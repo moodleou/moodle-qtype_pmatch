@@ -17,11 +17,10 @@
 
 
 /**
- * This file contains tests that walks a question through the interactive
- * behaviour.
+ * This file contains tests that tests the interpretation of a pmatch string.
  *
  * @package qtype
- * @subpackage gapselect
+ * @subpackage pmatch
  * @copyright 2011 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,5 +40,19 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, 17), $matchall->match(' not  pmatch_all()', 0));
         $this->assertEqual(array(false, 0), $matchall->match(' notpmatch_all()', 0));
         $this->assertEqual(array(false, 2), $matchall->match(' notpmatch_all()', 2));
+    }
+    public function test_qtype_pmatch_character_in_word() {
+        $matchchar = new qtype_pmatch_character_in_word();
+        $this->assertEqual(array(true, 1), $matchchar->match('f', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('fF', 1));
+        $this->assertEqual(array(true, 2), $matchchar->match('\_', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\]', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\[', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\_', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\(', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\)', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\ ', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\|', 0));
+        $this->assertEqual(array(true, 2), $matchchar->match('\\\\', 0));
     }
 }
