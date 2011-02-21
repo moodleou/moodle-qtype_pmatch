@@ -24,19 +24,7 @@ abstract class qtype_pmatch_item{
         list($found, $endofpattern, $subpatterns) = $this->find_pattern($this->pattern, $string, $start);
         return array($found, $endofpattern);
     }
-    /**
-     * 
-     * Invert the returned match for this item.
-     * @var boolean
-     */
-    var $not;
-    /**
-     * Search for a pattern with some common options (case insensitive, multiline)
-     * @param string $pattern the pattern to match
-     * @param string $string the string to be checked
-     * @param the position to start at in the string
-     * @see qtype_pmatch_negatable_item::match()
-     */
+
     public function find_pattern($pattern, $string, $start){
         $matches = array();
         preg_match($pattern.'im', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
@@ -49,21 +37,17 @@ abstract class qtype_pmatch_item{
         array_shift($matches);//pop off the matched string and only return sub patterns
         return array($found, $endofpattern, $matches);
     }
-    /**
-     * Is there a not here?
-     * @param string $string the string to be match
-     * @param the position to start at in the string
-     * @see qtype_pmatch_negatable_item::interpret()
-     */
-    public function interpret_not($string, $start){
-        list($found, $endofpattern, $subpatterns) = $this->find_pattern('!^\s*not\s+!', $string, $start);
-        return array($found, $endofpattern);
-    }
 }
 abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
 
-    protected $contents = array();
-
+    protected $subcontents = array();
+    /**
+     * 
+     * How many items can be contained as sub contents of this item. If 0 then no limit.
+     * @var integer
+     */
+    protected $limitsubcontents = 0;
+    
     /**
      * 
      * Interpret sub contents of item.
@@ -78,7 +62,6 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
         $branchindex = 0;
         $childbranches = array();
         $childbranchcursor = array();
-        $endofchildbranch = array();
         //iterate down all branches
         foreach ($typestotry as $typetotry){
             $childbranches[$branchindex] = $branchfoundsofar;
@@ -86,14 +69,15 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
                     $this->interpret_subcontent_item($typetotry, $string, $start);
             if ($found){
                 $childbranches[$branchindex][] = $typefound;
-                list($childbranches[$branchindex], $childbranchcursor[$branchindex]) = 
-                    $this->interpret_subcontents($string, $childbranchcursor[$branchindex], $childbranches[$branchindex]);
+                if (($this->limitsubcontents == 0) || (count($childbranches[$branchindex]) < $this->limitsubcontents)){
+                    list($childbranches[$branchindex], $childbranchcursor[$branchindex]) = 
+                        $this->interpret_subcontents($string, $childbranchcursor[$branchindex], $childbranches[$branchindex]);
+                }
             }
             $branchindex++;
         }
         //find the branch that matches the longest string
         array_multisort($childbranchcursor, SORT_DESC, SORT_NUMERIC, $childbranches);
-        //print_object(compact('childbranchcursor', 'childbranches'));
         return array(array_shift($childbranches), array_shift($childbranchcursor));
     }
     /**
@@ -138,65 +122,79 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
         }
     }
     protected function interpret_contents($string, $start){
-        list($this->contents, $endofcontents) = $this->interpret_subcontents($string, $start);
-        return array((!empty($this->contents)), $endofcontents);
+        list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $start);
+        return array((!empty($this->subcontents)), $endofcontents);
     }
 }
 
 
-abstract class qtype_pmatch_match extends qtype_pmatch_item_with_contents{
+class qtype_pmatch_item_with_enclosed_contents extends qtype_pmatch_item_with_contents{
 
-    abstract protected function interpret_options($options);
+
+    protected $openingpattern;
+    protected $closingpattern;
 
     protected function interpret_contents($string, $start){
-        //first check for a not
-        list(, $matchstart) = $this->interpret_not($string, $start);
         $subpatterns = array();
-        list($found, $endofopening, $subpatterns) = $this->find_pattern('!^match(.*)\s*\(!', $string, $matchstart);
+        list($found, $endofopening, $subpatterns) = $this->find_pattern($this->openingpattern, $string, $start);
+
         if (!$found){
-            echo 'opening not matched';
             return array(false, $start);
         }
+
         if (!empty($subpatterns)){
-            $options = $subpatterns[0][0];
+            $subpattern = $subpatterns[0][0];
         } else {
-            $options = '';
+            $subpattern = '';
         }
-        if (!$this->interpret_options($options)) {
-            echo 'options not matched';
+        if (!$this->interpret_subpattern_in_opening($subpattern)) {
             return array(false, $start);
         }
-        list($this->contents, $endofcontents) = $this->interpret_subcontents($string, $endofopening);
-        if (empty($this->contents)){
-            echo 'contents not matched';
+        list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $endofopening);
+        if (empty($this->subcontents)){
             return array(false, $start);
         }
-        list($found, $endofclosing, $subpatterns) = $this->find_pattern('!^\)\s*!', $string, $endofcontents);
+        list($found, $endofclosing, $subpatterns) = $this->find_pattern($this->closingpattern, $string, $endofcontents);
         if (!$found){
-            echo 'closing not matched';
-            echo substr($string, $endofcontents);
-            print_object($this);
             return array(false, $start);
         }
         return array(true, $endofclosing);
     }
+    protected function interpret_subpattern_in_opening($subpattern){
+        return true;
+    }
+}
+class qtype_pmatch_negative_match extends qtype_pmatch_item_with_enclosed_contents{
+
+    protected $openingpattern = '!^not\s*\(!';
+    protected $closingpattern = '!^\)\s*!';
+
+    protected function next_possible_subcontent($foundsofar){
+        return array('match_any', 'match_all', 'match_options');
+    }
+
+    protected $limitsubcontents = 1;
+}
+class qtype_pmatch_match extends qtype_pmatch_item_with_enclosed_contents{
+
+    protected $openingpattern = '!^match(.*)\s*\(!';
+    protected $closingpattern = '!^\)\s*!';
 
 }
-/*
 class qtype_pmatch_match_any extends qtype_pmatch_match{
-    protected function interpret_options($options){
+    protected function interpret_subpattern_in_opening($options){
         return ($options == '_any');
     }
 }
 
 class qtype_pmatch_match_all extends qtype_pmatch_match{
-    protected function interpret_options($options){
+    protected function interpret_subpattern_in_opening($options){
         return ($options == '_all');
     }
-}*/
+}
 
 class qtype_pmatch_match_options extends qtype_pmatch_match{
-    protected function interpret_options($options){
+    protected function interpret_subpattern_in_opening($options){
         return true;
     }
     protected function next_possible_subcontent($foundsofar){
@@ -218,20 +216,18 @@ class qtype_pmatch_or_list extends qtype_pmatch_item_with_contents{
 class qtype_pmatch_or_character extends qtype_pmatch_item{
     protected $pattern = '!^\|!';
 }
-class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_contents{
-    protected function interpret_contents($string, $start){
-        if ($string[$start] == '[') {
-            list($phrase, $found, $endofcontents) = $this->interpret_subcontent_item('phrase', $string, $start+1);
-            if ($found && $string[$endofcontents] == ']') {
-                $this->content = array($phrase);
-                return array(true, $endofcontents+1);
-            } else {
-                return array(false, $start); // TODO maybe bubble up an error here
-            }
-        }
-        return array(false, $start);
+class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_contents{
+
+    protected $openingpattern = '!^\[!';
+    protected $closingpattern = '!^\]!';
+
+    protected function next_possible_subcontent($foundsofar){
+        return array('phrase');
     }
+    
+    protected $limitsubcontents = 1;
 }
+
 
 class qtype_pmatch_phrase extends qtype_pmatch_item_with_contents{
     protected function next_possible_subcontent($foundsofar){
@@ -245,7 +241,7 @@ class qtype_pmatch_phrase extends qtype_pmatch_item_with_contents{
     }
 }
 class qtype_pmatch_word_delimiter extends qtype_pmatch_item{
-    protected $pattern = '!^[_\s]!';
+    protected $pattern = '!^\_|\s+!';
 }
 class qtype_pmatch_word extends qtype_pmatch_item_with_contents{
     protected function next_possible_subcontent($foundsofar){

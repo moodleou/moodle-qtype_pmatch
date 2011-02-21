@@ -41,7 +41,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretall->interpret(' notpmatch_all()', 0));
         $this->assertEqual(array(false, 2), $interpretall->interpret(' notpmatch_all()', 2));
     }*/
-/*    public function test_qtype_pmatch_character_in_word() {
+    public function test_qtype_pmatch_character_in_word() {
         $interpretchar = new qtype_pmatch_character_in_word();
         $this->assertEqual(array(true, 1), $interpretchar->interpret('f', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('fF', 1));
@@ -141,7 +141,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, strlen($orlist)), $interpretorlist->interpret($orlist, 0));
         $this->assertEqual(array(true, 13), $interpretorlist->interpret('[googly]|popo', 0));
         $this->assertEqual(array(false, 0), $interpretorlist->interpret('[]', 0));
-    }*/
+    }
     public function test_qtype_pmatch_match_options() {
 
         $interpretmatchoptions = new qtype_pmatch_match_options();
@@ -167,6 +167,5 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matchwithoptions = 'match_mow(hello ginger top)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
-
     }
 }
