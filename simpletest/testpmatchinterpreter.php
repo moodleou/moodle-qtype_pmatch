@@ -131,6 +131,8 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $interpretphrase = new qtype_pmatch_or_list_phrase();
 
         $this->assertEqual(array(true, 18), $interpretphrase->interpret('[hello_ginger top]', 0));
+        $interpretphrase->interpret('[hello_ginger top');
+        $this->assertEqual(get_string('ie_missingclosingbracket', 'qtype_pmatch', '[hello_ginger top'), $interpretphrase->get_error_message());
         $this->assertEqual(array(true, 8), $interpretphrase->interpret('[googly]', 0));
         $this->assertEqual(array(false, 0), $interpretphrase->interpret('[]', 0));
     }
@@ -141,6 +143,8 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, strlen($orlist)), $interpretorlist->interpret($orlist, 0));
         $this->assertEqual(array(true, 13), $interpretorlist->interpret('[googly]|popo', 0));
         $this->assertEqual(array(false, 0), $interpretorlist->interpret('[]', 0));
+        $this->assertEqual(get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', '[]'),
+                                        $interpretorlist->get_error_message());
     }
     public function test_qtype_pmatch_match_options() {
 
@@ -148,6 +152,12 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matchwithoptions = 'match_mow(less*|smaller|low*|light*)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
+
+        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*';
+        $this->assertEqual(array(false, 0), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
+        $this->assertEqual(get_string('ie_missingclosingbracket', 'qtype_pmatch', $matchwithoptionserr),
+                                        $interpretmatchoptions->get_error_message());
 
         $interpretmatchoptions = new qtype_pmatch_match_options();
         $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';

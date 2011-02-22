@@ -1,12 +1,14 @@
 <?php
 abstract class qtype_pmatch_item{
-    protected $matched;
-    public function interpret($string, $start){
+    protected $interpretererrormessage;
+    protected $codefragment;
+    public function interpret($string, $start = 0){
+        $interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
         if ($found){
-            $this->matched = substr($string, $start, $endofmatch-$start);
+            $this->codefragment = substr($string, $start, $endofmatch-$start);
         } else {
-            $this->matched = '';
+            $this->codefragment = '';
         }
         return array($found, $endofmatch);
     }
@@ -36,6 +38,16 @@ abstract class qtype_pmatch_item{
         }
         array_shift($matches);//pop off the matched string and only return sub patterns
         return array($found, $endofpattern, $matches);
+    }
+    public function get_error_message(){
+        if (!empty($this->interpretererrormessage)){
+            return $this->interpretererrormessage;
+        } else {
+            return '';
+        }
+    }
+    public function set_error_message($errormessage, $codefragment){
+        $this->interpretererrormessage = get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
 }
 abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
@@ -72,6 +84,10 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
                 if (($this->limitsubcontents == 0) || (count($childbranches[$branchindex]) < $this->limitsubcontents)){
                     list($childbranches[$branchindex], $childbranchcursor[$branchindex]) = 
                         $this->interpret_subcontents($string, $childbranchcursor[$branchindex], $childbranches[$branchindex]);
+                }
+            } else {
+                if ($anyerrormessage = $typefound->get_error_message()){
+                    $this->interpretererrormessage = $anyerrormessage;
                 }
             }
             $branchindex++;
@@ -115,10 +131,9 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
         $cancontain = new $cancontainclassname();
         list($found, $aftercontent) = $cancontain->interpret($string, $start);
         if ($found) {
-            $founditem = $cancontain;
-            return array($founditem, true, $aftercontent);
+            return array($cancontain, true, $aftercontent);
         } else {
-            return array(null, false, $start);
+            return array($cancontain, false, $start);
         }
     }
     protected function interpret_contents($string, $start){
@@ -133,7 +148,8 @@ class qtype_pmatch_item_with_enclosed_contents extends qtype_pmatch_item_with_co
 
     protected $openingpattern;
     protected $closingpattern;
-
+    protected $missingclosingpatternerror = '';
+    
     protected function interpret_contents($string, $start){
         $subpatterns = array();
         list($found, $endofopening, $subpatterns) = $this->find_pattern($this->openingpattern, $string, $start);
@@ -152,10 +168,14 @@ class qtype_pmatch_item_with_enclosed_contents extends qtype_pmatch_item_with_co
         }
         list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $endofopening);
         if (empty($this->subcontents)){
+            $this->set_error_message('unrecognisedsubcontents', substr($string, $start, 20));
             return array(false, $start);
         }
         list($found, $endofclosing, $subpatterns) = $this->find_pattern($this->closingpattern, $string, $endofcontents);
         if (!$found){
+            if (!empty($this->missingclosingpatternerror)){
+                $this->set_error_message($this->missingclosingpatternerror, substr($string, $start, $endofcontents - $start));
+            }
             return array(false, $start);
         }
         return array(true, $endofclosing);
@@ -168,6 +188,7 @@ class qtype_pmatch_negative_match extends qtype_pmatch_item_with_enclosed_conten
 
     protected $openingpattern = '!^not\s*\(!';
     protected $closingpattern = '!^\)\s*!';
+    protected $missingclosingpatternerror = 'missingclosingbracket';
 
     protected function next_possible_subcontent($foundsofar){
         return array('match_any', 'match_all', 'match_options');
@@ -179,7 +200,8 @@ class qtype_pmatch_match extends qtype_pmatch_item_with_enclosed_contents{
 
     protected $openingpattern = '!^match(.*)\s*\(!';
     protected $closingpattern = '!^\)\s*!';
-
+    protected $missingclosingpatternerror = 'missingclosingbracket';
+    
 }
 class qtype_pmatch_match_any extends qtype_pmatch_match{
     protected function interpret_subpattern_in_opening($options){
@@ -220,7 +242,8 @@ class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_conten
 
     protected $openingpattern = '!^\[!';
     protected $closingpattern = '!^\]!';
-
+    protected $missingclosingpatternerror = 'missingclosingbracket';
+    
     protected function next_possible_subcontent($foundsofar){
         return array('phrase');
     }
