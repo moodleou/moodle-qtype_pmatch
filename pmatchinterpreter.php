@@ -3,7 +3,7 @@ abstract class qtype_pmatch_item{
     protected $interpretererrormessage;
     protected $codefragment;
     public function interpret($string, $start = 0){
-        $interpretererrormessage = '';
+        $this->interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
         if ($found){
             $this->codefragment = substr($string, $start, $endofmatch-$start);
@@ -50,7 +50,7 @@ abstract class qtype_pmatch_item{
         $this->interpretererrormessage = get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
 }
-abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
+abstract class qtype_pmatch_item_with_subcontents extends qtype_pmatch_item{
 
     protected $subcontents = array();
     /**
@@ -85,10 +85,9 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
                     list($childbranches[$branchindex], $childbranchcursor[$branchindex]) = 
                         $this->interpret_subcontents($string, $childbranchcursor[$branchindex], $childbranches[$branchindex]);
                 }
-            } else {
-                if ($anyerrormessage = $typefound->get_error_message()){
-                    $this->interpretererrormessage = $anyerrormessage;
-                }
+            }
+            if ($anyerrormessage = $typefound->get_error_message()){
+                $this->interpretererrormessage = $anyerrormessage;
             }
             $branchindex++;
         }
@@ -138,18 +137,37 @@ abstract class qtype_pmatch_item_with_contents extends qtype_pmatch_item{
     }
     protected function interpret_contents($string, $start){
         list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $start);
+        $this->check_subcontents();
         return array((!empty($this->subcontents)), $endofcontents);
+    }
+    /**
+     * 
+     * Any checks that need to be done on sub contents found, are done here. The default is to check 
+     * the last content type found and if the type is included in lastcontenttypeerrors report an error.
+     */
+    protected function check_subcontents(){
+        if (array_key_exists($this->last_subcontent_type_found($this->subcontents), $this->lastcontenttypeerrors)){
+            $this->set_error_message($this->lastcontenttypeerrors[$this->last_subcontent_type_found($this->subcontents)], 
+                                    $this->codefragment);
+        }
+    }
+    protected $lastcontenttypeerrors = array('or_character' => 'lastsubcontenttypeorcharacter',
+                                             'word_delimiter' => 'lastsubcontenttypeworddelimiter');
+    public function interpret($string, $start = 0){
+        list($found, $endofmatch) = parent::interpret($string, $start);
+        $this->check_subcontents();
+        return array($found, $endofmatch);
     }
 }
 
 
-class qtype_pmatch_item_with_enclosed_contents extends qtype_pmatch_item_with_contents{
+abstract class qtype_pmatch_item_with_enclosed_subcontents extends qtype_pmatch_item_with_subcontents{
 
 
     protected $openingpattern;
     protected $closingpattern;
     protected $missingclosingpatternerror = '';
-    
+
     protected function interpret_contents($string, $start){
         $subpatterns = array();
         list($found, $endofopening, $subpatterns) = $this->find_pattern($this->openingpattern, $string, $start);
@@ -184,10 +202,24 @@ class qtype_pmatch_item_with_enclosed_contents extends qtype_pmatch_item_with_co
         return true;
     }
 }
-class qtype_pmatch_negative_match extends qtype_pmatch_item_with_enclosed_contents{
+class qtype_pmatch_whole_expression extends qtype_pmatch_item_with_subcontents{
 
-    protected $openingpattern = '!^not\s*\(!';
-    protected $closingpattern = '!^\)\s*!';
+    protected function next_possible_subcontent($foundsofar){
+        return array('not', 'match_any', 'match_all', 'match_options');
+    }
+    
+    public function interpret($string, $start = 0){
+        //here we always start at the first char - 0
+        //$string = preg_replace(array('!\s*\(\s*!', '!\s*\)\s*!'), array('(', ')'), $string);
+        return parent::interpret($string, $start);
+    }
+
+    protected $limitsubcontents = 1;
+}
+class qtype_pmatch_not extends qtype_pmatch_item_with_enclosed_subcontents{
+
+    protected $openingpattern = '!^\s*not\s*\(\s*!';
+    protected $closingpattern = '!^\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
 
     protected function next_possible_subcontent($foundsofar){
@@ -196,10 +228,10 @@ class qtype_pmatch_negative_match extends qtype_pmatch_item_with_enclosed_conten
 
     protected $limitsubcontents = 1;
 }
-class qtype_pmatch_match extends qtype_pmatch_item_with_enclosed_contents{
+class qtype_pmatch_match extends qtype_pmatch_item_with_enclosed_subcontents{
 
-    protected $openingpattern = '!^match(.*)\s*\(!';
-    protected $closingpattern = '!^\)\s*!';
+    protected $openingpattern = '!^match([_a-z2]*)\s*\(\s*!';
+    protected $closingpattern = '!^\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     
 }
@@ -207,23 +239,132 @@ class qtype_pmatch_match_any extends qtype_pmatch_match{
     protected function interpret_subpattern_in_opening($options){
         return ($options == '_any');
     }
+    protected function next_possible_subcontent($foundsofar){
+        return array('match_any', 'match_all', 'match_options', 'not');
+    }
+
 }
 
 class qtype_pmatch_match_all extends qtype_pmatch_match{
     protected function interpret_subpattern_in_opening($options){
         return ($options == '_all');
     }
+    protected function next_possible_subcontent($foundsofar){
+        return array('match_any', 'match_all', 'match_options', 'not');
+    }
 }
 
 class qtype_pmatch_match_options extends qtype_pmatch_match{
+
+    protected $allowextracharacters;
+    protected $allowanywordorder;
+    protected $allowextrawords;
+    protected $misspellingallowreplacechar;
+    protected $misspellingallowtransposetwochars;
+    protected $misspellingallowextrachar;
+    protected $misspellingallowfewerchar;
+    protected $allowproximityof;
+
+    public function __construct(){
+        $this->reset_options();
+    }
+    protected function reset_options(){
+        $this->allowextracharacters = false;
+        $this->allowanywordorder = false;
+        $this->allowextrawords = false;
+        $this->misspellingallowreplacechar = false;
+        $this->misspellingallowtransposetwochars = false;
+        $this->misspellingallowextrachar = false;
+        $this->misspellingallowfewerchar = false;
+        $this->allowproximityof = 2;
+        $this->misspellings = 1;
+    }
+    
     protected function interpret_subpattern_in_opening($options){
+        $this->reset_options();
+        if (empty($options)){
+            return true;
+        }
+        if ($options == '_any' || $options == '_all'){
+            return false;
+        }
+        if ($options[0] != '_'){
+            $this->set_error_message('illegaloptions', $options);
+            return false;
+        }
+        if (!preg_match('!^\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!', $options)){
+            $this->set_error_message('illegaloptions', $options);
+            return false;
+        }
+        if (FALSE !== strpos($options, 'c')){
+            $this->allowextracharacters = true;
+        }
+        if (FALSE !== strpos($options, 'o')){
+            $this->allowanywordorder = true;
+        }
+        if (FALSE !== strpos($options, 'w')){
+            $this->allowextrawords = true;
+        }
+        $moptionpos = strpos($options, 'm');
+        if (isset($options[$moptionpos+1])){
+            $msecondchar = $options[$moptionpos+1];
+        } else {
+            $msecondchar = '';
+        }
+
+        switch ($msecondchar){
+            case 'r' :
+                $this->misspellingallowreplacechar = true;
+                break;
+            case 't' :
+                $this->misspellingallowtransposetwochars = true;
+                break;
+            case 'x' :
+                $this->misspellingallowextrachar = true;
+                break;
+            case 'f' :
+                $this->misspellingallowfewerchar = true;
+                break;
+            case '2' :
+                $this->misspellings = 2;
+            default :
+                $this->misspellingallowreplacechar = true;
+                $this->misspellingallowtransposetwochars = true;
+                $this->misspellingallowextrachar = true;
+                $this->misspellingallowfewerchar = true;
+                break;
+        }
+        if (FALSE !== strpos($options, 'm', $moptionpos+1)){
+            $this->set_error_message('illegaloptions', $options);
+            return false;
+        }
+        if ($this->allowextracharacters && ($this->misspellingallowreplacechar||$this->misspellingallowtransposetwochars
+                                ||$this->misspellingallowextrachar||$this->misspellingallowfewerchar)){
+            $this->set_error_message('illegaloptions', $options);
+            return false;
+        }
+        $proximitymatches = array();
+        $noofproximitymatches = preg_match_all('!p([0-4])!i', $options, $proximitymatches, PREG_PATTERN_ORDER);
+        if ($noofproximitymatches > 1){
+            $this->set_error_message('illegaloptions', $options);
+            return false;
+        } else if ($noofproximitymatches == 1){
+            $this->allowproximityof = $proximitymatches[1][0];
+        }
         return true;
     }
     protected function next_possible_subcontent($foundsofar){
-       return array('or_list', 'phrase');
+        switch ($this->last_subcontent_type_found($foundsofar)){
+            case '':
+            case 'word_delimiter':
+                return array('phrase', 'or_list');
+            case 'or_list':
+            case 'phrase':
+                return array('word_delimiter');
+        }
     }
 }
-class qtype_pmatch_or_list extends qtype_pmatch_item_with_contents{
+class qtype_pmatch_or_list extends qtype_pmatch_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
@@ -238,7 +379,7 @@ class qtype_pmatch_or_list extends qtype_pmatch_item_with_contents{
 class qtype_pmatch_or_character extends qtype_pmatch_item{
     protected $pattern = '!^\|!';
 }
-class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_contents{
+class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_subcontents{
 
     protected $openingpattern = '!^\[!';
     protected $closingpattern = '!^\]!';
@@ -252,7 +393,7 @@ class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_conten
 }
 
 
-class qtype_pmatch_phrase extends qtype_pmatch_item_with_contents{
+class qtype_pmatch_phrase extends qtype_pmatch_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
@@ -266,7 +407,7 @@ class qtype_pmatch_phrase extends qtype_pmatch_item_with_contents{
 class qtype_pmatch_word_delimiter extends qtype_pmatch_item{
     protected $pattern = '!^\_|\s+!';
 }
-class qtype_pmatch_word extends qtype_pmatch_item_with_contents{
+class qtype_pmatch_word extends qtype_pmatch_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
         return array('character_in_word', 'wildcard_in_word');
     }

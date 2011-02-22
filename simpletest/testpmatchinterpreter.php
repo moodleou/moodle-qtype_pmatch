@@ -41,7 +41,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretall->interpret(' notpmatch_all()', 0));
         $this->assertEqual(array(false, 2), $interpretall->interpret(' notpmatch_all()', 2));
     }*/
-    public function test_qtype_pmatch_character_in_word() {
+/*    public function test_qtype_pmatch_character_in_word() {
         $interpretchar = new qtype_pmatch_character_in_word();
         $this->assertEqual(array(true, 1), $interpretchar->interpret('f', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('fF', 1));
@@ -154,10 +154,15 @@ class qtype_pmatch_interpreter extends UnitTestCase {
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
         $interpretmatchoptions = new qtype_pmatch_match_options();
-        $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*';
-        $this->assertEqual(array(false, 0), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
-        $this->assertEqual(get_string('ie_missingclosingbracket', 'qtype_pmatch', $matchwithoptionserr),
+        $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
+        $this->assertEqual(array(true, strlen($matchwithoptionserr)), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
+        $this->assertEqual(get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', 'less*|smaller|low*|light*|'),
                                         $interpretmatchoptions->get_error_message());
+
+        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
 
         $interpretmatchoptions = new qtype_pmatch_match_options();
         $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
@@ -177,5 +182,33 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matchwithoptions = 'match_mow(hello ginger top)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
+
+        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $matchwithoptions = 'match_mow(hello ginger top )';
+        $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $this->assertEqual(get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', 'top '),
+                                        $interpretmatchoptions->get_error_message());
+                                        
+        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $matchwithoptions = 'match_mow(hello ginger top [specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
+    }
+    */
+    public function test_qtype_pmatch_whole_expression() {
+        $wholeexpression = new qtype_pmatch_whole_expression();
+        $expression = <<<EOF
+match_all(
+    match_mow(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg)
+)
+EOF;
+        $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
+    }
+    public function test_qtype_pmatch_not() {
+        $wholeexpression = new qtype_pmatch_whole_expression();
+        $expression = <<<EOF
+not (
+    match_mw (water|not|higher) )
+EOF;
+        $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
     }
 }
