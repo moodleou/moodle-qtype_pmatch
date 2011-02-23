@@ -41,27 +41,11 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretall->interpret(' notpmatch_all()', 0));
         $this->assertEqual(array(false, 2), $interpretall->interpret(' notpmatch_all()', 2));
     }*/
-/*    public function test_qtype_pmatch_character_in_word() {
+    public function test_qtype_pmatch_character_in_word() {
         $interpretchar = new qtype_pmatch_character_in_word();
         $this->assertEqual(array(true, 1), $interpretchar->interpret('f', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('fF', 1));
-        //test interpreting of escaped special characters
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\_', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\]', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\[', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\_', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\(', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\)', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\ ', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\|', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\\\\', 0));
-        //should not interpret non escaped special characters
-        $this->assertEqual(array(false, 0), $interpretchar->interpret('|', 0));
-        $this->assertEqual(array(false, 0), $interpretchar->interpret(' ', 0));
-        $this->assertEqual(array(false, 0), $interpretchar->interpret('(', 0));
-        //should interpret escaped wild cards
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\*', 0));
-        $this->assertEqual(array(true, 2), $interpretchar->interpret('\?', 0));
+
         //interpret other keyboard characters
         $this->assertEqual(array(true, 1), $interpretchar->interpret('!', 0));
         $this->assertEqual(array(true, 1), $interpretchar->interpret('"', 0));
@@ -84,7 +68,26 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, 1), $interpretchar->interpret('}', 0));
         $this->assertEqual(array(true, 1), $interpretchar->interpret('~', 0));
     }
-    
+    public function test_qtype_pmatch_special_character_in_word() {
+        $interpretchar = new qtype_pmatch_special_character_in_word();
+        //test interpreting of escaped special characters
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\_', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\]', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\[', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\_', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\(', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\)', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\ ', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\|', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\\\\', 0));
+        //should not interpret non escaped special characters
+        $this->assertEqual(array(false, 0), $interpretchar->interpret('|', 0));
+        $this->assertEqual(array(false, 0), $interpretchar->interpret(' ', 0));
+        $this->assertEqual(array(false, 0), $interpretchar->interpret('(', 0));
+        //should interpret escaped wild cards
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\*', 0));
+        $this->assertEqual(array(true, 2), $interpretchar->interpret('\?', 0));
+    }
     public function test_qtype_pmatch_wildcard_in_word() {
         $interpretchar = new qtype_pmatch_wildcard_in_word();
 
@@ -193,12 +196,40 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matchwithoptions = 'match_mow(hello ginger top [specific gravity]|sg)';
         $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
     }
-    */
     public function test_qtype_pmatch_whole_expression() {
         $wholeexpression = new qtype_pmatch_whole_expression();
         $expression = <<<EOF
-match_all(
+match_all (
     match_mow(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg)
+    not (
+        match_mw(water|not|higher)
+   )
+)
+EOF;
+        $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
+
+        $wholeexpression = new qtype_pmatch_whole_expression();
+        $expression = <<<EOF
+match_all (
+    match_any (
+         match_mw(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg than_water)
+         match_mw(dens&|[specific gravity]|sg great&|high|higher|more|bigger|heavier|heavy than_water)
+         match_mw(dens& water < dens& oil)
+    )
+    not (
+         match_w(than_oil)
+   )
+)
+EOF;
+        $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
+
+        $wholeexpression = new qtype_pmatch_whole_expression();
+        $expression = <<<EOF
+match_all (
+    match_mow(less&|smaller|low&|light& dens&|[specific gravity]|sg)
+    not (
+        match_mw(water|not|higher)
+    )
 )
 EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
@@ -207,7 +238,17 @@ EOF;
         $wholeexpression = new qtype_pmatch_whole_expression();
         $expression = <<<EOF
 not (
-    match_mw (water|not|higher) )
+    match_mw (water|not|higher)
+)
+EOF;
+        $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
+    }
+    public function test_qtype_pmatch_whitespace_removal_tests() {
+        $wholeexpression = new qtype_pmatch_match_all();
+        $expression = <<<EOF
+match_all(
+    match_mow(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg)
+)
 EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
     }

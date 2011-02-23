@@ -27,15 +27,26 @@ abstract class qtype_pmatch_item{
         return array($found, $endofpattern);
     }
 
+    /**
+     * 
+     * Find an anchored case insensitive regular expression, searching from $start.
+     * @param string $pattern
+     * @param string $string
+     * @param integer $start
+     * @return array $found boolean is the pattern found,
+     *               $endofpattern integer the position of the end of the pattern,
+     *               $matches array of matches of sub patterns with offset from $start
+     */
     public function find_pattern($pattern, $string, $start){
         $matches = array();
-        preg_match($pattern.'im', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
+        preg_match($pattern.'iA', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found){
             $endofpattern = $matches[0][1]+strlen($matches[0][0])+$start;
         } else {
             $endofpattern = $start;
         }
+
         array_shift($matches);//pop off the matched string and only return sub patterns
         return array($found, $endofpattern, $matches);
     }
@@ -207,19 +218,13 @@ class qtype_pmatch_whole_expression extends qtype_pmatch_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
         return array('not', 'match_any', 'match_all', 'match_options');
     }
-    
-    public function interpret($string, $start = 0){
-        //here we always start at the first char - 0
-        //$string = preg_replace(array('!\s*\(\s*!', '!\s*\)\s*!'), array('(', ')'), $string);
-        return parent::interpret($string, $start);
-    }
 
     protected $limitsubcontents = 1;
 }
 class qtype_pmatch_not extends qtype_pmatch_item_with_enclosed_subcontents{
 
-    protected $openingpattern = '!^\s*not\s*\(\s*!';
-    protected $closingpattern = '!^\s*\)\s*!';
+    protected $openingpattern = '!\s*not\s*\(\s*!';
+    protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
 
     protected function next_possible_subcontent($foundsofar){
@@ -230,8 +235,8 @@ class qtype_pmatch_not extends qtype_pmatch_item_with_enclosed_subcontents{
 }
 class qtype_pmatch_match extends qtype_pmatch_item_with_enclosed_subcontents{
 
-    protected $openingpattern = '!^match([_a-z2]*)\s*\(\s*!';
-    protected $closingpattern = '!^\s*\)\s*!';
+    protected $openingpattern = '!match([_a-z2]*)\s*\(\s*!';
+    protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     
 }
@@ -292,7 +297,7 @@ class qtype_pmatch_match_options extends qtype_pmatch_match{
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-        if (!preg_match('!^\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!', $options)){
+        if (!preg_match('!\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!A', $options)){
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
@@ -377,12 +382,12 @@ class qtype_pmatch_or_list extends qtype_pmatch_item_with_subcontents{
     }
 }
 class qtype_pmatch_or_character extends qtype_pmatch_item{
-    protected $pattern = '!^\|!';
+    protected $pattern = '!\|!';
 }
 class qtype_pmatch_or_list_phrase extends qtype_pmatch_item_with_enclosed_subcontents{
 
-    protected $openingpattern = '!^\[!';
-    protected $closingpattern = '!^\]!';
+    protected $openingpattern = '!\[!';
+    protected $closingpattern = '!\]!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     
     protected function next_possible_subcontent($foundsofar){
@@ -405,16 +410,19 @@ class qtype_pmatch_phrase extends qtype_pmatch_item_with_subcontents{
     }
 }
 class qtype_pmatch_word_delimiter extends qtype_pmatch_item{
-    protected $pattern = '!^\_|\s+!';
+    protected $pattern = '!\_|\s+!';
 }
 class qtype_pmatch_word extends qtype_pmatch_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
-        return array('character_in_word', 'wildcard_in_word');
+        return array('character_in_word', 'special_character_in_word', 'wildcard_in_word');
     }
 }
 class qtype_pmatch_character_in_word extends qtype_pmatch_item{
-    protected $pattern = '!^[a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]|(\\\\[()\\\\ |?*_\[\]])!';
+    protected $pattern = '![a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]!';
+}
+class qtype_pmatch_special_character_in_word extends qtype_pmatch_item{
+    protected $pattern = '!\\\\[()\\\\ |?*_\[\]]!';
 }
 class qtype_pmatch_wildcard_in_word extends qtype_pmatch_item{
-    protected $pattern = '!^[?*]!';
+    protected $pattern = '![?*]!';
 }
