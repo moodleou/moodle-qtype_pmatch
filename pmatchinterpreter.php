@@ -1,4 +1,5 @@
 <?php
+require_once($CFG->dirroot.'/question/type/pmatch/pmatchmatcher.php');
 abstract class qtype_pmatch_interpreter_item{
     protected $interpretererrormessage;
     protected $codefragment;
@@ -60,6 +61,17 @@ abstract class qtype_pmatch_interpreter_item{
     public function set_error_message($errormessage, $codefragment){
         $this->interpretererrormessage = get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
+    public function get_matcher(){
+        $thistypename = $this->get_type_name_of_interpreter_object($this);
+        $matchclassname = 'qtype_pmatch_matcher_'.$thistypename;
+        return new $matchclassname($this);
+    }
+    public function get_type_name_of_interpreter_object($object){
+        return substr(get_class($object), 25);
+    }
+    public function get_code_fragment(){
+        return $this->codefragment;
+    }
 }
 abstract class qtype_pmatch_interpreter_item_with_subcontents extends qtype_pmatch_interpreter_item{
 
@@ -114,7 +126,7 @@ abstract class qtype_pmatch_interpreter_item_with_subcontents extends qtype_pmat
      */
     protected function last_subcontent_type_found($foundsofar){
         if (!empty($foundsofar)){
-            return substr(get_class($foundsofar[count($foundsofar)-1]), 13);
+            return $this->get_type_name_of_interpreter_object($foundsofar[count($foundsofar)-1]);
         } else {
             return '';
         }
@@ -168,6 +180,9 @@ abstract class qtype_pmatch_interpreter_item_with_subcontents extends qtype_pmat
         list($found, $endofmatch) = parent::interpret($string, $start);
         $this->check_subcontents();
         return array($found, $endofmatch);
+    }
+    public function get_subcontents(){
+        return $this->subcontents;
     }
 }
 
@@ -414,7 +429,7 @@ class qtype_pmatch_interpreter_word_delimiter extends qtype_pmatch_interpreter_i
 }
 class qtype_pmatch_interpreter_word extends qtype_pmatch_interpreter_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
-        return array('character_in_word', 'special_character_in_word', 'wildcard_in_word');
+        return array('character_in_word', 'special_character_in_word', 'wildcard_match_multiple', 'wildcard_match_single');
     }
 }
 class qtype_pmatch_interpreter_character_in_word extends qtype_pmatch_interpreter_item{
@@ -423,6 +438,9 @@ class qtype_pmatch_interpreter_character_in_word extends qtype_pmatch_interprete
 class qtype_pmatch_interpreter_special_character_in_word extends qtype_pmatch_interpreter_item{
     protected $pattern = '!\\\\[()\\\\ |?*_\[\]]!';
 }
-class qtype_pmatch_interpreter_wildcard_in_word extends qtype_pmatch_interpreter_item{
-    protected $pattern = '![?*]!';
+class qtype_pmatch_interpreter_wildcard_match_single extends qtype_pmatch_interpreter_item{
+    protected $pattern = '!\?!';
+}
+class qtype_pmatch_interpreter_wildcard_match_multiple extends qtype_pmatch_interpreter_item{
+    protected $pattern = '!\*!';
 }

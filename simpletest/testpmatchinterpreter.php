@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchinterpreter.php');
 
 class qtype_pmatch_interpreter extends UnitTestCase {
 /*    public function test_qtype_pmatch_all() {
-        $interpretall = new qtype_pmatch_match_all();
+        $interpretall = new qtype_pmatch_interpreter_match_all();
         $this->assertEqual(array(true, 5), $interpretall->interpret_not(' not pmatch_all()', 0));
         $this->assertEqual(array(true, 6), $interpretall->interpret_not(' not  pmatch_all()', 0));
         $this->assertEqual(array(false, 0), $interpretall->interpret_not(' notpmatch_all()', 0));
@@ -42,7 +42,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(false, 2), $interpretall->interpret(' notpmatch_all()', 2));
     }*/
     public function test_qtype_pmatch_character_in_word() {
-        $interpretchar = new qtype_pmatch_character_in_word();
+        $interpretchar = new qtype_pmatch_interpreter_character_in_word();
         $this->assertEqual(array(true, 1), $interpretchar->interpret('f', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('fF', 1));
 
@@ -69,7 +69,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, 1), $interpretchar->interpret('~', 0));
     }
     public function test_qtype_pmatch_special_character_in_word() {
-        $interpretchar = new qtype_pmatch_special_character_in_word();
+        $interpretchar = new qtype_pmatch_interpreter_special_character_in_word();
         //test interpreting of escaped special characters
         $this->assertEqual(array(true, 2), $interpretchar->interpret('\_', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('\]', 0));
@@ -88,17 +88,19 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(true, 2), $interpretchar->interpret('\*', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('\?', 0));
     }
-    public function test_qtype_pmatch_wildcard_in_word() {
-        $interpretchar = new qtype_pmatch_wildcard_in_word();
-
+    public function test_qtype_pmatch_wildcard_match_multiple() {
+        $interpretchar = new qtype_pmatch_interpreter_wildcard_match_multiple();
         //should interpret wild cards
         $this->assertEqual(array(true, 1), $interpretchar->interpret('*', 0));
-        $this->assertEqual(array(true, 1), $interpretchar->interpret('?', 0));
 
     }
-    
+    public function test_qtype_pmatch_wildcard_match_single() {
+        $interpretchar = new qtype_pmatch_interpreter_wildcard_match_single();
+        //should interpret wild cards
+        $this->assertEqual(array(true, 1), $interpretchar->interpret('?', 0));
+    }
     public function test_qtype_pmatch_word() {
-        $interpretword = new qtype_pmatch_word();
+        $interpretword = new qtype_pmatch_interpreter_word();
         $otherkeyboardchars = '!"#£$%&\'/-+<=>@^`{}~';
         $this->assertEqual(array(true, strlen($otherkeyboardchars)), $interpretword->interpret($otherkeyboardchars, 0));
         $alphanum = 'abcdefABCDEF1234567890';
@@ -118,20 +120,20 @@ class qtype_pmatch_interpreter extends UnitTestCase {
     }
 
     public function test_qtype_pmatch_word_delimiter() {
-        $interpretworddelimiter = new qtype_pmatch_word_delimiter();
+        $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter();
 
         $this->assertEqual(array(true, 1), $interpretworddelimiter->interpret('_', 0));
         $this->assertEqual(array(true, 3), $interpretworddelimiter->interpret('   ', 0));
     }
     public function test_qtype_pmatch_phrase() {
-        $interpretphrase = new qtype_pmatch_phrase();
+        $interpretphrase = new qtype_pmatch_interpreter_phrase();
 
         $this->assertEqual(array(true, 16), $interpretphrase->interpret('hello_ginger top', 0));
         $this->assertEqual(array(true, 6), $interpretphrase->interpret('googly', 0));
         $this->assertEqual(array(false, 0), $interpretphrase->interpret('[]', 0));
     }
     public function test_qtype_pmatch_or_list_phrase() {
-        $interpretphrase = new qtype_pmatch_or_list_phrase();
+        $interpretphrase = new qtype_pmatch_interpreter_or_list_phrase();
 
         $this->assertEqual(array(true, 18), $interpretphrase->interpret('[hello_ginger top]', 0));
         $interpretphrase->interpret('[hello_ginger top');
@@ -140,7 +142,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretphrase->interpret('[]', 0));
     }
     public function test_qtype_pmatch_or_list() {
-        $interpretorlist = new qtype_pmatch_or_list();
+        $interpretorlist = new qtype_pmatch_interpreter_or_list();
 
         $orlist = '[hello_ginger top]|googly|[googly]';
         $this->assertEqual(array(true, strlen($orlist)), $interpretorlist->interpret($orlist, 0));
@@ -151,53 +153,53 @@ class qtype_pmatch_interpreter extends UnitTestCase {
     }
     public function test_qtype_pmatch_match_options() {
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(less*|smaller|low*|light*)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
         $this->assertEqual(array(true, strlen($matchwithoptionserr)), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
         $this->assertEqual(get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', 'less*|smaller|low*|light*|'),
                                         $interpretmatchoptions->get_error_message());
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello_ginger top)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow([specific gravity])';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello ginger top)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
 
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello ginger top )';
         $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
         $this->assertEqual(get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', 'top '),
                                         $interpretmatchoptions->get_error_message());
                                         
-        $interpretmatchoptions = new qtype_pmatch_match_options();
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello ginger top [specific gravity]|sg)';
         $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
     }
     public function test_qtype_pmatch_whole_expression() {
-        $wholeexpression = new qtype_pmatch_whole_expression();
+        $wholeexpression = new qtype_pmatch_interpreter_whole_expression();
         $expression = <<<EOF
 match_all (
     match_mow(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg)
@@ -208,7 +210,7 @@ match_all (
 EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
 
-        $wholeexpression = new qtype_pmatch_whole_expression();
+        $wholeexpression = new qtype_pmatch_interpreter_whole_expression();
         $expression = <<<EOF
 match_all (
     match_any (
@@ -222,8 +224,9 @@ match_all (
 )
 EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
+        $matcher = $wholeexpression->get_matcher();
 
-        $wholeexpression = new qtype_pmatch_whole_expression();
+        $wholeexpression = new qtype_pmatch_interpreter_whole_expression();
         $expression = <<<EOF
 match_all (
     match_mow(less&|smaller|low&|light& dens&|[specific gravity]|sg)
@@ -235,7 +238,7 @@ EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
     }
     public function test_qtype_pmatch_not() {
-        $wholeexpression = new qtype_pmatch_whole_expression();
+        $wholeexpression = new qtype_pmatch_interpreter_whole_expression();
         $expression = <<<EOF
 not (
     match_mw (water|not|higher)
@@ -244,7 +247,7 @@ EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
     }
     public function test_qtype_pmatch_whitespace_removal_tests() {
-        $wholeexpression = new qtype_pmatch_match_all();
+        $wholeexpression = new qtype_pmatch_interpreter_match_all();
         $expression = <<<EOF
 match_all(
     match_mow(great&|high|higher|more|bigger|heavier|heavy dens&|[specific gravity]|sg)
