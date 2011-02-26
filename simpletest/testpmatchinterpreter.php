@@ -114,9 +114,41 @@ class qtype_pmatch_interpreter extends UnitTestCase {
                                 $interpretword->interpret($otherkeyboardchars.$alphanum.' '.$anotherword.' '.$escapedspecialcharsword, strlen($otherkeyboardchars)+strlen($alphanum)+1+strlen($anotherword)+1));
         $this->assertEqual(array(true, strlen($otherkeyboardchars)+strlen($alphanum)+2),
                                 $interpretword->interpret($otherkeyboardchars.$alphanum.'*? '.$anotherword, 0));
-        $embeddedwildcards = 'ab*cdefABC?DEF12*34567890';
+
+        $embeddedwildcards = 'f*ulaciou?';
         $this->assertEqual(array(true, strlen($embeddedwildcards)),
                                 $interpretword->interpret($embeddedwildcards, 0));
+        $matcher = $interpretword->get_matcher();
+        $studentresponse = "fabulacious";
+        $this->assertEqual(true, $matcher->match_word($studentresponse));
+        $studentresponse2 = "fabalacious";
+        $this->assertEqual(false,$matcher->match_word($studentresponse2));
+        $embeddedwildcards = 'a*b';
+        $this->assertEqual(array(true, strlen($embeddedwildcards)),
+                                $interpretword->interpret($embeddedwildcards, 0));
+        $studentresponse = "agooglegotb";
+        $matcher = $interpretword->get_matcher();
+        $this->assertEqual(true,$matcher->match_word($studentresponse));
+        $studentresponse2 = "agooglebotb";
+        $matcher = $interpretword->get_matcher();
+        $this->assertEqual(true,$matcher->match_word($studentresponse2));
+        $studentresponse2 = "agooglebotc";
+        $matcher = $interpretword->get_matcher();
+        $this->assertEqual(false,$matcher->match_word($studentresponse2));
+
+        $embeddedwildcardsandspecialcharacters = 'a\?*\*b';
+        $this->assertEqual(array(true, strlen($embeddedwildcardsandspecialcharacters)),
+                                $interpretword->interpret($embeddedwildcardsandspecialcharacters, 0));
+        $studentresponse = "a?googlegot*b";
+        $matcher = $interpretword->get_matcher();
+        $this->assertEqual(true,$matcher->match_word($studentresponse));
+
+        $mixedwildcardsandspecialcharacters = 'a\?*\*b?';
+        $this->assertEqual(array(true, strlen($mixedwildcardsandspecialcharacters)),
+                                $interpretword->interpret($mixedwildcardsandspecialcharacters, 0));
+        $studentresponse = "a?googlegot*by";
+        $matcher = $interpretword->get_matcher();
+        $this->assertEqual(true,$matcher->match_word($studentresponse));
     }
 
     public function test_qtype_pmatch_word_delimiter() {
@@ -146,6 +178,10 @@ class qtype_pmatch_interpreter extends UnitTestCase {
 
         $orlist = '[hello_ginger top]|googly|[googly]';
         $this->assertEqual(array(true, strlen($orlist)), $interpretorlist->interpret($orlist, 0));
+        $matcher = $interpretorlist->get_matcher();
+        $this->assertEqual(true,$matcher->match_phrase(array('hello', 'ginger', 'top')));
+        $this->assertEqual(true,$matcher->match_word('googly'));
+        
         $this->assertEqual(array(true, 13), $interpretorlist->interpret('[googly]|popo', 0));
         $this->assertEqual(array(false, 0), $interpretorlist->interpret('[]', 0));
         $this->assertEqual(get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', '[]'),
@@ -191,7 +227,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello ginger top )';
         $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
-        $this->assertEqual(get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', 'top '),
+        $this->assertEqual(get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', $matchwithoptions),
                                         $interpretmatchoptions->get_error_message());
                                         
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();

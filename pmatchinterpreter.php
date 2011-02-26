@@ -377,9 +377,8 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
             case 'word_delimiter':
-                return array('phrase', 'or_list');
+                return array('or_list');
             case 'or_list':
-            case 'phrase':
                 return array('word_delimiter');
         }
     }
