@@ -273,35 +273,106 @@ class qtype_pmatch_interpreter_match_all extends qtype_pmatch_interpreter_match{
         return array('match_any', 'match_all', 'match_options', 'not');
     }
 }
-
-class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_match{
-
+class qtype_pmatch_word_level_options {
     protected $allowextracharacters;
-    protected $allowanywordorder;
-    protected $allowextrawords;
     protected $misspellingallowreplacechar;
     protected $misspellingallowtransposetwochars;
     protected $misspellingallowextrachar;
     protected $misspellingallowfewerchar;
-    protected $allowproximityof;
+    protected $misspellings;
 
     public function __construct(){
         $this->reset_options();
     }
+
     protected function reset_options(){
         $this->allowextracharacters = false;
-        $this->allowanywordorder = false;
-        $this->allowextrawords = false;
         $this->misspellingallowreplacechar = false;
         $this->misspellingallowtransposetwochars = false;
         $this->misspellingallowextrachar = false;
         $this->misspellingallowfewerchar = false;
-        $this->allowproximityof = 2;
         $this->misspellings = 1;
     }
+    public function set_options($allowextracharacters, $misspellingallowreplacechar,
+                $misspellingallowtransposetwochars, $misspellingallowextrachar,
+                $misspellingallowfewerchar, $misspellings){
+        $this->allowextracharacters = $allowextracharacters;
+        $this->misspellingallowreplacechar = $misspellingallowreplacechar;
+        $this->misspellingallowtransposetwochars = $misspellingallowtransposetwochars;
+        $this->misspellingallowextrachar = $misspellingallowextrachar;
+        $this->misspellingallowfewerchar = $misspellingallowfewerchar;
+        $this->misspellings = $misspellings;
+    }
+    public function get_allowextracharacters(){
+        return $this->allowextracharacters;
+    }
+    public function get_misspelling_allow_replace_char(){
+        return $this->misspellingallowreplacechar;
+    }
+    public function get_misspelling_allow_transpose_two_chars(){
+        return $this->misspellingallowtransposetwochars;
+    }
+    public function get_misspelling_allow_extra_char(){
+        return $this->misspellingallowextrachar;
+    }
+    public function get_misspelling_allow_fewer_char(){
+        return $this->misspellingallowfewerchar;
+    }
+    public function get_misspellings(){
+        return $this->misspellings;
+    }
     
-    protected function interpret_subpattern_in_opening($options){
+}
+class qtype_pmatch_phrase_level_options {
+    protected $allowproximityof;
+    protected $allowanywordorder;
+    protected $allowextrawords;
+
+    public function __construct(){
         $this->reset_options();
+    }
+
+    public function get_allow_proximity_of(){
+        return $this->allowproximityof;
+    }
+    public function get_allow_any_word_order(){
+        return $this->allowanywordorder;
+    }
+    public function get_allow_extra_words(){
+        return $this->allowextrawords;
+    }
+    protected function reset_options(){
+        $this->allowanywordorder = false;
+        $this->allowextrawords = false;
+        $this->allowproximityof = 2;
+    }
+    public function set_options($allowproximityof, $allowanywordorder, $allowextrawords){
+        $this->allowproximityof = $allowproximityof;
+        $this->allowanywordorder = $allowanywordorder;
+        $this->allowextrawords = $allowextrawords;
+    }
+}
+class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_match{
+
+    /**
+     * @var qtype_pmatch_word_level_options
+     */
+    protected $wordleveloptions;
+
+    /**
+     * @var qtype_pmatch_phrase_level_options
+     */
+    protected $phraseleveloptions;
+
+    public function __construct(){
+        $this->wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->phraseleveloptions = new qtype_pmatch_phrase_level_options();
+    }
+
+
+    protected function interpret_subpattern_in_opening($options){
+        $this->wordleveloptions->reset_options();
+        $this->phraseleveloptions->reset_options();
         if (empty($options)){
             return true;
         }
@@ -317,13 +388,13 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
             return false;
         }
         if (FALSE !== strpos($options, 'c')){
-            $this->allowextracharacters = true;
+            $allowextracharacters = true;
         }
         if (FALSE !== strpos($options, 'o')){
-            $this->allowanywordorder = true;
+            $allowanywordorder = true;
         }
         if (FALSE !== strpos($options, 'w')){
-            $this->allowextrawords = true;
+            $allowextrawords = true;
         }
         $moptionpos = strpos($options, 'm');
         if (isset($options[$moptionpos+1])){
@@ -334,32 +405,32 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
 
         switch ($msecondchar){
             case 'r' :
-                $this->misspellingallowreplacechar = true;
+                $misspellingallowreplacechar = true;
                 break;
             case 't' :
-                $this->misspellingallowtransposetwochars = true;
+                $misspellingallowtransposetwochars = true;
                 break;
             case 'x' :
-                $this->misspellingallowextrachar = true;
+                $misspellingallowextrachar = true;
                 break;
             case 'f' :
-                $this->misspellingallowfewerchar = true;
+                $misspellingallowfewerchar = true;
                 break;
             case '2' :
-                $this->misspellings = 2;
+                $misspellings = 2;
             default :
-                $this->misspellingallowreplacechar = true;
-                $this->misspellingallowtransposetwochars = true;
-                $this->misspellingallowextrachar = true;
-                $this->misspellingallowfewerchar = true;
+                $misspellingallowreplacechar = true;
+                $misspellingallowtransposetwochars = true;
+                $misspellingallowextrachar = true;
+                $misspellingallowfewerchar = true;
                 break;
         }
         if (FALSE !== strpos($options, 'm', $moptionpos+1)){
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-        if ($this->allowextracharacters && ($this->misspellingallowreplacechar||$this->misspellingallowtransposetwochars
-                                ||$this->misspellingallowextrachar||$this->misspellingallowfewerchar)){
+        if ($allowextracharacters && ($misspellingallowreplacechar||$misspellingallowtransposetwochars
+                                ||$misspellingallowextrachar||$misspellingallowfewerchar)){
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
@@ -369,8 +440,12 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
             $this->set_error_message('illegaloptions', $options);
             return false;
         } else if ($noofproximitymatches == 1){
-            $this->allowproximityof = $proximitymatches[1][0];
+            $allowproximityof = $proximitymatches[1][0];
         }
+        $this->wordleveloptions->set_options($allowextracharacters, $misspellingallowreplacechar,
+                $misspellingallowtransposetwochars, $misspellingallowextrachar,
+                $misspellingallowfewerchar, $misspellings);
+        $this->phraseleveloptions->set_options($allowproximityof, $allowanywordorder, $allowextrawords);
         return true;
     }
     protected function next_possible_subcontent($foundsofar){
