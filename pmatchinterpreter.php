@@ -285,25 +285,33 @@ class qtype_pmatch_word_level_options {
         $this->reset_options();
     }
 
-    protected function reset_options(){
+    public function reset_options(){
         $this->allowextracharacters = false;
         $this->misspellingallowreplacechar = false;
         $this->misspellingallowtransposetwochars = false;
         $this->misspellingallowextrachar = false;
         $this->misspellingallowfewerchar = false;
-        $this->misspellings = 1;
+        $this->misspellings = 0;
     }
-    public function set_options($allowextracharacters, $misspellingallowreplacechar,
-                $misspellingallowtransposetwochars, $misspellingallowextrachar,
-                $misspellingallowfewerchar, $misspellings){
+    public function set_allow_extra_characters($allowextracharacters){
         $this->allowextracharacters = $allowextracharacters;
+    }
+    public function set_misspelling_allow_replace_char($misspellingallowreplacechar){
         $this->misspellingallowreplacechar = $misspellingallowreplacechar;
+    }
+    public function set_misspelling_allow_transpose_two_chars($misspellingallowtransposetwochars){
         $this->misspellingallowtransposetwochars = $misspellingallowtransposetwochars;
+    }
+    public function set_misspelling_allow_extra_char($misspellingallowextrachar){
         $this->misspellingallowextrachar = $misspellingallowextrachar;
+    }
+    public function set_misspelling_allow_fewer_char($misspellingallowfewerchar){
         $this->misspellingallowfewerchar = $misspellingallowfewerchar;
+    }
+    public function set_misspellings($misspellings){
         $this->misspellings = $misspellings;
     }
-    public function get_allowextracharacters(){
+    public function get_allow_extra_characters(){
         return $this->allowextracharacters;
     }
     public function get_misspelling_allow_replace_char(){
@@ -341,14 +349,18 @@ class qtype_pmatch_phrase_level_options {
     public function get_allow_extra_words(){
         return $this->allowextrawords;
     }
-    protected function reset_options(){
+    public function reset_options(){
         $this->allowanywordorder = false;
         $this->allowextrawords = false;
         $this->allowproximityof = 2;
     }
-    public function set_options($allowproximityof, $allowanywordorder, $allowextrawords){
+    public function set_allow_proximity_of($allowproximityof){
         $this->allowproximityof = $allowproximityof;
+    }
+    public function set_allow_any_word_order($allowanywordorder){
         $this->allowanywordorder = $allowanywordorder;
+    }
+    public function set_allow_extra_words($allowextrawords){
         $this->allowextrawords = $allowextrawords;
     }
 }
@@ -371,8 +383,7 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
 
 
     protected function interpret_subpattern_in_opening($options){
-        $this->wordleveloptions->reset_options();
-        $this->phraseleveloptions->reset_options();
+        //general checks
         if (empty($options)){
             return true;
         }
@@ -387,15 +398,10 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-        if (FALSE !== strpos($options, 'c')){
-            $allowextracharacters = true;
-        }
-        if (FALSE !== strpos($options, 'o')){
-            $allowanywordorder = true;
-        }
-        if (FALSE !== strpos($options, 'w')){
-            $allowextrawords = true;
-        }
+
+        //word level options
+        $this->wordleveloptions->reset_options();
+        $this->wordleveloptions->set_allow_extra_characters(FALSE !== strpos($options, 'c'));
         $moptionpos = strpos($options, 'm');
         if (isset($options[$moptionpos+1])){
             $msecondchar = $options[$moptionpos+1];
@@ -405,47 +411,62 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
 
         switch ($msecondchar){
             case 'r' :
-                $misspellingallowreplacechar = true;
+                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                $this->wordleveloptions->set_misspellings(1);
                 break;
             case 't' :
-                $misspellingallowtransposetwochars = true;
+                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                $this->wordleveloptions->set_misspellings(1);
                 break;
             case 'x' :
-                $misspellingallowextrachar = true;
+                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                $this->wordleveloptions->set_misspellings(1);
                 break;
             case 'f' :
-                $misspellingallowfewerchar = true;
+                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
+                $this->wordleveloptions->set_misspellings(1);
                 break;
             case '2' :
-                $misspellings = 2;
+                $this->wordleveloptions->set_misspellings(2);
+                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
+                break;
             default :
-                $misspellingallowreplacechar = true;
-                $misspellingallowtransposetwochars = true;
-                $misspellingallowextrachar = true;
-                $misspellingallowfewerchar = true;
+                $this->wordleveloptions->set_misspellings(1);
+                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
                 break;
         }
         if (FALSE !== strpos($options, 'm', $moptionpos+1)){
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-        if ($allowextracharacters && ($misspellingallowreplacechar||$misspellingallowtransposetwochars
-                                ||$misspellingallowextrachar||$misspellingallowfewerchar)){
+        if ($this->wordleveloptions->get_allow_extra_characters() 
+                && ($this->wordleveloptions->get_misspelling_allow_replace_char()||
+                    $this->wordleveloptions->get_misspelling_allow_transpose_two_chars()||
+                    $this->wordleveloptions->get_misspelling_allow_extra_char()||
+                    $this->wordleveloptions->get_misspelling_allow_fewer_char())){
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
+
+        //phrase level options
+        $this->phraseleveloptions->reset_options();
+        $this->phraseleveloptions->set_allow_any_word_order(FALSE !== strpos($options, 'o'));
+        $this->phraseleveloptions->set_allow_extra_words(FALSE !== strpos($options, 'w'));
+
         $proximitymatches = array();
         $noofproximitymatches = preg_match_all('!p([0-4])!i', $options, $proximitymatches, PREG_PATTERN_ORDER);
         if ($noofproximitymatches > 1){
             $this->set_error_message('illegaloptions', $options);
             return false;
         } else if ($noofproximitymatches == 1){
-            $allowproximityof = $proximitymatches[1][0];
+            $this->phraseleveloptions->set_allow_proximity_of($proximitymatches[1][0]);
         }
-        $this->wordleveloptions->set_options($allowextracharacters, $misspellingallowreplacechar,
-                $misspellingallowtransposetwochars, $misspellingallowextrachar,
-                $misspellingallowfewerchar, $misspellings);
-        $this->phraseleveloptions->set_options($allowproximityof, $allowanywordorder, $allowextrawords);
         return true;
     }
     protected function next_possible_subcontent($foundsofar){

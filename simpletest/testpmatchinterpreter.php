@@ -120,35 +120,35 @@ class qtype_pmatch_interpreter extends UnitTestCase {
                                 $interpretword->interpret($embeddedwildcards, 0));
         $matcher = $interpretword->get_matcher();
         $studentresponse = "fabulacious";
-        $this->assertEqual(true, $matcher->match_word($studentresponse));
+        $this->assertEqual(true, $matcher->match_word($studentresponse, new qtype_pmatch_word_level_options()));
         $studentresponse2 = "fabalacious";
-        $this->assertEqual(false,$matcher->match_word($studentresponse2));
+        $this->assertEqual(false,$matcher->match_word($studentresponse2, new qtype_pmatch_word_level_options()));
         $embeddedwildcards = 'a*b';
         $this->assertEqual(array(true, strlen($embeddedwildcards)),
                                 $interpretword->interpret($embeddedwildcards, 0));
         $studentresponse = "agooglegotb";
         $matcher = $interpretword->get_matcher();
-        $this->assertEqual(true,$matcher->match_word($studentresponse));
+        $this->assertEqual(true,$matcher->match_word($studentresponse, new qtype_pmatch_word_level_options()));
         $studentresponse2 = "agooglebotb";
         $matcher = $interpretword->get_matcher();
-        $this->assertEqual(true,$matcher->match_word($studentresponse2));
+        $this->assertEqual(true,$matcher->match_word($studentresponse2, new qtype_pmatch_word_level_options()));
         $studentresponse2 = "agooglebotc";
         $matcher = $interpretword->get_matcher();
-        $this->assertEqual(false,$matcher->match_word($studentresponse2));
+        $this->assertEqual(false,$matcher->match_word($studentresponse2, new qtype_pmatch_word_level_options()));
 
         $embeddedwildcardsandspecialcharacters = 'a\?*\*b';
         $this->assertEqual(array(true, strlen($embeddedwildcardsandspecialcharacters)),
                                 $interpretword->interpret($embeddedwildcardsandspecialcharacters, 0));
         $studentresponse = "a?googlegot*b";
         $matcher = $interpretword->get_matcher();
-        $this->assertEqual(true,$matcher->match_word($studentresponse));
+        $this->assertEqual(true,$matcher->match_word($studentresponse, new qtype_pmatch_word_level_options()));
 
         $mixedwildcardsandspecialcharacters = 'a\?*\*b?';
         $this->assertEqual(array(true, strlen($mixedwildcardsandspecialcharacters)),
                                 $interpretword->interpret($mixedwildcardsandspecialcharacters, 0));
         $studentresponse = "a?googlegot*by";
         $matcher = $interpretword->get_matcher();
-        $this->assertEqual(true,$matcher->match_word($studentresponse));
+        $this->assertEqual(true,$matcher->match_word($studentresponse, new qtype_pmatch_word_level_options()));
     }
 
     public function test_qtype_pmatch_word_delimiter() {
@@ -179,8 +179,9 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $orlist = '[hello_ginger top]|googly|[googly]';
         $this->assertEqual(array(true, strlen($orlist)), $interpretorlist->interpret($orlist, 0));
         $matcher = $interpretorlist->get_matcher();
-        $this->assertEqual(true,$matcher->match_phrase(array('hello', 'ginger', 'top')));
-        $this->assertEqual(true,$matcher->match_word('googly'));
+        $this->assertEqual(true,$matcher->match_phrase(array('hello', 'ginger', 'top')
+                    , new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
+        $this->assertEqual(true,$matcher->match_word('googly', new qtype_pmatch_word_level_options()));
         
         $this->assertEqual(array(true, 13), $interpretorlist->interpret('[googly]|popo', 0));
         $this->assertEqual(array(false, 0), $interpretorlist->interpret('[]', 0));

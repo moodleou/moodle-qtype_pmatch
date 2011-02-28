@@ -7,15 +7,18 @@ interface qtype_pmatch_can_match_multiple_or_no_chars {
     public function match_chars($chars);
 }
 interface qtype_pmatch_can_match_word {
-    public function match_word($word);
+    public function match_word($word, $wordleveloptions);
 }
 interface qtype_pmatch_can_match_phrase {
     /**
      * 
      * Can possibly match a phrase.
      * @param array $phrase array of words
+     * @param qtype_pmatch_phrase_level_options $phraseleveloptions
+     * @param qtype_pmatch_word_level_options $wordleveloptions
+     * @return boolean successful match?
      */
-    public function match_phrase($phrase);
+    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions);
 }
 
 abstract class qtype_pmatch_matcher_item{
@@ -91,19 +94,19 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match{
 }
 class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcontents
             implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_match_word{
-    public function match_word($word){
+    public function match_word($word, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_word &&
-                        $subcontent->match_word($word) === true){
+                        $subcontent->match_word($word, $wordleveloptions) === true){
                 return true;
             }
         }
         return false;
     }
-    public function match_phrase($phrase){
+    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_phrase &&
-                        $subcontent->match_phrase($phrase) === true){
+                        $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true){
                 return true;
             }
         }
@@ -116,10 +119,10 @@ class qtype_pmatch_matcher_or_character extends qtype_pmatch_matcher_item{
 }
 class qtype_pmatch_matcher_or_list_phrase extends qtype_pmatch_matcher_item_with_subcontents
             implements qtype_pmatch_can_match_phrase{
-    public function match_phrase($phrase){
+    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_phrase &&
-                        $subcontent->match_phrase($phrase) === true){
+                        $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true){
                 return true;
             }
         }
@@ -130,14 +133,14 @@ class qtype_pmatch_matcher_or_list_phrase extends qtype_pmatch_matcher_item_with
 
 class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcontents
             implements qtype_pmatch_can_match_phrase{
-    public function match_phrase($phrase){
+    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         $wordno = 0;
         $subcontentno = 0;
         do {
             $subcontent = $this->subcontents[$subcontentno];
             $word = $phrase[$wordno];
             if ($subcontent instanceof qtype_pmatch_can_match_word){
-                if ($subcontent->match_word($word) !== true){
+                if ($subcontent->match_word($word, $wordleveloptions) !== true){
                     return false;
                 }
                 $wordno++;
@@ -156,9 +159,21 @@ class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcont
 class qtype_pmatch_matcher_word_delimiter extends qtype_pmatch_matcher_item{
 }
 class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subcontents implements qtype_pmatch_can_match_word{
-    public function match_word($word){
+    private $options;
+    public function match_word($word, $wordleveloptions){
+        $this->options = $wordleveloptions;
         return $this->check_match_branches($word);
     }
+    /**
+     * 
+     * Check each character against each item and iterate down branches of possible matches to whole
+     * word.
+     * @param string $word word to match from student response
+     * @param integer $charpos position of character in word we are currently checking for a match
+     * @param integer $subcontentno subcontent item to match this character against
+     * @param integer $noofcharactertomatch no of characters to match
+     * @return boolean true if we find one match branch that successfully matches the whole word
+     */
     private function check_match_branches($word, $charpos = 0, $subcontentno = 0, $noofcharactertomatch = 1){
         if ($this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_chars(substr($word, $charpos, $noofcharactertomatch));
