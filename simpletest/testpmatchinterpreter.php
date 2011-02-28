@@ -162,6 +162,93 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $wordleveloptions = new qtype_pmatch_word_level_options();
         $wordleveloptions->set_allow_extra_characters(true);
         $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcdfe";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+        $wordleveloptions->set_misspellings(1);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcdefh";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_extra_char(true);
+        $wordleveloptions->set_misspellings(1);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcde";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_fewer_char(true);
+        $wordleveloptions->set_misspellings(1);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcdej";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_replace_char(true);
+        $wordleveloptions->set_misspellings(1);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcdejk";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_replace_char(true);
+        $wordleveloptions->set_misspelling_allow_extra_char(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abdefk";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_replace_char(true);
+        $wordleveloptions->set_misspelling_allow_extra_char(true);
+        $wordleveloptions->set_misspelling_allow_fewer_char(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcfde";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
     }
     public function test_qtype_pmatch_word_delimiter() {
         $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter();

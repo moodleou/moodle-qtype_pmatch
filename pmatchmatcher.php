@@ -186,7 +186,7 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
     private $wordleveloptions;
     public function match_word($word, $wordleveloptions){
         $this->wordleveloptions = $wordleveloptions;
-        return $this->check_match_branches($word);
+        return $this->check_match_branches($word, $this->wordleveloptions->get_misspellings());
     }
     /**
      * 
@@ -198,57 +198,91 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
      * @param integer $noofcharactertomatch no of characters to match
      * @return boolean true if we find one match branch that successfully matches the whole word
      */
-    private function check_match_branches($word, $charpos = 0, $subcontentno = 0, $noofcharactertomatch = 1){
+    private function check_match_branches($word, $allowmispellings, $charpos = 0, $subcontentno = 0, $noofcharactertomatch = 1){
+        $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
+        $charslefttomatch = strlen($word) - ($charpos + $noofcharactertomatch);
+        //print_object(array('args' => func_get_args())+compact('itemslefttomatch', 'charslefttomatch'));
+        //check if we have gone beyond limit of what can be matched
+        if ($itemslefttomatch < 0){
+            if ($charslefttomatch < 0){
+                return true;
+            } else if ($this->wordleveloptions->get_allow_extra_characters()){
+                return true;
+            }else if ($this->wordleveloptions->get_misspelling_allow_extra_char() && ($allowmispellings > $charslefttomatch)){
+                return true;
+            } else {
+                return false;
+            }
+        } else if ($charslefttomatch < 0) {
+            if ($this->wordleveloptions->get_misspelling_allow_fewer_char() && ($allowmispellings > $itemslefttomatch)){
+                return true;
+            } else {
+                return false;
+            }
+        }
         if ($this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_chars(substr($word, $charpos, $noofcharactertomatch));
         } else {
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_char(substr($word, $charpos, $noofcharactertomatch));
         }
-        $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
-        $charslefttomatch = strlen($word) - ($charpos + $noofcharactertomatch);
+
         if (($noofcharactertomatch == 1) &&
                 $this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
             //check for the multiple char match wild card matching no characters at the same time as checking for matching one
-            if ($this->check_match_branches($word, $charpos, $subcontentno + 1, 1)){
+            if ($this->check_match_branches($word, $allowmispellings, $charpos, $subcontentno + 1, 1)){
                 return true;
             }
         }
-        if ($thisfragmentmatched){
-            if ($itemslefttomatch == 0){
-                //all items match but have not necessarily matched all characters
-                if ($this->wordleveloptions->get_allow_extra_characters()){
-                    //there may be extra unmatched characters but we can ignore them
-                    return true;
-                }
+        if ((!$thisfragmentmatched) && $this->wordleveloptions->get_allow_extra_characters()){
+            if ($this->check_match_branches($word, $allowmispellings, $charpos + 1, $subcontentno, 1)){
+                return true;
             }
-            if ($charslefttomatch == 0){
-                //reached end of word
-                if ($itemslefttomatch == 0){
-                    //all items match
-                    return true;
-                } else {
-                    //this branch reached end of word prematurely
-                    return false;
-                }
-            } else {
-                if ($itemslefttomatch == 0){
-                    return false;
-                } else if ($this->check_match_branches($word, $charpos + $noofcharactertomatch, $subcontentno + 1, 1)){
-                    return true;
-                }
-                if ($this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
-                    if ($this->check_match_branches($word, $charpos, $subcontentno, $noofcharactertomatch + 1)){
+        }
+        if ((!$thisfragmentmatched) && ($allowmispellings > 0)) {
+            //if there is no match but we can match the next character 
+            if ($this->wordleveloptions->get_misspelling_allow_transpose_two_chars()&& 
+                        ($itemslefttomatch > 0) && ($charslefttomatch > 0)){
+                if (!$this->subcontents[$subcontentno + 1] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
+                    $wordtransposed = $word;
+                    $wordtransposed[$charpos] = $word[$charpos + 1];
+                    $wordtransposed[$charpos + 1] = $word[$charpos];
+                    if ($this->check_match_branches($wordtransposed, $allowmispellings - 1, $charpos, $subcontentno, 1)){
                         return true;
                     }
                 }
             }
-        } else {
-            if ($this->wordleveloptions->get_allow_extra_characters()){
-                //skip a character that does not match and go to the next item
-                if ($this->check_match_branches($word, $charpos + $noofcharactertomatch, $subcontentno, 1)){
+            //and if there is no match try ignoring this item
+            if ($this->wordleveloptions->get_misspelling_allow_fewer_char()){
+                if ($this->check_match_branches($word, $allowmispellings - 1, $charpos, $subcontentno + 1, 1)){
                     return true;
                 }
             }
+            //and if there is no match try ignoring this character
+            if ($this->wordleveloptions->get_misspelling_allow_extra_char()){
+                if ($this->check_match_branches($word, $allowmispellings - 1, $charpos + 1, $subcontentno, 1)){
+                    return true;
+                }
+            }
+            //and if there is no match try going on as if it was a match
+            if ($this->wordleveloptions->get_misspelling_allow_replace_char()){
+                if ($this->check_match_branches($word, $allowmispellings - 1, $charpos + 1, $subcontentno + 1, 1)){
+                    return true;
+                }
+            }
+        }
+        
+        if ($thisfragmentmatched){
+            if ($this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars){
+                if ($this->check_match_branches($word, $allowmispellings, $charpos, $subcontentno, $noofcharactertomatch + 1)){
+                    return true;
+                }
+                if ($this->check_match_branches($word, $allowmispellings, $charpos + $noofcharactertomatch, $subcontentno + 1, 1)){
+                    return true;
+                }
+            } else if ($this->check_match_branches($word, $allowmispellings, $charpos + $noofcharactertomatch, $subcontentno + 1, 1)){
+                return true;
+            }
+        } else {
             return false;
         }
     }
