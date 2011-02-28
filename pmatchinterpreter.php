@@ -403,47 +403,49 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
         $this->wordleveloptions->reset_options();
         $this->wordleveloptions->set_allow_extra_characters(FALSE !== strpos($options, 'c'));
         $moptionpos = strpos($options, 'm');
-        if (isset($options[$moptionpos+1])){
-            $msecondchar = $options[$moptionpos+1];
-        } else {
-            $msecondchar = '';
-        }
-
-        switch ($msecondchar){
-            case 'r' :
-                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
-                $this->wordleveloptions->set_misspellings(1);
-                break;
-            case 't' :
-                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
-                $this->wordleveloptions->set_misspellings(1);
-                break;
-            case 'x' :
-                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
-                $this->wordleveloptions->set_misspellings(1);
-                break;
-            case 'f' :
-                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
-                $this->wordleveloptions->set_misspellings(1);
-                break;
-            case '2' :
-                $this->wordleveloptions->set_misspellings(2);
-                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
-                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
-                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
-                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
-                break;
-            default :
-                $this->wordleveloptions->set_misspellings(1);
-                $this->wordleveloptions->set_misspelling_allow_replace_char(true);
-                $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
-                $this->wordleveloptions->set_misspelling_allow_extra_char(true);
-                $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
-                break;
-        }
-        if (FALSE !== strpos($options, 'm', $moptionpos+1)){
-            $this->set_error_message('illegaloptions', $options);
-            return false;
+        if ($moptionpos !== FALSE){
+            if (isset($options[$moptionpos+1])){
+                $msecondchar = $options[$moptionpos+1];
+            } else {
+                $msecondchar = '';
+            }
+    
+            switch ($msecondchar){
+                case 'r' :
+                    $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                    $this->wordleveloptions->set_misspellings(1);
+                    break;
+                case 't' :
+                    $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                    $this->wordleveloptions->set_misspellings(1);
+                    break;
+                case 'x' :
+                    $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                    $this->wordleveloptions->set_misspellings(1);
+                    break;
+                case 'f' :
+                    $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
+                    $this->wordleveloptions->set_misspellings(1);
+                    break;
+                case '2' :
+                    $this->wordleveloptions->set_misspellings(2);
+                    $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                    $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                    $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                    $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
+                    break;
+                default :
+                    $this->wordleveloptions->set_misspellings(1);
+                    $this->wordleveloptions->set_misspelling_allow_replace_char(true);
+                    $this->wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+                    $this->wordleveloptions->set_misspelling_allow_extra_char(true);
+                    $this->wordleveloptions->set_misspelling_allow_fewer_char(true);
+                    break;
+            }
+            if (FALSE !== strpos($options, 'm', $moptionpos+1)){
+                $this->set_error_message('illegaloptions', $options);
+                return false;
+            }
         }
         if ($this->wordleveloptions->get_allow_extra_characters() 
                 && ($this->wordleveloptions->get_misspelling_allow_replace_char()||

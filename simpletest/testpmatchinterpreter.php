@@ -150,7 +150,19 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matcher = $interpretword->get_matcher();
         $this->assertEqual(true,$matcher->match_word($studentresponse, new qtype_pmatch_word_level_options()));
     }
-
+    public function test_qtype_pmatch_word_with_word_level_options() {
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abba';
+        $this->assertEqual(array(true, strlen($pmatchcode)),
+                                $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "agooglegotbbacadabra";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_allow_extra_characters(true);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+    }
     public function test_qtype_pmatch_word_delimiter() {
         $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter();
 
@@ -191,9 +203,11 @@ class qtype_pmatch_interpreter extends UnitTestCase {
     public function test_qtype_pmatch_match_options() {
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
-        $matchwithoptions = 'match_mow(less*|smaller|low*|light*)';
+        $matchwithoptions = 'match_c(less*|smaller|low*|light*)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
