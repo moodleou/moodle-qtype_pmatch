@@ -265,6 +265,10 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
         } else if ($charslefttomatch < 0) {
             if ($this->wordleveloptions->get_misspelling_allow_fewer_char() && ($allowmispellings > $itemslefttomatch)){
                 return true;
+            } else if (($this->subcontents[$subcontentno] instanceof qtype_pmatch_can_match_multiple_or_no_chars)
+                    && ($this->check_match_branches($word, $allowmispellings, $charpos + 1, $subcontentno + 1, $noofcharactertomatch))){
+                //no chars left to match but this is a multiple match wild card, so no match needed.
+                return true;
             } else {
                 return false;
             }

@@ -331,7 +331,7 @@ class qtype_pmatch_interpreter extends UnitTestCase {
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(true, 
-                $matcher->match_phrase(array('lesser', 'calories'), new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
+                $matcher->match_phrase(array('less', 'calories'), new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
