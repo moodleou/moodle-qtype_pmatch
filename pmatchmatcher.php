@@ -106,9 +106,42 @@ class qtype_pmatch_matcher_match_any extends qtype_pmatch_matcher_match{
 class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
 }
 
-class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match{
-    public function match_response($response){
-        
+class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
+            implements qtype_pmatch_can_match_phrase {
+    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
+        print_object(array('args' => func_get_args(), 'type' => $this->get_type()));
+        $wordno = 0;
+        $subcontentno = 0;
+        do {
+            print_object(compact('wordno', 'subcontentno'));
+            $subcontent = $this->subcontents[$subcontentno];
+            $word = $phrase[$wordno];
+            if ($subcontent instanceof qtype_pmatch_can_match_word){
+                if ($subcontent->match_word($word, $wordleveloptions) !== true){
+                    return false;
+                }
+                $wordno++;
+            } 
+            $subcontentno++;
+            $nomorewords = (count($phrase) < ($wordno + 1));
+            $nomoreitems = (count($this->subcontents) < ($subcontentno + 1));
+            if ($nomorewords && $nomoreitems){
+                return true;
+            } else if ($nomorewords || $nomoreitems) {
+                return false;
+            }
+        } while (true);
+/*        foreach ($this->subcontents as $subcontent){
+            if ($subcontent instanceof qtype_pmatch_can_match_phrase){
+                
+            }
+            if ($subcontent instanceof qtype_pmatch_can_match_word){
+                
+            }
+            if ($phraseleveloptions->get_allow_any_word_order()){
+                
+            }
+        }*/
     }
 }
 class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcontents
@@ -184,9 +217,25 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
      * @var qtype_pmatch_word_level_options
      */
     private $wordleveloptions;
+    private $usedmisspellings;
+    /**
+     * 
+     * Called after running match_word. This function returns the minimum number of mispellings used to match the student response word to the
+     * pmatch expression.
+     * @return integer the number of misspellings found.
+     */
+    public function get_used_misspellings(){
+        return $this->usedmisspellings;
+    }
     public function match_word($word, $wordleveloptions){
         $this->wordleveloptions = $wordleveloptions;
-        return $this->check_match_branches($word, $this->wordleveloptions->get_misspellings());
+        for ($this->usedmisspellings = 0; $this->usedmisspellings <= $this->wordleveloptions->get_misspellings(); $this->usedmisspellings++){
+            if ($this->check_match_branches($word, $this->usedmisspellings)){
+                return true;
+            }
+        }
+        $this->usedmisspellings = 0;
+        return false;
     }
     /**
      * 

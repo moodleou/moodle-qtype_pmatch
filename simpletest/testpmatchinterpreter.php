@@ -249,6 +249,42 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
         $wordleveloptions->set_misspellings(2);
         $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+        $wordleveloptions->set_misspellings(1);
+        $this->assertEqual(false, $matcher->match_word($studentresponse, $wordleveloptions));
+
+        $interpretword = new qtype_pmatch_interpreter_word();
+        $pmatchcode = 'abcdef';
+        $this->assertEqual(array(true, strlen($pmatchcode)), $interpretword->interpret($pmatchcode, 0));
+        $studentresponse = "abcdfe";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_transpose_two_chars(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+        $this->assertEqual(1, $matcher->get_used_misspellings());
+        $studentresponse = "abcdf";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_fewer_char(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+        $this->assertEqual(1, $matcher->get_used_misspellings());
+        $studentresponse = "abcdefg";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_extra_char(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+        $this->assertEqual(1, $matcher->get_used_misspellings());
+        $studentresponse = "abcgdefg";
+        $matcher = $interpretword->get_matcher();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $wordleveloptions->set_misspelling_allow_extra_char(true);
+        $wordleveloptions->set_misspellings(2);
+        $this->assertEqual(true, $matcher->match_word($studentresponse, $wordleveloptions));
+        $this->assertEqual(2, $matcher->get_used_misspellings());
     }
     public function test_qtype_pmatch_word_delimiter() {
         $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter();
@@ -290,11 +326,12 @@ class qtype_pmatch_interpreter extends UnitTestCase {
     public function test_qtype_pmatch_match_options() {
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
-        $matchwithoptions = 'match_c(less*|smaller|low*|light*)';
+        $matchwithoptions = 'match(less*|smaller|low*|light* calories)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
-        
+        $this->assertEqual(true, 
+                $matcher->match_phrase(array('lesser', 'calories'), new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
