@@ -109,11 +109,9 @@ class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
 class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
             implements qtype_pmatch_can_match_phrase {
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
-        print_object(array('args' => func_get_args(), 'type' => $this->get_type()));
         $wordno = 0;
         $subcontentno = 0;
         do {
-            print_object(compact('wordno', 'subcontentno'));
             $subcontent = $this->subcontents[$subcontentno];
             $word = $phrase[$wordno];
             if ($subcontent instanceof qtype_pmatch_can_match_word){
