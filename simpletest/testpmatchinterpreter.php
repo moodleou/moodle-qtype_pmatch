@@ -287,9 +287,11 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $this->assertEqual(2, $matcher->get_used_misspellings());
     }
     public function test_qtype_pmatch_word_delimiter() {
-        $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter();
 
+        $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter_proximity();
         $this->assertEqual(array(true, 1), $interpretworddelimiter->interpret('_', 0));
+
+        $interpretworddelimiter = new qtype_pmatch_interpreter_word_delimiter_space();
         $this->assertEqual(array(true, 3), $interpretworddelimiter->interpret('   ', 0));
     }
     public function test_qtype_pmatch_phrase() {
@@ -332,6 +334,14 @@ class qtype_pmatch_interpreter extends UnitTestCase {
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(true, 
                 $matcher->match_phrase(array('less', 'calories'), new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
+
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_ow(less*|smaller|low*|light* calories)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(true, 
+                $matcher->match_whole_expression('calories are less likely to flower.'));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';

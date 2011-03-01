@@ -1,5 +1,18 @@
 <?php
 
+interface qtype_pmatch_word_delimiter {
+    /**
+     * 
+     * Check that items separated pmatch expressions are in the right order 
+     * and / or proximity to be matched validly. Do not need to check that the two words are not the same.
+     * 
+     * @param integer $phrasewordno1
+     * @param integer $phrasewordno2
+     * @param qtype_pmatch_phrase_level_options $phraseleveloptions
+     * @return boolean 
+     */
+    public function valid_match($phrasewordno1, $phrasewordno2, $phraseleveloptions);
+}
 interface qtype_pmatch_can_match_char {
     /**
      * Can possibly match a char.
@@ -108,38 +121,84 @@ class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
 
 class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
             implements qtype_pmatch_can_match_phrase {
+    public function match_whole_expression($expression){
+        $phrase = preg_split('!/s+!', $expression);
+        return $this->match_phrase($phrase, $this->interpreter->phraseleveloptions, $this->interpreter->wordleveloptions);
+    }
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
-        $wordno = 0;
-        $subcontentno = 0;
+
+        $matchestotry = $this->next_possible_match(count($phrase), $phraseleveloptions);
         do {
-            $subcontent = $this->subcontents[$subcontentno];
-            $word = $phrase[$wordno];
-            if ($subcontent instanceof qtype_pmatch_can_match_word){
-                if ($subcontent->match_word($word, $wordleveloptions) !== true){
-                    return false;
-                }
-                $wordno++;
-            } 
-            $subcontentno++;
-            $nomorewords = (count($phrase) < ($wordno + 1));
-            $nomoreitems = (count($this->subcontents) < ($subcontentno + 1));
-            if ($nomorewords && $nomoreitems){
+            $failure = false;
+            foreach ($matchestotry as $subcontentno => $wordno) {
+                $subcontent = $this->subcontents[$subcontentno];
+                $word = $phrase[$wordno];
+                if ($subcontent instanceof qtype_pmatch_can_match_word){
+                    if ($subcontent->match_word($word, $wordleveloptions) !== true){
+                        $failure = true;
+                        break;
+                    }
+                } 
+            }
+            if (!$failure){
                 return true;
-            } else if ($nomorewords || $nomoreitems) {
-                return false;
             }
-        } while (true);
-/*        foreach ($this->subcontents as $subcontent){
-            if ($subcontent instanceof qtype_pmatch_can_match_phrase){
-                
+            $matchestotry = $this->next_possible_match(count($phrase), $phraseleveloptions, $matchestotry);
+        } while (count($matchestotry));
+        return false;
+    }
+    /**
+     * 
+     * Return an array where the key is the subcontentno and the value is the word to try to match. Or return an
+     * empty array if there are no more possible matches left.
+     */
+    public function next_possible_match($phraselength, $phraseleveloptions, $lastmatchtried = null){
+        $noofmatchablecontents = (count($this->subcontents) + 1)/2;
+        if (is_null($lastmatchtried)){
+            $matchtotry = array();
+            for ($i=0; $i < $noofmatchablecontents; $i++){
+                $matchtotry[$i*2] = 0;
             }
-            if ($subcontent instanceof qtype_pmatch_can_match_word){
-                
+        } else {
+            $matchtotry = $lastmatchtried;
+        }
+        if (((!$phraseleveloptions->get_allow_extra_words()) && $phraselength !== $noofmatchablecontents)
+                || $noofmatchablecontents > $phraselength){
+            return array();//there are no possible valid matches
+        }
+        //iterate through all possible combinations
+        do {
+            $index = 0;
+            while ($matchtotry[$index] == $phraselength) {
+                $matchtotry[$index] = 0;
+                $index = $index + 2;
+                if ($index > count($this->subcontents)){
+                    return array();//no more possible combinations
+                }
             }
-            if ($phraseleveloptions->get_allow_any_word_order()){
-                
+            $matchtotry[$index]++;
+            //only allow valid match attempts
+            if (!$phraseleveloptions->get_allow_any_word_order() && !$phraseleveloptions->get_allow_extra_words()){
+                if ($matchtotry[0]!==0){
+                    $notvalid = true;
+                }
+            } else if (count(array_unique($matchtotry)) == count($matchtotry)){
+                $subcontentnos = array_keys($matchtotry);
+                foreach ($subcontentnos as $subcontentnokey => $subcontentno){
+                    if ($subcontentnokey > 0){
+                        //after the first key pass this value and the last to their separator to test if they are valid
+                        if (!$this->subcontents[$subcontentno - 1]->valid_match($matchtotry[$subcontentno - 2],
+                                                            $matchtotry[$subcontentno], $phraseleveloptions)){
+                            $notvalid = true;
+                            break;
+                        }
+                    } 
+                }
+            } else {
+                $notvalid = true;
             }
-        }*/
+        } while ($notvalid);
+        return $matchtotry;
     }
 }
 class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcontents
@@ -206,7 +265,26 @@ class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcont
         } while (true);
     }
 }
-class qtype_pmatch_matcher_word_delimiter extends qtype_pmatch_matcher_item{
+class qtype_pmatch_matcher_word_delimiter_space extends qtype_pmatch_matcher_item
+            implements qtype_pmatch_word_delimiter {
+    public function valid_match($phrasewordno1, $phrasewordno2, $phraseleveloptions){
+        if (!$phraseleveloptions->get_allow_any_word_order() && !$phraseleveloptions->get_allow_extra_words()){
+            return ($phrasewordno2 == ($phrasewordno1 + 1));
+        } else if (!$phraseleveloptions->get_allow_any_word_order()){
+            return ($phrasewordno2 > $phrasewordno1);
+        } else {
+            return true;
+        }
+    }
+}
+class qtype_pmatch_matcher_word_delimiter_proximity extends qtype_pmatch_matcher_item
+            implements qtype_pmatch_word_delimiter {
+    public function valid_match($item1, $item2, $phraseleveloptions){
+        if ($phrasewordno2 < $phrasewordno1){
+            return false;
+        }
+        return ($phrasewordno2 - $phrasewordno1) < $phraseleveloptions->get_allow_proximity_of();
+    }
 }
 class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subcontents implements qtype_pmatch_can_match_word{
     /**

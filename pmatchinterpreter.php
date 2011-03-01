@@ -175,7 +175,8 @@ abstract class qtype_pmatch_interpreter_item_with_subcontents extends qtype_pmat
         }
     }
     protected $lastcontenttypeerrors = array('or_character' => 'lastsubcontenttypeorcharacter',
-                                             'word_delimiter' => 'lastsubcontenttypeworddelimiter');
+                                             'word_delimiter_space' => 'lastsubcontenttypeworddelimiter',
+                                             'word_delimiter_proximity' => 'lastsubcontenttypeworddelimiter');
     public function interpret($string, $start = 0){
         list($found, $endofmatch) = parent::interpret($string, $start);
         $this->check_subcontents();
@@ -369,12 +370,12 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
     /**
      * @var qtype_pmatch_word_level_options
      */
-    protected $wordleveloptions;
+    public $wordleveloptions;
 
     /**
      * @var qtype_pmatch_phrase_level_options
      */
-    protected $phraseleveloptions;
+    public $phraseleveloptions;
 
     public function __construct(){
         $this->wordleveloptions = new qtype_pmatch_word_level_options();
@@ -474,10 +475,11 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
     protected function next_possible_subcontent($foundsofar){
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
-            case 'word_delimiter':
+            case 'word_delimiter_space':
+            case 'word_delimiter_proximity':
                 return array('or_list');
             case 'or_list':
-                return array('word_delimiter');
+                return array('word_delimiter_space', 'word_delimiter_proximity');
         }
     }
 }
@@ -514,15 +516,19 @@ class qtype_pmatch_interpreter_phrase extends qtype_pmatch_interpreter_item_with
     protected function next_possible_subcontent($foundsofar){
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
-            case 'word_delimiter':
+            case 'word_delimiter_space':
+            case 'word_delimiter_proximity':
                 return array('word');
             case 'word':
-                return array('word_delimiter');
+                return array('word_delimiter_space', 'word_delimiter_proximity');
         }
     }
 }
-class qtype_pmatch_interpreter_word_delimiter extends qtype_pmatch_interpreter_item{
-    protected $pattern = '!\_|\s+!';
+class qtype_pmatch_interpreter_word_delimiter_space extends qtype_pmatch_interpreter_item{
+    protected $pattern = '![ ]+!';
+}
+class qtype_pmatch_interpreter_word_delimiter_proximity extends qtype_pmatch_interpreter_item{
+    protected $pattern = '!\_!';
 }
 class qtype_pmatch_interpreter_word extends qtype_pmatch_interpreter_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
