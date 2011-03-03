@@ -29,7 +29,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchinterpreter.php');
 
 
-class qtype_pmatch_interpreter extends UnitTestCase {
+class qtype_pmatch_test extends UnitTestCase {
 /*    public function test_qtype_pmatch_all() {
         $interpretall = new qtype_pmatch_interpreter_match_all();
         $this->assertEqual(array(true, 5), $interpretall->interpret_not(' not pmatch_all()', 0));
