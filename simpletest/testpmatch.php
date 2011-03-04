@@ -41,7 +41,7 @@ class qtype_pmatch_test extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretall->interpret(' notpmatch_all()', 0));
         $this->assertEqual(array(false, 2), $interpretall->interpret(' notpmatch_all()', 2));
     }*/
-    public function test_qtype_pmatch_character_in_word() {
+/*    public function test_qtype_pmatch_character_in_word() {
         $interpretchar = new qtype_pmatch_interpreter_character_in_word();
         $this->assertEqual(array(true, 1), $interpretchar->interpret('f', 0));
         $this->assertEqual(array(true, 2), $interpretchar->interpret('fF', 1));
@@ -324,10 +324,10 @@ class qtype_pmatch_test extends UnitTestCase {
         $this->assertEqual(array(false, 0), $interpretorlist->interpret('[]', 0));
         $this->assertEqual(get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', '[]'),
                                         $interpretorlist->get_error_message());
-    }
+    }*/
     public function test_qtype_pmatch_match_options() {
 
-        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+/*        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match(less*|smaller|low*|light* calories)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
@@ -342,8 +342,41 @@ class qtype_pmatch_test extends UnitTestCase {
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(true, 
                 $matcher->match_whole_expression('calories are less likely to flower.'));
+                
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_ow(My tailor is rich and my flowers are beautiful)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(true, 
+                $matcher->match_whole_expression('My tailor is rich and my flowers are beautiful'));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_p2(My tailor_and my flowers are beautiful)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(true, 
+                $matcher->match_whole_expression('My tailor is rich and my flowers are beautiful'));
+
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_wp4(My_my flowers are beautiful)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(false, 
+                $matcher->match_whole_expression('My tailor is rich and my flowers are beautiful'));
+*/
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_p1(My flowers)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(true, $matcher->match_whole_expression('My bountiful flowers'));
+        $this->assertEqual(false, $matcher->match_whole_expression('My bountiful beautiful flowers'));
+                //print_object($matcher);
+
+/*        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
         $this->assertEqual(array(true, strlen($matchwithoptionserr)), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
         $this->assertEqual(get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', 'less*|smaller|low*|light*|'),
@@ -378,12 +411,12 @@ class qtype_pmatch_test extends UnitTestCase {
         $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
         $this->assertEqual(get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', $matchwithoptions),
                                         $interpretmatchoptions->get_error_message());
-                                        
+
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(hello ginger top [specific gravity]|sg)';
-        $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $this->assertEqual(array(true, strlen($matchwithoptions)), $interpretmatchoptions->interpret($matchwithoptions, 0));*/
     }
-    public function test_qtype_pmatch_whole_expression() {
+/*    public function test_qtype_pmatch_whole_expression() {
         $wholeexpression = new qtype_pmatch_interpreter_whole_expression();
         $expression = <<<EOF
 match_all (
@@ -439,5 +472,5 @@ match_all(
 )
 EOF;
         $this->assertEqual(array(true, strlen($expression)), $wholeexpression->interpret($expression));
-    }
+    }*/
 }

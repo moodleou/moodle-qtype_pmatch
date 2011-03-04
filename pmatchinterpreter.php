@@ -251,7 +251,7 @@ class qtype_pmatch_interpreter_not extends qtype_pmatch_interpreter_item_with_en
 }
 class qtype_pmatch_interpreter_match extends qtype_pmatch_interpreter_item_with_enclosed_subcontents{
 
-    protected $openingpattern = '!match([_a-z2]*)\s*\(\s*!';
+    protected $openingpattern = '!match([_a-z0-4]*)\s*\(\s*!';
     protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     
@@ -395,10 +395,10 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-        if (!preg_match('!\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!A', $options)){
+/*        if (!preg_match('!\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!A', $options)){
             $this->set_error_message('illegaloptions', $options);
             return false;
-        }
+        }*/
 
         //word level options
         $this->wordleveloptions->reset_options();
@@ -525,7 +525,7 @@ class qtype_pmatch_interpreter_phrase extends qtype_pmatch_interpreter_item_with
     }
 }
 class qtype_pmatch_interpreter_word_delimiter_space extends qtype_pmatch_interpreter_item{
-    protected $pattern = '![ ]+!';
+    protected $pattern = '!\s+!';
 }
 class qtype_pmatch_interpreter_word_delimiter_proximity extends qtype_pmatch_interpreter_item{
     protected $pattern = '!\_!';
