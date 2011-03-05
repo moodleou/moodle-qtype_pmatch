@@ -334,7 +334,7 @@ class qtype_pmatch_test extends UnitTestCase {
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(true, 
                 $matcher->match_phrase(array('less', 'calories'), new qtype_pmatch_phrase_level_options(), new qtype_pmatch_word_level_options()));
-
+*/
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_ow(less*|smaller|low*|light* calories)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
@@ -352,7 +352,7 @@ class qtype_pmatch_test extends UnitTestCase {
                 $matcher->match_whole_expression('My tailor is rich and my flowers are beautiful'));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
-        $matchwithoptions = 'match_p2(My tailor_and my flowers are beautiful)';
+        $matchwithoptions = 'match_wp2(My tailor_and my flowers are beautiful)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
@@ -364,17 +364,16 @@ class qtype_pmatch_test extends UnitTestCase {
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
-        $this->assertEqual(false, 
+        $this->assertEqual(true, 
                 $matcher->match_whole_expression('My tailor is rich and my flowers are beautiful'));
-*/
+
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
-        $matchwithoptions = 'match_p1(My flowers)';
+        $matchwithoptions = 'match_owp1(My_flowers)';
         $this->assertEqual(array(true, strlen($matchwithoptions)),
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(true, $matcher->match_whole_expression('My bountiful flowers'));
         $this->assertEqual(false, $matcher->match_whole_expression('My bountiful beautiful flowers'));
-                //print_object($matcher);
 
 /*        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';

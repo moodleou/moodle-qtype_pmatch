@@ -495,6 +495,22 @@ class qtype_pmatch_interpreter_or_list extends qtype_pmatch_interpreter_item_wit
         }
     }
 }
+/**
+ * 
+ * This is the same as an or_list but with no or_list_phrases. 
+ *
+ */
+class qtype_pmatch_interpreter_synonym extends qtype_pmatch_interpreter_item_with_subcontents{
+    protected function next_possible_subcontent($foundsofar){
+        switch ($this->last_subcontent_type_found($foundsofar)){
+            case '':
+            case 'or_character':
+                return array('word');
+            case 'word':
+                return array('or_character');
+        }
+    }
+}
 class qtype_pmatch_interpreter_or_character extends qtype_pmatch_interpreter_item{
     protected $pattern = '!\|!';
 }
@@ -511,15 +527,14 @@ class qtype_pmatch_interpreter_or_list_phrase extends qtype_pmatch_interpreter_i
     protected $limitsubcontents = 1;
 }
 
-
 class qtype_pmatch_interpreter_phrase extends qtype_pmatch_interpreter_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
         switch ($this->last_subcontent_type_found($foundsofar)){
             case '':
             case 'word_delimiter_space':
             case 'word_delimiter_proximity':
-                return array('word');
-            case 'word':
+                return array('synonym');
+            case 'synonym':
                 return array('word_delimiter_space', 'word_delimiter_proximity');
         }
     }

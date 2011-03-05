@@ -48,6 +48,15 @@ interface qtype_pmatch_can_match_phrase {
      * @return boolean successful match?
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions);
+    
+    /**
+     * 
+     * How many words can this phrase match? Minimum and max.
+     * @param qtype_pmatch_phrase_level_options $phraseleveloptions
+     * @return array with two values 0=> minimum and 1=> maximum. Values are the same if only
+     *                    number of words possible. Maximum is null if no max.
+     */
+    public function possible_word_matches($phraseleveloptions);
 }
 
 abstract class qtype_pmatch_matcher_item{
@@ -142,36 +151,39 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
     }
 
     protected function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0, $wordsmatched = array()){
+        if ($wordtotry >= count($phrase)){
+            return false;
+        }
         //is this a valid item to try to match?
-        if (!count($wordsmatched) || 
+        $shallwetry = ((!count($wordsmatched)) || 
                     $this->subcontents[$itemtotry - 1]->valid_match($wordsmatched[count($wordsmatched)-1],
-                                                                    $wordtotry, $this->phraseleveloptions)){
-            //does it match
-            if ($this->subcontents[$itemtotry]->match_word($phrase[$wordtotry], $this->wordleveloptions)){
-                //we found a match
-                $newwordsmatched = $wordsmatched;
-                $newwordsmatched[] = $wordtotry;
-                if ($itemtotry == count($this->subcontents) -1){
-                    //last item matched : success
-                    if (count($newwordsmatched) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
-                        return true;
-                    } else {
-                        return false;
-                    }
+                                                                    $wordtotry, $this->phraseleveloptions))
+                    && (!in_array($wordtotry, $wordsmatched, true));
+        if ($shallwetry && $this->subcontents[$itemtotry]->match_word($phrase[$wordtotry], $this->wordleveloptions)){
+            //we found a match
+            $newwordsmatched = $wordsmatched;
+            $newwordsmatched[] = $wordtotry;
+            if ($itemtotry == count($this->subcontents) -1){
+                //last item matched : success
+                if (count($newwordsmatched) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
+                    return true;
                 } else {
-                    //item matched, find next item to try to match
-                    if ($this->phraseleveloptions->get_allow_any_word_order()){
-                        $nextwordtotry = 0;
-                    } else {
-                        $nextwordtotry = $wordtotry + 1;
-                        if ($nextwordtotry >= count($phrase)){
-                            return false;//no more words left to match
-                        }
-                    }
-                    if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $newwordsmatched)) {
-                        return true;
-                    }
+                    return false;
                 }
+            } else {
+                //item matched, find next item to try to match
+                if ($this->phraseleveloptions->get_allow_any_word_order()){
+                    $nextwordtotry = 0;
+                } else {
+                    $nextwordtotry = $wordtotry + 1;
+                }
+                if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $newwordsmatched)) {
+                    return true;
+                }
+            }
+        } else if ($this->phraseleveloptions->get_allow_any_word_order()){
+            if ($this->check_match_phrase_branch($phrase, $itemtotry, $wordtotry + 1, $wordsmatched)) {
+                return true;
             }
         }
 /*        //if it is allowed try next item also 
@@ -187,13 +199,12 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         //if it is allowed try next word also
         if ($this->phraseleveloptions->get_allow_extra_words()){
             $nextwordtotry = $wordtotry + 1;
-            if ($nextwordtotry < count($phrase)){
-                //try next word
-                if ($this->check_match_phrase_branch($phrase, $itemtotry, $nextwordtotry, $wordsmatched)){
-                    return true;
-                }
+            //try next word
+            if ($this->check_match_phrase_branch($phrase, $itemtotry, $nextwordtotry, $wordsmatched)){
+                return true;
             }
         }
+        return false;
     }
 
 }
@@ -219,6 +230,25 @@ class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcon
     }
 
 }
+
+/**
+ * 
+ * This is the same as an or_list but with no or_list_phrases. 
+ *
+ */
+class qtype_pmatch_interpreter_synonym extends qtype_pmatch_interpreter_item_with_subcontents
+            implements qtype_pmatch_can_match_word{
+    public function match_word($word, $wordleveloptions){
+        foreach ($this->subcontents as $subcontent){
+            if ($subcontent instanceof qtype_pmatch_can_match_word &&
+                        $subcontent->match_word($word, $wordleveloptions) === true){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
 class qtype_pmatch_matcher_or_character extends qtype_pmatch_matcher_item{
 
 }
