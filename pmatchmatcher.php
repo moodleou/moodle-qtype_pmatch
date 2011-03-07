@@ -49,14 +49,17 @@ interface qtype_pmatch_can_match_phrase {
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions);
     
-    /**
+}
+interface qtype_pmatch_can_contribute_to_length_of_phrase{
+        /**
      * 
      * How many words can this phrase match? Minimum and max.
      * @param qtype_pmatch_phrase_level_options $phraseleveloptions
      * @return array with two values 0=> minimum and 1=> maximum. Values are the same if only
      *                    number of words possible. Maximum is null if no max.
      */
-    public function possible_word_matches($phraseleveloptions);
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions);
+    
 }
 
 abstract class qtype_pmatch_matcher_item{
@@ -129,7 +132,7 @@ class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
 }
 
 class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
-            implements qtype_pmatch_can_match_phrase {
+            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase {
     /**
      * @var qtype_pmatch_word_level_options
      */
@@ -206,10 +209,26 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         }
         return false;
     }
-
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        $min = 0;
+        $max = 0;
+        foreach ($this->subcontents as $subcontent){
+            if ($subcontent instanceof qtype_pmatch_can_contribute_to_length_of_phrase) {
+                list($subcontentmin, $subcontentmax) = $subcontent->contribution_to_length_of_phrase_can_try($phraseleveloptions);
+                if (is_null($subcontentmax) || is_null($max)){
+                    $max = null;
+                } else {
+                    $max = $max + $subcontentmax;
+                }
+                $min = $min + $subcontentmin;
+            }
+        }
+        return array($min, $max);
+    }
 }
 class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcontents
-            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_match_word{
+            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_match_word, 
+                                qtype_pmatch_can_contribute_to_length_of_phrase{
     public function match_word($word, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_word &&
@@ -228,7 +247,22 @@ class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcon
         }
         return false;
     }
-
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        $min = 1;
+        $max = 1;
+        foreach ($this->subcontents as $subcontent){
+            if ($subcontent instanceof qtype_pmatch_can_contribute_to_length_of_phrase) {
+                list($subcontentmin, $subcontentmax) = $subcontent->contribution_to_length_of_phrase_can_try($phraseleveloptions);
+                if (is_null($subcontentmax) || is_null($max)){
+                    $max = null;
+                } else {
+                    $max = max($max, $subcontentmax);
+                }
+                $min = min($min, $subcontentmin);
+            }
+        }
+        return array($min, $max);
+    }
 }
 
 /**
@@ -236,8 +270,8 @@ class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcon
  * This is the same as an or_list but with no or_list_phrases. 
  *
  */
-class qtype_pmatch_interpreter_synonym extends qtype_pmatch_interpreter_item_with_subcontents
-            implements qtype_pmatch_can_match_word{
+class qtype_pmatch_matcher_synonym extends qtype_pmatch_matcher_item_with_subcontents
+            implements qtype_pmatch_can_match_word, qtype_pmatch_can_contribute_to_length_of_phrase{
     public function match_word($word, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_word &&
@@ -247,13 +281,16 @@ class qtype_pmatch_interpreter_synonym extends qtype_pmatch_interpreter_item_wit
         }
         return false;
     }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        return array(1, 1);
+    }
 }
 
-class qtype_pmatch_matcher_or_character extends qtype_pmatch_matcher_item{
+class qtype_pmatch_matcher_or_character extends qtype_pmatch_matcher_item {
 
 }
 class qtype_pmatch_matcher_or_list_phrase extends qtype_pmatch_matcher_item_with_subcontents
-            implements qtype_pmatch_can_match_phrase{
+            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase{
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         foreach ($this->subcontents as $subcontent){
             if ($subcontent instanceof qtype_pmatch_can_match_phrase &&
@@ -263,11 +300,15 @@ class qtype_pmatch_matcher_or_list_phrase extends qtype_pmatch_matcher_item_with
         }
         return false;
     }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        $subcontent = reset($this->subcontents);
+        return $subcontent->contribution_to_length_of_phrase_can_try($phraseleveloptions);
+    }
 }
 
 
 class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcontents
-            implements qtype_pmatch_can_match_phrase{
+            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase{
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         $wordno = 0;
         $subcontentno = 0;
@@ -290,9 +331,17 @@ class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcont
             }
         } while (true);
     }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        $noofwords = (count($this->subcontents) + 1) / 2;
+        if ($phraseleveloptions->get_allow_extra_words()){
+            return array($noofwords, null);
+        } else {
+            return array($noofwords, $noofwords);
+        }
+    }
 }
 class qtype_pmatch_matcher_word_delimiter_space extends qtype_pmatch_matcher_item
-            implements qtype_pmatch_word_delimiter {
+            implements qtype_pmatch_word_delimiter, qtype_pmatch_can_contribute_to_length_of_phrase {
     public function valid_match($phrasewordno1, $phrasewordno2, $phraseleveloptions){
         if (!$phraseleveloptions->get_allow_any_word_order() && !$phraseleveloptions->get_allow_extra_words()){
             return ($phrasewordno2 == ($phrasewordno1 + 1));
@@ -302,17 +351,32 @@ class qtype_pmatch_matcher_word_delimiter_space extends qtype_pmatch_matcher_ite
             return true;
         }
     }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        if ($phraseleveloptions->get_allow_extra_words()){
+            return array(0, null);
+        } else {
+            return array(0, 0);
+        }
+    }
 }
 class qtype_pmatch_matcher_word_delimiter_proximity extends qtype_pmatch_matcher_item
-            implements qtype_pmatch_word_delimiter {
+            implements qtype_pmatch_word_delimiter, qtype_pmatch_can_contribute_to_length_of_phrase {
     public function valid_match($phrasewordno1, $phrasewordno2, $phraseleveloptions){
         if ($phrasewordno2 < $phrasewordno1){
             return false;
         }
         return ($phrasewordno2 - $phrasewordno1) <= ($phraseleveloptions->get_allow_proximity_of() + 1);
     }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        if ($phraseleveloptions->get_allow_extra_words()){
+            return array(0, $phraseleveloptions->get_allow_proximity_of());
+        } else {
+            return array(0, 0);
+        }
+    }
 }
-class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subcontents implements qtype_pmatch_can_match_word{
+class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subcontents 
+            implements qtype_pmatch_can_match_word, qtype_pmatch_can_contribute_to_length_of_phrase {
     /**
      * 
      * Enter description here ...
@@ -440,6 +504,9 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
         } else {
             return false;
         }
+    }
+    public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
+        return array(1, 1);
     }
 }
 class qtype_pmatch_matcher_character_in_word extends qtype_pmatch_matcher_item implements qtype_pmatch_can_match_char{

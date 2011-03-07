@@ -395,10 +395,10 @@ class qtype_pmatch_interpreter_match_options extends qtype_pmatch_interpreter_ma
             $this->set_error_message('illegaloptions', $options);
             return false;
         }
-/*        if (!preg_match('!\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!A', $options)){
+        if (!preg_match('!\_(c|o|w|m|mf|mr|mt|mx|m2|p0|p1|p2|p3|p4)+$!A', $options)){
             $this->set_error_message('illegaloptions', $options);
             return false;
-        }*/
+        }
 
         //word level options
         $this->wordleveloptions->reset_options();

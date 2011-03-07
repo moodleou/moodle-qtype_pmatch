@@ -375,16 +375,42 @@ class qtype_pmatch_test extends UnitTestCase {
         $this->assertEqual(true, $matcher->match_whole_expression('My bountiful flowers'));
         $this->assertEqual(false, $matcher->match_whole_expression('My bountiful beautiful flowers'));
 
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_mow(mighty marvin dens*|[specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        //print_object($matcher->get_type());
+        $this->assertEqual(array(3,null), $matcher->contribution_to_length_of_phrase_can_try($interpretmatchoptions->phraseleveloptions));
+
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_mow(mighty mighty [marvin martin moola]|king dens*|[specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(array(4,null), $matcher->contribution_to_length_of_phrase_can_try($interpretmatchoptions->phraseleveloptions));
+
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_mo(mighty marvin dens*|[specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        //print_object($matcher->get_type());
+        $this->assertEqual(array(3,4), $matcher->contribution_to_length_of_phrase_can_try($interpretmatchoptions->phraseleveloptions));
+
+        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
+        $matchwithoptions = 'match_mo(mighty mighty [marvin martin moola]|king dens*|[specific gravity]|sg)';
+        $this->assertEqual(array(true, strlen($matchwithoptions)),
+                                $interpretmatchoptions->interpret($matchwithoptions, 0));
+        $matcher = $interpretmatchoptions->get_matcher();
+        $this->assertEqual(array(4,7), $matcher->contribution_to_length_of_phrase_can_try($interpretmatchoptions->phraseleveloptions));
+
 /*        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';
         $this->assertEqual(array(true, strlen($matchwithoptionserr)), $interpretmatchoptions->interpret($matchwithoptionserr, 0));
         $this->assertEqual(get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', 'less*|smaller|low*|light*|'),
                                         $interpretmatchoptions->get_error_message());
 
-        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
-        $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
-        $this->assertEqual(array(true, strlen($matchwithoptions)),
-                                $interpretmatchoptions->interpret($matchwithoptions, 0));
 
         $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptions = 'match_mow(dens*|[specific gravity]|sg)';
