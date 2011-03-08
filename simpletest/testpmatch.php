@@ -404,6 +404,29 @@ class qtype_pmatch_test extends UnitTestCase {
                                 $interpretmatchoptions->interpret($matchwithoptions, 0));
         $matcher = $interpretmatchoptions->get_matcher();
         $this->assertEqual(array(4,7), $matcher->contribution_to_length_of_phrase_can_try($interpretmatchoptions->phraseleveloptions));
+        $this->assertEqual(true, $matcher->match_whole_expression('mighty mighty king sg'));
+        
+        $interpretorlist = new qtype_pmatch_interpreter_or_list();
+        $orlist = '[marvin martin moola]|kingz|kong';
+        $this->assertEqual(array(true, strlen($orlist)),
+                                $interpretorlist->interpret($orlist, 0));
+        $orlistmatcher = $interpretorlist->get_matcher();
+        $phraseleveloptions = new qtype_pmatch_phrase_level_options();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(array(1,3), $orlistmatcher->contribution_to_length_of_phrase_can_try($phraseleveloptions));
+        $this->assertEqual(true, $orlistmatcher->match_word('kong', $wordleveloptions));
+        $this->assertEqual(true, $orlistmatcher->match_phrase(array('marvin', 'martin', 'moola'), $phraseleveloptions, $wordleveloptions));
+
+        $interpreter = new qtype_pmatch_interpreter_or_list();
+        $orlist = '[marvin martin moola]|kingz|kong';
+        $this->assertEqual(array(true, strlen($orlist)),
+                                $interpretorlist->interpret($orlist, 0));
+        $orlistmatcher = $interpretorlist->get_matcher();
+        $phraseleveloptions = new qtype_pmatch_phrase_level_options();
+        $wordleveloptions = new qtype_pmatch_word_level_options();
+        $this->assertEqual(array(1,3), $orlistmatcher->contribution_to_length_of_phrase_can_try($phraseleveloptions));
+        $this->assertEqual(true, $orlistmatcher->match_word('kong', $wordleveloptions));
+        $this->assertEqual(true, $orlistmatcher->match_phrase(array('marvin', 'martin', 'moola'), $phraseleveloptions, $wordleveloptions));
 
 /*        $interpretmatchoptions = new qtype_pmatch_interpreter_match_options();
         $matchwithoptionserr = 'match_mow(less*|smaller|low*|light*|)';

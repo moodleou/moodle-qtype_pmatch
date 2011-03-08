@@ -184,23 +184,35 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
                     return true;
                 }
             }
-        } else if ($this->phraseleveloptions->get_allow_any_word_order()){
-            if ($this->check_match_phrase_branch($phrase, $itemtotry, $wordtotry + 1, $wordsmatched)) {
-                return true;
+        } 
+        if ($this->subcontents[$itemtotry] instanceof qtype_pmatch_can_match_phrase){
+            list($phraseminlength, $phrasemaxlength) = $this->subcontents[$itemtotry]->contribution_to_length_of_phrase_can_try($this->phraseleveloptions);
+            if (is_null($phrasemaxlength)){
+                $phrasemaxlength = count($phrase)- ($wordtotry + 1);
             }
-        }
-/*        //if it is allowed try next item also 
-        if ($this->phraseleveloptions->get_allow_any_word_order()){
-            $nextitemtotry = $itemtotry + 2;
-            if ($nextitemtotry < count($this->subcontents)){
-                //try next word
-                if ($this->check_match_phrase_branch($phrase, $nextitemtotry, $wordtotry, $wordsmatched)){
-                    return true;
+            //check all possible lengths of phrase
+            for ($phraselength = $phraseminlength; $phraselength <= $phrasemaxlength; $phraselength++){
+                if (in_array(($wordtotry + $phraselength -1), $wordsmatched, true)){
+                    break;//next word has been matched already, stop
+                }
+                $nextwordtotry = $wordtotry + $phraselength;
+                if ($this->subcontents[$itemtotry]->match_phrase(array_slice($phrase, $wordtotry, $phraselength), $this->phraseleveloptions, $this->wordleveloptions)){
+                    $wordsmatchedandphrasewords = $wordsmatched + range($wordtotry, $wordtotry + $phraselength -1);
+                    if (($itemtotry) == count($this->subcontents) -1){
+                        if (count($wordsmatchedandphrasewords) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $wordsmatchedandphrasewords)) {
+                        return true;
+                    }
                 }
             }
-        }*/
+        }
+
         //if it is allowed try next word also
-        if ($this->phraseleveloptions->get_allow_extra_words()){
+        if ($this->phraseleveloptions->get_allow_extra_words() || $this->phraseleveloptions->get_allow_any_word_order()){
             $nextwordtotry = $wordtotry + 1;
             //try next word
             if ($this->check_match_phrase_branch($phrase, $itemtotry, $nextwordtotry, $wordsmatched)){
@@ -209,6 +221,7 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         }
         return false;
     }
+
     public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
         $min = 0;
         $max = 0;
@@ -416,7 +429,6 @@ class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subconten
     private function check_match_branches($word, $allowmispellings, $charpos = 0, $subcontentno = 0, $noofcharactertomatch = 1){
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
         $charslefttomatch = strlen($word) - ($charpos + $noofcharactertomatch);
-        //print_object(array('args' => func_get_args())+compact('itemslefttomatch', 'charslefttomatch'));
         //check if we have gone beyond limit of what can be matched
         if ($itemslefttomatch < 0){
             if ($charslefttomatch < 0){

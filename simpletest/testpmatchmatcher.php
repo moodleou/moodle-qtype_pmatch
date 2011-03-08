@@ -68,6 +68,7 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('tmporatur', 'match_m2ow(temperature)')); // Three characters are incorrect; one has been replaced and two are missing.
         
         // These tests come from questions Tim had to ask Phil when writing this specification.
+        $this->assertTrue($this->match('dog', 'match([toad frog]|dog)'));
         //$this->assertTrue($this->match('cat toad frog', 'match(cat_[toad|newt frog]|dog)'));
         //$this->assertTrue($this->match('cat newt frog', 'match(cat_[toad|newt frog]|dog)'));
         //$this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
