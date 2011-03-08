@@ -12,6 +12,12 @@ interface qtype_pmatch_word_delimiter {
      * @return boolean 
      */
     public function valid_match($phrasewordno1, $phrasewordno2, $phraseleveloptions);
+    
+    /**
+     * 
+     * A hook to override allow any word order in word delimiter that precedes a phrase.
+     */
+    public function allow_any_word_order_in_adjacent_phrase($allowanywordorder);
 }
 interface qtype_pmatch_can_match_char {
     /**
@@ -115,44 +121,39 @@ abstract class qtype_pmatch_matcher_item_with_subcontents extends qtype_pmatch_m
         }
         return $typeobj;
     }
-    
-}
-
-class qtype_pmatch_matcher_whole_expression extends qtype_pmatch_matcher_item_with_subcontents{
-
-}
-class qtype_pmatch_matcher_not extends qtype_pmatch_matcher_item_with_subcontents{
-}
-class qtype_pmatch_matcher_match extends qtype_pmatch_matcher_item_with_subcontents{
-}
-class qtype_pmatch_matcher_match_any extends qtype_pmatch_matcher_match{
-}
-
-class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
-}
-
-class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
-            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase {
-    /**
-     * @var qtype_pmatch_word_level_options
-     */
-    public $wordleveloptions;
 
     /**
-     * @var qtype_pmatch_phrase_level_options
+     * 
+     * @param array $phrase Array of words
+     * @param qtype_pmatch_phrase_level_options $phraseleveloptions
+     * @param qtype_pmatch_word_level_options $wordleveloptions
+     * @return boolean Successfully matched?
      */
-    public $phraseleveloptions;
-
-    public function match_whole_expression($expression){
-        $phrase = preg_split('!\s+!', $expression);
-        return $this->match_phrase($phrase, $this->interpreter->phraseleveloptions, $this->interpreter->wordleveloptions);
-    }
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         $this->phraseleveloptions = $phraseleveloptions;
         $this->wordleveloptions = $wordleveloptions;
+        list($phraseminlength, $phrasemaxlength) = $this->contribution_to_length_of_phrase_can_try($phraseleveloptions);
+        if (count($phrase) < $phraseminlength){
+            return false;
+        }
+        if ((!$this->phraseleveloptions->get_allow_extra_words())
+                && (!is_null($phrasemaxlength)) && (count($phrase) > $phrasemaxlength)){
+            return false;
+        }
         return $this->check_match_phrase_branch($phrase);
     }
 
+    /**
+     * 
+     * Used to check for a match to a phrase of words separated by white space. Code shared by 
+     * phrase in a phrase list as well as for the whole expression in match_options. This is a recursive function
+     * that can be started by just calling it with the phrase to check and leaving other params as the default.
+     * @param array $phrase
+     * @param integer $itemtotry
+     * @param integer $wordtotry
+     * @param array $wordsmatched
+     * @return boolean found a match?
+     */
     protected function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0, $wordsmatched = array()){
         if ($wordtotry >= count($phrase)){
             return false;
@@ -188,7 +189,7 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         if ($this->subcontents[$itemtotry] instanceof qtype_pmatch_can_match_phrase){
             list($phraseminlength, $phrasemaxlength) = $this->subcontents[$itemtotry]->contribution_to_length_of_phrase_can_try($this->phraseleveloptions);
             if (is_null($phrasemaxlength)){
-                $phrasemaxlength = count($phrase)- ($wordtotry + 1);
+                $phrasemaxlength = count($phrase)- ($wordtotry);
             }
             //check all possible lengths of phrase
             for ($phraselength = $phraseminlength; $phraselength <= $phrasemaxlength; $phraselength++){
@@ -196,8 +197,18 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
                     break;//next word has been matched already, stop
                 }
                 $nextwordtotry = $wordtotry + $phraselength;
-                if ($this->subcontents[$itemtotry]->match_phrase(array_slice($phrase, $wordtotry, $phraselength), $this->phraseleveloptions, $this->wordleveloptions)){
-                    $wordsmatchedandphrasewords = $wordsmatched + range($wordtotry, $wordtotry + $phraselength -1);
+                $nextphraseleveloptions = clone($this->phraseleveloptions);
+                $allowanywordorder = $this->phraseleveloptions->get_allow_any_word_order();
+                if (isset($this->subcontents[$itemtotry - 1])){
+                    $allowanywordorder = $this->subcontents[$itemtotry - 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder);
+                }
+                if (isset($this->subcontents[$itemtotry + 1])){
+                    $allowanywordorder = $this->subcontents[$itemtotry + 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder);
+                }
+                
+                $nextphraseleveloptions->set_allow_any_word_order($allowanywordorder);
+                if ($this->subcontents[$itemtotry]->match_phrase(array_slice($phrase, $wordtotry, $phraselength), $nextphraseleveloptions, $this->wordleveloptions)){
+                    $wordsmatchedandphrasewords = array_merge($wordsmatched, range($wordtotry, $wordtotry + $phraselength -1));
                     if (($itemtotry) == count($this->subcontents) -1){
                         if (count($wordsmatchedandphrasewords) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
                             return true;
@@ -222,6 +233,42 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         return false;
     }
 
+    
+}
+
+class qtype_pmatch_matcher_whole_expression extends qtype_pmatch_matcher_item_with_subcontents{
+
+}
+class qtype_pmatch_matcher_not extends qtype_pmatch_matcher_item_with_subcontents{
+}
+class qtype_pmatch_matcher_match extends qtype_pmatch_matcher_item_with_subcontents{
+}
+class qtype_pmatch_matcher_match_any extends qtype_pmatch_matcher_match{
+}
+
+class qtype_pmatch_matcher_match_all extends qtype_pmatch_matcher_match{
+}
+
+class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
+            implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase {
+    /**
+     * @var qtype_pmatch_word_level_options
+     */
+    public $wordleveloptions;
+
+    /**
+     * @var qtype_pmatch_phrase_level_options
+     */
+    public $phraseleveloptions;
+
+    public function match_whole_expression($expression){
+        $phrase = preg_split('!\s+!', $expression);
+        return $this->match_phrase($phrase, $this->interpreter->phraseleveloptions, $this->interpreter->wordleveloptions);
+    }
+
+
+
+
     public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
         $min = 0;
         $max = 0;
@@ -238,6 +285,7 @@ class qtype_pmatch_matcher_match_options extends qtype_pmatch_matcher_match
         }
         return array($min, $max);
     }
+
 }
 class qtype_pmatch_matcher_or_list extends qtype_pmatch_matcher_item_with_subcontents
             implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_match_word, 
@@ -322,7 +370,7 @@ class qtype_pmatch_matcher_or_list_phrase extends qtype_pmatch_matcher_item_with
 
 class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcontents
             implements qtype_pmatch_can_match_phrase, qtype_pmatch_can_contribute_to_length_of_phrase{
-    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
+/*    public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions){
         $wordno = 0;
         $subcontentno = 0;
         do {
@@ -343,7 +391,7 @@ class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcont
                 return false;
             }
         } while (true);
-    }
+    }*/
     public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
         $noofwords = (count($this->subcontents) + 1) / 2;
         if ($phraseleveloptions->get_allow_extra_words()){
@@ -352,6 +400,8 @@ class qtype_pmatch_matcher_phrase extends qtype_pmatch_matcher_item_with_subcont
             return array($noofwords, $noofwords);
         }
     }
+
+    
 }
 class qtype_pmatch_matcher_word_delimiter_space extends qtype_pmatch_matcher_item
             implements qtype_pmatch_word_delimiter, qtype_pmatch_can_contribute_to_length_of_phrase {
@@ -371,6 +421,9 @@ class qtype_pmatch_matcher_word_delimiter_space extends qtype_pmatch_matcher_ite
             return array(0, 0);
         }
     }
+    public function allow_any_word_order_in_adjacent_phrase($allowanywordorder){
+        return $allowanywordorder;
+    }
 }
 class qtype_pmatch_matcher_word_delimiter_proximity extends qtype_pmatch_matcher_item
             implements qtype_pmatch_word_delimiter, qtype_pmatch_can_contribute_to_length_of_phrase {
@@ -386,6 +439,10 @@ class qtype_pmatch_matcher_word_delimiter_proximity extends qtype_pmatch_matcher
         } else {
             return array(0, 0);
         }
+    }
+
+    public function allow_any_word_order_in_adjacent_phrase($allowanywordorder){
+        return false;
     }
 }
 class qtype_pmatch_matcher_word extends qtype_pmatch_matcher_item_with_subcontents 

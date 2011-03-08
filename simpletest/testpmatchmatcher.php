@@ -47,7 +47,7 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('dick and harry and thomas', 'match_cow(tom dick harry)'));
         $this->assertTrue($this->match('arthur harry and sid', 'match_mow(tom|dick|harry)')); // Any of tom or dick or harry will be matched.
         $this->assertTrue($this->match('tomy harry and sid', 'match_mow(tom|dick harry|sid)')); // The pattern requires either tom or dick AND harry or sid.
-//        $this->assertTrue($this->match('tom was mesmerised by maud', 'match_mow([tom maud]|[sid jane])')); // The pattern requires either (tom and maud) or (sid and jane).
+        $this->assertTrue($this->match('tom was mesmerised by maud', 'match_mow([tom maud]|[sid jane])')); // The pattern requires either (tom and maud) or (sid and jane).
         $this->assertTrue($this->match('rick', 'match(?ick)')); // The first character can be anything.
         $this->assertTrue($this->match('harold', 'match(har*)')); // Any sequence of characters can follow 'har'.
         $this->assertTrue($this->match('tom married maud sid married jane', 'match_mow(tom_maud)')); // Only one word is between tom and maud.
@@ -67,21 +67,24 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('temporatur', 'match_mow(temperature)')); // Two characters are incorrect; one has been replaced and one is missing.
         $this->assertFalse($this->match('tmporatur', 'match_m2ow(temperature)')); // Three characters are incorrect; one has been replaced and two are missing.
         
-        // These tests come from questions Tim had to ask Phil when writing this specification.
+        $this->assertTrue($this->match('cat toad frog', 'match(cat [toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat newt frog', 'match(cat [toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat dog', 'match(cat [toad|newt frog]|dog)'));
         $this->assertTrue($this->match('dog', 'match([toad frog]|dog)'));
-        //$this->assertTrue($this->match('cat toad frog', 'match(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('cat newt frog', 'match(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('x cat x x toad frog x', 'match_w(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('x cat newt x x x x x frog x', 'match_w(cat_[toad|newt frog]|dog)'));
-        //$this->assertTrue($this->match('x cat x x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
-        //$this->assertFalse($this->match('A C B D', 'match([A B]_[C D])'));
-        //$this->assertFalse($this->match('B C A D', 'match_o([A B]_[C D])'));
-        //$this->assertTrue($this->match('A x x x x B C D', 'match_ow([A B]_[C D])'));
-        //$this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])')); // _ requires the words in [] to match in order.
-        //$this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
- 
+        $this->assertTrue($this->match('cat toad frog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat newt frog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('x cat x x toad frog x', 'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('x cat newt x x x x x frog x', 'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('x cat x x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertFalse($this->match('A C B D', 'match([A B]_[C D])'));
+        $this->assertFalse($this->match('B C A D', 'match_o([A B]_[C D])'));
+        $this->assertTrue($this->match('A x x x x B C D', 'match_ow([A B]_[C D])'));
+        $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));  //_ requires the words in [] to match in order.
+        $this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
+        $this->assertFalse($this->match('A A', 'match(A)'));
+        
         // Tests of the misspelling rules.
         $this->assertTrue($this->match('test', 'match(test)'));
         $this->assertFalse($this->match('tes', 'match(test)'));
