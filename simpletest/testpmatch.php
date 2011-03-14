@@ -292,8 +292,8 @@ EOF;
         //if an integer is in the expression expect an integer
         $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
 
-        //not sure if this should match
-        $this->assertTrue($this->match('abcd ccc ffff', 'match_o(abcd_ffff ccc)'));
+        //this should not match as the proximity delimiter precludes another word match occuring between the two words separated by it.
+        $this->assertFalse($this->match('abcd ccc ffff', 'match_o(abcd_ffff ccc)'));
 
         $this->assertTrue($this->match('one two five', 'match(one_two|[three four] five)'));
         $this->assertTrue($this->match('one two five', 'match(one_two|[three four] five)'));

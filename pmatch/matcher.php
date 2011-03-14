@@ -42,6 +42,13 @@ interface pmatch_word_delimiter {
      * A hook to override allow any word order in word delimiter that precedes a phrase.
      */
     public function allow_any_word_order_in_adjacent_phrase($allowanywordorder);
+        /**
+     * 
+     * Does this word delimiter also require intervening words between matched word to not be matched
+     * by other words in expression?
+     * @return boolean
+     */
+    public function also_match_intervening_words();
 }
 interface pmatch_can_match_char {
     /**
@@ -201,13 +208,21 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
             return false;
         }
         //is this a valid item to try to match?
-        $shallwetry = ((!count($wordsmatched)) || 
-                    $this->subcontents[$itemtotry - 1]->valid_match($phrase, $wordsmatched,
-                                                                    $wordtotry, $this->phraseleveloptions))
-                    && (!in_array($wordtotry, $wordsmatched, true));
+        $shallwetry = ((!isset($this->subcontents[$itemtotry - 1])) || 
+                    ($this->subcontents[$itemtotry - 1]->valid_match($phrase, $wordsmatched, $wordtotry, $this->phraseleveloptions) &&
+                    (!in_array($wordtotry, $wordsmatched, true))));
         if ($shallwetry && $this->subcontents[$itemtotry]->match_word($phrase[$wordtotry], $this->wordleveloptions)){
             //we found a match
             $newwordsmatched = $wordsmatched;
+            if (isset($this->subcontents[$itemtotry - 1]) 
+                        && $this->subcontents[$itemtotry - 1]->also_match_intervening_words()){
+                $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
+                $wordno = $lastwordmatched + 1;
+                while ($wordno < $wordtotry){
+                    $newwordsmatched[] = $wordno;
+                    $wordno++;
+                }
+            }
             $newwordsmatched[] = $wordtotry;
             if ($itemtotry == count($this->subcontents) -1){
                 //last item matched : success
@@ -477,8 +492,6 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
             return array($noofwords, $noofwords);
         }
     }
-
-    
 }
 class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
             implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {
@@ -502,6 +515,9 @@ class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
     public function allow_any_word_order_in_adjacent_phrase($allowanywordorder){
         return $allowanywordorder;
     }
+    public function also_match_intervening_words(){
+        return false;
+    }
 }
 class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
             implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {
@@ -517,6 +533,9 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
             if (preg_match('!\.$!', $phrase[$wordno])){
                 return false;
             }
+            if (($wordno != $lastwordmatched) && in_array($wordno, $wordsmatched, true)){
+                return false;
+            }
         }
         return true;
     }
@@ -530,6 +549,9 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 
     public function allow_any_word_order_in_adjacent_phrase($allowanywordorder){
         return false;
+    }
+    public function also_match_intervening_words(){
+        return true;
     }
 }
 class pmatch_matcher_number extends pmatch_matcher_item 
