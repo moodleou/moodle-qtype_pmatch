@@ -1,0 +1,12 @@
+match_all (
+    match_any (
+        not (
+            match_cow (one_two)
+        )
+        match_mfw (three|[four five])
+    )
+    match_any (
+        match_mrw (six|nine nine)
+        match_m2w (seven|[eight ten])
+    )
+)
