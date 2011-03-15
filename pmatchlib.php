@@ -161,7 +161,7 @@ class pmatch_expression {
             throw new coding_exception('Oops. You called matches for an expression that is not valid. You should call is_valid first.');
             return false;
         }
-        $matcher = $this->interpreter->get_matcher($this->options->ignorecase);
+        $matcher = $this->interpreter->get_matcher($this->options);
         return $matcher->match_whole_expression($parsedstring->get_words());
     }
     

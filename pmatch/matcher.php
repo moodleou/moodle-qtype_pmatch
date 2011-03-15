@@ -113,17 +113,17 @@ interface pmatch_can_contribute_to_length_of_phrase{
 abstract class pmatch_matcher_item{
     /** @var pmatch_interpreter_item */
     protected $interpreter;
-    /** @var boolean */
-    protected $ignorecase;
+    /** @var pmatch_options */
+    protected $externaloptions;
     /**
      * 
      * Constructor normally called by pmatch_interpreter_item->get_matcher method
      * @param pmatch_interpreter_item $interpreter
-     * @param boolean $ignorecase
+     * @param pmatch_options $externaloptions
      */
-    public function __construct($interpreter, $ignorecase){
+    public function __construct($interpreter, $externaloptions){
         $this->interpreter = $interpreter;
-        $this->ignorecase = $ignorecase;
+        $this->externaloptions = $externaloptions;
     }
 
     /**
@@ -149,11 +149,11 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
      * Create a tree of matcher items.
      * @param pmatch_interpreter_item_with_subcontents $interpreter
      */
-    public function __construct($interpreter, $ignorecase){
-        parent::__construct($interpreter, $ignorecase);
+    public function __construct($interpreter, $externaloptions){
+        parent::__construct($interpreter, $externaloptions);
         $interpretersubcontents = $interpreter->get_subcontents();
         foreach ($interpretersubcontents as $interpretersubcontent){
-            $this->subcontents[] = $interpretersubcontent->get_matcher($ignorecase);
+            $this->subcontents[] = $interpretersubcontent->get_matcher($externaloptions);
         }
     }
     /**
@@ -530,7 +530,8 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
             return false;
         }
         for ($wordno = $lastwordmatched; $wordno < $wordtotry; $wordno++){
-            if (preg_match('!\.$!', $phrase[$wordno])){
+            //is there a sentence divider (such as a full stop) on the end of this word?
+            if (rtrim($phrase[$wordno], $this->externaloptions->sentencedividers) != $phrase[$wordno]) {
                 return false;
             }
             if (($wordno != $lastwordmatched) && in_array($wordno, $wordsmatched, true)){
@@ -556,8 +557,8 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 }
 class pmatch_matcher_number extends pmatch_matcher_item 
             implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
-    public function __construct($interpreter, $ignorecase){
-        parent::__construct($interpreter, $ignorecase);
+    public function __construct($interpreter, $externaloptions){
+        parent::__construct($interpreter, $externaloptions);
     }
     public function match_phrase($words, $phraseleveloptions, $wordleveloptions){
         if (count($words) == 2){
@@ -618,7 +619,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         return $adjustedwordleveloptions;
     }
     public function match_word($word, $wordleveloptions){
-        $word = rtrim($word, '.');
+        $word = rtrim($word, $this->externaloptions->sentencedividers);
         $this->wordleveloptions = $this->check_word_level_options($wordleveloptions);
         if ($this->check_match_branches($word, $this->wordleveloptions->get_misspellings())){
             return true;
@@ -733,7 +734,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
 class pmatch_matcher_character_in_word extends pmatch_matcher_item implements pmatch_can_match_char{
     public function match_char($character){
         $codefragment = $this->interpreter->get_code_fragment();
-        if ($this->ignorecase){
+        if ($this->externaloptions->ignorecase){
             $textlib = textlib_get_instance();
             return ($textlib->strtolower($character) == $textlib->strtolower($codefragment));
         } else {

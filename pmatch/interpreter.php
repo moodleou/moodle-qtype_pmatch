@@ -86,10 +86,16 @@ abstract class pmatch_interpreter_item{
     public function set_error_message($errormessage, $codefragment){
         $this->interpretererrormessage = get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
-    public function get_matcher($ignorecase){
+    /**
+     * 
+     * Get the matcher tree for this interpreter object. Can be used from an interpreter object at any point in the tree.
+     * @param pmatch_options $externaloptions
+     * @return pmatch_matcher_item a tree of child classes of pmatch_matcher_item
+     */
+    public function get_matcher($externaloptions){
         $thistypename = $this->get_type_name_of_interpreter_object($this);
         $matchclassname = 'pmatch_matcher_'.$thistypename;
-        return new $matchclassname($this, $ignorecase);
+        return new $matchclassname($this, $externaloptions);
     }
     public function get_type_name_of_interpreter_object($object){
         return substr(get_class($object), 19);

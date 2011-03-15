@@ -302,6 +302,20 @@ EOF;
 
         $this->assertFalse($this->match('one four. two.', 'match_w(one_two)'));
         $this->assertTrue($this->match('one four two.', 'match_w(one_two)'));
+
+
+        //sentence divider can be any characters (although they should not be characters that
+        //might appear in a word).
+        $options = new pmatch_options();
+        $options->sentencedividers = '|';
+        $this->assertFalse($this->match('one four| two|', 'match_w(one_two)', $options));
+        $this->assertTrue($this->match('one four two|', 'match_w(one_two)', $options));
+        $options = new pmatch_options();
+        $options->sentencedividers = '|$';
+        $this->assertFalse($this->match('one four| two|', 'match_w(one_two)', $options));
+        $this->assertTrue($this->match('one four two|', 'match_w(one_two)', $options));
+        $this->assertFalse($this->match('one four$ two$', 'match_w(one_two)', $options));
+        $this->assertTrue($this->match('one four two$', 'match_w(one_two)', $options));
         
         $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
         $formattedexpression = <<<EOF
