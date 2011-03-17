@@ -25,8 +25,8 @@
  */
 
 
-$string['addingoumultiresponse'] = 'Adding a PMatch question';
-$string['editingoumultiresponse'] = 'Editing a PMatch question';
+$string['addingpmatch'] = 'Adding a PMatch question';
+$string['editingpmatch'] = 'Editing a PMatch question';
 $string['pmatch'] = 'PMatch';
 //intrepreter errors
 $string['ie_nomatchfound'] = 'Error in pmatch code.';
@@ -35,3 +35,30 @@ $string['ie_missingclosingbracket'] = 'Missing closing bracket in code fragment 
 $string['ie_lastsubcontenttypeorcharacter'] = 'Or character must not end subcontent in "{$a}".';
 $string['ie_lastsubcontenttypeworddelimiter'] = 'Word delimiter character must not end sub content "{$a}".';
 $string['ie_illegaloptions'] = 'Illegal options in match{options}() expression "{$a}".';
+$string['ie_unrecognisedexpression'] = 'Unrecognised expression.';
+
+
+$string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
+$string['allowsubscript'] = 'Allow use of subscript';
+$string['allowsuperscript'] = 'Allow use of super script';
+$string['answeringoptions'] = 'Options For Entering Answers';
+$string['applydictionarycheck'] = 'Check spelling of student';
+$string['answer'] = 'Answer: {$a}';
+$string['answermustbegiven'] = 'You must enter an answer if there is a grade or feedback.';
+$string['answerno'] = 'Answer {$a}';
+$string['caseno'] = 'No, case is unimportant';
+$string['casesensitive'] = 'Case sensitivity';
+$string['caseyes'] = 'Yes, case must match';
+$string['converttospace'] = 'Convert the following characters to a space';
+$string['correctansweris'] = 'The correct answer is: {$a}.';
+$string['correctanswers'] = 'Correct answers';
+$string['extenddictionary'] = 'Add these words to dictionary';
+$string['filloutoneanswer'] = 'Use PMatch syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
+$string['forcelength'] = 'If answer is more than 20 words';
+$string['forcelengthno'] = 'do not issue warning';
+$string['forcelengthyes'] = 'warn that answer is too long and invite respondee to shorten it';
+$string['notenoughanswers'] = 'This type of question requires at least $a answers';
+$string['pleaseenterananswer'] = 'Please enter an answer.';
+$string['pmatch_help'] = 'In response to a question (that may include a image) the respondent types a short phrase. There may be several possible correct answers, each with a different grade. If the "Case sensitive" option is selected, then you can have different scores for "Word" or "word".';
+$string['pmatch_link'] = 'question/type/pmatch';
+$string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pmatch syntax.';

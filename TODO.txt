@@ -1,0 +1,4 @@
+synonyms
+use spell checker
+super script and sub script
+back up and restore code

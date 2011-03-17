@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/pmatch/db" VERSION="20110316" COMMENT="XMLDB file for Moodle question/type/pmatch"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="qtype_pmatch" COMMENT="Options for pmatch questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="questionid"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id." PREVIOUS="id" NEXT="allowsubscript"/>
+        <FIELD NAME="allowsubscript" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Allow sub script in student input" PREVIOUS="questionid" NEXT="allowsuperscript"/>
+        <FIELD NAME="allowsuperscript" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Allow super script in student input" PREVIOUS="allowsubscript" NEXT="forcelength"/>
+        <FIELD NAME="forcelength" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Remind the user that length should be less than 20 chars." PREVIOUS="allowsuperscript" NEXT="usecase"/>
+        <FIELD NAME="usecase" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether answers are matched case-sensitively." PREVIOUS="forcelength" NEXT="converttospace"/>
+        <FIELD NAME="converttospace" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" COMMENT="Student answer characters that are converted to a space." PREVIOUS="usecase" NEXT="applydictionarycheck"/>
+        <FIELD NAME="applydictionarycheck" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to check student answers for spelling mistakes." PREVIOUS="converttospace" NEXT="extenddictionary"/>
+        <FIELD NAME="extenddictionary" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" COMMENT="Extra words for dictionary." PREVIOUS="applydictionarycheck"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="questionid"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
