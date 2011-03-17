@@ -27,6 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
 /**
  * Represents a short answer question.
@@ -79,26 +80,15 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
-        return self::compare_string_with_wildcard($response['answer'], $answer->answer, !$this->usecase);
+        return self::compare_string_with_pmatch_expression($response['answer'], $answer->answer, !$this->usecase);
     }
 
-    public static function compare_string_with_wildcard($string, $pattern, $ignorecase) {
-        // Break the string on non-escaped asterisks.
-        $bits = preg_split('/(?<!\\\\)\*/', $pattern);
-        // Escape regexp special characters in the bits.
-        $excapedbits = array();
-        foreach ($bits as $bit) {
-            $excapedbits[] = preg_quote(str_replace('\*', '*', $bit));
-        }
-        // Put it back together to make the regexp.
-        $regexp = '|^' . implode('.*', $excapedbits) . '$|u';
-
-        // Make the match insensitive if requested to.
-        if ($ignorecase) {
-            $regexp .= 'i';
-        }
-
-        return preg_match($regexp, trim($string));
+    public static function compare_string_with_pmatch_expression($string, $expression, $ignorecase) {
+        $options = new pmatch_options();
+        $options->ignorecase = $ignorecase;
+        $string = new pmatch_parsed_string($string, $options);
+        $expression = new pmatch_expression($expression, $options);
+        return $expression->matches($string);
     }
 
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
