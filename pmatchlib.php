@@ -37,7 +37,10 @@ class pmatch_options {
  
     /** @var string of word diveder characters. */
     public $worddividers = " \f\n\r\t";
- 
+
+    /** @var string of characters that will be converted to spaces before matching. */
+    public $converttospace = "";
+
     /**
      * @var array of words to recognise. These words may include sentence or
      * word divider characters.

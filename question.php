@@ -37,8 +37,16 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
  */
 class qtype_pmatch_question extends question_graded_by_strategy
         implements question_response_answer_comparer {
-    /** @var boolean whether answers should be graded case-sensitively. */
-    public $usecase;
+    /** @var boolean whether to allow students to use subscript. */
+    public $allowsubscript;
+    /** @var boolean whether to allow students to use super script. */
+    public $allowsuperscript;
+    /** @var boolean whether to warn student if their response is longer than 20 words. */
+    public $forcelength;
+    /** @var boolean whether to spell check students response. */
+    public $applydictionarycheck;
+    /** @var pmatch_options options for pmatch expression matching. */
+    public $pmatchoptions;
     /** @var array of question_answer. */
     public $answers = array();
 
@@ -80,12 +88,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
-        return self::compare_string_with_pmatch_expression($response['answer'], $answer->answer, !$this->usecase);
+        return self::compare_string_with_pmatch_expression($response['answer'], $answer->answer, $this->pmatchoptions);
     }
 
-    public static function compare_string_with_pmatch_expression($string, $expression, $ignorecase) {
-        $options = new pmatch_options();
-        $options->ignorecase = $ignorecase;
+    public static function compare_string_with_pmatch_expression($string, $expression, $options) {
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
         return $expression->matches($string);
