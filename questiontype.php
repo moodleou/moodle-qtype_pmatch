@@ -132,12 +132,12 @@ class qtype_pmatch extends question_type {
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $question->usecase = $questiondata->options->usecase;
-        $question->allowsubscript = $question->options->allowsubscript;
-        $question->allowsuperscript = $question->options->allowsuperscript;
-        $question->forcelength = $question->options->forcelength;
-        $question->applydictionarycheck = $question->options->applydictionarycheck;
-        $question->extenddictionary = $question->options->extenddictionary;
-        $question->converttospace = $question->options->converttospace;
+        $question->allowsubscript = $questiondata->options->allowsubscript;
+        $question->allowsuperscript = $questiondata->options->allowsuperscript;
+        $question->forcelength = $questiondata->options->forcelength;
+        $question->applydictionarycheck = $questiondata->options->applydictionarycheck;
+        $question->extenddictionary = $questiondata->options->extenddictionary;
+        $question->converttospace = $questiondata->options->converttospace;
         $this->initialise_question_answers($question, $questiondata);
     }
 
