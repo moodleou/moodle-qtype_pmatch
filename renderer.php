@@ -111,13 +111,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
     }
 
     public function correct_response(question_attempt $qa) {
-        $question = $qa->get_question();
-
-        $answer = reset($question->get_answers());
-        if (!$answer) {
-            return '';
-        }
-
-        return get_string('correctansweris', 'qtype_pmatch', s($answer->answer));
+        return '';
     }
 }

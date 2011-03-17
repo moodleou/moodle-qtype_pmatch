@@ -50,7 +50,6 @@ $string['caseno'] = 'No, case is unimportant';
 $string['casesensitive'] = 'Case sensitivity';
 $string['caseyes'] = 'Yes, case must match';
 $string['converttospace'] = 'Convert the following characters to a space';
-$string['correctansweris'] = 'The correct answer is: {$a}.';
 $string['correctanswers'] = 'Correct answers';
 $string['extenddictionary'] = 'Add these words to dictionary';
 $string['filloutoneanswer'] = 'Use PMatch syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
