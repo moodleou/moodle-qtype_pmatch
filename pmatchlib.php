@@ -73,10 +73,12 @@ class pmatch_parsed_string {
         }
 
         $this->words = array();
-        $word = strtok($string, $this->options->worddividers);
+        $word = strtok($string, $this->options->worddividers . $this->options->converttospace);
         while ($word !== false) {
-            $this->words[] = $word;
-            $word = strtok($this->options->worddividers);
+            if ($word != ''){
+                $this->words[] = $word;
+            }
+            $word = strtok($this->options->worddividers . $this->options->converttospace);
         };
     }
  
