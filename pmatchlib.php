@@ -148,6 +148,9 @@ class pmatch_expression {
             $this->valid = true;
         } else {
             $this->valid = false;
+            if ($this->errormessage == ''){
+                $this->errormessage = get_string('ie_unrecognisedexpression', 'qtype_pmatch');
+            }
         }
     }
  

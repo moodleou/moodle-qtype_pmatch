@@ -594,10 +594,14 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
         return $string;
     }
     protected function formatted_opening(){
-        $string = 'match_';
-        $string .= $this->wordleveloptions->get_options_as_string();
-        $string .= $this->phraseleveloptions->get_options_as_string();
-        return $string;
+        $options = '';
+        $options .= $this->wordleveloptions->get_options_as_string();
+        $options .= $this->phraseleveloptions->get_options_as_string();
+        if (!empty($options)){
+            return 'match_'.$options;
+        } else {
+            return 'match';
+        }
     }
 }
 class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontents{
