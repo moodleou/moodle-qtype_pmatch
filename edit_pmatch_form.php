@@ -141,6 +141,21 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if ($maxgrade == false) {
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
         }
+
+        //check sizes of answer box within a reasonable range
+        $placeholder = false;
+        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $data['questiontext'], $matches)) {
+            $rows = $matches[1];
+            $cols = $matches[2];
+            $placeholder = $matches[0];
+        } else if (preg_match('/__([0-9]+)__/', $data['questiontext'], $matches)) {
+            $rows = 1;
+            $cols = round($matches[1] * 1.1);
+            $placeholder = $matches[0];
+        }
+        if ($placeholder && ($rows > 100 || $cols > 150)) {
+            $errors['questiontext'] = get_string('inputareatoobig', 'pmatch', $placeholder);
+        }
         return $errors;
     }
 

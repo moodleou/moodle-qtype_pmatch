@@ -42,16 +42,14 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
 
         $inputname = $qa->get_qt_field_name('answer');
-        $inputattributes = array(
-            'type' => 'text',
+        $attributes = array(
             'name' => $inputname,
-            'value' => $currentanswer,
             'id' => $inputname,
-            'size' => 80,
         );
 
+
         if ($options->readonly) {
-            $inputattributes['readonly'] = 'readonly';
+            $attributes['readonly'] = 'readonly';
         }
 
         $feedbackimg = '';
@@ -62,18 +60,34 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $inputattributes['class'] = $this->feedback_class($fraction);
+            $attributes['class'] = $this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 
         $questiontext = $question->format_questiontext($qa);
         $placeholder = false;
-        if (preg_match('/_____+/', $questiontext, $matches)) {
+        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
-            $inputattributes['size'] = round(strlen($placeholder) * 1.1);
+            $attributes['rows'] = $matches[1];
+            $attributes['cols'] = $matches[2];
+            $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
+        } else {
+            $inputattributes = array(
+                'type' => 'text',
+                'value' => $currentanswer,
+                'size' => 80,
+            );
+            if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
+                $placeholder = $matches[0];
+                $inputattributes['size'] = round($matches[1] * 1.1);
+            } else if (preg_match('/_____+/', $questiontext, $matches)) {
+                $placeholder = $matches[0];
+                $inputattributes['size'] = round(strlen($placeholder) * 1.1);
+                
+            }
+            $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
-
-        $input = html_writer::empty_tag('input', $inputattributes) . $feedbackimg;
+        
 
         if ($placeholder) {
             $questiontext = substr_replace($questiontext, $input,
