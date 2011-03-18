@@ -167,12 +167,14 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
         }
 
+        $wordssofar = array();
         foreach ($data['synonymsdata'] as $key => $synonym){
             $trimmedword = trim($synonym['word']);
             $trimmedsynonyms = trim($synonym['synonyms']);
             if ($trimmedword == '' && $trimmedsynonyms == ''){
                 continue;
             }
+
             if ($trimmedword != '' && $trimmedsynonyms == ''){
                 $errors['synonymsdata['.$key.']'] = get_string('nomatchingsynonymforword', 'qtype_pmatch');
                 continue;
@@ -180,6 +182,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $errors['synonymsdata['.$key.']'] = get_string('nomatchingwordforsynonym', 'qtype_pmatch');
                 continue;
             }
+
             $wordinterpreter = new pmatch_interpreter_word();
             list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
             if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))){
@@ -199,6 +202,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $errors['synonymsdata['.$key.']'] = $synonyminterpreter->get_error_message();
                 continue;
             }
+
+            if (in_array($trimmedword, $wordssofar)){
+                $errors['synonymsdata['.$key.']'] = get_string('repeatedword', 'qtype_pmatch');
+            }
+            $wordssofar[] = $trimmedword;
         }
 
         return $errors;
