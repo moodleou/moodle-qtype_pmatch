@@ -166,6 +166,41 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if ($placeholder && ($rows > 100 || $cols > 150)) {
             $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
         }
+
+        foreach ($data['synonymsdata'] as $key => $synonym){
+            $trimmedword = trim($synonym['word']);
+            $trimmedsynonyms = trim($synonym['synonyms']);
+            if ($trimmedword == '' && $trimmedsynonyms == ''){
+                continue;
+            }
+            if ($trimmedword != '' && $trimmedsynonyms == ''){
+                $errors['synonymsdata['.$key.']'] = get_string('nomatchingsynonymforword', 'qtype_pmatch');
+                continue;
+            } else if ($trimmedword == '' && $trimmedsynonyms != '') {
+                $errors['synonymsdata['.$key.']'] = get_string('nomatchingwordforsynonym', 'qtype_pmatch');
+                continue;
+            }
+            $wordinterpreter = new pmatch_interpreter_word();
+            list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
+            if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))){
+                $errors['synonymsdata['.$key.']'] = get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
+                continue;
+            } else if ($wordinterpreter->get_error_message()){
+                $errors['synonymsdata['.$key.']'] = $wordinterpreter->get_error_message();
+                continue;
+            }
+
+            $synonyminterpreter = new pmatch_interpreter_synonym();
+            list($synonymmatched, $endofmatch) = $synonyminterpreter->interpret($trimmedsynonyms);
+            if ((!$synonymmatched) || !($endofmatch == (strlen($trimmedsynonyms)))){
+                $errors['synonymsdata['.$key.']'] = get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
+                continue;
+            } else if ($synonyminterpreter->get_error_message()){
+                $errors['synonymsdata['.$key.']'] = $synonyminterpreter->get_error_message();
+                continue;
+            }
+        }
+
         return $errors;
     }
     protected function add_synonyms($mform) {
@@ -187,21 +222,17 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $repeatsatstart = $countsynonyms;
         }
 
-        $repeatedoptions = $this->synonym_repeated_options();
-        $this->repeat_elements($textboxgroup, $repeatsatstart, $repeatedoptions, 'nosynonyms', 'addsynonyms', 4, get_string('addmoresynonymblanks', 'qtype_pmatch'));
+        $this->repeat_elements($textboxgroup, $repeatsatstart, array(), 'nosynonyms', 'addsynonyms', 4, get_string('addmoresynonymblanks', 'qtype_pmatch'));
     }
 
     protected function add_synonym($mform) {
         $grouparray = array();
-        $grouparray[] = $mform->createElement('text', 'word', get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15, 'class'=>'tweakcss'));
+        $grouparray[] = $mform->createElement('text', 'word', get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15));
         $grouparray[] = $mform->createElement('static', '', '',' '.get_string('synonym', 'qtype_pmatch').' ');
         $grouparray[] = $mform->createElement('text', 'synonyms', get_string('synonym', 'qtype_pmatch'), array('size'=>50));
         return $grouparray;
     }
-    protected function synonym_repeated_options() {
-        $repeatedoptions = array();
-        return $repeatedoptions;
-    }
+
     public function qtype() {
         return 'pmatch';
     }
