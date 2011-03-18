@@ -39,6 +39,7 @@ $string['ie_unrecognisedexpression'] = 'Unrecognised expression.';
 
 
 $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
+$string['addmoresynonymblanks'] = 'Blanks for {no} more synonyms';
 $string['allowsubscript'] = 'Allow use of subscript';
 $string['allowsuperscript'] = 'Allow use of super script';
 $string['answeringoptions'] = 'Options For Entering Answers';
@@ -62,3 +63,6 @@ $string['pleaseenterananswer'] = 'Please enter an answer.';
 $string['pmatch_help'] = 'In response to a question (that may include a image) the respondent types a short phrase. There may be several possible correct answers, each with a different grade. If the "Case sensitive" option is selected, then you can have different scores for "Word" or "word".';
 $string['pmatch_link'] = 'question/type/pmatch';
 $string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pmatch syntax.';
+$string['synonym'] = 'Synonyms';
+$string['synonymsheader'] = 'Define Synonyms For Words in Answers';
+$string['wordwithsynonym'] = 'Word';

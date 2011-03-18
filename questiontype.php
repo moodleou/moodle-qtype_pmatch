@@ -39,6 +39,13 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch extends question_type {
+    function get_question_options($question) {
+        global $DB;
+        parent::get_question_options($question);
+        $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms', array('questionid' => $question->id), 'id ASC');
+        return true;
+    }
+
     public function extra_question_fields() {
         return array('qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
                 'forcelength', 'applydictionarycheck', 'extenddictionary', 'converttospace');
@@ -104,6 +111,31 @@ class qtype_pmatch extends question_type {
             if ($question->fraction[$key] > $maxfraction) {
                 $maxfraction = $question->fraction[$key];
             }
+        }
+        $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
+                array('questionid' => $question->id), 'id ASC');
+        // Insert all the new answers
+        foreach ($question->synonymsdata as $key => $synonymfromform) {
+            // Check for, and ignore, completely blank synonym from the form.
+            $word = trim($synonymfromform['word']);
+            if ($word == '') {
+                continue;
+            }
+
+            // Update an existing answer if possible.
+            $synonym = array_shift($oldsynonyms);
+            if (!$synonym) {
+                $synonym = new stdClass();
+                $synonym->questionid = $question->id;
+                $synonym->synonyms = '';
+                $synonym->word = '';
+                $synonym->id = $DB->insert_record('qtype_pmatch_synonyms', $synonym);
+            }
+
+            $synonym->word = $word;
+            $synonym->synonyms = trim($synonymfromform['synonyms']);
+            $DB->update_record('qtype_pmatch_synonyms', $synonym);
+
         }
 
         $question->answers = implode(',', $answers);

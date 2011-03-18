@@ -70,7 +70,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $creategrades = get_grade_options();
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 $creategrades->gradeoptions);
-
+        $this->add_synonyms($mform);
         $this->add_interactive_settings();
     }
 
@@ -110,6 +110,16 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $question->extenddictionary = $question->options->extenddictionary;
             $question->converttospace = $question->options->converttospace;
         }
+        if (isset($question->options->synonyms)){
+            $synonyms = $question->options->synonyms;
+            $question->synonymsdata = array();
+            $key = 0;
+            foreach ($synonyms as $synonym){
+                $question->synonymsdata[$key]['word'] = $synonym->word;
+                $question->synonymsdata[$key]['synonyms'] = $synonym->synonyms;
+                $key++;
+            }
+        }
         return $question;
     }
 
@@ -144,21 +154,54 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         //check sizes of answer box within a reasonable range
         $placeholder = false;
-        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $data['questiontext'], $matches)) {
+        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $data['questiontext']['text'], $matches)) {
             $rows = $matches[1];
             $cols = $matches[2];
             $placeholder = $matches[0];
-        } else if (preg_match('/__([0-9]+)__/', $data['questiontext'], $matches)) {
+        } else if (preg_match('/__([0-9]+)__/', $data['questiontext']['text'], $matches)) {
             $rows = 1;
             $cols = round($matches[1] * 1.1);
             $placeholder = $matches[0];
         }
         if ($placeholder && ($rows > 100 || $cols > 150)) {
-            $errors['questiontext'] = get_string('inputareatoobig', 'pmatch', $placeholder);
+            $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
         }
         return $errors;
     }
+    protected function add_synonyms($mform) {
+        $mform->addElement('header', 'synonymshdr', get_string('synonymsheader', 'qtype_pmatch'));
 
+        $textboxgroup = array();
+        $textboxgroup[] = $mform->createElement('group', 'synonymsdata',
+                get_string('wordwithsynonym', 'qtype_pmatch'), $this->add_synonym($mform));
+
+        if (isset($this->question->options)) {
+            $countsynonyms = count($this->question->options->synonyms);
+        } else {
+            $countsynonyms = 0;
+        }
+
+        if ($this->question->formoptions->repeatelements) {
+            $repeatsatstart = max(8, 8, $countsynonyms + 4);
+        } else {
+            $repeatsatstart = $countsynonyms;
+        }
+
+        $repeatedoptions = $this->synonym_repeated_options();
+        $this->repeat_elements($textboxgroup, $repeatsatstart, $repeatedoptions, 'nosynonyms', 'addsynonyms', 4, get_string('addmoresynonymblanks', 'qtype_pmatch'));
+    }
+
+    protected function add_synonym($mform) {
+        $grouparray = array();
+        $grouparray[] = $mform->createElement('text', 'word', get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15, 'class'=>'tweakcss'));
+        $grouparray[] = $mform->createElement('static', '', '',' '.get_string('synonym', 'qtype_pmatch').' ');
+        $grouparray[] = $mform->createElement('text', 'synonyms', get_string('synonym', 'qtype_pmatch'), array('size'=>50));
+        return $grouparray;
+    }
+    protected function synonym_repeated_options() {
+        $repeatedoptions = array();
+        return $repeatedoptions;
+    }
     public function qtype() {
         return 'pmatch';
     }

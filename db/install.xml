@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/pmatch/db" VERSION="20110316" COMMENT="XMLDB file for Moodle question/type/pmatch"
+<XMLDB PATH="question/type/pmatch/db" VERSION="20110317" COMMENT="XMLDB file for Moodle question/type/pmatch"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="qtype_pmatch" COMMENT="Options for pmatch questions">
+    <TABLE NAME="qtype_pmatch" COMMENT="Options for pmatch questions" NEXT="qtype_pmatch_synonyms">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="questionid"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id." PREVIOUS="id" NEXT="allowsubscript"/>
@@ -19,6 +19,17 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="questionid"/>
         <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="qtype_pmatch_synonyms" COMMENT="synonyms used in pmatch questions." PREVIOUS="qtype_pmatch">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="questionid"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="points to the question that these are used in" PREVIOUS="id" NEXT="word"/>
+        <FIELD NAME="word" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" PREVIOUS="questionid" NEXT="synonyms"/>
+        <FIELD NAME="synonyms" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" PREVIOUS="word"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>
