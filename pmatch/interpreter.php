@@ -565,7 +565,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
                     $this->wordleveloptions->set_allow_extra_characters(true);
                     break;
                 case 'p' :
-                    if (FALSE !== preg_match('![0-4]$!A', $thisoption[1])){
+                    if (FALSE === preg_match('![0-4]$!A', $thisoption[1])){
                         $this->set_error_message('illegaloptions', $options);
                         return false;
                     } else {
