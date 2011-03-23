@@ -104,6 +104,9 @@ class pmatch_parsed_string {
             }
             $word = strtok($this->options->worddividers . $this->options->converttospace);
         };
+        if (count($this->words) == 0){
+            $this->words = array('');
+        }
     }
  
     /**
