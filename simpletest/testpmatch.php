@@ -306,6 +306,28 @@ EOF;
         $this->assertTrue($this->match('one four two.', 'match_w(one_two)'));
 
 
+        $this->assertFalse($this->match('one four two.', 'match_wp0(one_two)'));
+        $this->assertTrue($this->match('one two.', 'match_wp0(one_two)'));
+
+        $this->assertTrue($this->match('one two three.', 'match_wp1(one_three)'));
+        $this->assertTrue($this->match('one three.', 'match_wp1(one_three)'));
+        $this->assertFalse($this->match('one two two three.', 'match_wp1(one_three)'));
+
+        $this->assertTrue($this->match('one two three four.', 'match_wp2(one_four)'));
+        $this->assertTrue($this->match('one three four.', 'match_wp2(one_four)'));
+        $this->assertTrue($this->match('one four.', 'match_wp2(one_four)'));
+        $this->assertFalse($this->match('one two two three four.', 'match_wp2(one_four)'));
+
+        $this->assertTrue($this->match('one two three four five.', 'match_wp3(one_five)'));
+        $this->assertTrue($this->match('one three four five.', 'match_wp3(one_five)'));
+        $this->assertTrue($this->match('one five.', 'match_wp3(one_five)'));
+        $this->assertFalse($this->match('one two two three four five.', 'match_wp3(one_five)'));
+
+        $this->assertTrue($this->match('one two three four five six.', 'match_wp4(one_six)'));
+        $this->assertTrue($this->match('one three four five six.', 'match_wp4(one_six)'));
+        $this->assertTrue($this->match('one five six.', 'match_wp4(one_six)'));
+        $this->assertFalse($this->match('one two two three four five six.', 'match_wp4(one_six)'));
+
         //sentence divider can be any characters (although they should not be characters that
         //might appear in a word).
         $options = new pmatch_options();
