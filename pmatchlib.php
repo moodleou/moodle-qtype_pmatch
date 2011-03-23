@@ -193,7 +193,7 @@ class pmatch_expression {
      */
     public function matches(pmatch_parsed_string $parsedstring){
         if (!$this->is_valid()){
-            throw new coding_exception('Oops. You called matches for an expression that is not valid. You should call is_valid first.');
+            throw new coding_exception('Oops. You called matches for an expression that is not valid. You should call is_valid first. Interpreter error :'.$this->get_parse_error());
             return false;
         }
         $matcher = $this->interpreter->get_matcher($this->options);
