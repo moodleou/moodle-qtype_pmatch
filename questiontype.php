@@ -168,6 +168,7 @@ class qtype_pmatch extends question_type {
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
         $question->pmatchoptions->extradictionarywords = preg_split('!\s+!',$questiondata->options->extenddictionary);
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
+        $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
 
         $question->allowsubscript = $questiondata->options->allowsubscript;
         $question->allowsuperscript = $questiondata->options->allowsuperscript;

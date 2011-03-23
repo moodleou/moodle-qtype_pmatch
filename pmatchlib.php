@@ -46,6 +46,30 @@ class pmatch_options {
      * word divider characters.
      */
     public $extradictionarywords = array('e.g.', 'eg.', 'etc.', 'i.e.', 'ie.');
+
+    /**
+     * @var array of strings with preg expressions to match words that can be replaced.
+     */
+    public $wordstoreplace = array();
+    /**
+     * @var array of strings to replace words with.
+     */
+    public $synonymtoreplacewith = array();
+    
+    public function set_synonyms($synonyms){
+        $toreplace = array();
+        $replacewith = array();
+        foreach ($synonyms as $synonym){
+            $toreplaceitem = preg_quote($synonym->word, '!');
+            $toreplaceitem = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
+            $toreplaceitem = '!'.$toreplaceitem.'!';
+            if ($this->ignorecase){
+                $toreplaceitem .= 'i';
+            }
+            $this->wordstoreplace[] = $toreplaceitem;
+            $this->synonymtoreplacewith[] = "{$synonym->word}|{$synonym->synonyms}";
+        }
+    }
 }
  
 /**
@@ -146,7 +170,7 @@ class pmatch_expression {
             $this->options = new pmatch_options();
         }
         $this->originalexpression = $expression;
-        $this->interpreter = new pmatch_interpreter_whole_expression();
+        $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);
         $this->errormessage = $this->interpreter->get_error_message();
         if ($endofmatch == strlen($expression) && $matched && $this->errormessage == ''){

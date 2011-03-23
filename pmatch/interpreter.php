@@ -25,9 +25,21 @@
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
+define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
+define('PMATCH_CHARACTER', '[a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
+
+
 abstract class pmatch_interpreter_item{
     protected $interpretererrormessage;
     public $codefragment;
+    /**@var pmatch_options */
+    public $pmatchoptions;
+    /**
+     * @param pmatch_options $pmatchoptions
+     */
+    public function __construct($pmatchoptions){
+        $this->pmatchoptions = $pmatchoptions;
+    }
     public function interpret($string, $start = 0){
         $this->interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
@@ -188,7 +200,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      */
     protected function interpret_subcontent_item($cancontaintype, $string, $start){
         $cancontainclassname = 'pmatch_interpreter_'.$cancontaintype;
-        $cancontain = new $cancontainclassname();
+        $cancontain = new $cancontainclassname($this->pmatchoptions);
         list($found, $aftercontent) = $cancontain->interpret($string, $start);
         if ($found) {
             return array($cancontain, true, $aftercontent);
@@ -482,7 +494,8 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
      */
     public $phraseleveloptions;
 
-    public function __construct(){
+    public function __construct($pmatchoptions){
+        parent::__construct($pmatchoptions);
         $this->wordleveloptions = new pmatch_word_level_options();
         $this->phraseleveloptions = new pmatch_phrase_level_options();
     }
@@ -603,6 +616,22 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
             return 'match';
         }
     }
+
+    protected function interpret_subcontents($string, $start, $branchfoundsofar = array()){
+        list($found, $end) = parent::interpret_subcontents($string, $start, $branchfoundsofar);
+        if (!count($branchfoundsofar)){
+            if ($found && !empty($this->pmatchoptions->wordstoreplace)){
+                $subcontentsstr = substr($string, $start, $end - $start);
+                $subcontentsstrwithsyn = preg_replace($this->pmatchoptions->wordstoreplace, 
+                        $this->pmatchoptions->synonymtoreplacewith, $subcontentsstr);
+                if ($subcontentsstrwithsyn != $subcontentsstr) {
+                    list($found, ) = parent::interpret_subcontents($subcontentsstrwithsyn, 0, $branchfoundsofar);
+                }
+            }
+        }
+        return array($found, $end);
+    }
+
 }
 class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontents{
     protected function next_possible_subcontent($foundsofar){
@@ -687,10 +716,16 @@ class pmatch_interpreter_number extends pmatch_interpreter_item{
     protected $pattern = '!([+|-]( )?)?[0-9]+(\.[0-9]+)?!';
 }
 class pmatch_interpreter_character_in_word extends pmatch_interpreter_item{
-    protected $pattern = '![a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]!';
+    public function __construct($pmatchoptions){
+        parent::__construct($pmatchoptions);
+        $this->pattern = '!'.PMATCH_CHARACTER.'!';
+    }
 }
 class pmatch_interpreter_special_character_in_word extends pmatch_interpreter_item{
-    protected $pattern = '!\\\\[()\\\\ |?*_\[\]]!';
+    public function __construct($pmatchoptions){
+        parent::__construct($pmatchoptions);
+        $this->pattern = '!'.PMATCH_SPECIAL_CHARACTER.'!';
+    }
 }
 class pmatch_interpreter_wildcard_match_single extends pmatch_interpreter_item{
     protected $pattern = '!\?!';

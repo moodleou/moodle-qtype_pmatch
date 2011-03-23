@@ -218,6 +218,8 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('gabbcdffff', 'match_m2(abcdffff)'));
         $this->assertTrue($this->match('abbcdgffff', 'match_m2(abcdffff)'));
 
+        $this->assertTrue($this->match('', 'match(*)'));
+
         $options = new pmatch_options();
         $options->ignorecase = true;
         $this->assertTrue($this->match('ABCD', 'match(abcd)', $options));
@@ -402,6 +404,11 @@ EOF;
         $this->assertFalse($this->match('abceghi', $expressionstr));
         $this->assertTrue($this->match('abceghm', $expressionstr));
         $this->assertFalse($this->match('abceghmn', $expressionstr));
+
+        $options = new pmatch_options();
+        $this->assertFalse($this->match('fghij', 'match(abcde)', $options));
+        $options->set_synonyms(array((object)array('word'=>'abcde', 'synonyms' => 'xyz|fghij')));
+        $this->assertTrue($this->match('fghij', 'match(abcde)', $options));
     }
 
 
