@@ -138,7 +138,6 @@ class qtype_pmatch extends question_type {
 
         }
 
-        $question->answers = implode(',', $answers);
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
             // Parent function returns null if all is OK
