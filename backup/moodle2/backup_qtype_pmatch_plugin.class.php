@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_qtype_shortanswer_plugin extends backup_qtype_plugin {
+class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
 
     /**
      * Returns the qtype information to attach to question element
@@ -40,7 +40,7 @@ class backup_qtype_shortanswer_plugin extends backup_qtype_plugin {
     protected function define_question_plugin_structure() {
 
         // Define the virtual plugin element with the condition to fulfill
-        $plugin = $this->get_plugin_element(null, '../../qtype', 'shortanswer');
+        $plugin = $this->get_plugin_element(null, '../../qtype', 'pmatch');
 
         // Create one standard named plugin element (the visible container)
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
@@ -53,14 +53,20 @@ class backup_qtype_shortanswer_plugin extends backup_qtype_plugin {
         $this->add_question_question_answers($pluginwrapper);
 
         // Now create the qtype own structures
-        $shortanswer = new backup_nested_element('shortanswer', array('id'), array(
-            'answers', 'usecase'));
+        $pmatchoptions = new backup_nested_element('pmatch', array('id'), array('forcelength', 'usecase',
+            'converttospace', 'applydictionarycheck', 'extenddictionary', 'allowsubscript', 'allowsuperscript'));
 
-        // Now the own qtype tree
-        $pluginwrapper->add_child($shortanswer);
+        $synonyms = new backup_nested_element('synonyms');
+
+        $synonym = new backup_nested_element('synonym', array('id'), array('word', 'synonyms'));
+
+        $pluginwrapper->add_child($pmatchoptions);
+        $pluginwrapper->add_child($synonyms);
+        $synonyms->add_child($synonym);
 
         // set source to populate the data
-        $shortanswer->set_source_table('question_shortanswer', array('question' => backup::VAR_PARENTID));
+        $pmatchoptions->set_source_table('qtype_pmatch', array('questionid' => backup::VAR_PARENTID));
+        $synonym->set_source_table('qtype_pmatch_synonyms', array('questionid' => backup::VAR_PARENTID));
 
         // don't need to annotate ids nor files
 

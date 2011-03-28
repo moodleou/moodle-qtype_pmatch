@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_qtype_shortanswer_plugin extends restore_qtype_plugin {
+class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
 
     /**
      * Returns the paths to be handled by the plugin at question level
@@ -46,8 +46,12 @@ class restore_qtype_shortanswer_plugin extends restore_qtype_plugin {
         $this->add_question_question_answers($paths);
 
         // Add own qtype stuff
-        $elename = 'shortanswer';
-        $elepath = $this->get_pathfor('/shortanswer'); // we used get_recommended_name() so this works
+        $elename = 'pmatch';
+        $elepath = $this->get_pathfor('/pmatch'); // we used get_recommended_name() so this works
+        $paths[] = new restore_path_element($elename, $elepath);
+
+        $elename = 'synonym';
+        $elepath = $this->get_pathfor('/synonyms/synonym'); // we used get_recommended_name() so this works
         $paths[] = new restore_path_element($elename, $elepath);
 
 
@@ -55,9 +59,9 @@ class restore_qtype_shortanswer_plugin extends restore_qtype_plugin {
     }
 
     /**
-     * Process the qtype/shortanswer element
+     * Process the qtype/pmatch element
      */
-    public function process_shortanswer($data) {
+    public function process_pmatch($data) {
         global $DB;
 
         $data = (object)$data;
@@ -68,22 +72,41 @@ class restore_qtype_shortanswer_plugin extends restore_qtype_plugin {
         $newquestionid   = $this->get_new_parentid('question');
         $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
 
-        // If the question has been created by restore, we need to create its question_shortanswer too
+        // If the question has been created by restore, we need to create its qtype_pmatch too
         if ($questioncreated) {
             // Adjust some columns
-            $data->question = $newquestionid;
-            // Map sequence of question_answer ids
-            $answersarr = explode(',', $data->answers);
-            foreach ($answersarr as $key => $answer) {
-                $answersarr[$key] = $this->get_mappingid('question_answer', $answer);
-            }
-            $data->answers = implode(',', $answersarr);
+            $data->questionid = $newquestionid;
             // Insert record
-            $newitemid = $DB->insert_record('question_shortanswer', $data);
+            $newitemid = $DB->insert_record('qtype_pmatch', $data);
             // Create mapping
-            $this->set_mapping('question_shortanswer', $oldid, $newitemid);
+            $this->set_mapping('qtype_pmatch', $oldid, $newitemid);
         } else {
             // Nothing to remap if the question already existed
         }
     }
+    /**
+     * Process the qtype/synonyms/synonym element
+     */
+    public function process_synonym($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        // Detect if the question is created or mapped
+        $oldquestionid   = $this->get_old_parentid('question');
+        $newquestionid   = $this->get_new_parentid('question');
+        $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
+
+        // If the question has been created by restore, we need to create its qtype_pmatch_synonyms too
+        if ($questioncreated) {
+            // Adjust some columns
+            $data->questionid = $newquestionid;
+            // Insert record
+            $newitemid = $DB->insert_record('qtype_pmatch_synonyms', $data);
+        } else {
+            // Nothing to remap if the question already existed
+        }
+    }
+
 }
