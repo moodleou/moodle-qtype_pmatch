@@ -74,7 +74,6 @@ class qtype_pmatch extends question_type {
         $oldanswers = $DB->get_records('question_answers',
                 array('question' => $question->id), 'id ASC');
 
-        $answers = array();
         $maxfraction = -1;
 
         // Insert all the new answers
@@ -107,11 +106,30 @@ class qtype_pmatch extends question_type {
             $answer->feedbackformat = $question->feedback[$key]['format'];
             $DB->update_record('question_answers', $answer);
 
-            $answers[] = $answer->id;
             if ($question->fraction[$key] > $maxfraction) {
                 $maxfraction = $question->fraction[$key];
             }
         }
+
+        if (!html_is_blank($question->otherfeedback['text'])){
+            $otheranswer = new stdClass();
+            $otheranswer->answer = '*';
+            $otheranswer->fraction = 0;
+            $otheranswer->feedback = '';
+            $otheranswer->question = $question->id;
+            $oldotheranswer = array_shift($oldanswers);
+            if (!$oldotheranswer){
+                $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
+            } else {
+                $otheranswer->id = $oldotheranswer->id;
+            }
+            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
+                    $context, 'question', 'answerfeedback', $otheranswer->id);
+            $otheranswer->feedbackformat = $question->otherfeedback['format'];
+            $DB->update_record('question_answers', $otheranswer);
+        }
+
+
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
                 array('questionid' => $question->id), 'id ASC');
         // Insert all the new answers

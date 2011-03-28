@@ -26,6 +26,7 @@
 
 
 $string['addingpmatch'] = 'Adding a PMatch question';
+$string['anyotheranswer'] = 'Any other answer';
 $string['editingpmatch'] = 'Editing a PMatch question';
 $string['pmatch'] = 'PMatch';
 //intrepreter errors

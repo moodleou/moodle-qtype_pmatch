@@ -38,7 +38,10 @@ abstract class pmatch_interpreter_item{
     /**
      * @param pmatch_options $pmatchoptions
      */
-    public function __construct($pmatchoptions){
+    public function __construct($pmatchoptions = null){
+        if (is_null($pmatchoptions)){
+            $pmatchoptions = new pmatch_options();
+        }
         $this->pmatchoptions = $pmatchoptions;
     }
     public function interpret($string, $start = 0){

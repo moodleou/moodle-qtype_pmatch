@@ -116,6 +116,9 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
+        if ($answer->answer == '*'){
+            return true;
+        }
         return self::compare_string_with_pmatch_expression($response['answer'], $answer->answer, $this->pmatchoptions);
     }
 

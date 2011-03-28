@@ -70,6 +70,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $creategrades = get_grade_options();
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 $creategrades->gradeoptions);
+
+        $mform->addElement('header', 'otheranswerhdr', get_string('anyotheranswer', 'qtype_pmatch'));
+        $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
+        $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
+                                array('rows' => 5), $this->editoroptions);
+
         $this->add_synonyms($mform);
         $this->add_interactive_settings();
     }
@@ -97,9 +103,37 @@ class qtype_pmatch_edit_form extends question_edit_form {
         return $repeated;
     }
 
+    function data_preprocessing_other_answer($question){
+        //special handling of otheranswer
+        if (!empty($question->options->answers)) {
+            foreach ($question->options->answers as $key => $answer){
+                if ($answer->answer == '*'){
+                    $question->otherfeedback = array();
+                    // Prepare the feedback editor to display files in draft area
+                    $draftitemid = file_get_submitted_draft_itemid('otherfeedback');
+                    $question->otherfeedback['text'] = file_prepare_draft_area(
+                        $draftitemid,          // draftid
+                        $this->context->id,    // context
+                        'question',            // component
+                        'answerfeedback',      // filarea
+                        !empty($answer->id) ? (int) $answer->id : null, // itemid
+                        $this->fileoptions,    // options
+                        $answer->feedback      // text
+                    );
+                    $question->otherfeedback['itemid'] = $draftitemid;
+                    $question->otherfeedback['format'] = $answer->feedbackformat;
+                    unset($question->options->answers[$key]);
+                }
+            }
+        }
+        return $question;
+    }
+
     function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
+        $question = $this->data_preprocessing_other_answer($question);
         $question = $this->data_preprocessing_answers($question);
+
         $question = $this->data_preprocessing_hints($question);
         if (isset($question->options)){
             $question->usecase = $question->options->usecase;
