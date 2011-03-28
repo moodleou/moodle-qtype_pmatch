@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
  * Options that control the overall way the matching is done.
  */
 class pmatch_options {
+
     /** @var boolean */
     public $ignorecase;
  
@@ -55,19 +56,27 @@ class pmatch_options {
      * @var array of strings to replace words with.
      */
     public $synonymtoreplacewith = array();
-    
+
+    /** @var array of words from synonyms that are exempt from spell check. */
+    public $nospellcheckwords = array();
+
     public function set_synonyms($synonyms){
         $toreplace = array();
         $replacewith = array();
         foreach ($synonyms as $synonym){
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
-            $toreplaceitem = '!'.$toreplaceitem.'!';
+            $toreplaceitem = '!(^|\PL)'.$toreplaceitem.'(\PL|$)!';
             if ($this->ignorecase){
                 $toreplaceitem .= 'i';
             }
             $this->wordstoreplace[] = $toreplaceitem;
             $this->synonymtoreplacewith[] = "{$synonym->word}|{$synonym->synonyms}";
+            $this->nospellcheckwords[] = $synonym->word;
+            $synonymsforthisword = explode('|', $synonym->synonyms);
+            foreach ($synonymsforthisword as $synonymforthisword){
+                $this->nospellcheckwords[] = $synonymforthisword;
+            }
         }
     }
 }
@@ -84,6 +93,8 @@ class pmatch_parsed_string {
     /** @var array of words created by splitting $string by $options->worddividers */
     public $words;
 
+    private $misspelledwords = null;
+
     /**
      * Constructor.
      * @param string $string the string to match against.
@@ -97,7 +108,7 @@ class pmatch_parsed_string {
         }
 
         $this->words = array();
-        $word = strtok($string, $this->options->worddividers . $this->options->converttospace);
+        $word = strtok($string, $this->options->worddividers . $this->options->converttospace."\n\r");
         while ($word !== false) {
             if ($word != ''){
                 $this->words[] = $word;
@@ -110,21 +121,77 @@ class pmatch_parsed_string {
     }
  
     /**
-     * @return boolean returns true if any word is misspelt.
+     * @return boolean returns false if any word is misspelt.
      */
-    public function is_spelt_correctly(){
-        //TODO implement this properly
-        return true;
+    public function is_spelt_correctly($lang = null){
+        $this->misspelledwords = $this->spell_check($this->words, $lang);
+        return (count($this->misspelledwords) == 0);
     }
- 
+
+    protected function spell_check($words, $lang){
+        if ($lang == null){
+            $langidparts = explode('_', current_language());
+            $lang = $langidparts[0];
+        }
+        if (!function_exists('pspell_new')){
+            error_log('Attempted to spell check but pspell is not installed.');
+            return array();
+        }
+        $pspell_link = pspell_new($lang);
+        if ($pspell_link === false){
+            error_log("Attempted a spell check for a language with no aspell dictionary installed - '{$lang}'.");
+            return array();//if dictionary is not installed for this language we cannot spell check
+        }
+        $misspelledwords = array();
+        $wordstoignore = array_merge($this->options->extradictionarywords, $this->options->nospellcheckwords);
+        $wordstoignorepatterns = array(PMATCH_NUMBER);
+        foreach ($wordstoignore as $wordtoignore){
+            $wordstoignorepattern = preg_quote($wordtoignore, '!');
+            $wordstoignorepattern = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $wordstoignorepattern);
+            $wordstoignorepatterns[] = $wordstoignorepattern;
+        }
+        $sentencedividerpattern = '';
+        foreach (str_split($this->options->sentencedividers) as $sentencedivider){
+            if ($sentencedividerpattern != ''){
+                $sentencedividerpattern .= '|';
+            }
+            $sentencedividerpattern .= preg_quote($sentencedivider);
+        }
+        $endofpattern = '('.$sentencedividerpattern.')?$!A';
+        if ($this->options->ignorecase){
+            $endofpattern .= 'i';
+        }
+        $words = array_unique($words);
+        foreach ($wordstoignorepatterns as $wordstoignorepattern){
+            $words = (preg_grep('!'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
+        }
+        foreach ($words as $word){
+            $textlib = textlib_get_instance();
+            if (FALSE !== strpos($this->options->sentencedividers, $textlib->substr($word, -1))){
+                $word = $textlib->substr($word, 0, $textlib->strlen($word)-1);
+            }
+
+            if (!pspell_check($pspell_link, $word)) {
+                $misspelledwords[] = $word;
+            }
+        }
+        return $misspelledwords;
+    }
+
     /**
      * @return array all the distinct misspelt words.
      */
     public function get_spelling_errors(){
-        //TODO implement this properly
-        return array();
+        return $this->misspelledwords;
     }
- 
+
+    /**
+     * @return integer no of words.
+     */
+    public function get_word_count(){
+        return count($this->words);
+    }
+
     /**
      * @return pmatch_options the options that were used to construct this object.
      */

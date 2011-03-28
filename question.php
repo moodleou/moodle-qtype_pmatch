@@ -50,6 +50,8 @@ class qtype_pmatch_question extends question_graded_by_strategy
     /** @var array of question_answer. */
     public $answers = array();
 
+    
+    
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
     }
@@ -67,16 +69,42 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function is_complete_response(array $response) {
-        return array_key_exists('answer', $response) &&
-                ($response['answer'] || $response['answer'] === '0');
+        print_object(compact('response'));
+        $this->validate($response);
+        return (!count($this->errors) > 0);
+    }
+
+    private $errors = null;
+
+    protected function validate(array $response){
+        if (is_null($this->errors)){
+            $this->errors = array();
+            $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
+            if  (!array_key_exists('answer', $response) ||
+                    ((!$response['answer']) && $response['answer'] !== '0')){
+                $this->errors[] = get_string('pleaseenterananswer', 'qtype_pmatch');
+                return;
+            }
+            if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
+                $misspelledwords = $parsestring->get_spelling_errors();
+                $a = join(' ', $misspelledwords);
+                $this->errors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
+            }
+            if ($this->forcelength){
+                if ($parsestring->get_word_count() > 20){
+                    $this->errors[] = get_string('toomanywords', 'qtype_pmatch');
+                }
+            }
+
+        }
+        error_log(print_r(compact('response')+array('$this->errors'=> $this->errors), true));
     }
 
     public function get_validation_error(array $response) {
-        if ($this->is_gradable_response($response)) {
-            return '';
-        }
-        return get_string('pleaseenterananswer', 'qtype_pmatch');
+        $this->validate($response);
+        return join('<br />', $this->errors);
     }
+
 
     public function is_same_response(array $prevresponse, array $newresponse) {
         return question_utils::arrays_same_at_key_missing_is_blank(

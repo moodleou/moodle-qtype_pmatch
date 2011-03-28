@@ -1,5 +1,2 @@
-synonyms
-use spell checker
-add synonyms and extra words to dict
 super script and sub script
 back up and restore code

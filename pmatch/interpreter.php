@@ -27,6 +27,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
 define('PMATCH_CHARACTER', '[a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
+define('PMATCH_NUMBER', '([+|-]( )?)?[0-9]+(\.[0-9]+)?');
 
 
 abstract class pmatch_interpreter_item{
@@ -713,7 +714,10 @@ class pmatch_interpreter_word extends pmatch_interpreter_item_with_subcontents{
     }
 }
 class pmatch_interpreter_number extends pmatch_interpreter_item{
-    protected $pattern = '!([+|-]( )?)?[0-9]+(\.[0-9]+)?!';
+    public function __construct($pmatchoptions){
+        parent::__construct($pmatchoptions);
+        $this->pattern = '!'.PMATCH_NUMBER.'!';
+    }
 }
 class pmatch_interpreter_character_in_word extends pmatch_interpreter_item{
     public function __construct($pmatchoptions){
