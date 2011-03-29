@@ -35,8 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_renderer extends qtype_renderer {
-    public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
+    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
@@ -64,31 +63,38 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $feedbackimg = $this->feedback_image($fraction);
         }
 
+        $usehtmleditor = $question->allowsubscript || $question->allowsuperscript;
+
         $questiontext = $question->format_questiontext($qa);
+        $rows = 1;
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
-            $attributes['rows'] = $matches[1];
-            $attributes['cols'] = $matches[2];
+            $rows = $matches[1];
+            $cols = $matches[2];
+        } else {
+            if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
+                $placeholder = $matches[0];
+                $cols = round($matches[1] * 1.1);
+            } else if (preg_match('/_____+/', $questiontext, $matches)) {
+                $placeholder = $matches[0];
+                $cols = round(strlen($placeholder) * 1.1);
+            }
+        }
+
+        if ($usehtmleditor || $rows > 1) {
+            $attributes['rows'] = $rows;
+            $attributes['cols'] = $cols;
             $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
         } else {
             $inputattributes = array(
                 'type' => 'text',
                 'value' => $currentanswer,
-                'size' => 80,
+                'size' => 80
             );
-            if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
-                $placeholder = $matches[0];
-                $inputattributes['size'] = round($matches[1] * 1.1);
-            } else if (preg_match('/_____+/', $questiontext, $matches)) {
-                $placeholder = $matches[0];
-                $inputattributes['size'] = round(strlen($placeholder) * 1.1);
-
-            }
+            $inputattributes['size'] = $cols;
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
-
-
         if ($placeholder) {
             $questiontext = substr_replace($questiontext, $input,
                     strpos($questiontext, $placeholder), strlen($placeholder));
@@ -101,6 +107,12 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $result .= get_string('answer', 'qtype_pmatch',
                     html_writer::tag('div', $input, array('class' => 'answer')));
             $result .= html_writer::end_tag('div');
+        }
+
+        if ($usehtmleditor){
+            $colsem = $cols.'em';
+            $rowsem = (2*$rows).'em'; // need some extra space for sub and superscript
+            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor', array($inputname, $colsem, $rowsem, true, true));
         }
 
         if ($qa->get_state() == question_state::$invalid) {
@@ -126,5 +138,15 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
     public function correct_response(question_attempt $qa) {
         return '';
+    }
+
+    public function head_code(question_attempt $qa) {
+        $this->page->requires->yui2_lib('yahoo');
+        $this->page->requires->yui2_lib('dom');
+        $this->page->requires->yui2_lib('event');
+        $this->page->requires->yui2_lib('element');
+        $this->page->requires->yui2_lib('container');
+        $this->page->requires->yui2_lib('editor');
+        return parent::head_code($qa);
     }
 }
