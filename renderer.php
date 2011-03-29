@@ -67,6 +67,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         $questiontext = $question->format_questiontext($qa);
         $rows = 1;
+        $cols = 80;
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
@@ -89,8 +90,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         } else {
             $inputattributes = array(
                 'type' => 'text',
-                'value' => $currentanswer,
-                'size' => 80
+                'value' => $currentanswer
             );
             $inputattributes['size'] = $cols;
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
@@ -112,7 +112,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
         if ($usehtmleditor){
             $colsem = $cols.'em';
             $rowsem = (2*$rows).'em'; // need some extra space for sub and superscript
-            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor', array($inputname, $colsem, $rowsem, true, true));
+            $overridekeyevents = ($rows == 1);//don't override key events for arrow and return keys for a multiline input
+            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor', array($inputname, $colsem, $rowsem, true, true, $overridekeyevents));
         }
 
         if ($qa->get_state() == question_state::$invalid) {

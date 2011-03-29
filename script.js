@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 M.qtype_pmatch = {};
-M.qtype_pmatch.initeditor = function (Y, editorid, editorwidth, editorheight, subscript, superscript) {
+M.qtype_pmatch.initeditor = function (Y, editorid, editorwidth, editorheight, subscript, superscript, overridekeyevents) {
     var textstylebuttons = new Array();
     if (subscript){
         textstylebuttons.push({ type: 'push', label: 'Subscript', value: 'subscript' });
@@ -37,21 +37,23 @@ M.qtype_pmatch.initeditor = function (Y, editorid, editorwidth, editorheight, su
 
     var editor = new YAHOO.widget.Editor(editorid, editorconfig);
 
-    editor.on('beforeEditorKeyDown', function(e) {
-        switch (e.ev.keyCode) {
-            case 13: // Enter
-                YAHOO.util.Event.stopEvent(e.ev);
-                return false;
-            case 38: // Up
-                editor.execCommand('superscript');
-                YAHOO.util.Event.stopEvent(e.ev);
-                return false;
-            case 40: // Down
-                editor.execCommand('subscript');
-                YAHOO.util.Event.stopEvent(e.ev);
-                return false;
-        }
-    });
+    if (overridekeyevents){
+        editor.on('beforeEditorKeyDown', function(e) {
+            switch (e.ev.keyCode) {
+                case 13: // Enter
+                    YAHOO.util.Event.stopEvent(e.ev);
+                    return false;
+                case 38: // Up
+                    editor.execCommand('superscript');
+                    YAHOO.util.Event.stopEvent(e.ev);
+                    return false;
+                case 40: // Down
+                    editor.execCommand('subscript');
+                    YAHOO.util.Event.stopEvent(e.ev);
+                    return false;
+            }
+        });
+    }
 
 
     editor.render();
