@@ -83,11 +83,11 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else if (preg_match('/_____+/', $questiontext, $matches)) {
                 $placeholder = $matches[0];
                 $inputattributes['size'] = round(strlen($placeholder) * 1.1);
-                
+
             }
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
-        
+
 
         if ($placeholder) {
             $questiontext = substr_replace($questiontext, $input,

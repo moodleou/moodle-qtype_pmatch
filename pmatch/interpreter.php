@@ -56,7 +56,7 @@ abstract class pmatch_interpreter_item{
     }
     protected $pattern;
     /**
-     * 
+     *
      * Convert the $string starting at $start into a tree of object representing parts of pmatch code.
      * This is the default method which is often overriden. It looks for $pattern which is a regex with no
      * modifying options.
@@ -70,7 +70,7 @@ abstract class pmatch_interpreter_item{
     }
 
     /**
-     * 
+     *
      * Find an anchored case insensitive regular expression, searching from $start.
      * @param string $pattern
      * @param string $string
@@ -103,7 +103,7 @@ abstract class pmatch_interpreter_item{
         $this->interpretererrormessage = get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
     /**
-     * 
+     *
      * Get the matcher tree for this interpreter object. Can be used from an interpreter object at any point in the tree.
      * @param pmatch_options $externaloptions
      * @return pmatch_matcher_item a tree of child classes of pmatch_matcher_item
@@ -131,14 +131,14 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
 
     protected $subcontents = array();
     /**
-     * 
+     *
      * How many items can be contained as sub contents of this item. If 0 then no limit.
      * @var integer
      */
     protected $limitsubcontents = 0;
-    
+
     /**
-     * 
+     *
      * Interpret sub contents of item.
      * @param string $string code that is to be interpreted
      * @param integer $start position at which to start
@@ -154,12 +154,12 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         //iterate down all branches
         foreach ($typestotry as $typetotry){
             $childbranches[$branchindex] = $branchfoundsofar;
-            list($typefound, $found, $childbranchcursor[$branchindex]) = 
+            list($typefound, $found, $childbranchcursor[$branchindex]) =
                     $this->interpret_subcontent_item($typetotry, $string, $start);
             if ($found){
                 $childbranches[$branchindex][] = $typefound;
                 if (($this->limitsubcontents == 0) || (count($childbranches[$branchindex]) < $this->limitsubcontents)){
-                    list($childbranches[$branchindex], $childbranchcursor[$branchindex]) = 
+                    list($childbranches[$branchindex], $childbranchcursor[$branchindex]) =
                         $this->interpret_subcontents($string, $childbranchcursor[$branchindex], $childbranches[$branchindex]);
                 }
             }
@@ -173,7 +173,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         return array(array_shift($childbranches), array_shift($childbranchcursor));
     }
     /**
-     * 
+     *
      * What was the last type of sub contents found in $foundsofar
      * @param array $foundsofar
      * @return string the type of sub contents last found (prefix with 'pmatch_interpreter_' to get classname)
@@ -186,7 +186,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         }
     }
     /**
-     * 
+     *
      * In the branch of code matched so far what could be the next type.
      * @param array $foundsofar
      * @return array the types of sub contents that could come next
@@ -196,11 +196,11 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         return array();
     }
     /**
-     * 
+     *
      * Try to match $cancontaintype in $string starting at $start.
      * @param string $cancontaintype
      * @param string $string
-     * @param integer $start 
+     * @param integer $start
      */
     protected function interpret_subcontent_item($cancontaintype, $string, $start){
         $cancontainclassname = 'pmatch_interpreter_'.$cancontaintype;
@@ -218,13 +218,13 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         return array((!empty($this->subcontents)), $endofcontents);
     }
     /**
-     * 
-     * Any checks that need to be done on sub contents found, are done here. The default is to check 
+     *
+     * Any checks that need to be done on sub contents found, are done here. The default is to check
      * the last content type found and if the type is included in lastcontenttypeerrors report an error.
      */
     protected function check_subcontents(){
         if (array_key_exists($this->last_subcontent_type_found($this->subcontents), $this->lastcontenttypeerrors)){
-            $this->set_error_message($this->lastcontenttypeerrors[$this->last_subcontent_type_found($this->subcontents)], 
+            $this->set_error_message($this->lastcontenttypeerrors[$this->last_subcontent_type_found($this->subcontents)],
                                     $this->codefragment);
         }
     }
@@ -298,7 +298,7 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents extends pmatch_
     protected function formatted_opening(){
         return '';//overridden in sub classes
     }
-    
+
 }
 class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_subcontents{
 
@@ -332,7 +332,7 @@ class pmatch_interpreter_match extends pmatch_interpreter_item_with_enclosed_sub
     protected $openingpattern = '!match([_a-z0-4]*)\s*\(\s*!';
     protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
-    
+
 }
 class pmatch_interpreter_match_any extends pmatch_interpreter_match{
     protected function interpret_subpattern_in_opening($options){
@@ -626,7 +626,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
         if (!count($branchfoundsofar)){
             if ($found && !empty($this->pmatchoptions->wordstoreplace)){
                 $subcontentsstr = substr($string, $start, $end - $start);
-                $subcontentsstrwithsyn = preg_replace($this->pmatchoptions->wordstoreplace, 
+                $subcontentsstrwithsyn = preg_replace($this->pmatchoptions->wordstoreplace,
                         $this->pmatchoptions->synonymtoreplacewith, $subcontentsstr);
                 if ($subcontentsstrwithsyn != $subcontentsstr) {
                     list($found, ) = parent::interpret_subcontents($subcontentsstrwithsyn, 0, $branchfoundsofar);
@@ -651,8 +651,8 @@ class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontent
     }
 }
 /**
- * 
- * This is the same as an or_list but with no or_list_phrases. 
+ *
+ * This is the same as an or_list but with no or_list_phrases.
  *
  */
 class pmatch_interpreter_synonym extends pmatch_interpreter_item_with_subcontents{
@@ -675,13 +675,13 @@ class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enc
     protected $openingpattern = '!\[!';
     protected $closingpattern = '!\]!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
-    
+
     protected function next_possible_subcontent($foundsofar){
         return array('phrase');
     }
-    
+
     protected $limitsubcontents = 1;
-    
+
     public function get_formatted_expression_string($indentlevel = 0){
         $string = '[';
         foreach ($this->subcontents as $subcontent){
@@ -690,7 +690,7 @@ class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enc
         $string .= ']';
         return $string;
     }
-    
+
 }
 
 class pmatch_interpreter_phrase extends pmatch_interpreter_item_with_subcontents{

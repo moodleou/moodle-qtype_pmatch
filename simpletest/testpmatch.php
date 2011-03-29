@@ -77,7 +77,7 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('temporatur', 'match_m2ow(temperature)')); // Two characters are incorrect; one has been replaced and one is missing.
         $this->assertFalse($this->match('temporatur', 'match_mow(temperature)')); // Two characters are incorrect; one has been replaced and one is missing.
         $this->assertFalse($this->match('tmporatur', 'match_m2ow(temperature)')); // Three characters are incorrect; one has been replaced and two are missing.
-        
+
         $this->assertTrue($this->match('cat toad frog', 'match(cat [toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat newt frog', 'match(cat [toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat dog', 'match(cat [toad|newt frog]|dog)'));
@@ -95,14 +95,14 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));  //_ requires the words in [] to match in order.
         $this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
         $this->assertFalse($this->match('A A', 'match(A)'));
-        
+
         // Tests of the misspelling rules.
         $this->assertTrue($this->match('test', 'match(test)'));
         $this->assertFalse($this->match('tes', 'match(test)'));
         $this->assertFalse($this->match('testt', 'match(test)'));
         $this->assertFalse($this->match('tent', 'match(test)'));
         $this->assertFalse($this->match('tets', 'match(test)'));
- 
+
         $this->assertTrue($this->match('test', 'match_mf(test)'));
         $this->assertTrue($this->match('tes', 'match_mf(test)'));
         $this->assertFalse($this->match('testt', 'match_mf(test)'));
@@ -110,7 +110,7 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('tets', 'match_mf(test)'));
         //fewer characters option is disabled for a pattern of fewer than 4 normal characters in pattern.
         $this->assertFalse($this->match('te', 'match_mf(tes)'));
- 
+
         //allow fewer characters
         $this->assertTrue($this->match('abcd', 'match_mf(abcd)'));
         $this->assertTrue($this->match('abc', 'match_mf(abcd)'));
@@ -164,7 +164,7 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('abcdg', 'match_mx(abcd)'));
         $this->assertTrue($this->match('abcd', 'match_mx(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mx(abcd)'));
-        
+
 
         //allow any one mispelling
         $this->assertTrue($this->match('abcd', 'match_m(abcd)'));
@@ -205,10 +205,10 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('gabcd', 'match_m2(abcd)'));
         $this->assertTrue($this->match('abcdg', 'match_m2(abcd)'));
 
-        $this->assertFalse($this->match('bacde', 'match_m2(abcd)')); 
+        $this->assertFalse($this->match('bacde', 'match_m2(abcd)'));
         //ffff padding is to increase pattern length to the required 8 chars
         //so that two misspellings are allowed
-        $this->assertTrue($this->match('ffffbacde', 'match_m2(ffffabcd)')); 
+        $this->assertTrue($this->match('ffffbacde', 'match_m2(ffffabcd)'));
         $this->assertTrue($this->match('ffffbadc', 'match_m2(ffffabcd)'));
         $this->assertTrue($this->match('ffffaffd', 'match_m2(ffffabcd)'));
         $this->assertTrue($this->match('fffffbcf', 'match_m2(ffffabcd)'));
@@ -272,9 +272,9 @@ EOF;
         $this->assertTrue($this->match('dogs are bitter than cuts', 'match_m2(dogs are better than cats)'));
         $this->assertTrue($this->match('digs are bitter than cuts', 'match_m2(dogs are better than cats)'));
         $this->assertFalse($this->match('diigs are bitter than cuts', 'match_m2(dogs are better than cats)'));
-        
+
         //try to trip up matcher, can match first to first with two spelling mistakes
-        //but then will fail when trying to match second to second which will also have two mistakes 
+        //but then will fail when trying to match second to second which will also have two mistakes
         //but should match first word to second and second to first with 2 mistakes total
         $this->assertTrue($this->match('baccffff ffcdffff', 'match_m2o(abcdffff baccffff)'));
         $this->assertFalse($this->match('baccffff fffdffff', 'match_m2o(abcdffff baccffff)'));
@@ -340,7 +340,7 @@ EOF;
         $this->assertTrue($this->match('one four two|', 'match_w(one_two)', $options));
         $this->assertFalse($this->match('one four$ two$', 'match_w(one_two)', $options));
         $this->assertTrue($this->match('one four two$', 'match_w(one_two)', $options));
-        
+
         $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
         $formattedexpression = <<<EOF
 match_all (
@@ -358,7 +358,7 @@ match_all (
 
 EOF;
         $this->assertEqual($expression->get_formatted_expression_string(), $formattedexpression);
-        //when formatting phrase and word level options in expression they are simplied 
+        //when formatting phrase and word level options in expression they are simplied
         //and arranged into a standard order.
         $expression = new pmatch_expression('match_mfmtxr(three|[four five])');
         $this->assertEqual($expression->get_formatted_expression_string(), "match_m (three|[four five])\n");

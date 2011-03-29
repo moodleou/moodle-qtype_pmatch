@@ -99,7 +99,7 @@ class qtype_pmatch extends question_type {
             if ($expression->is_valid()){
                 $answer->answer = $expression->get_formatted_expression_string();
             }
-            
+
             $answer->fraction = $question->fraction[$key];
             $answer->feedback = $this->import_or_save_files($question->feedback[$key],
                     $context, 'question', 'answerfeedback', $answer->id);

@@ -32,10 +32,10 @@ class pmatch_options {
 
     /** @var boolean */
     public $ignorecase;
- 
+
     /** @var string of sentence divider characters. */
     public $sentencedividers = '.';
- 
+
     /** @var string of word diveder characters. */
     public $worddividers = " \f\n\r\t";
 
@@ -80,7 +80,7 @@ class pmatch_options {
         }
     }
 }
- 
+
 /**
  * Represents a string that is ready for matching, and provides the method to
  * match expressions against it.
@@ -119,7 +119,7 @@ class pmatch_parsed_string {
             $this->words = array('');
         }
     }
- 
+
     /**
      * @return boolean returns false if any word is misspelt.
      */
@@ -205,7 +205,7 @@ class pmatch_parsed_string {
         return $this->words;
     }
 }
- 
+
 /**
  * Represents a pmatch_expression.
  */
@@ -222,14 +222,14 @@ class pmatch_expression {
      * @var string
      */
     protected $errormessage;
-    
+
     /**
      * @var boolean
      */
     protected $valid;
-    
+
     /**
-     * 
+     *
      * @param string $string the string to match against.
      * @param pmatch_options $options the options to use.
      */
@@ -252,7 +252,7 @@ class pmatch_expression {
             }
         }
     }
- 
+
     /**
      * Test a string with a given pmatch expression.
      * @param pmatch_parsed_string $parsedstring the parsed string to match.
@@ -266,7 +266,7 @@ class pmatch_expression {
         $matcher = $this->interpreter->get_matcher($this->options);
         return $matcher->match_whole_expression($parsedstring->get_words());
     }
-    
+
     /**
      * @return boolean returns false if the string passed to the constructor
      * could not be parsed as a valid pmatch expression.
@@ -274,7 +274,7 @@ class pmatch_expression {
     public function is_valid(){
         return $this->valid;
     }
- 
+
     /**
      * @return string description of the syntax error in the expression string
      * if is_valid returned false. Otherwise returns an empty string.
@@ -282,21 +282,21 @@ class pmatch_expression {
     public function get_parse_error(){
         return $this->errormessage;
     }
- 
+
     /**
      * @return pmatch_options the options that were used to construct this object.
      */
     public function get_options(){
         return $this->options;
     }
- 
+
     /**
      * @return string the expression, exactly as it was passed to the constructor.
      */
     public function get_original_expression_string(){
         return $this->originalexpression;
     }
- 
+
     /**
      * @return string a nicely formatted version of the expression.
      */

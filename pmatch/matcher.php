@@ -25,25 +25,25 @@
 
 interface pmatch_word_delimiter {
     /**
-     * 
-     * Check that items separated pmatch expressions are in the right order 
+     *
+     * Check that items separated pmatch expressions are in the right order
      * and / or proximity to be matched validly. Do not need to check that the two words are not the same.
-     * 
+     *
      * @param array $phrase the words that are being matched
      * @param array $wordsmatched index no of words that have been matched so far
      * @param integer $wordtotry word we want to know if it is in the right position to match
      * @param pmatch_phrase_level_options $phraseleveloptions
-     * @return boolean 
+     * @return boolean
      */
     public function valid_match($phrase, $wordsmatched, $wordtotry, $phraseleveloptions);
-    
+
     /**
-     * 
+     *
      * A hook to override allow any word order in word delimiter that precedes a phrase.
      */
     public function allow_any_word_order_in_adjacent_phrase($allowanywordorder);
         /**
-     * 
+     *
      * Does this word delimiter also require intervening words between matched word to not be matched
      * by other words in expression?
      * @return boolean
@@ -77,7 +77,7 @@ interface pmatch_can_match_word {
 }
 interface pmatch_can_match_phrase {
     /**
-     * 
+     *
      * Can possibly match a phrase - can accept more than one word at once.
      * @param array $phrase array of words
      * @param pmatch_phrase_level_options $phraseleveloptions
@@ -85,11 +85,11 @@ interface pmatch_can_match_phrase {
      * @return boolean successful match?
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions);
-    
+
 }
 interface pmatch_can_match_whole_expression {
     /**
-     * 
+     *
      * Can possibly match the whole expression.
      * @param array $phrase array of words
      * @return boolean successful match?
@@ -100,14 +100,14 @@ interface pmatch_can_match_whole_expression {
 
 interface pmatch_can_contribute_to_length_of_phrase{
         /**
-     * 
+     *
      * How many words can this phrase match? Minimum and max.
      * @param pmatch_phrase_level_options $phraseleveloptions
      * @return array with two values 0=> minimum and 1=> maximum. Values are the same if only
      *                    number of words possible. Maximum is null if no max.
      */
     public function contribution_to_length_of_phrase_can_try($phraseleveloptions);
-    
+
 }
 
 abstract class pmatch_matcher_item{
@@ -116,7 +116,7 @@ abstract class pmatch_matcher_item{
     /** @var pmatch_options */
     protected $externaloptions;
     /**
-     * 
+     *
      * Constructor normally called by pmatch_interpreter_item->get_matcher method
      * @param pmatch_interpreter_item $interpreter
      * @param pmatch_options $externaloptions
@@ -127,7 +127,7 @@ abstract class pmatch_matcher_item{
     }
 
     /**
-     * 
+     *
      * Used for testing purposes. To make sure type and type of contents is as expected.
      */
     public function get_type(){
@@ -143,9 +143,9 @@ abstract class pmatch_matcher_item{
 abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
 
     protected $subcontents = array();
-    
+
     /**
-     * 
+     *
      * Create a tree of matcher items.
      * @param pmatch_interpreter_item_with_subcontents $interpreter
      */
@@ -157,7 +157,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
         }
     }
     /**
-     * 
+     *
      * Used for testing purposes. To make sure type and type of contents is as expected.
      */
     public function get_type(){
@@ -172,7 +172,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
     }
 
     /**
-     * 
+     *
      * @param array $phrase Array of words
      * @param pmatch_phrase_level_options $phraseleveloptions
      * @param pmatch_word_level_options $wordleveloptions
@@ -193,8 +193,8 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
     }
 
     /**
-     * 
-     * Used to check for a match to a phrase of words separated by white space. Code shared by 
+     *
+     * Used to check for a match to a phrase of words separated by white space. Code shared by
      * phrase in a phrase list as well as for the whole expression in match_options. This is a recursive function
      * that can be started by just calling it with the phrase to check and leaving other params as the default.
      * @param array $phrase
@@ -208,13 +208,13 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
             return false;
         }
         //is this a valid item to try to match?
-        $shallwetry = ((!isset($this->subcontents[$itemtotry - 1])) || 
+        $shallwetry = ((!isset($this->subcontents[$itemtotry - 1])) ||
                     ($this->subcontents[$itemtotry - 1]->valid_match($phrase, $wordsmatched, $wordtotry, $this->phraseleveloptions) &&
                     (!in_array($wordtotry, $wordsmatched, true))));
         if ($shallwetry && $this->subcontents[$itemtotry]->match_word($phrase[$wordtotry], $this->wordleveloptions)){
             //we found a match
             $newwordsmatched = $wordsmatched;
-            if (isset($this->subcontents[$itemtotry - 1]) 
+            if (isset($this->subcontents[$itemtotry - 1])
                         && $this->subcontents[$itemtotry - 1]->also_match_intervening_words()){
                 $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
                 $wordno = $lastwordmatched + 1;
@@ -242,7 +242,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
                     return true;
                 }
             }
-        } 
+        }
         if ($this->subcontents[$itemtotry] instanceof pmatch_can_match_phrase){
             list($phraseminlength, $phrasemaxlength) = $this->subcontents[$itemtotry]->contribution_to_length_of_phrase_can_try($this->phraseleveloptions);
             if (is_null($phrasemaxlength)){
@@ -289,7 +289,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
         return false;
     }
 
-    
+
 }
 
 class pmatch_matcher_whole_expression extends pmatch_matcher_item_with_subcontents implements pmatch_can_match_whole_expression {
@@ -327,7 +327,7 @@ class pmatch_matcher_match_all extends pmatch_matcher_match implements  pmatch_c
 }
 
 class pmatch_matcher_match_options extends pmatch_matcher_match
-            implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase, 
+            implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase,
                        pmatch_can_match_whole_expression {
     /**
      * @var pmatch_word_level_options
@@ -365,7 +365,7 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
 
 }
 class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
-            implements pmatch_can_match_phrase, pmatch_can_match_word, 
+            implements pmatch_can_match_phrase, pmatch_can_match_word,
                                 pmatch_can_contribute_to_length_of_phrase{
 
     public function match_word($word, $wordleveloptions){
@@ -405,15 +405,15 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
 }
 
 /**
- * 
- * This is the same as an or_list but with no or_list_phrases. 
+ *
+ * This is the same as an or_list but with no or_list_phrases.
  *
  */
 class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
             implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase{
                 protected $usedmisspellings;
     /**
-     * 
+     *
      * Called after running match_word or match_phrase. This function returns the minimum number of mispellings used to match the student response word to the
      * pmatch expression.
      * @return integer the number of misspellings found.
@@ -473,7 +473,7 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
                     return false;
                 }
                 $wordno++;
-            } 
+            }
             $subcontentno++;
             $nomorewords = (count($phrase) < ($wordno + 1));
             $nomoreitems = (count($this->subcontents) < ($subcontentno + 1));
@@ -555,7 +555,7 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
         return true;
     }
 }
-class pmatch_matcher_number extends pmatch_matcher_item 
+class pmatch_matcher_number extends pmatch_matcher_item
             implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
     public function __construct($interpreter, $externaloptions){
         parent::__construct($interpreter, $externaloptions);
@@ -586,13 +586,13 @@ class pmatch_matcher_number extends pmatch_matcher_item
         return array(1, 2);//a number can look like two words to the matcher as it may have a space
     }
 }
-class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents 
+class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
             implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase {
     /**
      * @var pmatch_word_level_options
      */
     private $wordleveloptions;
-    
+
     /**
      * @param pmatch_word_level_options $wordleveloptions
      * @return pmatch_word_level_options word level options with some options disabled if word too short
@@ -627,7 +627,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         return false;
     }
     /**
-     * 
+     *
      * Check each character against each item and iterate down branches of possible matches to whole
      * word.
      * @param string $word word to match from student response
@@ -680,8 +680,8 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
             }
         }
         if ((!$thisfragmentmatched) && ($allowmispellings > 0)) {
-            //if there is no match but we can match the next character 
-            if ($this->wordleveloptions->get_misspelling_allow_transpose_two_chars()&& 
+            //if there is no match but we can match the next character
+            if ($this->wordleveloptions->get_misspelling_allow_transpose_two_chars()&&
                         ($itemslefttomatch > 0) && ($charslefttomatch > 0)){
                 if (!$this->subcontents[$subcontentno + 1] instanceof pmatch_can_match_multiple_or_no_chars){
                     $wordtransposed = $word;
@@ -711,7 +711,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                 }
             }
         }
-        
+
         if ($thisfragmentmatched){
             if ($this->subcontents[$subcontentno] instanceof pmatch_can_match_multiple_or_no_chars){
                 if ($this->check_match_branches($word, $allowmispellings, $charpos, $subcontentno, $noofcharactertomatch + 1)){
@@ -753,7 +753,7 @@ class pmatch_matcher_wildcard_match_single extends pmatch_matcher_item implement
         return true;
     }
 }
-class pmatch_matcher_wildcard_match_multiple 
+class pmatch_matcher_wildcard_match_multiple
             extends pmatch_matcher_item implements pmatch_can_match_multiple_or_no_chars{
 
     public function match_chars($characters){

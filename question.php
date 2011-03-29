@@ -50,8 +50,8 @@ class qtype_pmatch_question extends question_graded_by_strategy
     /** @var array of question_answer. */
     public $answers = array();
 
-    
-    
+
+
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
     }
