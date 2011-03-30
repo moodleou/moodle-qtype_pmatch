@@ -96,7 +96,6 @@ class qtype_pmatch_question extends question_graded_by_strategy
             }
 
         }
-        error_log(print_r(compact('response')+array('$this->errors'=> $this->errors), true));
     }
 
     public function get_validation_error(array $response) {
