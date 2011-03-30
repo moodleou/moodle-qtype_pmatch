@@ -48,6 +48,9 @@ class pmatch_options {
      */
     public $extradictionarywords = array('e.g.', 'eg.', 'etc.', 'i.e.', 'ie.');
 
+    /** @var string language of string - current language of respondee or saved for this attempt step. */
+    public $lang;
+
     /**
      * @var array of strings with preg expressions to match words that can be replaced.
      */
@@ -123,23 +126,22 @@ class pmatch_parsed_string {
     /**
      * @return boolean returns false if any word is misspelt.
      */
-    public function is_spelt_correctly($lang = null){
-        $this->misspelledwords = $this->spell_check($this->words, $lang);
+    public function is_spelt_correctly(){
+        $this->misspelledwords = $this->spell_check($this->words);
         return (count($this->misspelledwords) == 0);
     }
 
-    protected function spell_check($words, $lang){
-        if ($lang == null){
-            $langidparts = explode('_', current_language());
-            $lang = $langidparts[0];
-        }
+    protected function spell_check($words){
+        $langidparts = explode('_', $this->options->lang);
+        $langforspellchecker = $langidparts[0];
+
         if (!function_exists('pspell_new')){
             error_log('Attempted to spell check but pspell is not installed.');
             return array();
         }
-        $pspell_link = pspell_new($lang);
+        $pspell_link = pspell_new($langforspellchecker);
         if ($pspell_link === false){
-            error_log("Attempted a spell check for a language with no aspell dictionary installed - '{$lang}'.");
+            error_log("Attempted a spell check for a language with no aspell dictionary installed - '{$langforspellchecker}'.");
             return array();//if dictionary is not installed for this language we cannot spell check
         }
         $misspelledwords = array();

@@ -52,6 +52,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
 
 
+
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
     }
@@ -139,5 +140,14 @@ class qtype_pmatch_question extends question_graded_by_strategy
         } else {
             return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
         }
+    }
+
+    public function start_attempt(question_attempt_step $step) {
+        $this->pmatchoptions->lang = current_language();
+        $step->set_qt_var('_responselang', $this->pmatchoptions->lang);
+    }
+
+    public function apply_attempt_state(question_attempt_step $step) {
+        $this->pmatchoptions->lang = $step->get_qt_var('_responselang');
     }
 }
