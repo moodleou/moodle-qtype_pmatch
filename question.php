@@ -69,7 +69,6 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function is_complete_response(array $response) {
-        print_object(compact('response'));
         $this->validate($response);
         return (!count($this->errors) > 0);
     }
