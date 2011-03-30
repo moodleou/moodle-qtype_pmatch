@@ -63,7 +63,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $feedbackimg = $this->feedback_image($fraction);
         }
 
-        $usehtmleditor = $question->allowsubscript || $question->allowsuperscript;
+        $usehtmleditor = !$options->readonly && ($question->allowsubscript || $question->allowsuperscript);
 
         $questiontext = $question->format_questiontext($qa);
         $rows = 1;
