@@ -78,12 +78,12 @@ class qtype_pmatch_question extends question_graded_by_strategy
     protected function validate(array $response){
         if (is_null($this->errors)){
             $this->errors = array();
-            $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
             if  (!array_key_exists('answer', $response) ||
                     ((!$response['answer']) && $response['answer'] !== '0')){
                 $this->errors[] = get_string('pleaseenterananswer', 'qtype_pmatch');
                 return;
             }
+            $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
             if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
                 $misspelledwords = $parsestring->get_spelling_errors();
                 $a = join(' ', $misspelledwords);
