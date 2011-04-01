@@ -25,6 +25,13 @@
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
 
+//following is required because the xdebug library defaults to throwing a fatal error if
+//there is more than 100 nested function calls.
+if (extension_loaded('xdebug')){
+     ini_set('xdebug.max_nesting_level', 1000);
+}
+
+
 /**
  * Options that control the overall way the matching is done.
  */
