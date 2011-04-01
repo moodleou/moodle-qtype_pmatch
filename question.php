@@ -69,30 +69,39 @@ class qtype_pmatch_question extends question_graded_by_strategy
         }
     }
 
-    public function is_complete_response(array $response) {
-        $this->validate($response);
-        return (!count($this->errors) > 0);
+    public function is_gradable_response(array $response) {
+        if  (!array_key_exists('answer', $response) || ((!$response['answer']) && $response['answer'] !== '0')){
+            if (is_null($this->responsevalidationerrors)){
+                $this->responsevalidationerrors[] = get_string('pleaseenterananswer', 'qtype_pmatch');
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    private $errors = null;
+    public function is_complete_response(array $response) {
+        if ($this->is_gradable_response($response)){
+            $this->validate($response);
+        }
+        return (!count($this->responsevalidationerrors) > 0);
+    }
+
+    private $responsevalidationerrors = null;
 
     protected function validate(array $response){
-        if (is_null($this->errors)){
-            $this->errors = array();
-            if  (!array_key_exists('answer', $response) ||
-                    ((!$response['answer']) && $response['answer'] !== '0')){
-                $this->errors[] = get_string('pleaseenterananswer', 'qtype_pmatch');
-                return;
-            }
+        if (is_null($this->responsevalidationerrors)){
+            $this->responsevalidationerrors = array();
+
             $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
             if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
                 $misspelledwords = $parsestring->get_spelling_errors();
                 $a = join(' ', $misspelledwords);
-                $this->errors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
+                $this->responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
             }
             if ($this->forcelength){
                 if ($parsestring->get_word_count() > 20){
-                    $this->errors[] = get_string('toomanywords', 'qtype_pmatch');
+                    $this->responsevalidationerrors[] = get_string('toomanywords', 'qtype_pmatch');
                 }
             }
 
@@ -101,9 +110,8 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
     public function get_validation_error(array $response) {
         $this->validate($response);
-        return join('<br />', $this->errors);
+        return join('<br />', $this->responsevalidationerrors);
     }
-
 
     public function is_same_response(array $prevresponse, array $newresponse) {
         return question_utils::arrays_same_at_key_missing_is_blank(
