@@ -170,6 +170,13 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
         }
         return $typeobj;
     }
+    /**
+     *
+     * This property controls whether extra words are matched on the beginning and end of a phrase when the extra words option
+     * is enabled for the expression.
+     * @var boolean
+     */
+    protected $greedyphrasematch = false;
 
     /**
      *
@@ -194,7 +201,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
 
     /**
      *
-     * Used to check for a match to a phrase of words separated by white space. Code shared by
+     * Used to check for a match to a phrase of words. Code shared by
      * phrase in a phrase list as well as for the whole expression in match_options. This is a recursive function
      * that can be started by just calling it with the phrase to check and leaving other params as the default.
      * @param array $phrase
@@ -211,25 +218,27 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
         $shallwetry = ((!isset($this->subcontents[$itemtotry - 1])) ||
                     ($this->subcontents[$itemtotry - 1]->valid_match($phrase, $wordsmatched, $wordtotry, $this->phraseleveloptions) &&
                     (!in_array($wordtotry, $wordsmatched, true))));
+        //see if we can match this word to next subcontents item
         if ($shallwetry && $this->subcontents[$itemtotry]->match_word($phrase[$wordtotry], $this->wordleveloptions)){
-            //we found a match
-            $newwordsmatched = $wordsmatched;
-            if (isset($this->subcontents[$itemtotry - 1])
+            //we found a match for one word
+            //print_object(array('matched_word')+compact('itemtotry', 'phrase', 'wordtotry'));
+            $wordsmatchedwithnewword = $wordsmatched;
+            if ((count($wordsmatched) > 0) && isset($this->subcontents[$itemtotry - 1])
                         && $this->subcontents[$itemtotry - 1]->also_match_intervening_words()){
+                //we need to mark all words since last match as matched too, for some separator types
                 $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
                 $wordno = $lastwordmatched + 1;
                 while ($wordno < $wordtotry){
-                    $newwordsmatched[] = $wordno;
+                    $wordsmatchedwithnewword[] = $wordno;
                     $wordno++;
                 }
             }
-            $newwordsmatched[] = $wordtotry;
+            $wordsmatchedwithnewword[] = $wordtotry;
             if ($itemtotry == count($this->subcontents) -1){
-                //last item matched : success
-                if (count($newwordsmatched) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
+                //last item matched
+                if (count($wordsmatchedwithnewword) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
+                    //all words matched or words are left but extra words are allowed
                     return true;
-                } else {
-                    return false;
                 }
             } else {
                 //item matched, find next item to try to match
@@ -238,12 +247,16 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
                 } else {
                     $nextwordtotry = $wordtotry + 1;
                 }
-                if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $newwordsmatched)) {
+                //not reached the end of this branch, continue following branches down and
+                //return true if we find a branch which finds a complete match
+                if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $wordsmatchedwithnewword)) {
                     return true;
                 }
             }
         }
-        if ($this->subcontents[$itemtotry] instanceof pmatch_can_match_phrase){
+        //see if we can match these next few words as a phrase to next subcontents item
+        if ($shallwetry && $this->subcontents[$itemtotry] instanceof pmatch_can_match_phrase){
+            //calculate min and max phrase lengths given the epxression and the length of phrase
             list($phraseminlength, $phrasemaxlength) = $this->subcontents[$itemtotry]->contribution_to_length_of_phrase_can_try($this->phraseleveloptions);
             if (is_null($phrasemaxlength)){
                 $phrasemaxlength = count($phrase)- ($wordtotry);
@@ -253,33 +266,42 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item{
                 if (in_array(($wordtotry + $phraselength -1), $wordsmatched, true)){
                     break;//next word has been matched already, stop
                 }
-                $nextwordtotry = $wordtotry + $phraselength;
+                //word separator in expression can affect how phrases should be matched
                 $nextphraseleveloptions = clone($this->phraseleveloptions);
                 $allowanywordorder = $this->phraseleveloptions->get_allow_any_word_order();
-                if (isset($this->subcontents[$itemtotry - 1])){
-                    $allowanywordorder = $this->subcontents[$itemtotry - 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder);
+                if (isset($this->subcontents[$itemtotry - 1]) && !$this->subcontents[$itemtotry - 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder)){
+                    $allowanywordorder = false;
                 }
-                if (isset($this->subcontents[$itemtotry + 1])){
-                    $allowanywordorder = $this->subcontents[$itemtotry + 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder);
+                if (isset($this->subcontents[$itemtotry + 1]) && !$this->subcontents[$itemtotry + 1]->allow_any_word_order_in_adjacent_phrase($allowanywordorder)){
+                    $allowanywordorder = false;
                 }
                 $nextphraseleveloptions->set_allow_any_word_order($allowanywordorder);
                 if ($this->subcontents[$itemtotry]->match_phrase(array_slice($phrase, $wordtotry, $phraselength), $nextphraseleveloptions, $this->wordleveloptions)){
+                    //we matched a phrase
+                    //print_object(array('matched_phrase')+compact('itemtotry', 'phrase', 'wordtotry', 'phraselength'));
+                    $nextwordtotry = $wordtotry + $phraselength;
                     $wordsmatchedandphrasewords = array_merge($wordsmatched, range($wordtotry, $wordtotry + $phraselength -1));
+                    // was this the last item to match?
                     if (($itemtotry) == count($this->subcontents) -1){
-                        if (count($wordsmatchedandphrasewords) == count($phrase) || $this->phraseleveloptions->get_allow_extra_words()){
+                        if (count($wordsmatchedandphrasewords) == count($phrase)){
+                            //matched all sub items and no more words left
                             return true;
-                        } else {
-                            return false;
+                        } else if ($this->phraseleveloptions->get_allow_extra_words()){
+                            //matched all sub items, there are more words left but extra words are allowed
+                            return true;
                         }
                     } else if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry, $wordsmatchedandphrasewords)) {
                         return true;
                     }
+                    break;
                 }
             }
         }
 
+        //make sure we have a match for the first word if doing a non greedy phrase match and items much match words in order
+        $allowextrawordshere =  ($this->greedyphrasematch || count($wordsmatched)) && $this->phraseleveloptions->get_allow_extra_words();
         //if it is allowed try next word also
-        if ($this->phraseleveloptions->get_allow_extra_words() || $this->phraseleveloptions->get_allow_any_word_order()){
+        if ($allowextrawordshere || $this->phraseleveloptions->get_allow_any_word_order()){
             $nextwordtotry = $wordtotry + 1;
             //try next word
             if ($this->check_match_phrase_branch($phrase, $itemtotry, $nextwordtotry, $wordsmatched)){
@@ -339,12 +361,18 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
      */
     public $phraseleveloptions;
 
+    protected $greedyphrasematch = true;
+
     public function match_whole_expression($words){
         return $this->match_phrase($words, $this->interpreter->phraseleveloptions, $this->interpreter->wordleveloptions);
     }
 
 
-
+/*    protected function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0, $wordsmatched = array()){
+        $return = parent::check_match_phrase_branch($phrase, $itemtotry, $wordtotry, $wordsmatched);
+        print_object(array('args'=>compact('phrase', 'itemtotry', 'wordtotry', 'wordsmatched'), 'return'=>$return));
+        return $return;
+    }*/
 
     public function contribution_to_length_of_phrase_can_try($phraseleveloptions){
         $min = 0;
@@ -492,6 +520,12 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
             return array($noofwords, $noofwords);
         }
     }
+
+/*    public function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0, $wordsmatched = array()){
+        $return = parent::check_match_phrase_branch($phrase, $itemtotry, $wordtotry, $wordsmatched);
+        print_object(array('args'=>compact('phrase', 'itemtotry', 'wordtotry', 'wordsmatched'), 'return' => $return));
+        return $return;
+    }*/
 }
 class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
             implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {

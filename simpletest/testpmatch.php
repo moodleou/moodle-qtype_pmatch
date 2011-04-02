@@ -431,6 +431,12 @@ EOF;
         $this->assertFalse($this->match('fghij', 'match(abcde)', $options));
         $options->set_synonyms(array((object)array('word'=>'abcde', 'synonyms' => 'xyz|fghij')));
         $this->assertTrue($this->match('fghij', 'match(abcde)', $options));
+
+        //further tests to check that phrase is matching the right no of words
+        $this->assertFalse($this->match('it does not really contain an object which is a verb', 'match_mw([not contain]_verb)'));
+        $this->assertFalse($this->match('it is not really a sentence it would be classed as a phrase as it does not contain an object which would indicate who thought of the good idea or a verb', 'match_m([not contain]|abc_verb)'));
+        $this->assertTrue($this->match('not contain is a verb', 'match_mw([not contain]|abc_verb)'));
+        $this->assertFalse($this->match('not contain is not a verb', 'match_mw([not contain]|abc_verb)'));
     }
 
 
