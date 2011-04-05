@@ -71,9 +71,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
     public function is_gradable_response(array $response) {
         if  (!array_key_exists('answer', $response) || ((!$response['answer']) && $response['answer'] !== '0')){
-            if (is_null($this->responsevalidationerrors)){
-                $this->responsevalidationerrors[] = get_string('pleaseenterananswer', 'qtype_pmatch');
-            }
+            $this->responsevalidationerrors = array(get_string('pleaseenterananswer', 'qtype_pmatch'));
             return false;
         } else {
             return true;
@@ -90,21 +88,18 @@ class qtype_pmatch_question extends question_graded_by_strategy
     private $responsevalidationerrors = null;
 
     protected function validate(array $response){
-        if (is_null($this->responsevalidationerrors)){
-            $this->responsevalidationerrors = array();
+        $this->responsevalidationerrors = array();
 
-            $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
-            if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
-                $misspelledwords = $parsestring->get_spelling_errors();
-                $a = join(' ', $misspelledwords);
-                $this->responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
+        $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
+        if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
+            $misspelledwords = $parsestring->get_spelling_errors();
+            $a = join(' ', $misspelledwords);
+            $this->responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
+        }
+        if ($this->forcelength){
+            if ($parsestring->get_word_count() > 20){
+                $this->responsevalidationerrors[] = get_string('toomanywords', 'qtype_pmatch');
             }
-            if ($this->forcelength){
-                if ($parsestring->get_word_count() > 20){
-                    $this->responsevalidationerrors[] = get_string('toomanywords', 'qtype_pmatch');
-                }
-            }
-
         }
     }
 
