@@ -156,6 +156,9 @@ class qtype_pmatch extends question_type {
 
         }
 
+        if (!isset($question->extenddictionary)) {
+            $question->extenddictionary = '';
+        }
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
             // Parent function returns null if all is OK
