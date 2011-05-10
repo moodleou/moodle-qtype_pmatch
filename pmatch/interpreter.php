@@ -156,7 +156,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
             $childbranches[$branchindex] = $branchfoundsofar;
             list($typefound, $found, $childbranchcursor[$branchindex]) =
                     $this->interpret_subcontent_item($typetotry, $string, $start);
-            if ($found){
+            if ($found && ($childbranchcursor[$branchindex] > $start)){
                 $childbranches[$branchindex][] = $typefound;
                 if (($this->limitsubcontents == 0) || (count($childbranches[$branchindex]) < $this->limitsubcontents)){
                     list($childbranches[$branchindex], $childbranchcursor[$branchindex]) =
