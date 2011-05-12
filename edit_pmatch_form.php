@@ -260,12 +260,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
 
         if ($this->question->formoptions->repeatelements) {
-            $repeatsatstart = max(8, 8, $countsynonyms + 4);
+            $repeatsatstart = max(3, $countsynonyms + 2);
         } else {
             $repeatsatstart = $countsynonyms;
         }
 
-        $this->repeat_elements($textboxgroup, $repeatsatstart, array(), 'nosynonyms', 'addsynonyms', 4, get_string('addmoresynonymblanks', 'qtype_pmatch'));
+        $this->repeat_elements($textboxgroup, $repeatsatstart, array(), 'nosynonyms', 'addsynonyms', 2, get_string('addmoresynonymblanks', 'qtype_pmatch'));
     }
 
     protected function add_synonym($mform) {
