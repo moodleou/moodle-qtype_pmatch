@@ -63,6 +63,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->addElement('text', 'converttospace', get_string('converttospace', 'qtype_pmatch'), array('size' => 60));
         $mform->setDefault('converttospace', ',;:');
 
+        $this->add_synonyms($mform);
+
         $mform->addElement('static', 'answersinstruct', get_string('correctanswers', 'qtype_pmatch'),
                 get_string('filloutoneanswer', 'qtype_pmatch'));
         $mform->closeHeaderBefore('answersinstruct');
@@ -76,7 +78,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
                                 array('rows' => 5), $this->editoroptions);
 
-        $this->add_synonyms($mform);
         $this->add_interactive_settings();
     }
 
