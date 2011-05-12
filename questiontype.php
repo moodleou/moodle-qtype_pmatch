@@ -181,6 +181,110 @@ class qtype_pmatch extends question_type {
         }
     }
 
+    public function import_from_xml($data, $question, $format, $extra=null) {
+        if (!isset($data['@']['type']) || $data['@']['type'] != 'pmatch') {
+            return false;
+        }
+
+        $question = $format->import_headers($data);
+        $question->qtype = 'pmatch';
+
+        $question->allowsubscript = $format->trans_single(
+                $format->getpath($data, array('#', 'allowsubscript', 0, '#'), 1));
+        $question->allowsuperscript = $format->trans_single(
+                $format->getpath($data, array('#', 'allowsuperscript', 0, '#'), 1));
+        $question->forcelength = $format->trans_single(
+                $format->getpath($data, array('#', 'forcelength', 0, '#'), 1));
+        $question->usecase = $format->trans_single(
+                $format->getpath($data, array('#', 'usecase', 0, '#'), 1));
+        $question->applydictionarycheck = $format->trans_single(
+                $format->getpath($data, array('#', 'applydictionarycheck', 0, '#'), 1));
+        $question->converttospace = $format->import_text(
+                $format->getpath($data, array('#', 'converttospace', 0, '#', 'text'), ''));
+        $question->extenddictionary = $format->import_text(
+                $format->getpath($data, array('#', 'extenddictionary', 0, '#', 'text'), ''));
+
+        // Run through the answers
+        $answers = $data['#']['answer'];
+        $acount = 0;
+        foreach ($answers as $answer) {
+            $ans = $format->import_answer($answer);
+            $question->answer[$acount] = $ans->answer['text'];
+            $question->fraction[$acount] = $ans->fraction;
+            $question->feedback[$acount] = $ans->feedback;
+            ++$acount;
+        }
+
+
+        $format->import_hints($question, $data, true);
+
+        $question->otherfeedback['text'] = '';
+
+        $synonyms = $format->getpath($data, array('#', 'synonym'), false);
+        if ($synonyms) {
+            $this->import_synonyms($format, $question, $synonyms);
+        }
+
+        return $question;
+    }
+
+    public function import_synonyms($format, &$question, $synonyms) {
+        foreach ($synonyms as $synonym){
+            $this->import_synonym($format, $question, $synonym);
+        }
+    }
+
+    public function import_synonym($format, &$question, $synonym) {
+        static $indexno = 0;
+        $question->synonymsdata[$indexno]['word'] = $format->import_text($format->getpath($synonym, array('#', 'word', 0, '#', 'text'), ''));
+        $question->synonymsdata[$indexno]['synonyms'] = $format->import_text($format->getpath($synonym, array('#', 'synonyms', 0, '#', 'text'), ''));
+        $indexno++;
+    }
+
+    public function export_to_xml($question, $format, $extra = null) {
+        $output = '';
+
+        $output .= "    <allowsubscript>" . $format->get_single($question->options->allowsubscript) . "</allowsubscript>\n";
+        $output .= "    <allowsuperscript>" . $format->get_single($question->options->allowsuperscript) . "</allowsuperscript>\n";
+        $output .= "    <forcelength>" . $format->get_single($question->options->forcelength) . "</forcelength>\n";
+        $output .= "    <usecase>" . $format->get_single($question->options->usecase) . "</usecase>\n";
+        $output .= "    <converttospace>\n";
+        $output .= $format->writetext($question->options->converttospace, 3);
+        $output .= "    </converttospace>\n";
+        $output .= "    <applydictionarycheck>" . $format->get_single($question->options->applydictionarycheck) . "</applydictionarycheck>\n";
+        $output .= "    <extenddictionary>\n";
+        $output .= $format->writetext($question->options->extenddictionary, 3);
+        $output .= "    </extenddictionary>\n";
+
+        $output .= $format->write_answers($question->options->answers);
+        $output .= $this->write_synonyms($question->options->synonyms, $format);
+
+        return $output;
+    }
+    protected function write_synonyms($synonyms, $format) {
+        if (empty($synonyms)) {
+            return '';
+        }
+        $output = '';
+        foreach ($synonyms as $synonym) {
+            $output .= $this->write_synonym($synonym, $format);
+        }
+        return $output;
+    }
+
+    protected function write_synonym($synonym, $format) {
+        $output = '';
+        $output .= "    <synonym>\n";
+        $output .= "      <word>\n";
+        $output .= $format->writetext($synonym->word, 4);
+        $output .= "      </word>\n";
+        $output .= "      <synonyms>\n";
+        $output .= $format->writetext($synonym->synonyms, 4);
+        $output .= "      </synonyms>\n";
+        $output .= "    </synonym>\n";
+        return $output;
+    }
+
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
 
