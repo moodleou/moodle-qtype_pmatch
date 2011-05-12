@@ -316,4 +316,13 @@ class qtype_pmatch extends question_type {
 
         return array($questiondata->id => $responses);
     }
+
+
+    public function delete_question($questionid, $contextid) {
+        global $DB;
+        $DB->delete_records('qtype_pmatch_synonyms', array('questionid' => $questionid));
+
+        parent::delete_question($questionid, $contextid);
+    }
+
 }
