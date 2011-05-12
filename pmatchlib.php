@@ -76,7 +76,8 @@ class pmatch_options {
         foreach ($synonyms as $synonym){
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
-            $toreplaceitem = '!(^|\PL)'.$toreplaceitem.'(\PL|$)!';
+            //the ?<= and ?= ensures that the adjacent characters are not replaced also
+            $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
             if ($this->ignorecase){
                 $toreplaceitem .= 'i';
             }
