@@ -86,12 +86,17 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('cat newt frog', 'match(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertFalse($this->match('cat. dog', 'match(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('cat. dog', 'match(cat [toad|newt frog]|dog)'));
         $this->assertTrue($this->match('x cat x x toad frog x', 'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('x cat newt x x x x x frog x', 'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('x cat x x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertFalse($this->match('x cat x. x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertFalse($this->match('A C B D', 'match([A B]_[C D])'));
         $this->assertFalse($this->match('B C A D', 'match_o([A B]_[C D])'));
         $this->assertTrue($this->match('A x x x x B C D', 'match_ow([A B]_[C D])'));
+        $this->assertFalse($this->match('A x x x x B. C D', 'match_ow([A B]_[C D])'));
+        $this->assertTrue($this->match('A x x x x B. C D', 'match_ow([A B] [C D])'));
         $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));  //_ requires the words in [] to match in order.
         $this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
         $this->assertFalse($this->match('A A', 'match(A)'));
