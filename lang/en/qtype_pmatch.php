@@ -72,6 +72,6 @@ $string['spellingmistakes'] = 'The following words are not in our dictionary : {
 $string['synonym'] = 'Synonyms';
 $string['synonymcontainsillegalcharacters'] = 'Synonym contains illegal characters.';
 $string['synonymsheader'] = 'Define Synonyms For Words in Answers';
-$string['toomanywords'] = 'You should try to keep your response short. We recommend 20 words or less.';
+$string['toomanywords'] = 'Your answer is too long. Please edit it to be no longer than 20 words.';
 $string['wordwithsynonym'] = 'Word';
 $string['wordcontainsillegalcharacters'] = 'Word contains illegal characters.';
