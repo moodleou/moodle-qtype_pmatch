@@ -35,7 +35,7 @@ $string['ie_unrecognisedsubcontents'] = 'Non recognized sub content in code frag
 $string['ie_missingclosingbracket'] = 'Missing closing bracket in code fragment "{$a}".';
 $string['ie_lastsubcontenttypeorcharacter'] = 'Or character must not end subcontent in "{$a}".';
 $string['ie_lastsubcontenttypeworddelimiter'] = 'Word delimiter character must not end sub content "{$a}".';
-$string['ie_illegaloptions'] = 'Illegal options in match{options}() expression "{$a}".';
+$string['ie_illegaloptions'] = 'Illegal options in expression "match<strong><em>{$a}</em></strong>()".';
 $string['ie_unrecognisedexpression'] = 'Unrecognised expression.';
 
 
