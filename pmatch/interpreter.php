@@ -522,7 +522,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match{
         $misspellingoptionmatches = array();
         $cursor = 1;//start at second character after '_'
         while($cursor < strlen($options)){
-            if (FALSE === preg_match('!c|o|w|m[frtx2]*|p[0-4]!A', substr($options, $cursor), $misspellingoptionmatches)){
+            if (0 === preg_match('!c|o|w|m([frtx2])*|p[0-4]!A', substr($options, $cursor), $misspellingoptionmatches)){
                 $this->set_error_message('illegaloptions', $options);
                 return false;
             }
