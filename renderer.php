@@ -66,8 +66,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $usehtmleditor = !$options->readonly && ($question->allowsubscript || $question->allowsuperscript);
 
         $questiontext = $question->format_questiontext($qa);
-        $rows = 1;
-        $cols = 80;
+        $rows = 2;
+        $cols = 50;
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
@@ -76,12 +76,14 @@ class qtype_pmatch_renderer extends qtype_renderer {
         } else {
             if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
                 $placeholder = $matches[0];
-                $cols = round($matches[1] * 1.1);
+                $cols = $matches[1];
             } else if (preg_match('/_____+/', $questiontext, $matches)) {
                 $placeholder = $matches[0];
-                $cols = round(strlen($placeholder) * 1.1);
+                $cols = strlen($placeholder);
             }
         }
+        $rows = round($rows * 1.1);
+        $cols = round($cols * 1.1);
 
         if ($usehtmleditor || $rows > 1) {
             $attributes['rows'] = $rows;
@@ -110,8 +112,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
 
         if ($usehtmleditor){
-            $colsem = $cols.'em';
-            $rowsem = (2*$rows).'em'; // need some extra space for sub and superscript
+            $colsem = floor($cols/2).'em';
+            $rowsem = floor(1.5*$rows +1).'em'; // need some extra space for sub and superscript
             $overridekeyevents = ($rows == 1);//don't override key events for arrow and return keys for a multiline input
             $this->page->requires->js_init_call('M.qtype_pmatch.initeditor', array($inputname, $colsem, $rowsem, true, true, $overridekeyevents));
         }
