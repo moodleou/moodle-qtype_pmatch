@@ -19,18 +19,19 @@
 /**
  * OU pmatch question type language strings.
  *
- * @package qtype_pmatch
- * @copyright 2008 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    qtype
+ * @subpackage pmatch
+ * @copyright  2011 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-$string['addingpmatch'] = 'Adding a PMatch question';
+$string['addingpmatch'] = 'Adding a Pattern match question';
 $string['anyotheranswer'] = 'Any other answer';
-$string['editingpmatch'] = 'Editing a PMatch question';
-$string['pmatch'] = 'PMatch';
+$string['editingpmatch'] = 'Editing a Pattern match question';
+$string['pmatch'] = 'Pattern match';
 //intrepreter errors
-$string['ie_nomatchfound'] = 'Error in pmatch code.';
+$string['ie_nomatchfound'] = 'Error in pattern match code.';
 $string['ie_unrecognisedsubcontents'] = 'Non recognized sub content in code fragment "{$a}".';
 $string['ie_missingclosingbracket'] = 'Missing closing bracket in code fragment "{$a}".';
 $string['ie_lastsubcontenttypeorcharacter'] = 'Or character must not end subcontent in "{$a}".';
@@ -54,7 +55,7 @@ $string['caseyes'] = 'Yes, case must match';
 $string['converttospace'] = 'Convert the following characters to a space';
 $string['correctanswers'] = 'Correct answers';
 $string['extenddictionary'] = 'Add these words to dictionary';
-$string['filloutoneanswer'] = 'Use PMatch syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
+$string['filloutoneanswer'] = 'Use Pattern match syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
 $string['forcelength'] = 'If answer is more than 20 words';
 $string['forcelengthno'] = 'do not issue warning';
 $string['forcelengthyes'] = 'warn that answer is too long and invite respondee to shorten it';
@@ -66,7 +67,7 @@ $string['nomatchingwordforsynonym'] = 'You have not entered a word that the syno
 $string['pleaseenterananswer'] = 'Please enter an answer.';
 $string['pmatch_help'] = 'In response to a question (that may include a image) the respondent types a short phrase. There may be several possible correct answers, each with a different grade. If the "Case sensitive" option is selected, then you can have different scores for "Word" or "word".';
 $string['pmatch_link'] = 'question/type/pmatch';
-$string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pmatch syntax.';
+$string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pattern match syntax.';
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['spellingmistakes'] = 'The following words are not in our dictionary : {$a}. Please correct your spelling.';
 $string['synonym'] = 'Synonyms';
