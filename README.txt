@@ -1,7 +1,7 @@
 Pattern match question type
 
 This question type was created by Jamie Pratt, working for the Open University
-(http://www.open.ac.uk/). 
+(http://www.open.ac.uk/).
 
 Students can enter a response of up to 20 words, which is then graded by matching
 it against vaious model answers that are expressed using a sophisticated patten
