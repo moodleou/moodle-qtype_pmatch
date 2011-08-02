@@ -223,6 +223,8 @@ class qtype_pmatch extends question_type {
         $synonyms = $format->getpath($data, array('#', 'synonym'), false);
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
+        } else {
+            $question->synonymsdata =array();
         }
 
         return $question;
