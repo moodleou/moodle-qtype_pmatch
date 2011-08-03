@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,39 +40,49 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function definition_inner($mform) {
-        $mform->addElement('header', 'generalheader', get_string('answeringoptions', 'qtype_pmatch'));
+        $mform->addElement('header', 'generalheader',
+                                                get_string('answeringoptions', 'qtype_pmatch'));
         $menu = array(
             get_string('caseno', 'qtype_pmatch'),
             get_string('caseyes', 'qtype_pmatch')
         );
         $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), $menu);
-        $mform->addElement('selectyesno', 'allowsubscript', get_string('allowsubscript', 'qtype_pmatch'));
-        $mform->addElement('selectyesno', 'allowsuperscript', get_string('allowsuperscript', 'qtype_pmatch'));
+        $mform->addElement('selectyesno', 'allowsubscript',
+                                                    get_string('allowsubscript', 'qtype_pmatch'));
+        $mform->addElement('selectyesno', 'allowsuperscript',
+                                                    get_string('allowsuperscript', 'qtype_pmatch'));
         $menu = array(
             get_string('forcelengthno', 'qtype_pmatch'),
             get_string('forcelengthyes', 'qtype_pmatch')
         );
-        $mform->addElement('select', 'forcelength', get_string('forcelength', 'qtype_pmatch'), $menu);
+        $mform->addElement('select', 'forcelength',
+                                                get_string('forcelength', 'qtype_pmatch'), $menu);
         $mform->setDefault('forcelength', 1);
-        $mform->addElement('selectyesno', 'applydictionarycheck', get_string('applydictionarycheck', 'qtype_pmatch'));
+        $mform->addElement('selectyesno', 'applydictionarycheck',
+                                            get_string('applydictionarycheck', 'qtype_pmatch'));
         $mform->setDefault('applydictionarycheck', 1);
-        $mform->addElement('textarea', 'extenddictionary', get_string('extenddictionary', 'qtype_pmatch'),
+        $mform->addElement('textarea', 'extenddictionary',
+                        get_string('extenddictionary', 'qtype_pmatch'),
                         array('rows' => '5', 'cols' => '80'));
         $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', 0);
-        $mform->addElement('text', 'converttospace', get_string('converttospace', 'qtype_pmatch'), array('size' => 60));
+        $mform->addElement('text', 'converttospace',
+                        get_string('converttospace', 'qtype_pmatch'),
+                        array('size' => 60));
         $mform->setDefault('converttospace', ',;:');
 
         $this->add_synonyms($mform);
 
-        $mform->addElement('static', 'answersinstruct', get_string('correctanswers', 'qtype_pmatch'),
-                get_string('filloutoneanswer', 'qtype_pmatch'));
+        $mform->addElement('static', 'answersinstruct',
+                                                get_string('correctanswers', 'qtype_pmatch'),
+                                                get_string('filloutoneanswer', 'qtype_pmatch'));
         $mform->closeHeaderBefore('answersinstruct');
 
         $creategrades = get_grade_options();
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 $creategrades->gradeoptions);
 
-        $mform->addElement('header', 'otheranswerhdr', get_string('anyotheranswer', 'qtype_pmatch'));
+        $mform->addElement('header', 'otheranswerhdr',
+                                                get_string('anyotheranswer', 'qtype_pmatch'));
         $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
         $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
                                 array('rows' => 5), $this->editoroptions);
@@ -87,16 +96,20 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param $label the label to use for each option.
      * @param $gradeoptions the possible grades for each answer.
      * @param $repeatedoptions reference to array of repeated options to fill
-     * @param $answersoption reference to return the name of $question->options field holding an array of answers
+     * @param $answersoption reference to return the name of $question->options
+     *                       field holding an array of answers
      * @return array of form fields.
      */
-    protected function get_per_answer_fields(&$mform, $label, $gradeoptions, &$repeatedoptions, &$answersoption) {
+    protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
+                                                            &$repeatedoptions, &$answersoption) {
         $repeated = array();
         $repeated[] = $mform->createElement('header', 'answerhdr', $label);
         $repeated[] = $mform->createElement('textarea', 'answer', get_string('answer', 'question'),
-                                array('rows' => '8', 'cols' => '60', 'class' => 'textareamonospace'));
-        $repeated[] = $mform->createElement('select', 'fraction', get_string('grade'), $gradeoptions);
-        $repeated[] = $mform->createElement('editor', 'feedback', get_string('feedback', 'question'),
+                            array('rows' => '8', 'cols' => '60', 'class' => 'textareamonospace'));
+        $repeated[] = $mform->createElement('select', 'fraction',
+                                                                get_string('grade'), $gradeoptions);
+        $repeated[] = $mform->createElement('editor', 'feedback',
+                                get_string('feedback', 'question'),
                                 array('rows' => 5), $this->editoroptions);
         $repeatedoptions['answer']['type'] = PARAM_RAW;
         $repeatedoptions['fraction']['default'] = 0;
@@ -104,11 +117,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
         return $repeated;
     }
 
-    function data_preprocessing_other_answer($question){
+    protected function data_preprocessing_other_answer($question) {
         //special handling of otheranswer
         if (!empty($question->options->answers)) {
-            foreach ($question->options->answers as $key => $answer){
-                if ($answer->answer == '*'){
+            foreach ($question->options->answers as $key => $answer) {
+                if ($answer->answer == '*') {
                     $question->otherfeedback = array();
                     // Prepare the feedback editor to display files in draft area
                     $draftitemid = file_get_submitted_draft_itemid('otherfeedback');
@@ -130,13 +143,13 @@ class qtype_pmatch_edit_form extends question_edit_form {
         return $question;
     }
 
-    function data_preprocessing($question) {
+    protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_other_answer($question);
         $question = $this->data_preprocessing_answers($question);
 
         $question = $this->data_preprocessing_hints($question);
-        if (isset($question->options)){
+        if (isset($question->options)) {
             $question->usecase = $question->options->usecase;
             $question->allowsubscript = $question->options->allowsubscript;
             $question->allowsuperscript = $question->options->allowsuperscript;
@@ -145,11 +158,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $question->extenddictionary = $question->options->extenddictionary;
             $question->converttospace = $question->options->converttospace;
         }
-        if (isset($question->options->synonyms)){
+        if (isset($question->options->synonyms)) {
             $synonyms = $question->options->synonyms;
             $question->synonymsdata = array();
             $key = 0;
-            foreach ($synonyms as $synonym){
+            foreach ($synonyms as $synonym) {
                 $question->synonymsdata[$key]['word'] = $synonym->word;
                 $question->synonymsdata[$key]['synonyms'] = $synonym->synonyms;
                 $key++;
@@ -166,21 +179,22 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $maxgrade = false;
         foreach ($answers as $key => $answer) {
             $trimmedanswer = trim($answer);
-            if ($trimmedanswer !== ''){
+            if ($trimmedanswer !== '') {
                 $expression = new pmatch_expression($trimmedanswer);
-                if (!$expression->is_valid()){
+                if (!$expression->is_valid()) {
                     $errors["answer[$key]"] = $expression->get_parse_error();
                 }
                 $answercount++;
                 if ($data['fraction'][$key] == 1) {
                     $maxgrade = true;
                 }
-            } else if ($data['fraction'][$key] != 0 || !html_is_blank($data['feedback'][$key]['text'])) {
+            } else if ($data['fraction'][$key] != 0 ||
+                                            !html_is_blank($data['feedback'][$key]['text'])) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_pmatch');
                 $answercount++;
             }
         }
-        if ($answercount==0){
+        if ($answercount==0) {
             $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_pmatch', 1);
         }
         if ($maxgrade == false) {
@@ -203,42 +217,46 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
 
         $wordssofar = array();
-        foreach ($data['synonymsdata'] as $key => $synonym){
+        foreach ($data['synonymsdata'] as $key => $synonym) {
             $trimmedword = trim($synonym['word']);
             $trimmedsynonyms = trim($synonym['synonyms']);
-            if ($trimmedword == '' && $trimmedsynonyms == ''){
+            if ($trimmedword == '' && $trimmedsynonyms == '') {
                 continue;
             }
 
-            if ($trimmedword != '' && $trimmedsynonyms == ''){
-                $errors['synonymsdata['.$key.']'] = get_string('nomatchingsynonymforword', 'qtype_pmatch');
+            if ($trimmedword != '' && $trimmedsynonyms == '') {
+                $errors['synonymsdata['.$key.']'] =
+                                            get_string('nomatchingsynonymforword', 'qtype_pmatch');
                 continue;
             } else if ($trimmedword == '' && $trimmedsynonyms != '') {
-                $errors['synonymsdata['.$key.']'] = get_string('nomatchingwordforsynonym', 'qtype_pmatch');
+                $errors['synonymsdata['.$key.']'] =
+                                            get_string('nomatchingwordforsynonym', 'qtype_pmatch');
                 continue;
             }
 
             $wordinterpreter = new pmatch_interpreter_word();
             list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
-            if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))){
-                $errors['synonymsdata['.$key.']'] = get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
+            if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))) {
+                $errors['synonymsdata['.$key.']'] =
+                                        get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
-            } else if ($wordinterpreter->get_error_message()){
+            } else if ($wordinterpreter->get_error_message()) {
                 $errors['synonymsdata['.$key.']'] = $wordinterpreter->get_error_message();
                 continue;
             }
 
             $synonyminterpreter = new pmatch_interpreter_synonym();
             list($synonymmatched, $endofmatch) = $synonyminterpreter->interpret($trimmedsynonyms);
-            if ((!$synonymmatched) || !($endofmatch == (strlen($trimmedsynonyms)))){
-                $errors['synonymsdata['.$key.']'] = get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
+            if ((!$synonymmatched) || !($endofmatch == (strlen($trimmedsynonyms)))) {
+                $errors['synonymsdata['.$key.']'] =
+                                get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
-            } else if ($synonyminterpreter->get_error_message()){
+            } else if ($synonyminterpreter->get_error_message()) {
                 $errors['synonymsdata['.$key.']'] = $synonyminterpreter->get_error_message();
                 continue;
             }
 
-            if (in_array($trimmedword, $wordssofar)){
+            if (in_array($trimmedword, $wordssofar)) {
                 $errors['synonymsdata['.$key.']'] = get_string('repeatedword', 'qtype_pmatch');
             }
             $wordssofar[] = $trimmedword;
@@ -265,14 +283,18 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $repeatsatstart = $countsynonyms;
         }
 
-        $this->repeat_elements($textboxgroup, $repeatsatstart, array(), 'nosynonyms', 'addsynonyms', 2, get_string('addmoresynonymblanks', 'qtype_pmatch'));
+        $this->repeat_elements($textboxgroup, $repeatsatstart, array(), 'nosynonyms',
+                        'addsynonyms', 2, get_string('addmoresynonymblanks', 'qtype_pmatch'));
     }
 
     protected function add_synonym($mform) {
         $grouparray = array();
-        $grouparray[] = $mform->createElement('text', 'word', get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15));
-        $grouparray[] = $mform->createElement('static', '', '',' '.get_string('synonym', 'qtype_pmatch').' ');
-        $grouparray[] = $mform->createElement('text', 'synonyms', get_string('synonym', 'qtype_pmatch'), array('size'=>50));
+        $grouparray[] = $mform->createElement('text', 'word',
+                            get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15));
+        $grouparray[] = $mform->createElement('static', '', '',
+                            ' '.get_string('synonym', 'qtype_pmatch').' ');
+        $grouparray[] = $mform->createElement('text', 'synonyms',
+                            get_string('synonym', 'qtype_pmatch'), array('size'=>50));
         return $grouparray;
     }
 

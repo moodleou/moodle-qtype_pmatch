@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -103,7 +102,8 @@ class pmatch_examples_test extends UnitTestCase {
             }
 
             if (count($data) < 2 || !is_numeric($data[1])) {
-                $this->fail('Skipping bad line in responses file (file ' . $name . '.responses.csv, line ' . $row . ').');
+                $this->fail('Skipping bad line in responses file '.
+                            '(file ' . $name . '.responses.csv, line ' . $row . ').');
                 continue;
             }
 

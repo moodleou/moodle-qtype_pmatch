@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -38,8 +37,9 @@ class test_pmatch_question_maker extends test_question_maker {
      * @return qtype_shortanswer_question
      */
     public static function make_a_pmatch_question($applydictionarycheck = false) {
-        if ($applydictionarycheck && !function_exists('pspell_new')){
-            throw new coding_exception('pspell not installed on your server. Spell checking will not work.');
+        if ($applydictionarycheck && !function_exists('pspell_new')) {
+            throw new coding_exception('pspell not installed on your server. '.
+                                                'Spell checking will not work.');
         }
         question_bank::load_question_definition_classes('pmatch');
         $pm = new qtype_pmatch_question();
@@ -49,14 +49,18 @@ class test_pmatch_question_maker extends test_question_maker {
         $pm->generalfeedback = 'Generalfeedback: Tom, Dick or Harry are all possible answers.';
         $pm->pmatchoptions = new pmatch_options();
         $pm->answers = array(
-            13 => new question_answer(13, 'match_w(Tom|Harry)', 1.0, 'Either Tom or Harry is a very good answer.', FORMAT_HTML),
-            14 => new question_answer(14, 'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
-            15 => new question_answer(15, '*', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
+            13 => new question_answer(13, 'match_w(Tom|Harry)', 1.0,
+                                'Either Tom or Harry is a very good answer.', FORMAT_HTML),
+            14 => new question_answer(14,
+                                'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
+            15 => new question_answer(15,
+                                '*', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
         );
         $pm->qtype = question_bank::get_qtype('pmatch');
         $pm->applydictionarycheck = $applydictionarycheck;
-        if ($pm->applydictionarycheck){
-            //these tests are in English, no matter what the current laguage of the user running the tests
+        if ($pm->applydictionarycheck) {
+            //these tests are in English,
+            //no matter what the current laguage of the user running the tests
             $pm->pmatchoptions->lang = 'en';
         }
         return $pm;
@@ -75,20 +79,32 @@ class qtype_pmatch_question_test extends UnitTestCase {
     public function test_compare_string_with_wildcard() {
         // Test case sensitive literal matches.
         $options = new pmatch_options();
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('mop', 'match_c(m)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('bomb', 'match_c(m)', $options));
-        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('car', 'match_c(m)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car', 'match_c(*)', $options));
-        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('Car', 'match_c(c)', $options));
+        $this->assertTrue(
+            qtype_pmatch_question::compare_string_with_pmatch_expression('mop',
+                                                                        'match_c(m)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('bomb',
+                                                                    'match_c(m)', $options));
+        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
+                                                                    'match_c(m)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
+                                                                    'match_c(*)', $options));
+        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('Car',
+                                                                    'match_c(c)', $options));
 
         $options = new pmatch_options();
         $options->ignorecase = true;
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('Mop', 'match_c(m)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('bomb', 'match_c(m)', $options));
-        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('car', 'match_c(m)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car', 'match_c(*)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('Car', 'match_c(c)', $options));
-        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car', 'match_c(C)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('Mop',
+                                                                    'match_c(m)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('bomb',
+                                                                    'match_c(m)', $options));
+        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
+                                                                    'match_c(m)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
+                                                                    'match_c(*)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('Car',
+                                                                    'match_c(c)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
+                                                                    'match_c(C)', $options));
 
     }
 
@@ -104,7 +120,8 @@ class qtype_pmatch_question_test extends UnitTestCase {
         $question = test_pmatch_question_maker::make_a_pmatch_question(true);
 
         $this->assertTrue($question->is_complete_response(array('answer' => 'The Queen is dead.')));
-        $this->assertFalse($question->is_complete_response(array('answer' => 'Long kive the Kin.')));
+        $this->assertFalse($question->is_complete_response(
+                                                        array('answer' => 'Long kive the Kin.')));
     }
 
     public function test_is_complete_response_with_spelling() {

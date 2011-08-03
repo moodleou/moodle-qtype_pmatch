@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -34,36 +33,65 @@ class pmatch_test extends UnitTestCase {
         return $expression->matches($string);
     }
 
-    protected function error_message($expression, $options = null){
+    protected function error_message($expression, $options = null) {
         $expression = new pmatch_expression($expression, $options);
         return $expression->get_parse_error();
     }
 
     public function test_pmatch_error() {
-        $this->assertEqual($this->error_message('match_mow([tom maud]|[sid jane]'), get_string('ie_missingclosingbracket', 'qtype_pmatch', 'match_mow([tom maud]|[sid jane]')); // No closing bracket.
-        $this->assertEqual($this->error_message('match_mow()'), get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', 'match_mow()')); // No contents.
-        $this->assertEqual($this->error_message('match_mow([tom maud]|)'), get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', '[tom maud]|')); // ends in an or character.
-        $this->assertEqual($this->error_message('match_mow([tom maud] )'), get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', 'match_mow([tom maud] )')); // ends in a space.
-        $this->assertEqual($this->error_message('match_mow([tom maud]_)'), get_string('ie_lastsubcontenttypeworddelimiter', 'qtype_pmatch', 'match_mow([tom maud]_)')); // ends in a proximity delimiter.
+        // No closing bracket.
+        $this->assertEqual($this->error_message('match_mow([tom maud]|[sid jane]'),
+                get_string('ie_missingclosingbracket',
+                'qtype_pmatch', 'match_mow([tom maud]|[sid jane]'));
+        // No contents.
+        $this->assertEqual($this->error_message('match_mow()'),
+                get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', 'match_mow()'));
+        // ends in an or character.
+        $this->assertEqual($this->error_message('match_mow([tom maud]|)'),
+                get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', '[tom maud]|'));
+        // ends in a space.
+        $this->assertEqual($this->error_message('match_mow([tom maud] )'),
+                get_string('ie_lastsubcontenttypeworddelimiter',
+                         'qtype_pmatch', 'match_mow([tom maud] )'));
+        // ends in a proximity delimiter.
+        $this->assertEqual($this->error_message('match_mow([tom maud]_)'),
+                get_string('ie_lastsubcontenttypeworddelimiter',
+                         'qtype_pmatch', 'match_mow([tom maud]_)'));
     }
 
     public function test_pmatch_matching() {
         // Tests from the original pmatch documentation.
-        $this->assertTrue($this->match('tom dick harry', 'match(tom dick harry)')); // This is the exact match.
-        $this->assertTrue($this->match('thomas', 'match_c(tom)')); // Extra characters are allowed anywhere within the word.
-        $this->assertTrue($this->match('tom dick and harry', 'match_w(dick)')); // Extra words are allowed anywhere within the sentence.
-        $this->assertTrue($this->match('harry dick tom', 'match_o(tom dick harry)')); // Any order of words is allowed.
-        $this->assertTrue($this->match('rick', 'match_m(dick)')); // One character in the word can differ.
+        // This is the exact match.
+        $this->assertTrue($this->match('tom dick harry', 'match(tom dick harry)'));
+        // Extra characters are allowed anywhere within the word.
+        $this->assertTrue($this->match('thomas', 'match_c(tom)'));
+        // Extra words are allowed anywhere within the sentence.
+        $this->assertTrue($this->match('tom dick and harry', 'match_w(dick)'));
+        // Any order of words is allowed.
+        $this->assertTrue($this->match('harry dick tom', 'match_o(tom dick harry)'));
+        // One character in the word can differ.
+        $this->assertTrue($this->match('rick', 'match_m(dick)'));
         $this->assertTrue($this->match('rick and harry and tom', 'match_mow(tom dick harry)'));
         $this->assertTrue($this->match('dick and harry and thomas', 'match_cow(tom dick harry)'));
-        $this->assertTrue($this->match('arthur harry and sid', 'match_mow(tom|dick|harry)')); // Any of tom or dick or harry will be matched.
-        $this->assertTrue($this->match('tomy harry and sid', 'match_mow(tom|dick harry|sid)')); // The pattern requires either tom or dick AND harry or sid.
-        $this->assertTrue($this->match('tom was mesmerised by maud', 'match_mow([tom maud]|[sid jane])')); // The pattern requires either (tom and maud) or (sid and jane).
-        $this->assertTrue($this->match('rick', 'match(?ick)')); // The first character can be anything.
-        $this->assertTrue($this->match('harold', 'match(har*)')); // Any sequence of characters can follow 'har'.
-        $this->assertTrue($this->match('tom married maud sid married jane', 'match_mow(tom_maud)')); // Only one word is between tom and maud.
-        $this->assertFalse($this->match('maud married tom sid married jane', 'match_mow(tom_maud)')); // The proximity control also specifies word order and over-rides the 'o' matching option.
-        $this->assertFalse($this->match('tom married maud sid married jane', 'match_mow(tom_jane)')); // Only two words are allowed between tom and jane.
+        // Any of tom or dick or harry will be matched.
+        $this->assertTrue($this->match('arthur harry and sid', 'match_mow(tom|dick|harry)'));
+        // The pattern requires either tom or dick AND harry or sid.
+        $this->assertTrue($this->match('tomy harry and sid', 'match_mow(tom|dick harry|sid)'));
+        // The pattern requires either (tom and maud) or (sid and jane).
+        $this->assertTrue($this->match('tom was mesmerised by maud',
+                                               'match_mow([tom maud]|[sid jane])'));
+        // The first character can be anything.
+        $this->assertTrue($this->match('rick', 'match(?ick)'));
+        // Any sequence of characters can follow 'har'.
+        $this->assertTrue($this->match('harold', 'match(har*)'));
+        // Only one word is between tom and maud.
+        $this->assertTrue($this->match('tom married maud sid married jane', 'match_mow(tom_maud)'));
+        // The proximity control also specifies word order and over-rides the 'o' matching option.
+        $this->assertFalse($this->match('maud married tom sid married jane',
+                                                                        'match_mow(tom_maud)'));
+        // Only two words are allowed between tom and jane.
+        $this->assertFalse($this->match('tom married maud sid married jane',
+                                            'match_mow(tom_jane)'));
 
         $this->assertTrue($this->match('married', 'match_mow(marr*)'));
         $this->assertTrue($this->match('tom married maud', 'match_mow(tom|thomas marr* maud)'));
@@ -72,11 +100,16 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('tom is to marry maud', 'match_o(tom|thomas marr* maud)'));
         $this->assertTrue($this->match('tom is to maud marry', 'match_ow(tom|thomas marr* maud)'));
         $this->assertFalse($this->match('tom is to maud marry', 'match_w(tom|thomas marr* maud)'));
-        $this->assertTrue($this->match('tempratur', 'match_m2ow(temperature)')); // Two characters are missing.
-        $this->assertFalse($this->match('tempratur', 'match_mow(temperature)')); // Two characters are missing.
-        $this->assertTrue($this->match('temporatur', 'match_m2ow(temperature)')); // Two characters are incorrect; one has been replaced and one is missing.
-        $this->assertFalse($this->match('temporatur', 'match_mow(temperature)')); // Two characters are incorrect; one has been replaced and one is missing.
-        $this->assertFalse($this->match('tmporatur', 'match_m2ow(temperature)')); // Three characters are incorrect; one has been replaced and two are missing.
+        // Two characters are missing.
+        $this->assertTrue($this->match('tempratur', 'match_m2ow(temperature)'));
+        // Two characters are missing.
+        $this->assertFalse($this->match('tempratur', 'match_mow(temperature)'));
+        // Two characters are incorrect; one has been replaced and one is missing.
+        $this->assertTrue($this->match('temporatur', 'match_m2ow(temperature)'));
+        // Two characters are incorrect; one has been replaced and one is missing.
+        $this->assertFalse($this->match('temporatur', 'match_mow(temperature)'));
+        // Three characters are incorrect; one has been replaced and two are missing.
+        $this->assertFalse($this->match('tmporatur', 'match_m2ow(temperature)'));
 
         $this->assertTrue($this->match('cat toad frog', 'match(cat [toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat newt frog', 'match(cat [toad|newt frog]|dog)'));
@@ -88,8 +121,10 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('cat dog', 'match(cat_[toad|newt frog]|dog)'));
         $this->assertFalse($this->match('cat. dog', 'match(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('cat. dog', 'match(cat [toad|newt frog]|dog)'));
-        $this->assertTrue($this->match('x cat x x toad frog x', 'match_w(cat_[toad|newt frog]|dog)'));
-        $this->assertTrue($this->match('x cat newt x x x x x frog x', 'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('x cat x x toad frog x',
+                                                            'match_w(cat_[toad|newt frog]|dog)'));
+        $this->assertTrue($this->match('x cat newt x x x x x frog x',
+                                                            'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertTrue($this->match('x cat x x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertFalse($this->match('x cat x. x dog x', 'match_w(cat_[toad|newt frog]|dog)'));
         $this->assertFalse($this->match('A C B D', 'match([A B]_[C D])'));
@@ -97,7 +132,8 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('A x x x x B C D', 'match_ow([A B]_[C D])'));
         $this->assertFalse($this->match('A x x x x B. C D', 'match_ow([A B]_[C D])'));
         $this->assertTrue($this->match('A x x x x B. C D', 'match_ow([A B] [C D])'));
-        $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));  //_ requires the words in [] to match in order.
+        //_ requires the words in [] to match in order.
+        $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));
         $this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
         $this->assertFalse($this->match('A A', 'match(A)'));
 
@@ -113,7 +149,8 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('testt', 'match_mf(test)'));
         $this->assertFalse($this->match('tent', 'match_mf(test)'));
         $this->assertFalse($this->match('tets', 'match_mf(test)'));
-        //fewer characters option is disabled for a pattern of fewer than 4 normal characters in pattern.
+        //fewer characters option is disabled for a pattern
+        //of fewer than 4 normal characters in pattern.
         $this->assertFalse($this->match('te', 'match_mf(tes)'));
 
         //allow fewer characters
@@ -153,7 +190,6 @@ class pmatch_test extends UnitTestCase {
         $this->assertFalse($this->match('gabcd', 'match_mt(abcd)'));
         $this->assertFalse($this->match('abcdg', 'match_mt(abcd)'));
 
-
         //allow extra character
         $this->assertTrue($this->match('abcd', 'match_mx(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mx(abcd)'));
@@ -169,7 +205,6 @@ class pmatch_test extends UnitTestCase {
         $this->assertTrue($this->match('abcdg', 'match_mx(abcd)'));
         $this->assertTrue($this->match('abcd', 'match_mx(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mx(abcd)'));
-
 
         //allow any one mispelling
         $this->assertTrue($this->match('abcd', 'match_m(abcd)'));
@@ -228,7 +263,8 @@ class pmatch_test extends UnitTestCase {
         $options = new pmatch_options();
         $options->ignorecase = true;
         $this->assertTrue($this->match('ABCD', 'match(abcd)', $options));
-        $this->assertTrue($this->match('Mary had a little LamB', 'match(mary had a little lamb)', $options));
+        $this->assertTrue($this->match('Mary had a little LamB',
+                                          'match(mary had a little lamb)', $options));
         $options->ignorecase = false;
         $this->assertFalse($this->match('ABCD', 'match(abcd)', $options));
 
@@ -274,9 +310,12 @@ EOF;
         $this->assertFalse($this->match('dog', $expression));
 
         //when words are shorter than 8 characters, revert to allow one spelling mistake per word
-        $this->assertTrue($this->match('dogs are bitter than cuts', 'match_m2(dogs are better than cats)'));
-        $this->assertTrue($this->match('digs are bitter than cuts', 'match_m2(dogs are better than cats)'));
-        $this->assertFalse($this->match('diigs are bitter than cuts', 'match_m2(dogs are better than cats)'));
+        $this->assertTrue($this->match('dogs are bitter than cuts',
+                                                        'match_m2(dogs are better than cats)'));
+        $this->assertTrue($this->match('digs are bitter than cuts',
+                                                        'match_m2(dogs are better than cats)'));
+        $this->assertFalse($this->match('diigs are bitter than cuts',
+                                                        'match_m2(dogs are better than cats)'));
 
         //try to trip up matcher, can match first to first with two spelling mistakes
         //but then will fail when trying to match second to second which will also have two mistakes
@@ -285,8 +324,10 @@ EOF;
         $this->assertFalse($this->match('baccffff fffdffff', 'match_m2o(abcdffff baccffff)'));
 
         //similar attempt to trip up matcher as above
-        $this->assertTrue($this->match('baccffff ffcdffff ffffffff', 'match_m2o(ffffffff abcdffff baccffff)'));
-        $this->assertFalse($this->match('baccffff fffdffff ffffffff', 'match_m2o(ffffffff abcdffff baccffff)'));
+        $this->assertTrue($this->match('baccffff ffcdffff ffffffff',
+                                        'match_m2o(ffffffff abcdffff baccffff)'));
+        $this->assertFalse($this->match('baccffff fffdffff ffffffff',
+                                        'match_m2o(ffffffff abcdffff baccffff)'));
 
         //if a float is in the description expect a float,
         //round the student answer to the same precision before matching
@@ -299,7 +340,8 @@ EOF;
         //if an integer is in the expression expect an integer
         $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
 
-        //this should not match as the proximity delimiter precludes another word match occuring between the two words separated by it.
+        //this should not match as the proximity delimiter precludes another word match occuring
+        //between the two words separated by it.
         $this->assertFalse($this->match('abcd ccc ffff', 'match_o(abcd_ffff ccc)'));
 
         $this->assertTrue($this->match('one two five', 'match(one_two|[three four] five)'));
@@ -309,7 +351,6 @@ EOF;
 
         $this->assertFalse($this->match('one four. two.', 'match_w(one_two)'));
         $this->assertTrue($this->match('one four two.', 'match_w(one_two)'));
-
 
         $this->assertFalse($this->match('one four two.', 'match_wp0(one_two)'));
         $this->assertTrue($this->match('one two.', 'match_wp0(one_two)'));
@@ -346,7 +387,9 @@ EOF;
         $this->assertFalse($this->match('one four$ two$', 'match_w(one_two)', $options));
         $this->assertTrue($this->match('one four two$', 'match_w(one_two)', $options));
 
-        $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
+        $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))'.
+                'match_mfw(three|[four five]))'.
+                'match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
         $formattedexpression = <<<EOF
 match_all (
     match_any (
@@ -366,17 +409,25 @@ EOF;
         //when formatting phrase and word level options in expression they are simplied
         //and arranged into a standard order.
         $expression = new pmatch_expression('match_mfmtxr(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(), "match_m (three|[four five])\n");
+        $this->assertEqual($expression->get_formatted_expression_string(),
+                                                                "match_m (three|[four five])\n");
         $expression = new pmatch_expression('match_mfmtxrow(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(), "match_mow (three|[four five])\n");
+        $this->assertEqual($expression->get_formatted_expression_string(),
+                                                                "match_mow (three|[four five])\n");
         $expression = new pmatch_expression('match_mfmtxr2(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(), "match_m2 (three|[four five])\n");
+        $this->assertEqual($expression->get_formatted_expression_string(),
+                                                                "match_m2 (three|[four five])\n");
         $expression = new pmatch_expression('match_mtxrow(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(), "match_mrtxow (three|[four five])\n");
-        $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
+        $this->assertEqual($expression->get_formatted_expression_string(),
+                                                            "match_mrtxow (three|[four five])\n");
+        $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))'.
+                        'match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)'.
+                        'match_m2w(seven|[eight ten])))');
 
-        $expressionstr = 'match_all(match_any(not(match_c(a))match_c(b))match_all(match_all(match_any(match_c(c)match_c(d))'.
-                        'match_any(match_c(e)match_c(f))match_all(match_c(g)match_c(h)))not(match_any(match_any(match_c(i)match_c(j))'.
+        $expressionstr = 'match_all(match_any(not(match_c(a))match_c(b))'.
+                        'match_all(match_all(match_any(match_c(c)match_c(d))'.
+                        'match_any(match_c(e)match_c(f))match_all(match_c(g)match_c(h)))'.
+                        'not(match_any(match_any(match_c(i)match_c(j))'.
                         'match_any(match_c(k)match_c(l))match_all(match_c(m)match_c(n))))))';
         $expression = new pmatch_expression($expressionstr);
         $formattedexpression = <<<EOF
@@ -438,11 +489,15 @@ EOF;
         $this->assertTrue($this->match('fghij', 'match(abcde)', $options));
 
         //further tests to check that phrase is matching the right no of words
-        $this->assertFalse($this->match('it does not really contain an object which is a verb', 'match_mw([not contain]_verb)'));
-        $this->assertFalse($this->match('it is not really a sentence it would be classed as a phrase as it does not contain an object which would indicate who thought of the good idea or a verb', 'match_m([not contain]|abc_verb)'));
-        $this->assertTrue($this->match('not contain is a verb', 'match_mw([not contain]|abc_verb)'));
-        $this->assertFalse($this->match('not contain is not a verb', 'match_mw([not contain]|abc_verb)'));
-
+        $this->assertFalse($this->match('it does not really contain an object which is a verb',
+                                                                'match_mw([not contain]_verb)'));
+        $this->assertFalse($this->match('it is not really a sentence it would be classed as a'.
+                ' phrase as it does not contain an object which would indicate who thought of the '.
+                'good idea or a verb', 'match_m([not contain]|abc_verb)'));
+        $this->assertTrue($this->match('not contain is a verb',
+                                                        'match_mw([not contain]|abc_verb)'));
+        $this->assertFalse($this->match('not contain is not a verb',
+                                                        'match_mw([not contain]|abc_verb)'));
 
         //test full stop as word separator
         $this->assertFalse($this->match('one four.two.', 'match_w(one_two)'));
@@ -461,11 +516,11 @@ EOF;
         $this->assertFalse($this->match('one.five.', 'match_wp3(one_five)'));
     }
 
-
     public function test_pmatch_spelling() {
 
-        if (!function_exists('pspell_new')){
-            throw new coding_exception('pspell not installed on your server. Spell checking will not work.');
+        if (!function_exists('pspell_new')) {
+            throw new coding_exception('pspell not installed on your server. '.
+                                            'Spell checking will not work.');
         }
 
         $options = new pmatch_options();
@@ -476,7 +531,6 @@ EOF;
         //tool passes as it is correctly spelt
         $parsedstring = new pmatch_parsed_string('e.g. tool', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
-
 
         //full stop (sentence divider) should pass test
         $parsedstring = new pmatch_parsed_string('e.g.. tool.', $options);
@@ -490,16 +544,15 @@ EOF;
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queek queek', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-
         //anything in synonyms automatically passes
         $parsedstring = new pmatch_parsed_string('e.g.. tool. abcde fghij.', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-
         //synonyms may include * wild card
         $options = new pmatch_options();
         $options->lang = 'en';
-        $options->set_synonyms(array((object)array('word'=>'queek*', 'synonyms' => 'abcde|fghij')));
+        $options->set_synonyms(
+                    array((object)array('word'=>'queek*', 'synonyms' => 'abcde|fghij')));
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queeking.', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 

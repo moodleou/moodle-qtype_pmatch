@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -37,8 +36,9 @@ require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_test extends UnitTestCase {
-    public static $includecoverage = array('question/type/questiontype.php', 'question/type/pmatch/questiontype.php');
-    var $qtype;
+    public static $includecoverage = array('question/type/questiontype.php',
+                                        'question/type/pmatch/questiontype.php');
+    protected $qtype;
 
     public function setUp() {
         $this->qtype = new qtype_pmatch();

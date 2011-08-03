@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -51,9 +50,8 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         $elename = 'synonym';
-        $elepath = $this->get_pathfor('/synonyms/synonym'); // we used get_recommended_name() so this works
+        $elepath = $this->get_pathfor('/synonyms/synonym');
         $paths[] = new restore_path_element($elename, $elepath);
-
 
         return $paths; // And we return the interesting paths
     }
@@ -80,8 +78,6 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
             $newitemid = $DB->insert_record('qtype_pmatch', $data);
             // Create mapping
             $this->set_mapping('qtype_pmatch', $oldid, $newitemid);
-        } else {
-            // Nothing to remap if the question already existed
         }
     }
     /**
@@ -98,14 +94,13 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         $newquestionid   = $this->get_new_parentid('question');
         $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
 
-        // If the question has been created by restore, we need to create its qtype_pmatch_synonyms too
+        // If the question has been created by restore,
+        // we need to create its qtype_pmatch_synonyms too
         if ($questioncreated) {
             // Adjust some columns
             $data->questionid = $newquestionid;
             // Insert record
             $newitemid = $DB->insert_record('qtype_pmatch_synonyms', $data);
-        } else {
-            // Nothing to remap if the question already existed
         }
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -70,8 +69,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function is_gradable_response(array $response) {
-        if  (!array_key_exists('answer', $response) || ((!$response['answer']) && $response['answer'] !== '0')){
-            $this->responsevalidationerrors = array(get_string('pleaseenterananswer', 'qtype_pmatch'));
+        if (!array_key_exists('answer', $response) ||
+                                ((!$response['answer']) && $response['answer'] !== '0')) {
+            $this->responsevalidationerrors =
+                                    array(get_string('pleaseenterananswer', 'qtype_pmatch'));
             return false;
         } else {
             return true;
@@ -79,7 +80,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function is_complete_response(array $response) {
-        if ($this->is_gradable_response($response)){
+        if ($this->is_gradable_response($response)) {
             $this->validate($response);
         }
         return (!count($this->responsevalidationerrors) > 0);
@@ -87,17 +88,17 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
     private $responsevalidationerrors = null;
 
-    protected function validate(array $response){
+    protected function validate(array $response) {
         $this->responsevalidationerrors = array();
 
         $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
-        if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()){
+        if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()) {
             $misspelledwords = $parsestring->get_spelling_errors();
             $a = join(' ', $misspelledwords);
             $this->responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
         }
-        if ($this->forcelength){
-            if ($parsestring->get_word_count() > 20){
+        if ($this->forcelength) {
+            if ($parsestring->get_word_count() > 20) {
                 $this->responsevalidationerrors[] = get_string('toomanywords', 'qtype_pmatch');
             }
         }
@@ -118,10 +119,12 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
-        if ($answer->answer == '*'){
+        if ($answer->answer == '*') {
             return true;
         }
-        return self::compare_string_with_pmatch_expression($response['answer'], $answer->answer, $this->pmatchoptions);
+        return self::compare_string_with_pmatch_expression($response['answer'],
+                                                            $answer->answer,
+                                                            $this->pmatchoptions);
     }
 
     public static function compare_string_with_pmatch_expression($string, $expression, $options) {
@@ -141,7 +144,8 @@ class qtype_pmatch_question extends question_graded_by_strategy
             return $this->check_hint_file_access($qa, $options, $args);
 
         } else {
-            return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
+            return parent::check_file_access($qa, $options, $component,
+                                                                $filearea, $args, $forcedownload);
         }
     }
 

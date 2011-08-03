@@ -55,6 +55,5 @@ M.qtype_pmatch.initeditor = function (Y, editorid, editorwidth, editorheight, su
         });
     }
 
-
     editor.render();
 }

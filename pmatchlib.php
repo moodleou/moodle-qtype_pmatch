@@ -27,7 +27,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
 
 //following is required because the xdebug library defaults to throwing a fatal error if
 //there is more than 100 nested function calls.
-if (extension_loaded('xdebug')){
+if (extension_loaded('xdebug')) {
      ini_set('xdebug.max_nesting_level', 1000);
 }
 
@@ -55,7 +55,10 @@ class pmatch_options {
      */
     public $extradictionarywords = array('e.g.', 'eg.', 'etc.', 'i.e.', 'ie.');
 
-    /** @var string language of string - current language of respondee or saved for this attempt step. */
+    /**
+     * @var string language of string -
+     *             current language of respondee or saved for this attempt step.
+     */
     public $lang;
 
     /**
@@ -70,22 +73,23 @@ class pmatch_options {
     /** @var array of words from synonyms that are exempt from spell check. */
     public $nospellcheckwords = array();
 
-    public function set_synonyms($synonyms){
+    public function set_synonyms($synonyms) {
         $toreplace = array();
         $replacewith = array();
-        foreach ($synonyms as $synonym){
+        foreach ($synonyms as $synonym) {
             $toreplaceitem = preg_quote($synonym->word, '!');
-            $toreplaceitem = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
+            $toreplaceitem = str_replace('\*',
+                        '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
             //the ?<= and ?= ensures that the adjacent characters are not replaced also
             $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
-            if ($this->ignorecase){
+            if ($this->ignorecase) {
                 $toreplaceitem .= 'i';
             }
             $this->wordstoreplace[] = $toreplaceitem;
             $this->synonymtoreplacewith[] = "{$synonym->word}|{$synonym->synonyms}";
             $this->nospellcheckwords[] = $synonym->word;
             $synonymsforthisword = explode('|', $synonym->synonyms);
-            foreach ($synonymsforthisword as $synonymforthisword){
+            foreach ($synonymsforthisword as $synonymforthisword) {
                 $this->nospellcheckwords[] = $synonymforthisword;
             }
         }
@@ -111,8 +115,8 @@ class pmatch_parsed_string {
      * @param string $string the string to match against.
      * @param pmatch_options $options the options to use.
      */
-    public function __construct($string, pmatch_options $options = null){
-        if (!is_null($options)){
+    public function __construct($string, pmatch_options $options = null) {
+        if (!is_null($options)) {
             $this->options = $options;
         } else {
             $this->options = new pmatch_options();
@@ -124,7 +128,7 @@ class pmatch_parsed_string {
         //or no full stop and one or more dividers
         $pattern = "!((?<=\.)([$dividers])*)|([$dividers])+!";
         $this->words = preg_split($pattern, $string);
-        if (count($this->words) == 0){
+        if (count($this->words) == 0) {
             $this->words = array('');
         }
     }
@@ -132,50 +136,54 @@ class pmatch_parsed_string {
     /**
      * @return boolean returns false if any word is misspelt.
      */
-    public function is_spelt_correctly(){
+    public function is_spelt_correctly() {
         $this->misspelledwords = $this->spell_check($this->words);
         return (count($this->misspelledwords) == 0);
     }
 
-    protected function spell_check($words){
+    protected function spell_check($words) {
         $langidparts = explode('_', $this->options->lang);
         $langforspellchecker = $langidparts[0];
 
-        if (!function_exists('pspell_new')){
+        if (!function_exists('pspell_new')) {
             error_log('Attempted to spell check but pspell is not installed.');
             return array();
         }
         $pspell_link = pspell_new($langforspellchecker);
-        if ($pspell_link === false){
-            error_log("Attempted a spell check for a language with no aspell dictionary installed - '{$langforspellchecker}'.");
+        if ($pspell_link === false) {
+            error_log("Attempted a spell check for a language ".
+                        "with no aspell dictionary installed - '{$langforspellchecker}'.");
             return array();//if dictionary is not installed for this language we cannot spell check
         }
         $misspelledwords = array();
-        $wordstoignore = array_merge($this->options->extradictionarywords, $this->options->nospellcheckwords);
+        $wordstoignore = array_merge($this->options->extradictionarywords,
+                                        $this->options->nospellcheckwords);
         $wordstoignorepatterns = array(PMATCH_NUMBER);
-        foreach ($wordstoignore as $wordtoignore){
+        foreach ($wordstoignore as $wordtoignore) {
             $wordstoignorepattern = preg_quote($wordtoignore, '!');
-            $wordstoignorepattern = str_replace('\*', '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $wordstoignorepattern);
+            $wordstoignorepattern = str_replace('\*',
+                                        '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*',
+                                        $wordstoignorepattern);
             $wordstoignorepatterns[] = $wordstoignorepattern;
         }
         $sentencedividerpattern = '';
-        foreach (str_split($this->options->sentencedividers) as $sentencedivider){
-            if ($sentencedividerpattern != ''){
+        foreach (str_split($this->options->sentencedividers) as $sentencedivider) {
+            if ($sentencedividerpattern != '') {
                 $sentencedividerpattern .= '|';
             }
             $sentencedividerpattern .= preg_quote($sentencedivider);
         }
         $endofpattern = '('.$sentencedividerpattern.')?$!A';
-        if ($this->options->ignorecase){
+        if ($this->options->ignorecase) {
             $endofpattern .= 'i';
         }
         $words = array_unique($words);
-        foreach ($wordstoignorepatterns as $wordstoignorepattern){
+        foreach ($wordstoignorepatterns as $wordstoignorepattern) {
             $words = (preg_grep('!'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
         }
-        foreach ($words as $word){
+        foreach ($words as $word) {
             $textlib = textlib_get_instance();
-            if (FALSE !== strpos($this->options->sentencedividers, $textlib->substr($word, -1))){
+            if (false !== strpos($this->options->sentencedividers, $textlib->substr($word, -1))) {
                 $word = $textlib->substr($word, 0, $textlib->strlen($word)-1);
             }
 
@@ -189,27 +197,27 @@ class pmatch_parsed_string {
     /**
      * @return array all the distinct misspelt words.
      */
-    public function get_spelling_errors(){
+    public function get_spelling_errors() {
         return $this->misspelledwords;
     }
 
     /**
      * @return integer no of words.
      */
-    public function get_word_count(){
+    public function get_word_count() {
         return count($this->words);
     }
 
     /**
      * @return pmatch_options the options that were used to construct this object.
      */
-    public function get_options(){
+    public function get_options() {
         return $this->options;
     }
     /**
      * @return array the words to try to match.
      */
-    public function get_words(){
+    public function get_words() {
         return $this->words;
     }
 }
@@ -241,8 +249,8 @@ class pmatch_expression {
      * @param string $string the string to match against.
      * @param pmatch_options $options the options to use.
      */
-    public function __construct($expression, $options = null){
-        if (!is_null($options)){
+    public function __construct($expression, $options = null) {
+        if (!is_null($options)) {
             $this->options = $options;
         } else {
             $this->options = new pmatch_options();
@@ -251,11 +259,11 @@ class pmatch_expression {
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);
         $this->errormessage = $this->interpreter->get_error_message();
-        if ($endofmatch == strlen($expression) && $matched && $this->errormessage == ''){
+        if ($endofmatch == strlen($expression) && $matched && $this->errormessage == '') {
             $this->valid = true;
         } else {
             $this->valid = false;
-            if ($this->errormessage == ''){
+            if ($this->errormessage == '') {
                 $this->errormessage = get_string('ie_unrecognisedexpression', 'qtype_pmatch');
             }
         }
@@ -266,9 +274,11 @@ class pmatch_expression {
      * @param pmatch_parsed_string $parsedstring the parsed string to match.
      * @return boolean whether this string matches the expression.
      */
-    public function matches(pmatch_parsed_string $parsedstring){
-        if (!$this->is_valid()){
-            throw new coding_exception('Oops. You called matches for an expression that is not valid. You should call is_valid first. Interpreter error :'.$this->get_parse_error());
+    public function matches(pmatch_parsed_string $parsedstring) {
+        if (!$this->is_valid()) {
+            throw new coding_exception('Oops. You called matches for an expression that is not '.
+                                'valid. You should call is_valid first. Interpreter error :'.
+                                $this->get_parse_error());
             return false;
         }
         $matcher = $this->interpreter->get_matcher($this->options);
@@ -279,7 +289,7 @@ class pmatch_expression {
      * @return boolean returns false if the string passed to the constructor
      * could not be parsed as a valid pmatch expression.
      */
-    public function is_valid(){
+    public function is_valid() {
         return $this->valid;
     }
 
@@ -287,30 +297,31 @@ class pmatch_expression {
      * @return string description of the syntax error in the expression string
      * if is_valid returned false. Otherwise returns an empty string.
      */
-    public function get_parse_error(){
+    public function get_parse_error() {
         return $this->errormessage;
     }
 
     /**
      * @return pmatch_options the options that were used to construct this object.
      */
-    public function get_options(){
+    public function get_options() {
         return $this->options;
     }
 
     /**
      * @return string the expression, exactly as it was passed to the constructor.
      */
-    public function get_original_expression_string(){
+    public function get_original_expression_string() {
         return $this->originalexpression;
     }
 
     /**
      * @return string a nicely formatted version of the expression.
      */
-    public function get_formatted_expression_string(){
-        if (!$this->is_valid()){
-            throw new coding_exception('Oops. You called get_formatted_expression_string for an expression that is not valid. You should call is_valid first.');
+    public function get_formatted_expression_string() {
+        if (!$this->is_valid()) {
+            throw new coding_exception('Oops. You called get_formatted_expression_string for an '.
+                                'expression that is not valid. You should call is_valid first.');
             return false;
         }
         return $this->interpreter->get_formatted_expression_string();

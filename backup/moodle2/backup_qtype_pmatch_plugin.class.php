@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -53,8 +52,9 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
         $this->add_question_question_answers($pluginwrapper);
 
         // Now create the qtype own structures
-        $pmatchoptions = new backup_nested_element('pmatch', array('id'), array('forcelength', 'usecase',
-            'converttospace', 'applydictionarycheck', 'extenddictionary', 'allowsubscript', 'allowsuperscript'));
+        $pmatchoptions = new backup_nested_element('pmatch', array('id'), array('forcelength',
+            'usecase', 'converttospace', 'applydictionarycheck', 'extenddictionary',
+            'allowsubscript', 'allowsuperscript'));
 
         $synonyms = new backup_nested_element('synonyms');
 
@@ -65,8 +65,10 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
         $synonyms->add_child($synonym);
 
         // set source to populate the data
-        $pmatchoptions->set_source_table('qtype_pmatch', array('questionid' => backup::VAR_PARENTID));
-        $synonym->set_source_table('qtype_pmatch_synonyms', array('questionid' => backup::VAR_PARENTID));
+        $pmatchoptions->set_source_table('qtype_pmatch',
+                                                    array('questionid' => backup::VAR_PARENTID));
+        $synonym->set_source_table('qtype_pmatch_synonyms',
+                                                    array('questionid' => backup::VAR_PARENTID));
 
         // don't need to annotate ids nor files
 

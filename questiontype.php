@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -39,10 +38,12 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch extends question_type {
-    function get_question_options($question) {
+    public function get_question_options($question) {
         global $DB;
         parent::get_question_options($question);
-        $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms', array('questionid' => $question->id), 'id ASC');
+        $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms',
+                                                        array('questionid' => $question->id),
+                                                        'id ASC');
         return true;
     }
 
@@ -55,7 +56,7 @@ class qtype_pmatch extends question_type {
         return 'questionid';
     }
 
-    function move_files($questionid, $oldcontextid, $newcontextid) {
+    public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_answers($questionid, $oldcontextid, $newcontextid);
     }
@@ -96,7 +97,7 @@ class qtype_pmatch extends question_type {
 
             $answer->answer = trim($answerdata);
             $expression = new pmatch_expression($answer->answer);
-            if ($expression->is_valid()){
+            if ($expression->is_valid()) {
                 $answer->answer = $expression->get_formatted_expression_string();
             }
 
@@ -111,14 +112,14 @@ class qtype_pmatch extends question_type {
             }
         }
 
-        if (!html_is_blank($question->otherfeedback['text'])){
+        if (!html_is_blank($question->otherfeedback['text'])) {
             $otheranswer = new stdClass();
             $otheranswer->answer = '*';
             $otheranswer->fraction = 0;
             $otheranswer->feedback = '';
             $otheranswer->question = $question->id;
             $oldotheranswer = array_shift($oldanswers);
-            if (!$oldotheranswer){
+            if (!$oldotheranswer) {
                 $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
             } else {
                 $otheranswer->id = $oldotheranswer->id;
@@ -128,7 +129,6 @@ class qtype_pmatch extends question_type {
             $otheranswer->feedbackformat = $question->otherfeedback['format'];
             $DB->update_record('question_answers', $otheranswer);
         }
-
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
                 array('questionid' => $question->id), 'id ASC');
@@ -167,7 +167,7 @@ class qtype_pmatch extends question_type {
 
         // Delete any left over old answer records.
         $fs = get_file_storage();
-        foreach($oldanswers as $oldanswer) {
+        foreach ($oldanswers as $oldanswer) {
             $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
@@ -215,7 +215,6 @@ class qtype_pmatch extends question_type {
             ++$acount;
         }
 
-
         $format->import_hints($question, $data, true);
 
         $question->otherfeedback['text'] = '';
@@ -231,29 +230,45 @@ class qtype_pmatch extends question_type {
     }
 
     public function import_synonyms($format, &$question, $synonyms) {
-        foreach ($synonyms as $synonym){
+        foreach ($synonyms as $synonym) {
             $this->import_synonym($format, $question, $synonym);
         }
     }
 
     public function import_synonym($format, &$question, $synonym) {
         static $indexno = 0;
-        $question->synonymsdata[$indexno]['word'] = $format->import_text($format->getpath($synonym, array('#', 'word', 0, '#', 'text'), ''));
-        $question->synonymsdata[$indexno]['synonyms'] = $format->import_text($format->getpath($synonym, array('#', 'synonyms', 0, '#', 'text'), ''));
+        $question->synonymsdata[$indexno]['word'] =
+                    $format->import_text($format->getpath($synonym,
+                                                            array('#', 'word', 0, '#', 'text'),
+                                                            ''));
+        $question->synonymsdata[$indexno]['synonyms'] =
+                    $format->import_text($format->getpath($synonym,
+                                                            array('#', 'synonyms', 0, '#', 'text'),
+                                                            ''));
         $indexno++;
     }
 
     public function export_to_xml($question, $format, $extra = null) {
         $output = '';
 
-        $output .= "    <allowsubscript>" . $format->get_single($question->options->allowsubscript) . "</allowsubscript>\n";
-        $output .= "    <allowsuperscript>" . $format->get_single($question->options->allowsuperscript) . "</allowsuperscript>\n";
-        $output .= "    <forcelength>" . $format->get_single($question->options->forcelength) . "</forcelength>\n";
-        $output .= "    <usecase>" . $format->get_single($question->options->usecase) . "</usecase>\n";
+        $output .= "    <allowsubscript>";
+        $output .= $format->get_single($question->options->allowsubscript);
+        $output .= "</allowsubscript>\n";
+        $output .= "    <allowsuperscript>";
+        $output .= $format->get_single($question->options->allowsuperscript);
+        $output .= "</allowsuperscript>\n";
+        $output .= "    <forcelength>";
+        $output .= $format->get_single($question->options->forcelength);
+        $output .= "</forcelength>\n";
+        $output .= "    <usecase>";
+        $output .= $format->get_single($question->options->usecase);
+        $output .= "</usecase>\n";
         $output .= "    <converttospace>\n";
         $output .= $format->writetext($question->options->converttospace, 3);
         $output .= "    </converttospace>\n";
-        $output .= "    <applydictionarycheck>" . $format->get_single($question->options->applydictionarycheck) . "</applydictionarycheck>\n";
+        $output .= "    <applydictionarycheck>";
+        $output .= $format->get_single($question->options->applydictionarycheck);
+        $output .= "</applydictionarycheck>\n";
         $output .= "    <extenddictionary>\n";
         $output .= $format->writetext($question->options->extenddictionary, 3);
         $output .= "    </extenddictionary>\n";
@@ -292,7 +307,8 @@ class qtype_pmatch extends question_type {
 
         $question->pmatchoptions = new pmatch_options();
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
-        $question->pmatchoptions->extradictionarywords = preg_split('!\s+!',$questiondata->options->extenddictionary);
+        $question->pmatchoptions->extradictionarywords =
+                                    preg_split('!\s+!', $questiondata->options->extenddictionary);
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
         $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
 

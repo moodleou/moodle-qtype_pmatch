@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -35,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_renderer extends qtype_renderer {
-    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
+    public function formulation_and_controls(question_attempt $qa,
+                                                            question_display_options $options) {
 
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
@@ -45,7 +45,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
             'name' => $inputname,
             'id' => $inputname,
         );
-
 
         if ($options->readonly) {
             $attributes['readonly'] = 'readonly';
@@ -63,7 +62,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $feedbackimg = $this->feedback_image($fraction);
         }
 
-        $usehtmleditor = !$options->readonly && ($question->allowsubscript || $question->allowsuperscript);
+        $usehtmleditor = !$options->readonly &&
+                                    ($question->allowsubscript || $question->allowsuperscript);
 
         $questiontext = $question->format_questiontext($qa);
         $rows = 2;
@@ -111,11 +111,16 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $result .= html_writer::end_tag('div');
         }
 
-        if ($usehtmleditor){
+        if ($usehtmleditor) {
             $colsem = floor($cols/2).'em';
             $rowsem = floor(1.5*$rows +1).'em'; // need some extra space for sub and superscript
-            $overridekeyevents = ($rows == 1);//don't override key events for arrow and return keys for a multiline input
-            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor', array($inputname, $colsem, $rowsem, true, true, $overridekeyevents));
+            //don't override key events for arrow and return keys for a multiline input
+            $overridekeyevents = ($rows == 1);
+            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor',
+                                                                array($inputname,
+                                                                        $colsem, $rowsem,
+                                                                        true, true,
+                                                                        $overridekeyevents));
         }
 
         if ($qa->get_state() == question_state::$invalid) {
