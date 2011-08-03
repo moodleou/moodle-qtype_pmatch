@@ -142,17 +142,21 @@ class pmatch_parsed_string {
     }
 
     protected function spell_check($words) {
+        global $COURSE;
         $langidparts = explode('_', $this->options->lang);
         $langforspellchecker = $langidparts[0];
 
         if (!function_exists('pspell_new')) {
+            add_to_log($COURSE->id, 'question', 'error', '',
+                            'Attempted to spell check but pspell is not installed.');
             error_log('Attempted to spell check but pspell is not installed.');
             return array();
         }
         $pspell_link = pspell_new($langforspellchecker);
         if ($pspell_link === false) {
-            error_log("Attempted a spell check for a language ".
-                        "with no aspell dictionary installed - '{$langforspellchecker}'.");
+            add_to_log($COURSE->id, 'question', 'error', "Attempted a spell check for ".
+                        "'{$langforspellchecker}' ".
+                        "but no aspell dictionary installed - '{$langforspellchecker}'.");
             return array();//if dictionary is not installed for this language we cannot spell check
         }
         $misspelledwords = array();
