@@ -442,6 +442,23 @@ EOF;
         $this->assertFalse($this->match('it is not really a sentence it would be classed as a phrase as it does not contain an object which would indicate who thought of the good idea or a verb', 'match_m([not contain]|abc_verb)'));
         $this->assertTrue($this->match('not contain is a verb', 'match_mw([not contain]|abc_verb)'));
         $this->assertFalse($this->match('not contain is not a verb', 'match_mw([not contain]|abc_verb)'));
+
+
+        //test full stop as word separator
+        $this->assertFalse($this->match('one four.two.', 'match_w(one_two)'));
+        $this->assertTrue($this->match('one four two.greeedy', 'match_w(one_two)'));
+        $this->assertTrue($this->match('one four two.', 'match_w(one_two)'));
+
+        $this->assertTrue($this->match('one two.', 'match_wp0(one_two)'));
+        $this->assertFalse($this->match('one hello.two.', 'match_wp0(one_two)'));
+
+        $this->assertTrue($this->match('one two three.', 'match_wp1(one_three)'));
+        $this->assertFalse($this->match('one two.three.', 'match_wp1(one_three)'));
+        $this->assertTrue($this->match('one two.three.', 'match_w(one three)'));
+
+        $this->assertFalse($this->match('one two three.four five.', 'match_wp3(one_five)'));
+        $this->assertFalse($this->match('one three.four five.', 'match_wp3(one_five)'));
+        $this->assertFalse($this->match('one.five.', 'match_wp3(one_five)'));
     }
 
 

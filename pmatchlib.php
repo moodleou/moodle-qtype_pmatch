@@ -119,13 +119,11 @@ class pmatch_parsed_string {
         }
 
         $this->words = array();
-        $word = strtok($string, $this->options->worddividers . $this->options->converttospace."\n\r");
-        while ($word !== false) {
-            if ($word != ''){
-                $this->words[] = $word;
-            }
-            $word = strtok($this->options->worddividers . $this->options->converttospace);
-        };
+        $dividers = preg_quote($this->options->worddividers . $this->options->converttospace, '!');
+        //unmatched previous fullstop and none or more dividers
+        //or no full stop and one or more dividers
+        $pattern = "!((?<=\.)([$dividers])*)|([$dividers])+!";
+        $this->words = preg_split($pattern, $string);
         if (count($this->words) == 0){
             $this->words = array('');
         }
