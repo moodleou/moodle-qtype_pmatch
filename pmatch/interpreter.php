@@ -26,7 +26,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
-define('PMATCH_CHARACTER', '[a-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
+define('PMATCH_CHARACTER', '[A-Za-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
 define('PMATCH_NUMBER', '([+|-]( )?)?[0-9]+(\.[0-9]+)?');
 
 

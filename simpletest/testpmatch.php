@@ -538,7 +538,7 @@ EOF;
 
         //only allow one full stop (sentence divider)
         $parsedstring = new pmatch_parsed_string('e.g... tool.', $options);
-        $this->assertFalse($parsedstring->is_spelt_correctly());
+        $this->assertFalse($parsedstring->is_parseable());
 
         //anything in synonyms automatically passes
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queek queek', $options);

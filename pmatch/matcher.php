@@ -603,34 +603,28 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
     }
 }
 class pmatch_matcher_number extends pmatch_matcher_item
-            implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
-    public function match_phrase($words, $phraseleveloptions, $wordleveloptions) {
-        if (count($words) == 2) {
-            $studentinput = $words[0].$words[1];
-        } else {
-            $studentinput = $words[0];
-        }
-        if (0 === preg_match('![+|-]?[0-9]+(\.[0-9]+)?$!A', $studentinput)) {
+            implements pmatch_can_match_word {
+    public function match_word($word, $wordleveloptions) {
+        if (0 === preg_match('!'.PMATCH_NUMBER.'$!A', $word)) {
             return false;
         } else {
             $teacherinput = str_replace(' ', '', $this->interpreter->get_code_fragment());
+            $word = str_replace(' ', '', $word);
             $numberparts = array();
-            preg_match('!([+|-]( )?)?[0-9]+(\.[0-9]+)?$!A',
+            preg_match('!'.PMATCH_NUMBER.'$!A',
                         $this->interpreter->get_code_fragment(),
                         $numberparts);
             if (isset($numberparts[3]) && strlen($numberparts[3]) > 0) {
                 $decplaces = strlen($numberparts[3]) - 1;
-                $studentinputrounded = round((float)$studentinput, $decplaces);
+                $studentinputrounded = round((float)$word, $decplaces);
                 $teacherinput = (float)$teacherinput;
                 return $studentinputrounded == $teacherinput;
             } else {
-                return ($teacherinput + 0) == ($studentinput + 0);
+                return ($teacherinput + 0) == ($word + 0);
             }
         }
     }
-    public function can_match_len($phraseleveloptions) {
-        return array(1, 2);//a number can look like two words to the matcher as it may have a space
-    }
+
 }
 class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
             implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase {

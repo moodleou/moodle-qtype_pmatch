@@ -79,7 +79,7 @@ class pmatch_options {
         foreach ($synonyms as $synonym) {
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = str_replace('\*',
-                        '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*', $toreplaceitem);
+                        '('.$this->character_in_word_patern().')*', $toreplaceitem);
             //the ?<= and ?= ensures that the adjacent characters are not replaced also
             $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
             if ($this->ignorecase) {
@@ -94,6 +94,57 @@ class pmatch_options {
             }
         }
     }
+
+    public function words_to_ignore_patterns() {
+        $words = array_merge($this->extradictionarywords, $this->nospellcheckwords);
+        $wordpatterns = array(PMATCH_NUMBER);
+        foreach ($words as $word) {
+            if (trim($word) === '') {
+                continue;
+            }
+            $wordpattern = preg_quote($word, '!');
+            $wordpattern = str_replace('\*',
+                                        '('.$this->character_in_word_patern().')*',
+                                        $wordpattern);
+            $wordpatterns[] = $wordpattern;
+        }
+        return $wordpatterns;
+    }
+
+    /*
+     * @return string fragment of preg_match pattern to match sentence separator.
+     */
+    public function sentence_divider_pattern() {
+        return $this->pattern_to_match_any_of($this->sentencedividers);
+    }
+
+    public function word_divider_pattern() {
+        return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace, '!');
+    }
+
+    public function character_in_word_patern() {
+        return PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER;
+    }
+
+    public function pattern_options() {
+        if ($this->ignorecase) {
+            return 'i';
+        } else {
+            return '';
+        }
+    }
+
+    private function pattern_to_match_any_of($charsinstring) {
+        $pattern = '';
+        foreach (str_split($charsinstring) as $char) {
+            if ($pattern != '') {
+                $pattern .= '|';
+            }
+            $pattern .= preg_quote($char, '!');
+        }
+        return $pattern;
+    }
+
 }
 
 /**
@@ -108,10 +159,13 @@ class pmatch_parsed_string {
     /** @var array of words created by splitting $string by $options->worddividers */
     public $words;
 
+
     private $misspelledwords = null;
 
+    private $unrecognizedfragment = '';
+
     /**
-     * Constructor.
+     * Constructor. Parses string.
      * @param string $string the string to match against.
      * @param pmatch_options $options the options to use.
      */
@@ -123,15 +177,47 @@ class pmatch_parsed_string {
         }
 
         $this->words = array();
-        $dividers = preg_quote($this->options->worddividers . $this->options->converttospace, '!');
-        //unmatched previous fullstop and none or more dividers
-        //or no full stop and one or more dividers
-        $pattern = "!((?<=\.)([$dividers])*)|([$dividers])+!";
-        $this->words = preg_split($pattern, $string);
+        $wordno = 0;
+        $cursor = 0;
+        $string = trim($string);//trim off any extra whitespace
+
+        $sd = $this->options->sentence_divider_pattern();
+        $wd = $this->options->word_divider_pattern();
+        $wtis = $this->options->words_to_ignore_patterns();
+        $po = $this->options->pattern_options();
+        $ciw = $this->options->character_in_word_patern();
+        while ($cursor < strlen($string)) {
+            $toprocess = substr($string, $cursor);
+            $matches = array();
+            foreach ($wtis as $wti) {
+                if (preg_match("!({$wti}({$sd})?)({$wd})*!A$po", $toprocess, $matches)) {
+                    break;
+                }
+            }
+            if (!count($matches)) {
+                if (!preg_match("!(({$ciw})+({$sd})?)({$wd})*!A$po", $toprocess, $matches)) {
+                    //try to find next recognizable word
+                    if (preg_match("!(({$ciw})+({$sd})?)({$wd})*!$po",
+                                                $toprocess, $matches, PREG_OFFSET_CAPTURE)) {
+                        $this->unrecognizedfragment = substr($toprocess, $matches[0][1]);
+                        $cursor = $cursor + $matches[0][1];
+                        continue;
+                    } else {
+                        $this->unrecognizedfragment = $toprocess;
+                        break;
+                    }
+                }
+            }
+            $this->words[$wordno] = $matches[1];
+            $wordno++;
+            $cursor = $cursor + strlen($matches[0]);
+        }
+
         if (count($this->words) == 0) {
             $this->words = array('');
         }
     }
+
 
     /**
      * @return boolean returns false if any word is misspelt.
@@ -141,7 +227,19 @@ class pmatch_parsed_string {
         return (count($this->misspelledwords) == 0);
     }
 
-    protected function spell_check($words) {
+    public function is_parseable() {
+        if ($this->unrecognizedfragment === ''){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function unparseable() {
+        return $this->unrecognizedfragment;
+    }
+
+    protected function spell_check() {
         global $COURSE;
         $langidparts = explode('_', $this->options->lang);
         $langforspellchecker = $langidparts[0];
@@ -158,34 +256,20 @@ class pmatch_parsed_string {
                         "but no aspell dictionary installed - '{$langforspellchecker}'.");
             return array();//if dictionary is not installed for this language we cannot spell check
         }
-        $misspelledwords = array();
-        $wordstoignore = array_merge($this->options->extradictionarywords,
-                                        $this->options->nospellcheckwords);
-        $wordstoignorepatterns = array(PMATCH_NUMBER);
-        foreach ($wordstoignore as $wordtoignore) {
-            $wordstoignorepattern = preg_quote($wordtoignore, '!');
-            $wordstoignorepattern = str_replace('\*',
-                                        '('.PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER.')*',
-                                        $wordstoignorepattern);
-            $wordstoignorepatterns[] = $wordstoignorepattern;
-        }
-        $sentencedividerpattern = '';
-        foreach (str_split($this->options->sentencedividers) as $sentencedivider) {
-            if ($sentencedividerpattern != '') {
-                $sentencedividerpattern .= '|';
-            }
-            $sentencedividerpattern .= preg_quote($sentencedivider);
-        }
-        $endofpattern = '('.$sentencedividerpattern.')?$!A';
+
+
+        $endofpattern = '('.$this->options->sentence_divider_pattern().')?$!A';
         if ($this->options->ignorecase) {
             $endofpattern .= 'i';
         }
-        $words = array_unique($words);
-        foreach ($wordstoignorepatterns as $wordstoignorepattern) {
+        $words = array_unique($this->words);
+        foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
             $words = (preg_grep('!'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
         }
+        $misspelledwords = array();
         foreach ($words as $word) {
             $textlib = textlib_get_instance();
+            //chop off exactly one sentence divider if present.
             if (false !== strpos($this->options->sentencedividers, $textlib->substr($word, -1))) {
                 $word = $textlib->substr($word, 0, $textlib->strlen($word)-1);
             }
