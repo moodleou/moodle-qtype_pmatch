@@ -92,10 +92,6 @@ class qtype_pmatch_question extends question_graded_by_strategy
         $this->responsevalidationerrors = array();
 
         $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
-        if (!$parsestring->is_parseable()) {
-            $a = $parsestring->unparseable();
-            $this->responsevalidationerrors[] = get_string('unparseable', 'qtype_pmatch', $a);
-        }
         if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()) {
             $misspelledwords = $parsestring->get_spelling_errors();
             $a = join(' ', $misspelledwords);
