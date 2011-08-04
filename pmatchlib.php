@@ -149,7 +149,6 @@ class pmatch_parsed_string {
         if (!function_exists('pspell_new')) {
             add_to_log($COURSE->id, 'question', 'error', '',
                             'Attempted to spell check but pspell is not installed.');
-            error_log('Attempted to spell check but pspell is not installed.');
             return array();
         }
         $pspell_link = pspell_new($langforspellchecker);
