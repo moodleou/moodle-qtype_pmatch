@@ -203,8 +203,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
         //check sizes of answer box within a reasonable range
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $data['questiontext']['text'], $matches)) {
-            $rows = $matches[1];
-            $cols = $matches[2];
+            $cols = $matches[1];
+            $rows = $matches[2];
             $placeholder = $matches[0];
         } else if (preg_match('/__([0-9]+)__/', $data['questiontext']['text'], $matches)) {
             $rows = 1;

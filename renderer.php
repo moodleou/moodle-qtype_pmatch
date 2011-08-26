@@ -71,8 +71,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
-            $rows = $matches[1];
-            $cols = $matches[2];
+            $cols = $matches[1];
+            $rows = $matches[2];
         } else {
             if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
                 $placeholder = $matches[0];
