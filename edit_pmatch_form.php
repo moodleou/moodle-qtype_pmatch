@@ -77,9 +77,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
                                                 get_string('filloutoneanswer', 'qtype_pmatch'));
         $mform->closeHeaderBefore('answersinstruct');
 
-        $creategrades = get_grade_options();
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
-                $creategrades->gradeoptions);
+                question_bank::fraction_options());
 
         $mform->addElement('header', 'otheranswerhdr',
                                                 get_string('anyotheranswer', 'qtype_pmatch'));
