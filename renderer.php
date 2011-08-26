@@ -43,7 +43,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $inputname = $qa->get_qt_field_name('answer');
         $attributes = array(
             'name' => $inputname,
-            'id' => $inputname,
+            'id' => $inputname
         );
 
         if ($options->readonly) {
@@ -62,8 +62,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $feedbackimg = $this->feedback_image($fraction);
         }
 
-        $usehtmleditor = !$options->readonly &&
-                                    ($question->allowsubscript || $question->allowsuperscript);
+        $usehtmleditor = $question->allowsubscript || $question->allowsuperscript;
 
         $questiontext = $question->format_questiontext($qa);
         $rows = 2;
@@ -85,7 +84,13 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $rows = round($rows * 1.1);
         $cols = round($cols * 1.1);
 
-        if ($usehtmleditor || $rows > 1) {
+        if ($usehtmleditor && $options->readonly) {
+            $input = html_writer::tag('span', $currentanswer, $attributes) . $feedbackimg;
+        } else if ($usehtmleditor) {
+            $attributes['rows'] = 2;
+            $attributes['cols'] = $cols;
+            $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
+        } else if ($rows > 1) {
             $attributes['rows'] = $rows;
             $attributes['cols'] = $cols;
             $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
@@ -111,16 +116,21 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $result .= html_writer::end_tag('div');
         }
 
-        if ($usehtmleditor) {
-            $colsem = floor($cols/2).'em';
-            $rowsem = floor(1.5*$rows +1).'em'; // need some extra space for sub and superscript
-            //don't override key events for arrow and return keys for a multiline input
-            $overridekeyevents = ($rows == 1);
-            $this->page->requires->js_init_call('M.qtype_pmatch.initeditor',
-                                                                array($inputname,
-                                                                        $colsem, $rowsem,
-                                                                        true, true,
-                                                                        $overridekeyevents));
+        if ($usehtmleditor && !$options->readonly) {
+            if ($question->allowsubscript && $question->allowsuperscript) {
+                $supsub = 'both';
+            } else if ($question->allowsuperscript) {
+                $supsub = 'sup';
+            } else if ($question->allowsubscript) {
+                $supsub = 'sub';
+            }
+            $options = array(
+                'supsub' => $supsub
+            );
+            $editor = get_texteditor('supsub');
+            if ($editor !== false) {
+                $editor->use_editor($attributes['id'], $options);
+            }
         }
 
         if ($qa->get_state() == question_state::$invalid) {
