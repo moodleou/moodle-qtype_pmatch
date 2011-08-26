@@ -69,6 +69,7 @@ $string['pmatch_link'] = 'question/type/pmatch';
 $string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pattern match syntax.';
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['spellingmistakes'] = 'The following words are not in our dictionary : {$a}. Please correct your spelling.';
+$string['subsuponelineonly'] = 'The sub / super script editor can only be used with an input box one line high.';
 $string['synonym'] = 'Synonyms';
 $string['synonymcontainsillegalcharacters'] = 'Synonym contains illegal characters.';
 $string['synonymsheader'] = 'Define Synonyms For Words in Answers';

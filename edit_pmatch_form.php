@@ -214,6 +214,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if ($placeholder && ($rows > 100 || $cols > 150)) {
             $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
         }
+        if ($placeholder && $rows > 1 && ($data['allowsubscript'] || $data['allowsuperscript'])) {
+            $errors['questiontext'] = get_string('subsuponelineonly', 'qtype_pmatch');
+        }
 
         $wordssofar = array();
         foreach ($data['synonymsdata'] as $key => $synonym) {
