@@ -63,7 +63,12 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
 
         $usehtmleditor = $question->allowsubscript || $question->allowsuperscript;
-
+        if ($usehtmleditor) {
+            $editor = get_texteditor('supsub');
+            if ($editor === false) {
+                $usehtmleditor = false;
+            }
+        }
         $questiontext = $question->format_questiontext($qa);
         $rows = 2;
         $cols = 50;
@@ -127,10 +132,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $options = array(
                 'supsub' => $supsub
             );
-            $editor = get_texteditor('supsub');
-            if ($editor !== false) {
-                $editor->use_editor($attributes['id'], $options);
-            }
+            $editor->use_editor($attributes['id'], $options);
         }
 
         if ($qa->get_state() == question_state::$invalid) {
