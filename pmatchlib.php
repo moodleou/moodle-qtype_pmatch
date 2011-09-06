@@ -199,7 +199,7 @@ class pmatch_parsed_string {
                     //try to find next recognizable word
                     if (preg_match("!(({$ciw})+({$sd})?)({$wd})*!$po",
                                                 $toprocess, $matches, PREG_OFFSET_CAPTURE)) {
-                        $this->unrecognizedfragment = substr($toprocess, $matches[0][1]);
+                        $this->unrecognizedfragment = substr($toprocess, 0, $matches[0][1]);
                         $cursor = $cursor + $matches[0][1];
                         continue;
                     } else {
