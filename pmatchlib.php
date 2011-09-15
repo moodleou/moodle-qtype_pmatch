@@ -189,7 +189,7 @@ class pmatch_parsed_string {
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
-            $endofword = "(({$sd})|({$wd})+|$)";
+            $endofword = "((({$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
                 if (preg_match("!({$wti})$endofword!A$po", $toprocess, $matches)) {
                     //we found a number or extra dictionary word
@@ -203,8 +203,8 @@ class pmatch_parsed_string {
                 }
             }
             $this->words[$wordno] = $matches[1];
-            if (isset($matches[3])) {
-                $this->words[$wordno] .= $matches[3];
+            if (isset($matches[4])) {
+                $this->words[$wordno] .= $matches[4];
             }
             t(array('words' => $this->words, 'matches' => $matches));
             $wordno++;
