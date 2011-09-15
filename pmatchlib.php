@@ -189,26 +189,24 @@ class pmatch_parsed_string {
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
+            $endofword = "(({$sd})|({$wd})+|$)";
             foreach ($wtis as $wti) {
-                if (preg_match("!({$wti}({$sd})?)({$wd})*!A$po", $toprocess, $matches)) {
+                if (preg_match("!({$wti})$endofword!A$po", $toprocess, $matches)) {
+                    //we found a number or extra dictionary word
                     break;
                 }
             }
             if (!count($matches)) {
-                if (!preg_match("!(({$ciw})+({$sd})?)({$wd})*!A$po", $toprocess, $matches)) {
-                    //try to find next recognizable word
-                    if (preg_match("!(({$ciw})+({$sd})?)({$wd})*!$po",
-                                                $toprocess, $matches, PREG_OFFSET_CAPTURE)) {
-                        $this->unrecognizedfragment = substr($toprocess, 0, $matches[0][1]);
-                        $cursor = $cursor + $matches[0][1];
-                        continue;
-                    } else {
-                        $this->unrecognizedfragment = $toprocess;
-                        break;
-                    }
+                if (!preg_match("!(.+?)$endofword!A$po", $toprocess, $matches)){
+                    //ignore the rest of the string
+                    break;
                 }
             }
             $this->words[$wordno] = $matches[1];
+            if (isset($matches[3])) {
+                $this->words[$wordno] .= $matches[3];
+            }
+            t(array('words' => $this->words, 'matches' => $matches));
             $wordno++;
             $cursor = $cursor + strlen($matches[0]);
         }
