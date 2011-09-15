@@ -41,7 +41,7 @@ class pmatch_options {
     public $ignorecase;
 
     /** @var string of sentence divider characters. */
-    public $sentencedividers = '.';
+    public $sentencedividers = '.?!';
 
     /** @var string of word diveder characters. */
     public $worddividers = " \f\n\r\t";
@@ -268,7 +268,8 @@ class pmatch_parsed_string {
         foreach ($words as $word) {
             $textlib = textlib_get_instance();
             //chop off exactly one sentence divider if present.
-            if (false !== strpos($this->options->sentencedividers, $textlib->substr($word, -1))) {
+            $sd = $this->options->sentence_divider_pattern();
+            if (1 === preg_match('!'.$sd.'$!', $word)) {
                 $word = $textlib->substr($word, 0, $textlib->strlen($word)-1);
             }
 
