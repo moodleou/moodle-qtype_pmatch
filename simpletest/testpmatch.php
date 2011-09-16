@@ -329,17 +329,6 @@ EOF;
         $this->assertFalse($this->match('baccffff fffdffff ffffffff',
                                         'match_m2o(ffffffff abcdffff baccffff)'));
 
-        //if a float is in the description expect a float,
-        //round the student answer to the same precision before matching
-        $this->assertTrue($this->match('1.981', 'match(1.98)'));
-        $this->assertTrue($this->match('-1.9851', 'match(- 1.985)'));
-        $this->assertTrue($this->match('1.98', 'match(+1.98)'));
-        $this->assertTrue($this->match('+1.98499999', 'match(+1.98)'));
-        $this->assertTrue($this->match('+101', 'match(101)'));
-        $this->assertTrue($this->match('- 50', 'match(- 50)'));
-        //if an integer is in the expression expect an integer
-        $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
-
         //this should not match as the proximity delimiter precludes another word match occuring
         //between the two words separated by it.
         $this->assertFalse($this->match('abcd ccc ffff', 'match_o(abcd_ffff ccc)'));
@@ -514,6 +503,47 @@ EOF;
         $this->assertFalse($this->match('one two three.four five.', 'match_wp3(one_five)'));
         $this->assertFalse($this->match('one three.four five.', 'match_wp3(one_five)'));
         $this->assertFalse($this->match('one.five.', 'match_wp3(one_five)'));
+    }
+
+    public function test_pmatch_number_matching() {
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '1.981'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-1.981'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>3</sup>'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>-3</sup>'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x10<sup>-3</sup>'));
+        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11<sup>-3</sup>'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101e3'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101e-3'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11e-3'));
+        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
+
+        $this->assertTrue($this->match('1.981', 'match(1.981)'));
+        $this->assertTrue($this->match('-1.985', 'match(- 1.985)'));
+        $this->assertTrue($this->match('1.98', 'match(+1.98)'));
+        $this->assertTrue($this->match('+1.98', 'match(+1.98)'));
+        $this->assertTrue($this->match('+101', 'match(101)'));
+        $this->assertTrue($this->match('- 50', 'match(- 50)'));
+        $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
+
+        $this->assertTrue($this->match('- 50', 'match(-50e0)'));
+        $this->assertTrue($this->match('- 50', 'match(- 50e0)'));
+        $this->assertTrue($this->match('- 50', 'match(- 5e1)'));
+        $this->assertTrue($this->match('- 50', 'match(- 5e+1)'));
+        $this->assertTrue($this->match('-0.5', 'match(- 5e-1)'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-5*10<sup>-1</sup>'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
+        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
+        $this->assertTrue($this->match('-0.5', 'match(-5*10<sup>-1</sup>)'));
+        $this->assertTrue($this->match('-0.5', 'match(- 5x10<sup>-1</sup>)'));
+        $this->assertTrue($this->match('-0.5', 'match(- 5X10<sup>-1</sup>)'));
+
+        $this->assertTrue($this->match('100.11', 'match(1.001099e2)'));
+        $this->assertTrue($this->match('1.234561x10<sup>3</sup>', 'match(1234.56)'));
+
+        $this->assertTrue($this->match('10.011<sup>3</sup>', 'match(10 011<sup>3</sup>)'));
+        $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
     }
 
 }

@@ -189,7 +189,8 @@ class pmatch_parsed_string {
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
-            $endofword = "((({$sd})({$wd})*)|({$wd})+|$)";
+            //using a named sub pattern to make sure to capture the sentence divider
+            $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
                 if (preg_match("!({$wti})$endofword!A$po", $toprocess, $matches)) {
                     //we found a number or extra dictionary word
@@ -203,10 +204,9 @@ class pmatch_parsed_string {
                 }
             }
             $this->words[$wordno] = $matches[1];
-            if (isset($matches[4])) {
-                $this->words[$wordno] .= $matches[4];
+            if (isset($matches['sd'])) {
+                $this->words[$wordno] .= $matches['sd'];
             }
-            t(array('words' => $this->words, 'matches' => $matches));
             $wordno++;
             $cursor = $cursor + strlen($matches[0]);
         }
@@ -214,6 +214,7 @@ class pmatch_parsed_string {
         if (count($this->words) == 0) {
             $this->words = array('');
         }
+        print_object($this->words);
     }
 
 
@@ -353,6 +354,7 @@ class pmatch_expression {
                 $this->errormessage = get_string('ie_unrecognisedexpression', 'qtype_pmatch');
             }
         }
+        print_object($this->interpreter);
     }
 
     /**

@@ -27,8 +27,15 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
 define('PMATCH_CHARACTER', '[A-Za-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
-define('PMATCH_NUMBER', '([+|-]( )?)?[0-9]+(\.[0-9]+)?');
 
+define('PMATCH_LNUM', '[0-9]+');
+define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
+define('PMATCH_HTML_EXPONENT', '[*xX]10<(sup|SUP)>([+-]?'.PMATCH_LNUM.')</(sup|SUP)>');
+define('PMATCH_EXPONENT_DNUM', '(('.PMATCH_LNUM.'|'.PMATCH_DNUM.')'.
+                            '([eE][+-]?'.PMATCH_LNUM.'|'.PMATCH_HTML_EXPONENT.'))');
+define('PMATCH_NUMBER', '((([+|-]( )?)?'.PMATCH_EXPONENT_DNUM.')'.
+                            '|(([+|-]( )?)?'.PMATCH_DNUM.')'.
+                            '|(([+|-]( )?)?'.PMATCH_LNUM.'))');
 
 abstract class pmatch_interpreter_item {
     protected $interpretererrormessage;

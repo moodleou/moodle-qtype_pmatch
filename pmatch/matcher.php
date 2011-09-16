@@ -608,21 +608,21 @@ class pmatch_matcher_number extends pmatch_matcher_item
         if (0 === preg_match('!'.PMATCH_NUMBER.'$!A', $word)) {
             return false;
         } else {
-            $teacherinput = str_replace(' ', '', $this->interpreter->get_code_fragment());
-            $word = str_replace(' ', '', $word);
-            $numberparts = array();
-            preg_match('!'.PMATCH_NUMBER.'$!A',
-                        $this->interpreter->get_code_fragment(),
-                        $numberparts);
-            if (isset($numberparts[3]) && strlen($numberparts[3]) > 0) {
-                $decplaces = strlen($numberparts[3]) - 1;
-                $studentinputrounded = round((float)$word, $decplaces);
-                $teacherinput = (float)$teacherinput;
-                return $studentinputrounded == $teacherinput;
-            } else {
-                return ($teacherinput + 0) == ($word + 0);
-            }
+            $studentinput = $this->cleanup_number($word);
+            $teacherinput = $this->cleanup_number($this->interpreter->get_code_fragment());
+            return abs($teacherinput - $studentinput) < abs(1e-6 * $teacherinput);
         }
+    }
+    /**
+     *
+     * Take a string that is part of the pmatch expression or that the student has entered
+     * and clean it up into a format that php understands then cast it as a float and
+     * return it.
+     */
+    public function cleanup_number($numberstr) {
+        $numberstr = str_replace(' ', '', $numberstr);
+        $numberstr = preg_replace('!'.PMATCH_HTML_EXPONENT.'!', 'e$2', $numberstr);
+        return (float)$numberstr;
     }
 
 }
