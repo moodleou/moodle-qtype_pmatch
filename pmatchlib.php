@@ -118,6 +118,21 @@ class pmatch_options {
         return $this->pattern_to_match_any_of($this->sentencedividers);
     }
 
+    /**
+     *
+     * Strip one and only one sentence divider from the end of a string.
+     * @param string $string
+     * @return string with sentence divider stripped off.
+     */
+    public function strip_sentence_divider($string) {
+        $textlib = textlib_get_instance();
+        $sd = $this->sentence_divider_pattern();
+        if (1 === preg_match('!('.$sd.')$!', $string)) {
+            $string = $textlib->substr($string, 0, $textlib->strlen($string)-1);
+        }
+        return $string;
+    }
+
     public function word_divider_pattern() {
         return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace, '!');
     }
@@ -214,7 +229,6 @@ class pmatch_parsed_string {
         if (count($this->words) == 0) {
             $this->words = array('');
         }
-        print_object($this->words);
     }
 
 
@@ -267,12 +281,7 @@ class pmatch_parsed_string {
         }
         $misspelledwords = array();
         foreach ($words as $word) {
-            $textlib = textlib_get_instance();
-            //chop off exactly one sentence divider if present.
-            $sd = $this->options->sentence_divider_pattern();
-            if (1 === preg_match('!'.$sd.'$!', $word)) {
-                $word = $textlib->substr($word, 0, $textlib->strlen($word)-1);
-            }
+            $word = $this->options->strip_sentence_divider($word);
 
             if (!pspell_check($pspell_link, $word)) {
                 $misspelledwords[] = $word;
@@ -354,7 +363,6 @@ class pmatch_expression {
                 $this->errormessage = get_string('ie_unrecognisedexpression', 'qtype_pmatch');
             }
         }
-        print_object($this->interpreter);
     }
 
     /**

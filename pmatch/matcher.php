@@ -605,6 +605,7 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 class pmatch_matcher_number extends pmatch_matcher_item
             implements pmatch_can_match_word {
     public function match_word($word, $wordleveloptions) {
+        $word = $this->externaloptions->strip_sentence_divider($word);
         if (0 === preg_match('!'.PMATCH_NUMBER.'$!A', $word)) {
             return false;
         } else {
@@ -661,7 +662,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         return $adjustedwordleveloptions;
     }
     public function match_word($word, $wordleveloptions) {
-        $word = rtrim($word, $this->externaloptions->sentencedividers);
+        $word = $this->externaloptions->strip_sentence_divider($word);
         $this->wordleveloptions = $this->check_word_level_options($wordleveloptions);
         if ($this->check_match_branches($word, $this->wordleveloptions->get_misspellings())) {
             return true;
