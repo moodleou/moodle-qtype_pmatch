@@ -62,11 +62,11 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $feedbackimg = $this->feedback_image($fraction);
         }
 
-        $usehtmleditor = $question->allowsubscript || $question->allowsuperscript;
-        if ($usehtmleditor) {
+        $htmlresponse = $question->allowsubscript || $question->allowsuperscript;
+        if ($htmlresponse) {
             $editor = get_texteditor('supsub');
             if ($editor === false) {
-                $usehtmleditor = false;
+                $htmlresponse = false;
             }
         }
         $questiontext = $question->format_questiontext($qa);
@@ -89,9 +89,10 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $rows = round($rows * 1.1);
         $cols = round($cols * 1.1);
 
-        if ($usehtmleditor && $options->readonly) {
+        if ($htmlresponse && $options->readonly) {
             $input = html_writer::tag('span', $currentanswer, $attributes) . $feedbackimg;
-        } else if ($usehtmleditor) {
+        } else if ($htmlresponse) {
+            $this->require_editor_js();
             $attributes['rows'] = 2;
             $attributes['cols'] = $cols;
             $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
@@ -121,7 +122,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $result .= html_writer::end_tag('div');
         }
 
-        if ($usehtmleditor && !$options->readonly) {
+        if ($htmlresponse && !$options->readonly) {
             if ($question->allowsubscript && $question->allowsuperscript) {
                 $supsub = 'both';
             } else if ($question->allowsuperscript) {
@@ -160,13 +161,12 @@ class qtype_pmatch_renderer extends qtype_renderer {
         return '';
     }
 
-    public function head_code(question_attempt $qa) {
+    public function require_editor_js() {
         $this->page->requires->yui2_lib('yahoo');
         $this->page->requires->yui2_lib('dom');
         $this->page->requires->yui2_lib('event');
         $this->page->requires->yui2_lib('element');
         $this->page->requires->yui2_lib('container');
         $this->page->requires->yui2_lib('editor');
-        return parent::head_code($qa);
     }
 }
