@@ -156,6 +156,11 @@ class qtype_pmatch extends question_type {
 
         }
 
+        // Delete any remaining synonyms.
+        foreach ($oldsynonyms as $oldsynonym) {
+            $DB->delete_records('qtype_pmatch_synonyms', array('id' => $oldsynonym->id));
+        }
+
         if (!isset($question->extenddictionary)) {
             $question->extenddictionary = '';
         }
