@@ -42,6 +42,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         $inputname = $qa->get_qt_field_name('answer');
         $attributes = array(
+            'class' => 'answerinputfield',
             'name' => $inputname,
             'id' => $inputname
         );
@@ -58,7 +59,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $attributes['class'] = $this->feedback_class($fraction);
+            $attributes['class'] .= ' '.$this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 
