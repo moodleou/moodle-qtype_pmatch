@@ -108,8 +108,9 @@ class pmatch_examples_test extends UnitTestCase {
             }
 
             $string = new pmatch_parsed_string($data[0]);
-            $this->assertEqual((bool)$data[1], $expression->matches($string),
-                    'File ' . $name . '.responses.csv, line ' . $row . ', %s');
+            $this->assertEqual((bool) trim($data[1]), $expression->matches($string),
+                    'File ' . $name . '.responses.csv, line ' . $row .
+                    ' "' . s($data[0]) . '", %s');
         }
 
         fclose($handle);

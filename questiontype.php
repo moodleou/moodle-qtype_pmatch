@@ -220,7 +220,8 @@ class qtype_pmatch extends question_type {
             ++$acount;
         }
 
-        $format->import_hints($question, $data, true);
+        $format->import_hints($question, $data, true, false,
+                $format->get_format($question->questiontextformat));
 
         $question->otherfeedback['text'] = '';
 
