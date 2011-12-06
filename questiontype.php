@@ -52,10 +52,6 @@ class qtype_pmatch extends question_type {
                 'forcelength', 'applydictionarycheck', 'extenddictionary', 'converttospace');
     }
 
-    protected function questionid_column_name() {
-        return 'questionid';
-    }
-
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_answers($questionid, $oldcontextid, $newcontextid);
