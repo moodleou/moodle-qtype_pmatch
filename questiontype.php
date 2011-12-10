@@ -68,71 +68,10 @@ class qtype_pmatch extends question_type {
 
     public function save_question_options($question) {
         global $DB;
-        $result = new stdClass();
-
-        $context = $question->context;
-
-        $oldanswers = $DB->get_records('question_answers',
-                array('question' => $question->id), 'id ASC');
-
-        $maxfraction = -1;
-
-        // Insert all the new answers
-        foreach ($question->answer as $key => $answerdata) {
-            // Check for, and ignore, completely blank answer from the form.
-            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
-                    html_is_blank($question->feedback[$key]['text'])) {
-                continue;
-            }
-
-            // Update an existing answer if possible.
-            $answer = array_shift($oldanswers);
-            if (!$answer) {
-                $answer = new stdClass();
-                $answer->question = $question->id;
-                $answer->answer = '';
-                $answer->feedback = '';
-                $answer->id = $DB->insert_record('question_answers', $answer);
-            }
-
-            $answer->answer = trim($answerdata);
-            $expression = new pmatch_expression($answer->answer);
-            if ($expression->is_valid()) {
-                $answer->answer = $expression->get_formatted_expression_string();
-            }
-
-            $answer->fraction = $question->fraction[$key];
-            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
-                    $context, 'question', 'answerfeedback', $answer->id);
-            $answer->feedbackformat = $question->feedback[$key]['format'];
-            $DB->update_record('question_answers', $answer);
-
-            if ($question->fraction[$key] > $maxfraction) {
-                $maxfraction = $question->fraction[$key];
-            }
-        }
-
-        if (!html_is_blank($question->otherfeedback['text'])) {
-            $otheranswer = new stdClass();
-            $otheranswer->answer = '*';
-            $otheranswer->fraction = 0;
-            $otheranswer->feedback = '';
-            $otheranswer->question = $question->id;
-            $oldotheranswer = array_shift($oldanswers);
-            if (!$oldotheranswer) {
-                $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
-            } else {
-                $otheranswer->id = $oldotheranswer->id;
-            }
-            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
-                    $context, 'question', 'answerfeedback', $otheranswer->id);
-            $otheranswer->feedbackformat = $question->otherfeedback['format'];
-            $DB->update_record('question_answers', $otheranswer);
-        }
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
                 array('questionid' => $question->id), 'id ASC');
-        // Insert all the new answers
+
         foreach ($question->synonymsdata as $key => $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
             $word = trim($synonymfromform['word']);
@@ -170,20 +109,85 @@ class qtype_pmatch extends question_type {
             return $parentresult;
         }
 
-        // Delete any left over old answer records.
-        $fs = get_file_storage();
-        foreach ($oldanswers as $oldanswer) {
-            $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
-            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
-        }
-
         $this->save_hints($question);
 
+        return $this->save_answers($question);
+    }
+
+    protected function save_answers($question) {
+        global $DB;
+        $oldanswers = $DB->get_records('question_answers',
+                                            array('question' => $question->id), 'id ASC');
+
+        $context = $question->context;
+        $maxfraction = -1;
+
+        // Insert all the new answers
+        foreach ($question->answer as $key => $answerdata) {
+            // Check for, and ignore, completely blank answer from the form.
+            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
+                    html_is_blank($question->feedback[$key]['text'])) {
+                continue;
+            }
+
+            // Update an existing answer if possible.
+            $answer = array_shift($oldanswers);
+            if (!$answer) {
+                $answer = new stdClass();
+                $answer->question = $question->id;
+                $answer->answer = '';
+                $answer->feedback = '';
+                $answer->id = $DB->insert_record('question_answers', $answer);
+            }
+
+            $answer->answer = trim($answerdata);
+            $expression = new pmatch_expression($answer->answer);
+            if ($expression->is_valid()) {
+                $answer->answer = $expression->get_formatted_expression_string();
+            }
+
+            $answer->fraction = $question->fraction[$key];
+            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
+                    $context, 'question', 'answerfeedback', $answer->id);
+            $answer->feedbackformat = $question->feedback[$key]['format'];
+            $DB->update_record('question_answers', $answer);
+
+            if ($question->fraction[$key] > $maxfraction) {
+                $maxfraction = $question->fraction[$key];
+            }
+            $this->save_extra_answer_data($question, $key, $answer->id);
+        }
+
+        if (!html_is_blank($question->otherfeedback['text'])) {
+            $otheranswer = new stdClass();
+            $otheranswer->answer = '*';
+            $otheranswer->fraction = 0;
+            $otheranswer->feedback = '';
+            $otheranswer->question = $question->id;
+            $oldotheranswer = array_shift($oldanswers);
+            if (!$oldotheranswer) {
+                $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
+            } else {
+                $otheranswer->id = $oldotheranswer->id;
+            }
+            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
+                    $context, 'question', 'answerfeedback', $otheranswer->id);
+            $otheranswer->feedbackformat = $question->otherfeedback['format'];
+            $DB->update_record('question_answers', $otheranswer);
+            $this->save_extra_answer_data($question, 'other', $otheranswer->id);
+        }
         // Perform sanity checks on fractional grades
         if ($maxfraction != 1) {
+            $result = new stdClass();
             $result->noticeyesno = get_string('fractionsnomax', 'question', $maxfraction * 100);
             return $result;
+        } else {
+            return null;
         }
+    }
+
+    public function save_extra_answer_data($question, $key, $answerid) {
+
     }
 
     public function import_from_xml($data, $question, $format, $extra=null) {
