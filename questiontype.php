@@ -191,50 +191,13 @@ class qtype_pmatch extends question_type {
     }
 
     public function import_from_xml($data, $question, $format, $extra=null) {
-        if (!isset($data['@']['type']) || $data['@']['type'] != 'pmatch') {
-            return false;
-        }
-
-        $question = $format->import_headers($data);
-        $question->qtype = 'pmatch';
-
-        $question->allowsubscript = $format->trans_single(
-                $format->getpath($data, array('#', 'allowsubscript', 0, '#'), 1));
-        $question->allowsuperscript = $format->trans_single(
-                $format->getpath($data, array('#', 'allowsuperscript', 0, '#'), 1));
-        $question->forcelength = $format->trans_single(
-                $format->getpath($data, array('#', 'forcelength', 0, '#'), 1));
-        $question->usecase = $format->trans_single(
-                $format->getpath($data, array('#', 'usecase', 0, '#'), 1));
-        $question->applydictionarycheck = $format->trans_single(
-                $format->getpath($data, array('#', 'applydictionarycheck', 0, '#'), 1));
-        $question->converttospace = $format->import_text(
-                $format->getpath($data, array('#', 'converttospace', 0, '#', 'text'), ''));
-        $question->extenddictionary = $format->import_text(
-                $format->getpath($data, array('#', 'extenddictionary', 0, '#', 'text'), ''));
-
-        // Run through the answers
-        $answers = $data['#']['answer'];
-        $acount = 0;
-        foreach ($answers as $answer) {
-            $ans = $format->import_answer($answer);
-            $question->answer[$acount] = $ans->answer['text'];
-            $question->fraction[$acount] = $ans->fraction;
-            $question->feedback[$acount] = $ans->feedback;
-            ++$acount;
-        }
-
-        $format->import_hints($question, $data, true);
-
-        $question->otherfeedback['text'] = '';
-
+        $question = parent::import_from_xml($data, $question, $format, $extra);
         $synonyms = $format->getpath($data, array('#', 'synonym'), false);
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
         } else {
             $question->synonymsdata =array();
         }
-
         return $question;
     }
 
@@ -258,31 +221,8 @@ class qtype_pmatch extends question_type {
     }
 
     public function export_to_xml($question, $format, $extra = null) {
-        $output = '';
+        $output = parent::export_to_xml($question, $format, $extra);
 
-        $output .= "    <allowsubscript>";
-        $output .= $format->get_single($question->options->allowsubscript);
-        $output .= "</allowsubscript>\n";
-        $output .= "    <allowsuperscript>";
-        $output .= $format->get_single($question->options->allowsuperscript);
-        $output .= "</allowsuperscript>\n";
-        $output .= "    <forcelength>";
-        $output .= $format->get_single($question->options->forcelength);
-        $output .= "</forcelength>\n";
-        $output .= "    <usecase>";
-        $output .= $format->get_single($question->options->usecase);
-        $output .= "</usecase>\n";
-        $output .= "    <converttospace>\n";
-        $output .= $format->writetext($question->options->converttospace, 3);
-        $output .= "    </converttospace>\n";
-        $output .= "    <applydictionarycheck>";
-        $output .= $format->get_single($question->options->applydictionarycheck);
-        $output .= "</applydictionarycheck>\n";
-        $output .= "    <extenddictionary>\n";
-        $output .= $format->writetext($question->options->extenddictionary, 3);
-        $output .= "    </extenddictionary>\n";
-
-        $output .= $format->write_answers($question->options->answers);
         $output .= $this->write_synonyms($question->options->synonyms, $format);
 
         return $output;
