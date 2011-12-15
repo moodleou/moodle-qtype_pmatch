@@ -158,7 +158,7 @@ class qtype_pmatch extends question_type {
             $this->save_extra_answer_data($question, $key, $answer->id);
         }
 
-        if (!html_is_blank($question->otherfeedback['text'])) {
+        if (isset($question->otherfeedback) && !html_is_blank($question->otherfeedback['text'])) {
             $otheranswer = new stdClass();
             $otheranswer->answer = '*';
             $otheranswer->fraction = 0;
