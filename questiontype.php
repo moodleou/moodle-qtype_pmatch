@@ -198,6 +198,8 @@ class qtype_pmatch extends question_type {
         } else {
             $question->synonymsdata =array();
         }
+        $format->import_hints($question, $data, true, false,
+                                                $format->get_format($question->questiontextformat));
         return $question;
     }
 
