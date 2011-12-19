@@ -40,6 +40,41 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function definition_inner($mform) {
+        $this->general_answer_fields($mform);
+
+        $this->add_synonyms($mform);
+
+        $mform->addElement('static', 'answersinstruct',
+                                                get_string('correctanswers', 'qtype_pmatch'),
+                                                get_string('filloutoneanswer', 'qtype_pmatch'));
+        $mform->closeHeaderBefore('answersinstruct');
+
+        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
+                question_bank::fraction_options());
+
+        $this->add_other_answer_fields($mform);
+        $this->add_interactive_settings();
+    }
+
+    /**
+     * Add answer options for any other (wrong) answer.
+     *
+     * @param MoodleQuickForm $mform the form being built.
+     */
+    protected function add_other_answer_fields($mform) {
+        $mform->addElement('header', 'otheranswerhdr',
+                                                get_string('anyotheranswer', 'qtype_pmatch'));
+        $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
+        $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
+                                                        array('rows' => 5), $this->editoroptions);
+    }
+
+    /**
+     * Add answer options that are common to all answers.
+     *
+     * @param MoodleQuickForm $mform the form being built.
+     */
+    protected function general_answer_fields($mform) {
         $mform->addElement('header', 'generalheader',
                                                 get_string('answeringoptions', 'qtype_pmatch'));
         $menu = array(
@@ -69,24 +104,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         get_string('converttospace', 'qtype_pmatch'),
                         array('size' => 60));
         $mform->setDefault('converttospace', ',;:');
-
-        $this->add_synonyms($mform);
-
-        $mform->addElement('static', 'answersinstruct',
-                                                get_string('correctanswers', 'qtype_pmatch'),
-                                                get_string('filloutoneanswer', 'qtype_pmatch'));
-        $mform->closeHeaderBefore('answersinstruct');
-
-        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
-                question_bank::fraction_options());
-
-        $mform->addElement('header', 'otheranswerhdr',
-                                                get_string('anyotheranswer', 'qtype_pmatch'));
-        $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
-        $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
-                                array('rows' => 5), $this->editoroptions);
-
-        $this->add_interactive_settings();
     }
 
     /**
@@ -99,7 +116,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      *                       field holding an array of answers
      * @return array of form fields.
      */
-    protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
+    protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                                             &$repeatedoptions, &$answersoption) {
         $repeated = array();
         $repeated[] = $mform->createElement('header', 'answerhdr', $label);

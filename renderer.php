@@ -42,6 +42,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         $inputname = $qa->get_qt_field_name('answer');
         $attributes = array(
+            'class' => 'answerinputfield',
             'name' => $inputname,
             'id' => $inputname
         );
@@ -58,7 +59,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $attributes['class'] = $this->feedback_class($fraction);
+            $attributes['class'] .= ' '.$this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 
@@ -92,7 +93,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
         if ($htmlresponse && $options->readonly) {
             $input = html_writer::tag('span', $currentanswer, $attributes) . $feedbackimg;
         } else if ($htmlresponse) {
-            $this->require_editor_js();
             $attributes['rows'] = 2;
             $attributes['cols'] = $cols;
             $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
@@ -161,12 +161,4 @@ class qtype_pmatch_renderer extends qtype_renderer {
         return '';
     }
 
-    public function require_editor_js() {
-        $this->page->requires->yui2_lib('yahoo');
-        $this->page->requires->yui2_lib('dom');
-        $this->page->requires->yui2_lib('event');
-        $this->page->requires->yui2_lib('element');
-        $this->page->requires->yui2_lib('container');
-        $this->page->requires->yui2_lib('editor');
-    }
 }

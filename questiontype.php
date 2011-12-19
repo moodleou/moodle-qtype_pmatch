@@ -64,71 +64,10 @@ class qtype_pmatch extends question_type {
 
     public function save_question_options($question) {
         global $DB;
-        $result = new stdClass();
-
-        $context = $question->context;
-
-        $oldanswers = $DB->get_records('question_answers',
-                array('question' => $question->id), 'id ASC');
-
-        $maxfraction = -1;
-
-        // Insert all the new answers
-        foreach ($question->answer as $key => $answerdata) {
-            // Check for, and ignore, completely blank answer from the form.
-            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
-                    html_is_blank($question->feedback[$key]['text'])) {
-                continue;
-            }
-
-            // Update an existing answer if possible.
-            $answer = array_shift($oldanswers);
-            if (!$answer) {
-                $answer = new stdClass();
-                $answer->question = $question->id;
-                $answer->answer = '';
-                $answer->feedback = '';
-                $answer->id = $DB->insert_record('question_answers', $answer);
-            }
-
-            $answer->answer = trim($answerdata);
-            $expression = new pmatch_expression($answer->answer);
-            if ($expression->is_valid()) {
-                $answer->answer = $expression->get_formatted_expression_string();
-            }
-
-            $answer->fraction = $question->fraction[$key];
-            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
-                    $context, 'question', 'answerfeedback', $answer->id);
-            $answer->feedbackformat = $question->feedback[$key]['format'];
-            $DB->update_record('question_answers', $answer);
-
-            if ($question->fraction[$key] > $maxfraction) {
-                $maxfraction = $question->fraction[$key];
-            }
-        }
-
-        if (!html_is_blank($question->otherfeedback['text'])) {
-            $otheranswer = new stdClass();
-            $otheranswer->answer = '*';
-            $otheranswer->fraction = 0;
-            $otheranswer->feedback = '';
-            $otheranswer->question = $question->id;
-            $oldotheranswer = array_shift($oldanswers);
-            if (!$oldotheranswer) {
-                $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
-            } else {
-                $otheranswer->id = $oldotheranswer->id;
-            }
-            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
-                    $context, 'question', 'answerfeedback', $otheranswer->id);
-            $otheranswer->feedbackformat = $question->otherfeedback['format'];
-            $DB->update_record('question_answers', $otheranswer);
-        }
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
                 array('questionid' => $question->id), 'id ASC');
-        // Insert all the new answers
+
         foreach ($question->synonymsdata as $key => $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
             $word = trim($synonymfromform['word']);
@@ -166,68 +105,96 @@ class qtype_pmatch extends question_type {
             return $parentresult;
         }
 
-        // Delete any left over old answer records.
-        $fs = get_file_storage();
-        foreach ($oldanswers as $oldanswer) {
-            $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
-            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
-        }
-
         $this->save_hints($question);
 
+        return $this->save_answers($question);
+    }
+
+    protected function save_answers($question) {
+        global $DB;
+        $oldanswers = $DB->get_records('question_answers',
+                                            array('question' => $question->id), 'id ASC');
+
+        $context = $question->context;
+        $maxfraction = -1;
+
+        // Insert all the new answers
+        foreach ($question->answer as $key => $answerdata) {
+            // Check for, and ignore, completely blank answer from the form.
+            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
+                    html_is_blank($question->feedback[$key]['text'])) {
+                continue;
+            }
+
+            // Update an existing answer if possible.
+            $answer = array_shift($oldanswers);
+            if (!$answer) {
+                $answer = new stdClass();
+                $answer->question = $question->id;
+                $answer->answer = '';
+                $answer->feedback = '';
+                $answer->id = $DB->insert_record('question_answers', $answer);
+            }
+
+            $answer->answer = trim($answerdata);
+            $expression = new pmatch_expression($answer->answer);
+            if ($expression->is_valid()) {
+                $answer->answer = $expression->get_formatted_expression_string();
+            }
+
+            $answer->fraction = $question->fraction[$key];
+            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
+                    $context, 'question', 'answerfeedback', $answer->id);
+            $answer->feedbackformat = $question->feedback[$key]['format'];
+            $DB->update_record('question_answers', $answer);
+
+            if ($question->fraction[$key] > $maxfraction) {
+                $maxfraction = $question->fraction[$key];
+            }
+            $this->save_extra_answer_data($question, $key, $answer->id);
+        }
+
+        if (isset($question->otherfeedback) && !html_is_blank($question->otherfeedback['text'])) {
+            $otheranswer = new stdClass();
+            $otheranswer->answer = '*';
+            $otheranswer->fraction = 0;
+            $otheranswer->feedback = '';
+            $otheranswer->question = $question->id;
+            $oldotheranswer = array_shift($oldanswers);
+            if (!$oldotheranswer) {
+                $otheranswer->id = $DB->insert_record('question_answers', $otheranswer);
+            } else {
+                $otheranswer->id = $oldotheranswer->id;
+            }
+            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
+                    $context, 'question', 'answerfeedback', $otheranswer->id);
+            $otheranswer->feedbackformat = $question->otherfeedback['format'];
+            $DB->update_record('question_answers', $otheranswer);
+            $this->save_extra_answer_data($question, 'other', $otheranswer->id);
+        }
         // Perform sanity checks on fractional grades
         if ($maxfraction != 1) {
+            $result = new stdClass();
             $result->noticeyesno = get_string('fractionsnomax', 'question', $maxfraction * 100);
             return $result;
+        } else {
+            return null;
         }
     }
 
+    public function save_extra_answer_data($question, $key, $answerid) {
+    }
+
     public function import_from_xml($data, $question, $format, $extra=null) {
-        if (!isset($data['@']['type']) || $data['@']['type'] != 'pmatch') {
-            return false;
-        }
-
-        $question = $format->import_headers($data);
-        $question->qtype = 'pmatch';
-
-        $question->allowsubscript = $format->trans_single(
-                $format->getpath($data, array('#', 'allowsubscript', 0, '#'), 1));
-        $question->allowsuperscript = $format->trans_single(
-                $format->getpath($data, array('#', 'allowsuperscript', 0, '#'), 1));
-        $question->forcelength = $format->trans_single(
-                $format->getpath($data, array('#', 'forcelength', 0, '#'), 1));
-        $question->usecase = $format->trans_single(
-                $format->getpath($data, array('#', 'usecase', 0, '#'), 1));
-        $question->applydictionarycheck = $format->trans_single(
-                $format->getpath($data, array('#', 'applydictionarycheck', 0, '#'), 1));
-        $question->converttospace = $format->import_text(
-                $format->getpath($data, array('#', 'converttospace', 0, '#', 'text'), ''));
-        $question->extenddictionary = $format->import_text(
-                $format->getpath($data, array('#', 'extenddictionary', 0, '#', 'text'), ''));
-
-        // Run through the answers
-        $answers = $data['#']['answer'];
-        $acount = 0;
-        foreach ($answers as $answer) {
-            $ans = $format->import_answer($answer);
-            $question->answer[$acount] = $ans->answer['text'];
-            $question->fraction[$acount] = $ans->fraction;
-            $question->feedback[$acount] = $ans->feedback;
-            ++$acount;
-        }
-
-        $format->import_hints($question, $data, true, false,
-                $format->get_format($question->questiontextformat));
-
-        $question->otherfeedback['text'] = '';
-
+        $question = parent::import_from_xml($data, $question, $format, $extra);
         $synonyms = $format->getpath($data, array('#', 'synonym'), false);
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
         } else {
             $question->synonymsdata =array();
         }
-
+        $format->import_hints($question, $data, true, false,
+                $format->get_format($question->questiontextformat));
         return $question;
     }
 
@@ -251,31 +218,8 @@ class qtype_pmatch extends question_type {
     }
 
     public function export_to_xml($question, $format, $extra = null) {
-        $output = '';
+        $output = parent::export_to_xml($question, $format, $extra);
 
-        $output .= "    <allowsubscript>";
-        $output .= $format->get_single($question->options->allowsubscript);
-        $output .= "</allowsubscript>\n";
-        $output .= "    <allowsuperscript>";
-        $output .= $format->get_single($question->options->allowsuperscript);
-        $output .= "</allowsuperscript>\n";
-        $output .= "    <forcelength>";
-        $output .= $format->get_single($question->options->forcelength);
-        $output .= "</forcelength>\n";
-        $output .= "    <usecase>";
-        $output .= $format->get_single($question->options->usecase);
-        $output .= "</usecase>\n";
-        $output .= "    <converttospace>\n";
-        $output .= $format->writetext($question->options->converttospace, 3);
-        $output .= "    </converttospace>\n";
-        $output .= "    <applydictionarycheck>";
-        $output .= $format->get_single($question->options->applydictionarycheck);
-        $output .= "</applydictionarycheck>\n";
-        $output .= "    <extenddictionary>\n";
-        $output .= $format->writetext($question->options->extenddictionary, 3);
-        $output .= "    </extenddictionary>\n";
-
-        $output .= $format->write_answers($question->options->answers);
         $output .= $this->write_synonyms($question->options->synonyms, $format);
 
         return $output;
