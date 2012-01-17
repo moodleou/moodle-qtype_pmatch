@@ -682,8 +682,9 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
     private function check_match_branches($word, $allowmispellings,
                                             $charpos = 0, $subcontentno = 0,
                                             $noofcharactertomatch = 1) {
+        $textlib = textlib_get_instance();
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
-        $charslefttomatch = strlen($word) - ($charpos + $noofcharactertomatch);
+        $charslefttomatch = $textlib->strlen($word) - ($charpos + $noofcharactertomatch);
         //check if we have gone beyond limit of what can be matched
         if ($itemslefttomatch < 0) {
             if ($charslefttomatch < 0) {
@@ -710,7 +711,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                 return false;
             }
         }
-        $thisfragment = substr($word, $charpos, $noofcharactertomatch);
+        $thisfragment = $textlib->substr($word, $charpos, $noofcharactertomatch);
         if ($this->subcontents[$subcontentno] instanceof pmatch_can_match_multiple_or_no_chars) {
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_chars($thisfragment);
         } else {
