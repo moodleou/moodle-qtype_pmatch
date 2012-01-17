@@ -26,7 +26,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
-define('PMATCH_CHARACTER', '[A-Za-z0-9\!"#£$%&\'/\-+<=>@\^`{}~]');
+define('PMATCH_CHARACTER', '[\pL\pN\!"#£$%&\'/\-+<=>@\^`{}~]');
 
 define('PMATCH_LNUM', '[0-9]+');
 define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
@@ -89,7 +89,7 @@ abstract class pmatch_interpreter_item {
      */
     public function find_pattern($pattern, $string, $start) {
         $matches = array();
-        preg_match($pattern.'iA', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
+        preg_match($pattern.'iAu', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found) {
             $endofpattern = $matches[0][1]+strlen($matches[0][0])+$start;
