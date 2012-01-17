@@ -93,8 +93,8 @@ class pmatch_examples_test extends UnitTestCase {
         $row = -1;
         while (($data = fgetcsv($handle)) !== false) {
             $row++;
-            if ($row == 0) {
-                continue; // Skipping header row.
+            if ($row == 0 || $data[0]{0} === '#') {
+                continue; // Skipping header row or comment
             }
 
             if (defined('TIME_ALLOWED_PER_UNIT_TEST')) {
