@@ -577,8 +577,7 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
         }
         for ($wordno = $lastwordmatched; $wordno < $wordtotry; $wordno++) {
             //is there a sentence divider (such as a full stop) on the end of this word?
-            $wordwithoutdivider = rtrim($phrase[$wordno], $this->externaloptions->sentencedividers);
-            if ($wordwithoutdivider != $phrase[$wordno]) {
+            if ($this->externaloptions->word_has_sentence_divider_suffix($phrase[$wordno])) {
                 return false;
             }
             if (($wordno != $lastwordmatched) && in_array($wordno, $wordsmatched, true)) {
