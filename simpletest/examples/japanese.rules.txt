@@ -1,0 +1,6 @@
+match_any(
+match_w(多友人 似*)
+match_ow(里美さん 異なって*)
+match_w(いろいろ_里美さん)
+match_w(使って*_里美さん)
+)
