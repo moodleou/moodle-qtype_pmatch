@@ -1,9 +1,12 @@
 You should add pairs of files to this folder like
 
 <name>.rules.txt - contains a single pmatch expression.
-<name>.responses.csv - a CSV file with two columns:
+<name>.responses.csv - a CSV file with two to five columns:
     Response - a student response.
     Matches? - whether the response should match the rule, 1 or 0.
+    Ignore Case (optional) - ignore case, 1 or 0.
+    Sentence dividers (optional)
+    Word Divider (optional)
 
 There should be a row in the CSV file with the column headings, but the actual
 text of the column headings is ignored.

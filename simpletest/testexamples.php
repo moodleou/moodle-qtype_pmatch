@@ -106,8 +106,17 @@ class pmatch_examples_test extends UnitTestCase {
                             '(file ' . $name . '.responses.csv, line ' . $row . ').');
                 continue;
             }
+            $options = new pmatch_options();
+            switch (count($data)) {
+                case 5 :
+                    $options->worddividers = $data[4];
+                case 4 :
+                    $options->sentencedividers = $data[3];
+                case 3 :
+                    (bool)$options->ignorecase = $data[2];
+            }
 
-            $string = new pmatch_parsed_string($data[0]);
+            $string = new pmatch_parsed_string($data[0], $options);
             $this->assertEqual((bool) trim($data[1]), $expression->matches($string),
                     'File ' . $name . '.responses.csv, line ' . $row .
                     ' "' . s($data[0]) . '", %s');
