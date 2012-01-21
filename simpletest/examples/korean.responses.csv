@@ -1,0 +1,7 @@
+Response,Matches?, Ignore Case, Sentence dividers, word dividers
+#first expression
+영어만 보다가 한글 리플 보고서 반가워서 리플답니다., 0
+영어만 보다가 한글 리플답니다., 1
+영어만 보다가 리플답니다., 1
+영어만 보다가. 리플답니다., 0
+영어만 보다가 한글 리답니다., 1
