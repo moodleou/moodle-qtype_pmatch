@@ -739,9 +739,11 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                         ($itemslefttomatch > 0) && ($charslefttomatch > 0)) {
                 if (!$this->subcontents[$subcontentno + 1]
                                             instanceof pmatch_can_match_multiple_or_no_chars) {
-                    $wordtransposed = $word;
-                    $wordtransposed[$charpos] = $word[$charpos + 1];
-                    $wordtransposed[$charpos + 1] = $word[$charpos];
+                    $wordtransposed = $textlib->substr($word, 0, $charpos);
+                    $wordtransposed .= $textlib->substr($word, $charpos+1, 1);
+                    $wordtransposed .= $textlib->substr($word, $charpos, 1);
+                    $wordtransposed .= $textlib->substr($word, $charpos+2, $textlib->strlen($word));
+
                     if ($this->check_match_branches($wordtransposed, $allowmispellings - 1,
                                                         $charpos, $subcontentno, 1)) {
                         return true;
