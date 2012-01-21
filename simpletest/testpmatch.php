@@ -545,5 +545,11 @@ EOF;
         $this->assertTrue($this->match('10.011<sup>3</sup>', 'match(10 011<sup>3</sup>)'));
         $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
     }
-
+    public function test_pmatch_unicode_matching() {
+        //Unicode normalisation means that the same characters with two different
+        //unicode representations should match.
+        // "\xC3\x85" = 'LATIN CAPITAL LETTER A WITH RING ABOVE' (U+00C5)
+        // "\xCC\x8A" = 'COMBINING RING ABOVE' (U+030A)
+        $this->assertTrue($this->match("A\xCC\x8A", "match(\xC3\x85)"));
+    }
 }
