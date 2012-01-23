@@ -103,7 +103,7 @@ class pmatch_examples_test extends UnitTestCase {
 
             if (count($data) < 2 || !is_numeric($data[1])) {
                 $this->fail('Skipping bad line in responses file '.
-                            '(file ' . $name . '.responses.csv, line ' . $row . ').');
+                            '(file ' . $name . '.responses.csv, line ' . ($row+1) . ').');
                 continue;
             }
             $options = new pmatch_options();
@@ -118,7 +118,7 @@ class pmatch_examples_test extends UnitTestCase {
 
             $string = new pmatch_parsed_string($data[0], $options);
             $this->assertEqual((bool) trim($data[1]), $expression->matches($string),
-                    'File ' . $name . '.responses.csv, line ' . $row .
+                    'File ' . $name . '.responses.csv, line ' . ($row+1) .
                     ' "' . s($data[0]) . '", %s');
         }
 
