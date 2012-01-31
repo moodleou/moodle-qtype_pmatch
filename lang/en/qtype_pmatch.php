@@ -25,10 +25,7 @@
  */
 
 
-$string['addingpmatch'] = 'Adding a Pattern match question';
 $string['anyotheranswer'] = 'Any other answer';
-$string['editingpmatch'] = 'Editing a Pattern match question';
-$string['pmatch'] = 'Pattern match';
 //intrepreter errors
 $string['ie_nomatchfound'] = 'Error in pattern match code.';
 $string['ie_unrecognisedsubcontents'] = 'Non recognized sub content in code fragment "{$a}".';
@@ -64,9 +61,12 @@ $string['nomatchingsynonymforword'] = 'No synonyms entered for word. Delete the 
 $string['notenoughanswers'] = 'This type of question requires at least $a answers';
 $string['nomatchingwordforsynonym'] = 'You have not entered a word that the synonym is equivalent too. Delete the synonym(s) or enter an equivalent word for it.';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
-$string['pmatch_help'] = 'In response to a question (that may include a image) the respondent types a short phrase. There may be several possible correct answers, each with a different grade. If the "Case sensitive" option is selected, then you can have different scores for "Word" or "word".';
-$string['pmatch_link'] = 'question/type/pmatch';
-$string['pmatchsummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pattern match syntax.';
+$string['pluginname'] = 'Pattern match';
+$string['pluginname_help'] = 'In response to a question (that may include a image) the respondent types a short phrase. There may be several possible correct answers, each with a different grade. If the "Case sensitive" option is selected, then you can have different scores for "Word" or "word".';
+$string['pluginname_link'] = 'question/type/pmatch';
+$string['pluginnameadding'] = 'Adding a Pattern match question';
+$string['pluginnameediting'] = 'Editing a Pattern match question';
+$string['pluginnamesummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pattern match syntax.';
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['spellingmistakes'] = 'The following words are not in our dictionary : {$a}. Please correct your spelling.';
 $string['subsuponelineonly'] = 'The sub / super script editor can only be used with an input box one line high.';
