@@ -25,7 +25,7 @@
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
-define('PMATCH_SPECIAL_CHARACTER', '\\\\[()\\\\ |?*_\[\]]');
+define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\ \|\?\*_\[\]]');
 define('PMATCH_CHARACTER', '[\pL\pM\pN\!"#£$%&\'/\-+<=>@\^`{}~]');
 
 define('PMATCH_LNUM', '[0-9]+');
@@ -764,7 +764,7 @@ class pmatch_interpreter_character_in_word extends pmatch_interpreter_item {
 class pmatch_interpreter_special_character_in_word extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '!'.PMATCH_SPECIAL_CHARACTER.'!';
+        $this->pattern = '!\\\\'.PMATCH_SPECIAL_CHARACTER.'!';
     }
 }
 class pmatch_interpreter_wildcard_match_single extends pmatch_interpreter_item {

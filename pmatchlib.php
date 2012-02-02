@@ -214,7 +214,6 @@ class pmatch_parsed_string {
         $wd = $this->options->word_divider_pattern();
         $wtis = $this->options->words_to_ignore_patterns();
         $po = $this->options->pattern_options();
-        $ciw = $this->options->character_in_word_pattern();
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
