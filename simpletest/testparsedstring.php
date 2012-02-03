@@ -44,7 +44,7 @@ class pmatch_parse_string_test extends UnitTestCase {
         $parsedstring = new pmatch_parsed_string('cat? dog', $options);
         $this->assertEqual($parsedstring->get_words(), array('cat?', 'dog'));
     }
-/*    public function test_pmatch_spelling() {
+    public function test_pmatch_spelling() {
 
         if (!function_exists('pspell_new')) {
             throw new coding_exception('pspell not installed on your server. '.
@@ -86,5 +86,5 @@ class pmatch_parse_string_test extends UnitTestCase {
 
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queenking.', $options);
         $this->assertFalse($parsedstring->is_spelt_correctly());
-    }*/
+    }
 }
