@@ -238,6 +238,9 @@ class pmatch_parsed_string {
             $this->words[$wordno] = $word;
             $wordno++;
             $cursor = $cursor + strlen($matches[0]);
+            if ('' === $this->options->strip_sentence_divider($word)) {
+                $this->unrecognizedfragment = substr($string, 0, $cursor);
+            }
         }
 
         if (count($this->words) == 0) {
