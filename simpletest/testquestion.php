@@ -26,8 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
+require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 
 
 class test_pmatch_question_maker extends test_question_maker {
