@@ -577,8 +577,7 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
         }
         for ($wordno = $lastwordmatched; $wordno < $wordtotry; $wordno++) {
             //is there a sentence divider (such as a full stop) on the end of this word?
-            $wordwithoutdivider = rtrim($phrase[$wordno], $this->externaloptions->sentencedividers);
-            if ($wordwithoutdivider != $phrase[$wordno]) {
+            if ($this->externaloptions->word_has_sentence_divider_suffix($phrase[$wordno])) {
                 return false;
             }
             if (($wordno != $lastwordmatched) && in_array($wordno, $wordsmatched, true)) {
@@ -682,8 +681,9 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
     private function check_match_branches($word, $allowmispellings,
                                             $charpos = 0, $subcontentno = 0,
                                             $noofcharactertomatch = 1) {
+        $textlib = textlib_get_instance();
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
-        $charslefttomatch = strlen($word) - ($charpos + $noofcharactertomatch);
+        $charslefttomatch = $textlib->strlen($word) - ($charpos + $noofcharactertomatch);
         //check if we have gone beyond limit of what can be matched
         if ($itemslefttomatch < 0) {
             if ($charslefttomatch < 0) {
@@ -710,7 +710,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                 return false;
             }
         }
-        $thisfragment = substr($word, $charpos, $noofcharactertomatch);
+        $thisfragment = $textlib->substr($word, $charpos, $noofcharactertomatch);
         if ($this->subcontents[$subcontentno] instanceof pmatch_can_match_multiple_or_no_chars) {
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_chars($thisfragment);
         } else {
@@ -739,9 +739,11 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                         ($itemslefttomatch > 0) && ($charslefttomatch > 0)) {
                 if (!$this->subcontents[$subcontentno + 1]
                                             instanceof pmatch_can_match_multiple_or_no_chars) {
-                    $wordtransposed = $word;
-                    $wordtransposed[$charpos] = $word[$charpos + 1];
-                    $wordtransposed[$charpos + 1] = $word[$charpos];
+                    $wordtransposed = $textlib->substr($word, 0, $charpos);
+                    $wordtransposed .= $textlib->substr($word, $charpos+1, 1);
+                    $wordtransposed .= $textlib->substr($word, $charpos, 1);
+                    $wordtransposed .= $textlib->substr($word, $charpos+2, $textlib->strlen($word));
+
                     if ($this->check_match_branches($wordtransposed, $allowmispellings - 1,
                                                         $charpos, $subcontentno, 1)) {
                         return true;

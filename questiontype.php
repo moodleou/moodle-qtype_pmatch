@@ -253,8 +253,8 @@ class qtype_pmatch extends question_type {
 
         $question->pmatchoptions = new pmatch_options();
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
-        $question->pmatchoptions->extradictionarywords =
-                                    preg_split('!\s+!', $questiondata->options->extenddictionary);
+        $question->pmatchoptions->set_extra_dictionary_words(
+                                                        $questiondata->options->extenddictionary);
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
         $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
 
