@@ -77,9 +77,11 @@ class pmatch_options {
         $toreplace = array();
         $replacewith = array();
         foreach ($synonyms as $synonym) {
+            $synonym->word = Normalizer::normalize($synonym->word);
+            $synonym->synonyms = Normalizer::normalize($synonym->synonyms);
             $toreplaceitem = preg_quote($synonym->word, '!');
-            $toreplaceitem = str_replace('\*',
-                        '('.$this->character_in_word_patern().')*', $toreplaceitem);
+            $toreplaceitem = preg_replace('!\\\\\*!u',
+                        '('.$this->character_in_word_pattern().')*', $toreplaceitem);
             //the ?<= and ?= ensures that the adjacent characters are not replaced also
             $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
             if ($this->ignorecase) {
@@ -94,7 +96,10 @@ class pmatch_options {
             }
         }
     }
-
+    public function set_extra_dictionary_words($wordlist) {
+        $wordlist = Normalizer::normalize($wordlist);
+        $this->extradictionarywords = preg_split('!\s+!', $wordlist);
+    }
     public function words_to_ignore_patterns() {
         $words = array_merge($this->extradictionarywords, $this->nospellcheckwords);
         $wordpatterns = array(PMATCH_NUMBER);
@@ -103,8 +108,8 @@ class pmatch_options {
                 continue;
             }
             $wordpattern = preg_quote($word, '!');
-            $wordpattern = str_replace('\*',
-                                        '('.$this->character_in_word_patern().')*',
+            $wordpattern = preg_replace('!\\\\\*!u',
+                                        '('.$this->character_in_word_pattern().')*',
                                         $wordpattern);
             $wordpatterns[] = $wordpattern;
         }
@@ -118,6 +123,13 @@ class pmatch_options {
         return $this->pattern_to_match_any_of($this->sentencedividers);
     }
 
+    /*
+     * @return string fragment of preg_match pattern to match sentence separator.
+     */
+    public function word_has_sentence_divider_suffix($word) {
+        $sd = $this->sentence_divider_pattern();
+        return (1 === preg_match('!('.$sd.')$!u', $word));
+    }
     /**
      *
      * Strip one and only one sentence divider from the end of a string.
@@ -127,8 +139,8 @@ class pmatch_options {
     public function strip_sentence_divider($string) {
         $textlib = textlib_get_instance();
         $sd = $this->sentence_divider_pattern();
-        if (1 === preg_match('!('.$sd.')$!', $string)) {
-            $string = $textlib->substr($string, 0, $textlib->strlen($string)-1);
+        if ($this->word_has_sentence_divider_suffix($string)) {
+            $string = $textlib->substr($string, 0, -1);
         }
         return $string;
     }
@@ -137,7 +149,7 @@ class pmatch_options {
         return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace, '!');
     }
 
-    public function character_in_word_patern() {
+    public function character_in_word_pattern() {
         return PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER;
     }
 
@@ -151,11 +163,12 @@ class pmatch_options {
 
     private function pattern_to_match_any_of($charsinstring) {
         $pattern = '';
-        foreach (str_split($charsinstring) as $char) {
+        $textlib = textlib_get_instance();
+        for ($i = 0; $i < $textlib->strlen($charsinstring); $i++) {
             if ($pattern != '') {
                 $pattern .= '|';
             }
-            $pattern .= preg_quote($char, '!');
+            $pattern .= preg_quote($textlib->substr($charsinstring, $i, 1), '!');
         }
         return $pattern;
     }
@@ -195,19 +208,19 @@ class pmatch_parsed_string {
         $wordno = 0;
         $cursor = 0;
         $string = trim($string);//trim off any extra whitespace
+        $string = Normalizer::normalize($string);
 
         $sd = $this->options->sentence_divider_pattern();
         $wd = $this->options->word_divider_pattern();
         $wtis = $this->options->words_to_ignore_patterns();
         $po = $this->options->pattern_options();
-        $ciw = $this->options->character_in_word_patern();
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
             //using a named sub pattern to make sure to capture the sentence divider
             $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
-                if (preg_match("!({$wti})$endofword!A$po", $toprocess, $matches)) {
+                if (preg_match("!({$wti})$endofword!Au$po", $toprocess, $matches)) {
                     //we found a number or extra dictionary word
                     break;
                 }
@@ -218,12 +231,16 @@ class pmatch_parsed_string {
                     break;
                 }
             }
-            $this->words[$wordno] = $matches[1];
+            $word = $matches[1];
             if (isset($matches['sd'])) {
-                $this->words[$wordno] .= $matches['sd'];
+                $word .= $matches['sd'];
             }
+            $this->words[$wordno] = $word;
             $wordno++;
             $cursor = $cursor + strlen($matches[0]);
+            if ('' === $this->options->strip_sentence_divider($word)) {
+                $this->unrecognizedfragment = substr($string, 0, $cursor);
+            }
         }
 
         if (count($this->words) == 0) {
@@ -351,6 +368,7 @@ class pmatch_expression {
         } else {
             $this->options = new pmatch_options();
         }
+        $expression = Normalizer::normalize($expression);
         $this->originalexpression = $expression;
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);

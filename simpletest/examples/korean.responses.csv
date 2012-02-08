@@ -1,0 +1,18 @@
+Response,Matches?, Ignore Case, Sentence dividers, word dividers
+#first expression
+영어만영영 보다가 한글 리플 보고서 반가워서 리플답니다., 0
+영어만영 보다가 한글 리플답니다., 1
+영어만영 보다가 리플답니다., 1
+영어만영 보다가. 리플답니다., 0
+영어만영 보다가 한글., 0
+영어만영 보다가 한글 리답니다., 1
+영어만영 보다가 한글 플리답니다., 1
+영어만영 보다가 한글 영리플답니다., 1
+#two misspellings
+영어만영 보다가 한글 영플리답니다., 0
+#one character misspelled in first word
+영영만영 보다가 한글 리플답니다., 1
+#transposition in first word
+어영만영 보다가 한글 리플답니다., 1
+#one character missing in first word
+어만영 보다가 한글 리플답니다., 1

@@ -1,0 +1,9 @@
+Response,Matches?, Ignore Case, Sentence dividers
+#first expression
+ผม ลูบ หัว อาทิตย์, 1
+#second expression
+ขน ของ อาทิตย์ นุ่ม มาก, 1
+#third expression
+คุณ ชอบ ขับ รถ บน ถนน เรียบๆ, 1
+#fourth expression
+เด็กๆ ชอบ ลูกโป่ง, 1
