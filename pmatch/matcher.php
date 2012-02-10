@@ -635,8 +635,8 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
 
     /**
      * @param pmatch_word_level_options $wordleveloptions
-     * @return pmatch_word_level_options word level options with some options disabled if word too
-     *                short.
+     * @return pmatch_word_level_options word level options with some options
+     *      disabled if word too short.
      */
     protected function check_word_level_options($wordleveloptions) {
         $normalcharactercount = 0;
