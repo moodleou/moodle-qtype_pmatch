@@ -23,12 +23,12 @@ script and sub script options in the question editing form will not be available
 To install the question type using git, type this command in the root of your
 Moodle install
 
-    git clone git://github.com/moodleou/moodle-qtype_pmatch.git question/type/pmatch
+    git clone -b MOODLE_21_STABLE git://github.com/moodleou/moodle-qtype_pmatch.git question/type/pmatch
 
 And add question/type/pmatch to your git ignore.
 
 Alternatively, download the zip from
 
-    https://github.com/moodleou/moodle-qtype_pmatch/zipball/master
+    https://github.com/moodleou/moodle-qtype_pmatch/zipball/MOODLE_21_STABLE
 
 unzip it into the question/type folder, and then rename the new folder to pmatch.
