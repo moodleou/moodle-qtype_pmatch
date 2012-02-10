@@ -29,6 +29,7 @@ $string['addingpmatch'] = 'Adding a Pattern match question';
 $string['anyotheranswer'] = 'Any other answer';
 $string['editingpmatch'] = 'Editing a Pattern match question';
 $string['pmatch'] = 'Pattern match';
+$string['pluginname'] = 'Pattern match';
 //intrepreter errors
 $string['ie_nomatchfound'] = 'Error in pattern match code.';
 $string['ie_unrecognisedsubcontents'] = 'Non recognized sub content in code fragment "{$a}".';
