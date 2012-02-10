@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * restore plugin class that provides the necessary information
- * needed to restore one shortanswer qtype plugin
+ * needed to restore one pmatch qtype plugin
  *
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -9,18 +9,19 @@ matching algorithm. See http://docs.moodle.org/dev/The_OU_PMatch_algorithm
 
 This question type is compatible with Moodle 2.1+.
 
-You will want to install Tim's stripped down tinymce editor that only allows the use of 
-superscript and subscript see (https://github.com/moodleou/moodle-editor_supsub). To install this
-editor using git, type this command in the root of your Moodle install :
+You will want to install Tim's stripped down tinymce editor that only allows the
+use of superscript and subscript see (https://github.com/moodleou/moodle-editor_supsub).
+To install this editor using git, type this command in the root of your Moodle install:
 
     git clone git://github.com/moodleou/moodle-editor_supsub.git lib/editor/supsub
 
 Then add lib/editor/supsub to your git ignore.
 
-If the editor is not installed the question type can still be used but the super script and sub
-script options in the question editing form will not work.
+If the editor is not installed the question type can still be used but the super
+script and sub script options in the question editing form will not be available.
 
-To install the question type using git, type this command in the root of your Moodle install
+To install the question type using git, type this command in the root of your
+Moodle install
 
     git clone git://github.com/moodleou/moodle-qtype_pmatch.git question/type/pmatch
 

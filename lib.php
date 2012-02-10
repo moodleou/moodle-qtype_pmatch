@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Checks file access for short answer questions.
+ * Checks file access for pattern-match questions.
  */
 function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
     global $DB, $CFG;

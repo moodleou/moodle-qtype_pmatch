@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Question type class for the short answer question type.
+ * Question type class for the pattern-match question type.
  *
- * @package    qtype
- * @subpackage pmatch
+ * @package    qtype_pmatch
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +31,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 
 
 /**
- * The short answer question type.
+ * The pattern-match question type.
  *
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

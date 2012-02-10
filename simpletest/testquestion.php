@@ -17,9 +17,8 @@
 /**
  * Unit tests for the pmatch question definition class.
  *
- * @package    qtype
- * @subpackage pmatch
- * @copyright  2008 The Open University
+ * @package    qtype_pmatch
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +33,7 @@ class test_pmatch_question_maker extends test_question_maker {
     /**
      * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
      * correct answer 'Dick' and defaultmark 1.
-     * @return qtype_shortanswer_question
+     * @return qtype_pmatch_question
      */
     public static function make_a_pmatch_question($applydictionarycheck = false) {
         if ($applydictionarycheck && !function_exists('pspell_new')) {
@@ -70,7 +69,7 @@ class test_pmatch_question_maker extends test_question_maker {
 }
 
 /**
- * Unit tests for the short answer question definition class.
+ * Unit tests for the pattern-match question definition class.
  *
  * @copyright  2008 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -15,11 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Short answer question definition class.
+ * Pattern-match question definition class.
  *
- * @package    qtype
- * @subpackage pmatch
- * @copyright  2009 The Open University
+ * @package    qtype_pmatch
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,9 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
 /**
- * Represents a short answer question.
+ * Represents a pattern-match  question.
  *
- * @copyright  2009 The Open University
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_question extends question_graded_by_strategy
