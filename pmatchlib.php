@@ -77,8 +77,8 @@ class pmatch_options {
         $toreplace = array();
         $replacewith = array();
         foreach ($synonyms as $synonym) {
-            $synonym->word = Normalizer::normalize($synonym->word);
-            $synonym->synonyms = Normalizer::normalize($synonym->synonyms);
+            $synonym->word = $this->unicode_normalisation($synonym->word);
+            $synonym->synonyms = $this->unicode_normalisation($synonym->synonyms);
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = preg_replace('!\\\\\*!u',
                         '('.$this->character_in_word_pattern().')*', $toreplaceitem);
@@ -97,9 +97,18 @@ class pmatch_options {
         }
     }
     public function set_extra_dictionary_words($wordlist) {
-        $wordlist = Normalizer::normalize($wordlist);
+        $wordlist = $this->unicode_normalisation($wordlist);
         $this->extradictionarywords = preg_split('!\s+!', $wordlist);
     }
+
+    public function unicode_normalisation($unicodestring) {
+        if (class_exists('Normalizer')) {
+            return Normalizer::normalize($unicodestring);
+        } else {
+            return $unicodestring;
+        }
+    }
+
     public function words_to_ignore_patterns() {
         $words = array_merge($this->extradictionarywords, $this->nospellcheckwords);
         $wordpatterns = array(PMATCH_NUMBER);
@@ -208,7 +217,7 @@ class pmatch_parsed_string {
         $wordno = 0;
         $cursor = 0;
         $string = trim($string);//trim off any extra whitespace
-        $string = Normalizer::normalize($string);
+        $string = $this->options->unicode_normalisation($string);
 
         $sd = $this->options->sentence_divider_pattern();
         $wd = $this->options->word_divider_pattern();
@@ -368,7 +377,7 @@ class pmatch_expression {
         } else {
             $this->options = new pmatch_options();
         }
-        $expression = Normalizer::normalize($expression);
+        $expression = $this->options->unicode_normalisation($expression);
         $this->originalexpression = $expression;
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);
