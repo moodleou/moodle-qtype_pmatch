@@ -109,8 +109,7 @@ class pmatch_options {
         } else {
             //limit the errors added to the log to one per pagee load
             if (!$errorlogged) {
-                add_to_log($COURSE->id, 'question', 'error',
-                        "PECL Package for Unicode Normalizer appears not to be correctly installed");
+                add_to_log($COURSE->id, 'question', 'error', '', get_string('env_peclnormalisationmissing', 'qtype_pmatch'));
                 $errorlogged = true;
             }
             return $unicodestring;
@@ -292,15 +291,12 @@ class pmatch_parsed_string {
         $langforspellchecker = $langidparts[0];
 
         if (!function_exists('pspell_new')) {
-            add_to_log($COURSE->id, 'question', 'error', '',
-                            'Attempted to spell check but pspell is not installed.');
+            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_pspellmissing', 'qtype_pmatch'));
             return array();
         }
         $pspell_link = pspell_new($langforspellchecker);
         if ($pspell_link === false) {
-            add_to_log($COURSE->id, 'question', 'error', "Attempted a spell check for ".
-                        "'{$langforspellchecker}' ".
-                        "but no aspell dictionary installed - '{$langforspellchecker}'.");
+            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $langforspellchecker));
             return array();//if dictionary is not installed for this language we cannot spell check
         }
 
