@@ -102,9 +102,17 @@ class pmatch_options {
     }
 
     public function unicode_normalisation($unicodestring) {
+        global $COURSE;
+        static $errorlogged = false;
         if (class_exists('Normalizer')) {
             return Normalizer::normalize($unicodestring);
         } else {
+            //limit the errors added to the log to one per pagee load
+            if (!$errorlogged) {
+                add_to_log($COURSE->id, 'question', 'error',
+                        "PECL Package for Unicode Normalizer appears not to be correctly installed");
+                $errorlogged = true;
+            }
             return $unicodestring;
         }
     }
@@ -449,4 +457,5 @@ class pmatch_expression {
         }
         return $this->interpreter->get_formatted_expression_string();
     }
+
 }
