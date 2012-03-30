@@ -188,6 +188,10 @@ class qtype_pmatch extends question_type {
 
     public function import_from_xml($data, $question, $format, $extra=null) {
         $question = parent::import_from_xml($data, $question, $format, $extra);
+        if (!$question) {
+            return false;
+        }
+
         $synonyms = $format->getpath($data, array('#', 'synonym'), false);
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
