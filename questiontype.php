@@ -186,7 +186,7 @@ class qtype_pmatch extends question_type {
     public function save_extra_answer_data($question, $key, $answerid) {
     }
 
-    public function import_from_xml($data, $question, $format, $extra=null) {
+    public function import_from_xml($data, $question, qformat_xml $format, $extra=null) {
         $question = parent::import_from_xml($data, $question, $format, $extra);
         if (!$question) {
             return false;
@@ -222,7 +222,7 @@ class qtype_pmatch extends question_type {
         $indexno++;
     }
 
-    public function export_to_xml($question, $format, $extra = null) {
+    public function export_to_xml($question, qformat_xml $format, $extra = null) {
         $output = parent::export_to_xml($question, $format, $extra);
 
         $output .= $this->write_synonyms($question->options->synonyms, $format);
