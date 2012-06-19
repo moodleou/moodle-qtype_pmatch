@@ -77,8 +77,8 @@ class pmatch_options {
         $toreplace = array();
         $replacewith = array();
         foreach ($synonyms as $synonym) {
-            $synonym->word = Normalizer::normalize($synonym->word);
-            $synonym->synonyms = Normalizer::normalize($synonym->synonyms);
+            $synonym->word = $this->unicode_normalisation($synonym->word);
+            $synonym->synonyms = $this->unicode_normalisation($synonym->synonyms);
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = preg_replace('!\\\\\*!u',
                         '('.$this->character_in_word_pattern().')*', $toreplaceitem);
@@ -97,9 +97,25 @@ class pmatch_options {
         }
     }
     public function set_extra_dictionary_words($wordlist) {
-        $wordlist = Normalizer::normalize($wordlist);
+        $wordlist = $this->unicode_normalisation($wordlist);
         $this->extradictionarywords = preg_split('!\s+!', $wordlist);
     }
+
+    public function unicode_normalisation($unicodestring) {
+        global $COURSE;
+        static $errorlogged = false;
+        if (class_exists('Normalizer')) {
+            return Normalizer::normalize($unicodestring);
+        } else {
+            //limit the errors added to the log to one per pagee load
+            if (!$errorlogged) {
+                add_to_log($COURSE->id, 'question', 'error', '', get_string('env_peclnormalisationmissing', 'qtype_pmatch'));
+                $errorlogged = true;
+            }
+            return $unicodestring;
+        }
+    }
+
     public function words_to_ignore_patterns() {
         $words = array_merge($this->extradictionarywords, $this->nospellcheckwords);
         $wordpatterns = array(PMATCH_NUMBER);
@@ -208,7 +224,7 @@ class pmatch_parsed_string {
         $wordno = 0;
         $cursor = 0;
         $string = trim($string);//trim off any extra whitespace
-        $string = Normalizer::normalize($string);
+        $string = $this->options->unicode_normalisation($string);
 
         $sd = $this->options->sentence_divider_pattern();
         $wd = $this->options->word_divider_pattern();
@@ -275,15 +291,12 @@ class pmatch_parsed_string {
         $langforspellchecker = $langidparts[0];
 
         if (!function_exists('pspell_new')) {
-            add_to_log($COURSE->id, 'question', 'error', '',
-                            'Attempted to spell check but pspell is not installed.');
+            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_pspellmissing', 'qtype_pmatch'));
             return array();
         }
         $pspell_link = pspell_new($langforspellchecker);
         if ($pspell_link === false) {
-            add_to_log($COURSE->id, 'question', 'error', "Attempted a spell check for ".
-                        "'{$langforspellchecker}' ".
-                        "but no aspell dictionary installed - '{$langforspellchecker}'.");
+            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $langforspellchecker));
             return array();//if dictionary is not installed for this language we cannot spell check
         }
 
@@ -368,7 +381,7 @@ class pmatch_expression {
         } else {
             $this->options = new pmatch_options();
         }
-        $expression = Normalizer::normalize($expression);
+        $expression = $this->options->unicode_normalisation($expression);
         $this->originalexpression = $expression;
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);
@@ -440,4 +453,5 @@ class pmatch_expression {
         }
         return $this->interpreter->get_formatted_expression_string();
     }
+
 }
