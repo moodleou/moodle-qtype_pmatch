@@ -19,14 +19,22 @@
  * This file contains tests that tests the interpretation of a pmatch string.
  *
  * @package pmatch
- * @copyright 2011 The Open University
+ * @copyright  2012 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
-class pmatch_test extends UnitTestCase {
+/**
+ * Tests of the interpretation of the pmatch pattern in the pmatch library.
+ *
+ * @copyright  2012 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_pmatch
+ */
+class qtype_pmatch_test extends basic_testcase {
     protected function match($string, $expression, $options = null) {
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
@@ -40,21 +48,21 @@ class pmatch_test extends UnitTestCase {
 
     public function test_pmatch_error() {
         // No closing bracket.
-        $this->assertEqual($this->error_message('match_mow([tom maud]|[sid jane]'),
+        $this->assertEquals($this->error_message('match_mow([tom maud]|[sid jane]'),
                 get_string('ie_missingclosingbracket',
                 'qtype_pmatch', 'match_mow([tom maud]|[sid jane]'));
         // No contents.
-        $this->assertEqual($this->error_message('match_mow()'),
+        $this->assertEquals($this->error_message('match_mow()'),
                 get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', 'match_mow()'));
         // ends in an or character.
-        $this->assertEqual($this->error_message('match_mow([tom maud]|)'),
+        $this->assertEquals($this->error_message('match_mow([tom maud]|)'),
                 get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', '[tom maud]|'));
         // ends in a space.
-        $this->assertEqual($this->error_message('match_mow([tom maud] )'),
+        $this->assertEquals($this->error_message('match_mow([tom maud] )'),
                 get_string('ie_lastsubcontenttypeworddelimiter',
                          'qtype_pmatch', 'match_mow([tom maud] )'));
         // ends in a proximity delimiter.
-        $this->assertEqual($this->error_message('match_mow([tom maud]_)'),
+        $this->assertEquals($this->error_message('match_mow([tom maud]_)'),
                 get_string('ie_lastsubcontenttypeworddelimiter',
                          'qtype_pmatch', 'match_mow([tom maud]_)'));
     }
@@ -394,20 +402,20 @@ match_all (
 )
 
 EOF;
-        $this->assertEqual($expression->get_formatted_expression_string(), $formattedexpression);
+        $this->assertEquals($expression->get_formatted_expression_string(), $formattedexpression);
         //when formatting phrase and word level options in expression they are simplied
         //and arranged into a standard order.
         $expression = new pmatch_expression('match_mfmtxr(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(),
+        $this->assertEquals($expression->get_formatted_expression_string(),
                                                                 "match_m (three|[four five])\n");
         $expression = new pmatch_expression('match_mfmtxrow(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(),
+        $this->assertEquals($expression->get_formatted_expression_string(),
                                                                 "match_mow (three|[four five])\n");
         $expression = new pmatch_expression('match_mfmtxr2(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(),
+        $this->assertEquals($expression->get_formatted_expression_string(),
                                                                 "match_m2 (three|[four five])\n");
         $expression = new pmatch_expression('match_mtxrow(three|[four five])');
-        $this->assertEqual($expression->get_formatted_expression_string(),
+        $this->assertEquals($expression->get_formatted_expression_string(),
                                                             "match_mrtxow (three|[four five])\n");
         $expression = new pmatch_expression('match_all(match_any(not(match_cow(one_two))'.
                         'match_mfw(three|[four five]))match_any(match_mrw(six|nine nine)'.
@@ -463,7 +471,7 @@ match_all (
 
 EOF;
 
-        $this->assertEqual($expression->get_formatted_expression_string(), $formattedexpression);
+        $this->assertEquals($expression->get_formatted_expression_string(), $formattedexpression);
         //notice match_c (m) will match any one word string with an 'm' in it.
         $this->assertTrue($this->match('cegh', $expressionstr));
         $this->assertFalse($this->match('acegh', $expressionstr));
