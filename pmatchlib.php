@@ -137,10 +137,9 @@ class pmatch_options {
      * @return string with sentence divider stripped off.
      */
     public function strip_sentence_divider($string) {
-        $textlib = textlib_get_instance();
         $sd = $this->sentence_divider_pattern();
         if ($this->word_has_sentence_divider_suffix($string)) {
-            $string = $textlib->substr($string, 0, -1);
+            $string = textlib::substr($string, 0, -1);
         }
         return $string;
     }
