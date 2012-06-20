@@ -39,11 +39,12 @@ class test_pmatch_question_maker extends test_question_maker {
     /**
      * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
      * correct answer 'Dick' and defaultmark 1.
+     * @param $applydictionarycheck false not to check. basic_testcase ($this in the test code) to check.
      * @return qtype_pmatch_question
      */
     public static function make_a_pmatch_question($applydictionarycheck = false) {
         if ($applydictionarycheck && !function_exists('pspell_new')) {
-            $testcase->markTestSkipped(
+            $applydictionarycheck->markTestSkipped(
                     'pspell not installed on your server. Spell checking will not work.');
         }
         question_bank::load_question_definition_classes('pmatch');
@@ -123,7 +124,7 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_complete_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_complete_response(array('answer' => 'x')));
 
-        $question = test_pmatch_question_maker::make_a_pmatch_question(true);
+        $question = test_pmatch_question_maker::make_a_pmatch_question($this);
 
         $this->assertTrue($question->is_complete_response(array('answer' => 'The Queen is dead.')));
         $this->assertFalse($question->is_complete_response(
@@ -142,7 +143,7 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_gradable_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'x')));
 
-        $question = test_pmatch_question_maker::make_a_pmatch_question(true);
+        $question = test_pmatch_question_maker::make_a_pmatch_question($this);
 
         $this->assertTrue($question->is_gradable_response(array('answer' => 'The Queen is dead.')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'Long kive the Kin.')));
