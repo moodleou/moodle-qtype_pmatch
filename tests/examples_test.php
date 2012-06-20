@@ -20,11 +20,11 @@
  *
  * @package    qtype
  * @subpackage pmatch
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
 
@@ -32,10 +32,11 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * Test driver class that tests the pmatch library by loading examples from
  * text files in the examples folder.
  *
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_pmatch
  */
-class pmatch_examples_test extends UnitTestCase {
+class qtype_pmatch_examples_test extends basic_testcase {
     /** @var string where to look for examples. */
     protected $examplesdir = 'examples';
 
@@ -117,7 +118,7 @@ class pmatch_examples_test extends UnitTestCase {
             }
 
             $string = new pmatch_parsed_string($data[0], $options);
-            $this->assertEqual((bool) trim($data[1]), $expression->matches($string),
+            $this->assertEquals((bool) trim($data[1]), $expression->matches($string),
                     'File ' . $name . '.responses.csv, line ' . ($row+1) .
                     ' "' . s($data[0]) . '", %s');
         }

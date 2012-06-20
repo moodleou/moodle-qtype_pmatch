@@ -1,48 +1,80 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+/**
+ * This file contains tests of the student response parsing in the pmatch library.
+ *
+ * @package    qtype
+ * @subpackage pmatch
+ * @copyright  2012 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
-class pmatch_parse_string_test extends UnitTestCase {
+/**
+ * Tests of the student response parsing in the pmatch library.
+ *
+ * @copyright  2012 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_pmatch
+ */
+class qtype_pmatch_parse_string_test extends basic_testcase {
     public function test_pmatch_parse_string() {
         $options = new pmatch_options();
 
         $parsedstring = new pmatch_parsed_string('abc.def', $options);
-        $this->assertEqual($parsedstring->get_words(), array('abc.', 'def'));
+        $this->assertEquals($parsedstring->get_words(), array('abc.', 'def'));
 
         $parsedstring = new pmatch_parsed_string('abc def', $options);
-        $this->assertEqual($parsedstring->get_words(), array('abc', 'def'));
+        $this->assertEquals($parsedstring->get_words(), array('abc', 'def'));
 
         $parsedstring = new pmatch_parsed_string('abc<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(), array('abc<sup>3</sup>'));
+        $this->assertEquals($parsedstring->get_words(), array('abc<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(), array('123<sup>3</sup>'));
+        $this->assertEquals($parsedstring->get_words(), array('123<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>?456<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(),
+        $this->assertEquals($parsedstring->get_words(),
                                                 array('123<sup>3</sup>?', '456<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>!456<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(),
+        $this->assertEquals($parsedstring->get_words(),
                                                 array('123<sup>3</sup>!', '456<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('1.23', $options);
-        $this->assertEqual($parsedstring->get_words(), array('1.23'));
+        $this->assertEquals($parsedstring->get_words(), array('1.23'));
 
         $parsedstring = new pmatch_parsed_string('1.23e-10', $options);
-        $this->assertEqual($parsedstring->get_words(), array('1.23e-10'));
+        $this->assertEquals($parsedstring->get_words(), array('1.23e-10'));
 
         $parsedstring = new pmatch_parsed_string('1.23x10<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(), array('1.23x10<sup>3</sup>'));
+        $this->assertEquals($parsedstring->get_words(), array('1.23x10<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>', $options);
-        $this->assertEqual($parsedstring->get_words(), array('123<sup>3</sup>'));
+        $this->assertEquals($parsedstring->get_words(), array('123<sup>3</sup>'));
 
         $parsedstring = new pmatch_parsed_string('cat. dog', $options);
-        $this->assertEqual($parsedstring->get_words(), array('cat.', 'dog'));
+        $this->assertEquals($parsedstring->get_words(), array('cat.', 'dog'));
 
         $parsedstring = new pmatch_parsed_string('cat? dog', $options);
-        $this->assertEqual($parsedstring->get_words(), array('cat?', 'dog'));
+        $this->assertEquals($parsedstring->get_words(), array('cat?', 'dog'));
     }
     public function test_pmatch_spelling() {
 
