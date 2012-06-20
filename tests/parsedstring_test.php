@@ -79,8 +79,8 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
     public function test_pmatch_spelling() {
 
         if (!function_exists('pspell_new')) {
-            throw new coding_exception('pspell not installed on your server. '.
-                                            'Spell checking will not work.');
+            $testcase->markTestSkipped(
+                    'pspell not installed on your server. Spell checking will not work.');
         }
 
         $options = new pmatch_options();

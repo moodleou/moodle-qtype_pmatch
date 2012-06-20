@@ -43,8 +43,8 @@ class test_pmatch_question_maker extends test_question_maker {
      */
     public static function make_a_pmatch_question($applydictionarycheck = false) {
         if ($applydictionarycheck && !function_exists('pspell_new')) {
-            throw new coding_exception('pspell not installed on your server. '.
-                                                'Spell checking will not work.');
+            $testcase->markTestSkipped(
+                    'pspell not installed on your server. Spell checking will not work.');
         }
         question_bank::load_question_definition_classes('pmatch');
         $pm = new qtype_pmatch_question();
