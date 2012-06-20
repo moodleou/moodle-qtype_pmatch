@@ -178,12 +178,11 @@ class pmatch_options {
 
     private function pattern_to_match_any_of($charsinstring) {
         $pattern = '';
-        $textlib = textlib_get_instance();
-        for ($i = 0; $i < $textlib->strlen($charsinstring); $i++) {
+        for ($i = 0; $i < textlib::strlen($charsinstring); $i++) {
             if ($pattern != '') {
                 $pattern .= '|';
             }
-            $pattern .= preg_quote($textlib->substr($charsinstring, $i, 1), '!');
+            $pattern .= preg_quote(textlib::substr($charsinstring, $i, 1), '!');
         }
         return $pattern;
     }
