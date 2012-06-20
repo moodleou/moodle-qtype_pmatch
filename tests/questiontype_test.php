@@ -19,12 +19,13 @@
  *
  * @package    qtype
  * @subpackage pmatch
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 
 require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
 
@@ -32,25 +33,27 @@ require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
 /**
  * Unit tests for the pmatch question type class.
  *
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_pmatch
  */
-class qtype_pmatch_test extends UnitTestCase {
+class qtype_pmatch_questiontype_test extends basic_testcase {
     public static $includecoverage = array('question/type/questiontype.php',
                                         'question/type/pmatch/questiontype.php');
     protected $qtype;
 
-    public function setUp() {
+    protected function setUp() {
         $this->qtype = new qtype_pmatch();
     }
 
-    public function tearDown() {
+    protected function tearDown() {
         $this->qtype = null;
     }
 
     protected function get_test_question_data() {
         $q = new stdClass();
         $q->id = 1;
+        $q->options = new stdClass();
         $q->options->answers[1] = (object) array('answer' => 'match(frog)', 'fraction' => 1);
         $q->options->answers[2] = (object) array('answer' => '*', 'fraction' => 0);
 
@@ -58,7 +61,7 @@ class qtype_pmatch_test extends UnitTestCase {
     }
 
     public function test_name() {
-        $this->assertEqual($this->qtype->name(), 'pmatch');
+        $this->assertEquals($this->qtype->name(), 'pmatch');
     }
 
     public function test_can_analyse_responses() {
@@ -67,13 +70,13 @@ class qtype_pmatch_test extends UnitTestCase {
 
     public function test_get_random_guess_score() {
         $q = $this->get_test_question_data();
-        $this->assertEqual(0, $this->qtype->get_random_guess_score($q));
+        $this->assertEquals(0, $this->qtype->get_random_guess_score($q));
     }
 
     public function test_get_possible_responses() {
         $q = $this->get_test_question_data();
 
-        $this->assertEqual(array(
+        $this->assertEquals(array(
             $q->id => array(
                 1 => new question_possible_response('match(frog)', 1),
                 2 => new question_possible_response('*', 0),

@@ -18,17 +18,23 @@
  * Unit tests for the pmatch question definition class.
  *
  * @package    qtype_pmatch
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 
-require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 
-
+/**
+ * Question maker for unit tests for the pmatch question definition class.
+ *
+ * @copyright  2012 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class test_pmatch_question_maker extends test_question_maker {
     /**
      * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
@@ -71,10 +77,11 @@ class test_pmatch_question_maker extends test_question_maker {
 /**
  * Unit tests for the pattern-match question definition class.
  *
- * @copyright  2008 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_pmatch
  */
-class qtype_pmatch_question_test extends UnitTestCase {
+class qtype_pmatch_question_test extends basic_testcase {
     public function test_compare_string_with_wildcard() {
         // Test case sensitive literal matches.
         $options = new pmatch_options();
@@ -144,52 +151,52 @@ class qtype_pmatch_question_test extends UnitTestCase {
     public function test_grading() {
         $question = test_pmatch_question_maker::make_a_pmatch_question();
 
-        $this->assertEqual(array(0, question_state::$gradedwrong),
+        $this->assertEquals(array(0, question_state::$gradedwrong),
                 $question->grade_response(array('answer' => 'x')));
-        $this->assertEqual(array(1, question_state::$gradedright),
+        $this->assertEquals(array(1, question_state::$gradedright),
                 $question->grade_response(array('answer' => 'Tom')));
-        $this->assertEqual(array(1, question_state::$gradedright),
+        $this->assertEquals(array(1, question_state::$gradedright),
                 $question->grade_response(array('answer' => 'Harry')));
-                $this->assertEqual(array(0.8, question_state::$gradedpartial),
+                $this->assertEquals(array(0.8, question_state::$gradedpartial),
                 $question->grade_response(array('answer' => 'Dick')));
     }
 
     public function test_get_correct_response() {
         $question = test_pmatch_question_maker::make_a_pmatch_question();
 
-        $this->assertEqual(array('answer' => 'match_w(Tom|Harry)'),
+        $this->assertEquals(array('answer' => 'match_w(Tom|Harry)'),
                 $question->get_correct_response());
     }
 
     public function test_get_question_summary() {
         $sa = test_pmatch_question_maker::make_a_pmatch_question();
         $qsummary = $sa->get_question_summary();
-        $this->assertEqual('Who was Jane\'s companion : __________', $qsummary);
+        $this->assertEquals('Who was Jane\'s companion : __________', $qsummary);
     }
 
     public function test_summarise_response() {
         $sa = test_pmatch_question_maker::make_a_pmatch_question();
         $summary = $sa->summarise_response(array('answer' => 'dog'));
-        $this->assertEqual('dog', $summary);
+        $this->assertEquals('dog', $summary);
     }
 
     public function test_classify_response() {
         $sa = test_pmatch_question_maker::make_a_pmatch_question();
-        $sa->start_attempt(new question_attempt_step());
+        $sa->start_attempt(new question_attempt_step(), 1);
 
-        $this->assertEqual(array(
+        $this->assertEquals(array(
                 new question_classified_response(13, 'Tom', 1.0)),
                 $sa->classify_response(array('answer' => 'Tom')));
-        $this->assertEqual(array(
+        $this->assertEquals(array(
                 new question_classified_response(13, 'Harry', 1.0)),
                 $sa->classify_response(array('answer' => 'Harry')));
-        $this->assertEqual(array(
+        $this->assertEquals(array(
                 new question_classified_response(14, 'Dick', 0.8)),
                 $sa->classify_response(array('answer' => 'Dick')));
-        $this->assertEqual(array(
+        $this->assertEquals(array(
                 new question_classified_response(15, 'cat', 0.0)),
                 $sa->classify_response(array('answer' => 'cat')));
-        $this->assertEqual(array(
+        $this->assertEquals(array(
                 question_classified_response::no_response()),
                 $sa->classify_response(array('answer' => '')));
     }
