@@ -175,7 +175,7 @@ class qtype_pmatch_question_test extends UnitTestCase {
 
     public function test_classify_response() {
         $sa = test_pmatch_question_maker::make_a_pmatch_question();
-        $sa->start_attempt(new question_attempt_step());
+        $sa->start_attempt(new question_attempt_step(), 1);
 
         $this->assertEqual(array(
                 new question_classified_response(13, 'Tom', 1.0)),
