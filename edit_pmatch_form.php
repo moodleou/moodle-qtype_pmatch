@@ -217,23 +217,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
         }
 
-        //check sizes of answer box within a reasonable range
-        $placeholder = false;
-        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $data['questiontext']['text'], $matches)) {
-            $cols = $matches[1];
-            $rows = $matches[2];
-            $placeholder = $matches[0];
-        } else if (preg_match('/__([0-9]+)__/', $data['questiontext']['text'], $matches)) {
-            $rows = 1;
-            $cols = round($matches[1] * 1.1);
-            $placeholder = $matches[0];
-        }
-        if ($placeholder && ($rows > 100 || $cols > 150)) {
-            $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
-        }
-        if ($placeholder && $rows > 1 && ($data['allowsubscript'] || $data['allowsuperscript'])) {
-            $errors['questiontext'] = get_string('subsuponelineonly', 'qtype_pmatch');
-        }
+        $errors += $this->place_holder_errors($data['questiontext']['text'],
+                                              $data['allowsubscript'] || $data['allowsuperscript']);
 
         $wordssofar = array();
         foreach ($data['synonymsdata'] as $key => $synonym) {
@@ -283,6 +268,30 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         return $errors;
     }
+
+    protected function place_holder_errors($questiontext, $usesubsup) {
+        //check sizes of answer box within a reasonable range
+        $errors = array();
+        $placeholder = false;
+        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
+            $cols = $matches[1];
+            $rows = $matches[2];
+            $placeholder = $matches[0];
+        } else if (preg_match('/__([0-9]+)__/', $questiontext, $matches)) {
+            $rows = 1;
+            $cols = round($matches[1] * 1.1);
+            $placeholder = $matches[0];
+        }
+        if ($placeholder && ($rows > 100 || $cols > 150)) {
+            $errors['questiontext'] = get_string('inputareatoobig', 'qtype_pmatch', $placeholder);
+        }
+        if ($placeholder && ($rows > 1) && $usesubsup) {
+            $errors['questiontext'] = get_string('subsuponelineonly', 'qtype_pmatch');
+        }
+        return $errors;
+    }
+
+
     protected function add_synonyms($mform) {
         $mform->addElement('header', 'synonymshdr', get_string('synonymsheader', 'qtype_pmatch'));
 
