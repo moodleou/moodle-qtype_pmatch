@@ -18,9 +18,9 @@
 /**
  * This file contains tests that tests the interpretation of a pmatch string.
  *
- * @package pmatch
- * @copyright  2012 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,9 +30,9 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 /**
  * Tests of the interpretation of the pmatch pattern in the pmatch library.
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group     qtype_pmatch
  */
 class qtype_pmatch_test extends basic_testcase {
     protected function match($string, $expression, $options = null) {
@@ -54,14 +54,14 @@ class qtype_pmatch_test extends basic_testcase {
         // No contents.
         $this->assertEquals($this->error_message('match_mow()'),
                 get_string('ie_unrecognisedsubcontents', 'qtype_pmatch', 'match_mow()'));
-        // ends in an or character.
+        // Ends in an or character.
         $this->assertEquals($this->error_message('match_mow([tom maud]|)'),
                 get_string('ie_lastsubcontenttypeorcharacter', 'qtype_pmatch', '[tom maud]|'));
-        // ends in a space.
+        // Ends in a space.
         $this->assertEquals($this->error_message('match_mow([tom maud] )'),
                 get_string('ie_lastsubcontenttypeworddelimiter',
                          'qtype_pmatch', 'match_mow([tom maud] )'));
-        // ends in a proximity delimiter.
+        // Ends in a proximity delimiter.
         $this->assertEquals($this->error_message('match_mow([tom maud]_)'),
                 get_string('ie_lastsubcontenttypeworddelimiter',
                          'qtype_pmatch', 'match_mow([tom maud]_)'));
@@ -140,7 +140,7 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertTrue($this->match('A x x x x B C D', 'match_ow([A B]_[C D])'));
         $this->assertFalse($this->match('A x x x x B. C D', 'match_ow([A B]_[C D])'));
         $this->assertTrue($this->match('A x x x x B. C D', 'match_ow([A B] [C D])'));
-        //_ requires the words in [] to match in order.
+        // Requires the words in [] to match in order.
         $this->assertFalse($this->match('B x x x x A C D', 'match_ow([A B]_[C D])'));
         $this->assertFalse($this->match('A B C', 'match_ow([A B]_[B C])'));
         $this->assertFalse($this->match('A A', 'match(A)'));
@@ -157,11 +157,11 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertFalse($this->match('testt', 'match_mf(test)'));
         $this->assertFalse($this->match('tent', 'match_mf(test)'));
         $this->assertFalse($this->match('tets', 'match_mf(test)'));
-        //fewer characters option is disabled for a pattern
-        //of fewer than 4 normal characters in pattern.
+        // Fewer characters option is disabled for a pattern
+        // of fewer than 4 normal characters in pattern.
         $this->assertFalse($this->match('te', 'match_mf(tes)'));
 
-        //allow fewer characters
+        // Allow fewer characters.
         $this->assertTrue($this->match('abcd', 'match_mf(abcd)'));
         $this->assertTrue($this->match('abc', 'match_mf(abcd)'));
         $this->assertFalse($this->match('acbd', 'match_mf(abcd)'));
@@ -172,7 +172,7 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertFalse($this->match('gabcd', 'match_mf(abcd)'));
         $this->assertFalse($this->match('abcdg', 'match_mf(abcd)'));
 
-        //allow replace character
+        // Allow replace character.
         $this->assertTrue($this->match('abcd', 'match_mr(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mr(abcd)'));
         $this->assertFalse($this->match('acbd', 'match_mr(abcd)'));
@@ -184,7 +184,7 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertFalse($this->match('gabcd', 'match_mr(abcd)'));
         $this->assertFalse($this->match('abcdg', 'match_mr(abcd)'));
 
-        //allow transpose characters
+        // Allow transpose characters.
         $this->assertTrue($this->match('abcd', 'match_mt(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mt(abcd)'));
         $this->assertTrue($this->match('acbd', 'match_mt(abcd)'));
@@ -198,7 +198,7 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertFalse($this->match('gabcd', 'match_mt(abcd)'));
         $this->assertFalse($this->match('abcdg', 'match_mt(abcd)'));
 
-        //allow extra character
+        // Allow extra character.
         $this->assertTrue($this->match('abcd', 'match_mx(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mx(abcd)'));
         $this->assertFalse($this->match('acbd', 'match_mx(abcd)'));
@@ -214,7 +214,7 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertTrue($this->match('abcd', 'match_mx(abcd)'));
         $this->assertFalse($this->match('abc', 'match_mx(abcd)'));
 
-        //allow any one mispelling
+        // Allow any one mispelling.
         $this->assertTrue($this->match('abcd', 'match_m(abcd)'));
         $this->assertTrue($this->match('abc', 'match_m(abcd)'));
         $this->assertTrue($this->match('acbd', 'match_m(abcd)'));
@@ -238,8 +238,8 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertFalse($this->match('gabbcd', 'match_m(abcd)'));
         $this->assertFalse($this->match('abbcdg', 'match_m(abcd)'));
 
-        //allow any two mispelling
-        //default to one if there are less than 8 chars in word pattern
+        // Allow any two mispelling.
+        // Default to one if there are less than 8 chars in word pattern.
         $this->assertTrue($this->match('abcd', 'match_m2(abcd)'));
         $this->assertTrue($this->match('abc', 'match_m2(abcd)'));
         $this->assertTrue($this->match('acbd', 'match_m2(abcd)'));
@@ -254,8 +254,8 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertTrue($this->match('abcdg', 'match_m2(abcd)'));
 
         $this->assertFalse($this->match('bacde', 'match_m2(abcd)'));
-        //ffff padding is to increase pattern length to the required 8 chars
-        //so that two misspellings are allowed
+        // The ffff padding is to increase pattern length to the required 8 chars
+        // so that two misspellings are allowed.
         $this->assertTrue($this->match('ffffbacde', 'match_m2(ffffabcd)'));
         $this->assertTrue($this->match('ffffbadc', 'match_m2(ffffabcd)'));
         $this->assertTrue($this->match('ffffaffd', 'match_m2(ffffabcd)'));
@@ -317,7 +317,7 @@ EOF;
         $this->assertTrue($this->match('lock', $expression));
         $this->assertFalse($this->match('dog', $expression));
 
-        //when words are shorter than 8 characters, revert to allow one spelling mistake per word
+        // When words are shorter than 8 characters, revert to allow one spelling mistake per word.
         $this->assertTrue($this->match('dogs are bitter than cuts',
                                                         'match_m2(dogs are better than cats)'));
         $this->assertTrue($this->match('digs are bitter than cuts',
@@ -325,20 +325,20 @@ EOF;
         $this->assertFalse($this->match('diigs are bitter than cuts',
                                                         'match_m2(dogs are better than cats)'));
 
-        //try to trip up matcher, can match first to first with two spelling mistakes
-        //but then will fail when trying to match second to second which will also have two mistakes
-        //but should match first word to second and second to first with 2 mistakes total
+        // Try to trip up matcher, can match first to first with two spelling mistakes
+        // but then will fail when trying to match second to second which will also have two mistakes
+        // but should match first word to second and second to first with 2 mistakes total.
         $this->assertTrue($this->match('baccffff ffcdffff', 'match_m2o(abcdffff baccffff)'));
         $this->assertFalse($this->match('baccffff fffdffff', 'match_m2o(abcdffff baccffff)'));
 
-        //similar attempt to trip up matcher as above
+        // Similar attempt to trip up matcher as above.
         $this->assertTrue($this->match('baccffff ffcdffff ffffffff',
                                         'match_m2o(ffffffff abcdffff baccffff)'));
         $this->assertFalse($this->match('baccffff fffdffff ffffffff',
                                         'match_m2o(ffffffff abcdffff baccffff)'));
 
-        //this should not match as the proximity delimiter precludes another word match occuring
-        //between the two words separated by it.
+        // This should not match as the proximity delimiter precludes another word match occuring
+        // between the two words separated by it.
         $this->assertFalse($this->match('abcd ccc ffff', 'match_o(abcd_ffff ccc)'));
 
         $this->assertTrue($this->match('one two five', 'match(one_two|[three four] five)'));
@@ -371,8 +371,8 @@ EOF;
         $this->assertTrue($this->match('one five six.', 'match_wp4(one_six)'));
         $this->assertFalse($this->match('one two two three four five six.', 'match_wp4(one_six)'));
 
-        //sentence divider can be any characters (although they should not be characters that
-        //might appear in a word).
+        // The sentence divider can be any characters (although they should not be characters that
+        // might appear in a word).
         $options = new pmatch_options();
         $options->sentencedividers = '|';
         $this->assertFalse($this->match('one four| two|', 'match_w(one_two)', $options));
@@ -403,8 +403,8 @@ match_all (
 
 EOF;
         $this->assertEquals($expression->get_formatted_expression_string(), $formattedexpression);
-        //when formatting phrase and word level options in expression they are simplied
-        //and arranged into a standard order.
+        // When formatting phrase and word level options in expression they are simplied
+        // and arranged into a standard order.
         $expression = new pmatch_expression('match_mfmtxr(three|[four five])');
         $this->assertEquals($expression->get_formatted_expression_string(),
                                                                 "match_m (three|[four five])\n");
@@ -472,7 +472,7 @@ match_all (
 EOF;
 
         $this->assertEquals($expression->get_formatted_expression_string(), $formattedexpression);
-        //notice match_c (m) will match any one word string with an 'm' in it.
+        // Notice match_c (m) will match any one word string with an 'm' in it.
         $this->assertTrue($this->match('cegh', $expressionstr));
         $this->assertFalse($this->match('acegh', $expressionstr));
         $this->assertTrue($this->match('abcegh', $expressionstr));
@@ -485,7 +485,7 @@ EOF;
         $options->set_synonyms(array((object)array('word'=>'abcde', 'synonyms' => 'xyz|fghij')));
         $this->assertTrue($this->match('fghij', 'match(abcde)', $options));
 
-        //further tests to check that phrase is matching the right no of words
+        // Further tests to check that phrase is matching the right no of words.
         $this->assertFalse($this->match('it does not really contain an object which is a verb',
                                                                 'match_mw([not contain]_verb)'));
         $this->assertFalse($this->match('it is not really a sentence it would be classed as a'.
@@ -496,7 +496,7 @@ EOF;
         $this->assertFalse($this->match('not contain is not a verb',
                                                         'match_mw([not contain]|abc_verb)'));
 
-        //test full stop as word separator
+        // Test full stop as word separator.
         $this->assertFalse($this->match('one four.two.', 'match_w(one_two)'));
         $this->assertTrue($this->match('one four two.greeedy', 'match_w(one_two)'));
         $this->assertTrue($this->match('one four two.', 'match_w(one_two)'));
@@ -554,10 +554,10 @@ EOF;
         $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
     }
     public function test_pmatch_unicode_matching() {
-        //Unicode normalisation means that the same characters with two different
-        //unicode representations should match.
+        // Unicode normalisation means that the same characters with two different
+        // unicode representations should match.
         // "\xC3\x85" = 'LATIN CAPITAL LETTER A WITH RING ABOVE' (U+00C5)
-        // "\xCC\x8A" = 'COMBINING RING ABOVE' (U+030A)
+        // "\xCC\x8A" = 'COMBINING RING ABOVE' (U+030A).
         $this->assertTrue($this->match("A\xCC\x8A", "match(\xC3\x85)"));
     }
 }

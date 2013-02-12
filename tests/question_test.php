@@ -17,9 +17,9 @@
 /**
  * Unit tests for the pmatch question definition class.
  *
- * @package    qtype_pmatch
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -29,11 +29,12 @@ global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 
+
 /**
  * Question maker for unit tests for the pmatch question definition class.
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class test_pmatch_question_maker extends test_question_maker {
     /**
@@ -65,8 +66,8 @@ class test_pmatch_question_maker extends test_question_maker {
         $pm->qtype = question_bank::get_qtype('pmatch');
         $pm->applydictionarycheck = $applydictionarycheck;
         if ($pm->applydictionarycheck) {
-            //these tests are in English,
-            //no matter what the current laguage of the user running the tests
+            // These tests are in English,
+            // no matter what the current laguage of the user running the tests.
             $pm->pmatchoptions->lang = 'en';
         }
         return $pm;
@@ -74,6 +75,7 @@ class test_pmatch_question_maker extends test_question_maker {
 
 
 }
+
 
 /**
  * Unit tests for the pattern-match question definition class.
@@ -201,6 +203,4 @@ class qtype_pmatch_question_test extends basic_testcase {
                 question_classified_response::no_response()),
                 $sa->classify_response(array('answer' => '')));
     }
-
-
 }

@@ -18,15 +18,15 @@
 /**
  * This file contains the API for accessing pmatch expression interpreter and matcher.
  *
- * @package pmatch
+ * @package   qtype_pmatch
  * @copyright 2011 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
 
-//following is required because the xdebug library defaults to throwing a fatal error if
-//there is more than 100 nested function calls.
+// The following is required because the xdebug library defaults to throwing a fatal error if
+// there is more than 100 nested function calls.
 if (extension_loaded('xdebug')) {
      ini_set('xdebug.max_nesting_level', 1000);
 }
@@ -82,7 +82,7 @@ class pmatch_options {
             $toreplaceitem = preg_quote($synonym->word, '!');
             $toreplaceitem = preg_replace('!\\\\\*!u',
                         '('.$this->character_in_word_pattern().')*', $toreplaceitem);
-            //the ?<= and ?= ensures that the adjacent characters are not replaced also
+            // The ?<= and ?= ensures that the adjacent characters are not replaced also.
             $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
             if ($this->ignorecase) {
                 $toreplaceitem .= 'i';
@@ -96,6 +96,7 @@ class pmatch_options {
             }
         }
     }
+
     public function set_extra_dictionary_words($wordlist) {
         $wordlist = $this->unicode_normalisation($wordlist);
         $this->extradictionarywords = preg_split('!\s+!', $wordlist);
@@ -107,7 +108,7 @@ class pmatch_options {
         if (class_exists('Normalizer')) {
             return Normalizer::normalize($unicodestring);
         } else {
-            //limit the errors added to the log to one per pagee load
+            // Limit the errors added to the log to one per pagee load.
             if (!$errorlogged) {
                 add_to_log($COURSE->id, 'question', 'error', '', get_string('env_peclnormalisationmissing', 'qtype_pmatch'));
                 $errorlogged = true;
@@ -132,20 +133,21 @@ class pmatch_options {
         return $wordpatterns;
     }
 
-    /*
+    /**
      * @return string fragment of preg_match pattern to match sentence separator.
      */
     public function sentence_divider_pattern() {
         return $this->pattern_to_match_any_of($this->sentencedividers);
     }
 
-    /*
+    /**
      * @return string fragment of preg_match pattern to match sentence separator.
      */
     public function word_has_sentence_divider_suffix($word) {
         $sd = $this->sentence_divider_pattern();
         return (1 === preg_match('!('.$sd.')$!u', $word));
     }
+
     /**
      *
      * Strip one and only one sentence divider from the end of a string.
@@ -186,8 +188,8 @@ class pmatch_options {
         }
         return $pattern;
     }
-
 }
+
 
 /**
  * Represents a string that is ready for matching, and provides the method to
@@ -221,7 +223,7 @@ class pmatch_parsed_string {
         $this->words = array();
         $wordno = 0;
         $cursor = 0;
-        $string = trim($string);//trim off any extra whitespace
+        $string = trim($string); // Trim off any extra whitespace.
         $string = $this->options->unicode_normalisation($string);
 
         $sd = $this->options->sentence_divider_pattern();
@@ -231,17 +233,17 @@ class pmatch_parsed_string {
         while ($cursor < strlen($string)) {
             $toprocess = substr($string, $cursor);
             $matches = array();
-            //using a named sub pattern to make sure to capture the sentence divider
+            // Using a named sub pattern to make sure to capture the sentence divider.
             $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
                 if (preg_match("!({$wti})$endofword!Au$po", $toprocess, $matches)) {
-                    //we found a number or extra dictionary word
+                    // We found a number or extra dictionary word.
                     break;
                 }
             }
             if (!count($matches)) {
-                if (!preg_match("!(.+?)$endofword!A$po", $toprocess, $matches)){
-                    //ignore the rest of the string
+                if (!preg_match("!(.+?)$endofword!A$po", $toprocess, $matches)) {
+                    // Ignore the rest of the string.
                     break;
                 }
             }
@@ -262,7 +264,6 @@ class pmatch_parsed_string {
         }
     }
 
-
     /**
      * @return boolean returns false if any word is misspelt.
      */
@@ -272,7 +273,7 @@ class pmatch_parsed_string {
     }
 
     public function is_parseable() {
-        if ($this->unrecognizedfragment === ''){
+        if ($this->unrecognizedfragment === '') {
             return true;
         } else {
             return false;
@@ -295,11 +296,10 @@ class pmatch_parsed_string {
         $pspell_link = pspell_new($langforspellchecker);
         if ($pspell_link === false) {
             add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $langforspellchecker));
-            return array();//if dictionary is not installed for this language we cannot spell check
+            return array(); // If dictionary is not installed for this language we cannot spell check.
         }
 
-
-        $endofpattern = '('.$this->options->sentence_divider_pattern().')?$!A';
+        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$!A';
         if ($this->options->ignorecase) {
             $endofpattern .= 'i';
         }
@@ -338,6 +338,7 @@ class pmatch_parsed_string {
     public function get_options() {
         return $this->options;
     }
+
     /**
      * @return array the words to try to match.
      */
@@ -346,30 +347,25 @@ class pmatch_parsed_string {
     }
 }
 
+
 /**
  * Represents a pmatch_expression.
  */
 class pmatch_expression {
-    /**
-     * @var pmatch_interpreter_whole_expression
-     */
+
+    /** @var pmatch_interpreter_whole_expression */
     protected $interpreter;
-    /**
-     * @var string the original expression passed to the constructor
-     */
+
+    /** @var string the original expression passed to the constructor */
     protected $originalexpression;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     protected $errormessage;
 
-    /**
-     * @var boolean
-     */
+    /** @var boolean */
     protected $valid;
 
     /**
-     *
      * @param string $string the string to match against.
      * @param pmatch_options $options the options to use.
      */
@@ -451,5 +447,4 @@ class pmatch_expression {
         }
         return $this->interpreter->get_formatted_expression_string();
     }
-
 }

@@ -17,9 +17,9 @@
 /**
  * Pattern-match question definition class.
  *
- * @package    qtype_pmatch
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -30,26 +30,31 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 /**
  * Represents a pattern-match  question.
  *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_question extends question_graded_by_strategy
         implements question_response_answer_comparer {
+
     /** @var boolean whether to allow students to use subscript. */
     public $allowsubscript;
+
     /** @var boolean whether to allow students to use super script. */
     public $allowsuperscript;
+
     /** @var boolean whether to warn student if their response is longer than 20 words. */
     public $forcelength;
+
     /** @var boolean whether to spell check students response. */
     public $applydictionarycheck;
+
     /** @var pmatch_options options for pmatch expression matching. */
     public $pmatchoptions;
+
     /** @var array of question_answer. */
     public $answers = array();
 
-
-
+    private $responsevalidationerrors = null;
 
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
@@ -84,8 +89,6 @@ class qtype_pmatch_question extends question_graded_by_strategy
         }
         return (!count($this->responsevalidationerrors) > 0);
     }
-
-    private $responsevalidationerrors = null;
 
     protected function validate(array $response) {
         $this->responsevalidationerrors = array();
@@ -140,7 +143,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
             $answer = $qa->get_question()->get_matching_answer(array('answer' => $currentanswer));
-            $answerid = reset($args); // itemid is answer id.
+            $answerid = reset($args); // Itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
 
         } else if ($component == 'question' && $filearea == 'hint') {

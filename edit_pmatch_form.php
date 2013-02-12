@@ -17,10 +17,9 @@
 /**
  * Defines the editing form for the pmatch question type.
  *
- * @package    qtype
- * @subpackage pmatch
- * @copyright  2007 Jamie Pratt
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 2007 Jamie Pratt
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,8 +29,8 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 /**
  * Short answer question editing form definition.
  *
- * @copyright  2007 Jamie Pratt
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2007 Jamie Pratt
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_edit_form extends question_edit_form {
     /**
@@ -134,21 +133,21 @@ class qtype_pmatch_edit_form extends question_edit_form {
     }
 
     protected function data_preprocessing_other_answer($question) {
-        //special handling of otheranswer
+        // Special handling of otheranswer.
         if (!empty($question->options->answers)) {
             foreach ($question->options->answers as $key => $answer) {
                 if ($answer->answer == '*') {
                     $question->otherfeedback = array();
-                    // Prepare the feedback editor to display files in draft area
+                    // Prepare the feedback editor to display files in draft area.
                     $draftitemid = file_get_submitted_draft_itemid('otherfeedback');
                     $question->otherfeedback['text'] = file_prepare_draft_area(
-                        $draftitemid,          // draftid
-                        $this->context->id,    // context
-                        'question',            // component
-                        'answerfeedback',      // filarea
-                        !empty($answer->id) ? (int) $answer->id : null, // itemid
-                        $this->fileoptions,    // options
-                        $answer->feedback      // text
+                        $draftitemid,
+                        $this->context->id,
+                        'question',
+                        'answerfeedback',
+                        !empty($answer->id) ? (int) $answer->id : null,
+                        $this->fileoptions,
+                        $answer->feedback
                     );
                     $question->otherfeedback['itemid'] = $draftitemid;
                     $question->otherfeedback['format'] = $answer->feedbackformat;
@@ -270,7 +269,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
     }
 
     protected function place_holder_errors($questiontext, $usesubsup) {
-        //check sizes of answer box within a reasonable range
+        // Check sizes of answer box within a reasonable range.
         $errors = array();
         $placeholder = false;
         if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {

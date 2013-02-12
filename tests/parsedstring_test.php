@@ -18,10 +18,9 @@
 /**
  * This file contains tests of the student response parsing in the pmatch library.
  *
- * @package    qtype
- * @subpackage pmatch
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -30,9 +29,9 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 /**
  * Tests of the student response parsing in the pmatch library.
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group     qtype_pmatch
  */
 class qtype_pmatch_parse_string_test extends basic_testcase {
     public function test_pmatch_parse_string() {
@@ -87,28 +86,28 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
         $options->lang = 'en';
         $options->set_synonyms(array((object)array('word'=>'queek', 'synonyms' => 'abcde|fghij')));
 
-        //e.g. passes as it is an extra dictionary word
-        //tool passes as it is correctly spelt
+        // For example passes as it is an extra dictionary word
+        // tool passes as it is correctly spelt.
         $parsedstring = new pmatch_parsed_string('e.g. tool', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-        //full stop (sentence divider) should pass test
+        // Full stop (sentence divider) should pass test.
         $parsedstring = new pmatch_parsed_string('e.g.. tool.', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-        //only allow one full stop (sentence divider)
+        // Only allow one full stop (sentence divider).
         $parsedstring = new pmatch_parsed_string('e.g... tool.', $options);
         $this->assertFalse($parsedstring->is_parseable());
 
-        //anything in synonyms automatically passes
+        // Anything in synonyms automatically passes.
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queek queek', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-        //anything in synonyms automatically passes
+        // Anything in synonyms automatically passes.
         $parsedstring = new pmatch_parsed_string('e.g.. tool. abcde fghij.', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 
-        //synonyms may include * wild card
+        // Synonyms may include * wild card.
         $options = new pmatch_options();
         $options->lang = 'en';
         $options->set_synonyms(

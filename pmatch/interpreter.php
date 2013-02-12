@@ -18,9 +18,9 @@
 /**
  * This file contains code to interpret a pmatch expression.
  *
- * @package pmatch
+ * @package   qtype_pmatch
  * @copyright 2011 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
@@ -40,8 +40,12 @@ define('PMATCH_NUMBER', '((([+|-]( )?)?'.PMATCH_EXPONENT_DNUM.')'.
 abstract class pmatch_interpreter_item {
     protected $interpretererrormessage;
     public $codefragment;
-    /**@var pmatch_options */
+
+    /** @var pmatch_options */
     public $pmatchoptions;
+
+    protected $pattern;
+
     /**
      * @param pmatch_options $pmatchoptions
      */
@@ -51,6 +55,11 @@ abstract class pmatch_interpreter_item {
         }
         $this->pmatchoptions = $pmatchoptions;
     }
+
+    /**
+     * @param string $string a pmatch expression as a string.
+     * @param int $start where to start parsing.
+     */
     public function interpret($string, $start = 0) {
         $this->interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
@@ -61,9 +70,8 @@ abstract class pmatch_interpreter_item {
         }
         return array($found, $endofmatch);
     }
-    protected $pattern;
+
     /**
-     *
      * Convert the $string starting at $start into a tree of object representing parts of pmatch
      * code. This is the default method which is often overriden. It looks for $pattern which is a
      * regex with no modifying options.
@@ -71,9 +79,9 @@ abstract class pmatch_interpreter_item {
      * @param integer $start
      */
     protected function interpret_contents($string, $start) {
-        //regex pattern to match one character of pmatch code
-        list($found, $endofpattern, $subpatterns) =
-                                        $this->find_pattern($this->pattern, $string, $start);
+        // Regex pattern to match one character of pmatch code.
+        list($found, $endofpattern, $subpatterns) = $this->find_pattern(
+                $this->pattern, $string, $start);
         return array($found, $endofpattern);
     }
 
@@ -97,7 +105,7 @@ abstract class pmatch_interpreter_item {
             $endofpattern = $start;
         }
 
-        array_shift($matches);//pop off the matched string and only return sub patterns
+        array_shift($matches); // Pop off the matched string and only return sub patterns.
         return array($found, $endofpattern, $matches);
     }
     public function get_error_message() {
@@ -161,7 +169,8 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         $branchindex = 0;
         $childbranches = array();
         $childbranchcursor = array();
-        //iterate down all branches
+
+        // Iterate down all branches.
         foreach ($typestotry as $typetotry) {
             $childbranches[$branchindex] = $branchfoundsofar;
             list($typefound, $found, $childbranchcursor[$branchindex]) =
@@ -181,7 +190,8 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
             }
             $branchindex++;
         }
-        //find the branch that matches the longest string
+
+        // Find the branch that matches the longest string.
         array_multisort($childbranchcursor, SORT_DESC, SORT_NUMERIC, $childbranches);
         return array(array_shift($childbranches), array_shift($childbranchcursor));
     }
@@ -308,77 +318,91 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
         }
         return array(true, $endofclosing);
     }
+
     protected function interpret_subpattern_in_opening($subpattern) {
         return true;
     }
+
     public function get_formatted_expression_string($indentlevel = 0) {
         $string = $this->indent($indentlevel). $this->formatted_opening()." (\n";
         $string .= parent::get_formatted_expression_string($indentlevel);
         $string .= $this->indent($indentlevel). ")\n";
         return $string;
     }
+
     protected function formatted_opening() {
-        return '';//overridden in sub classes
+        return ''; // Overridden in sub classes.
     }
 
 }
-class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_subcontents {
 
+
+class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_subcontents {
+    protected $limitsubcontents = 1;
 
     protected function next_possible_subcontent($foundsofar) {
         return array('not', 'match_any', 'match_all', 'match_options');
     }
 
-    protected $limitsubcontents = 1;
     public function get_formatted_expression_string($indentlevel = 0) {
         return $this->subcontents[0]->get_formatted_expression_string($indentlevel);
     }
 }
-class pmatch_interpreter_not extends pmatch_interpreter_item_with_enclosed_subcontents {
 
+
+class pmatch_interpreter_not extends pmatch_interpreter_item_with_enclosed_subcontents {
     protected $openingpattern = '!\s*not\s*\(\s*!';
     protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
+    protected $limitsubcontents = 1;
 
     protected function next_possible_subcontent($foundsofar) {
         return array('match_any', 'match_all', 'match_options');
     }
 
-    protected $limitsubcontents = 1;
     protected function formatted_opening() {
         return 'not';
     }
 }
-class pmatch_interpreter_match extends pmatch_interpreter_item_with_enclosed_subcontents {
 
+
+class pmatch_interpreter_match extends pmatch_interpreter_item_with_enclosed_subcontents {
     protected $openingpattern = '!match([_a-z0-4]*)\s*\(\s*!';
     protected $closingpattern = '!\s*\)\s*!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
-
 }
+
+
 class pmatch_interpreter_match_any extends pmatch_interpreter_match {
     protected function interpret_subpattern_in_opening($options) {
         return ($options == '_any');
     }
+
     protected function next_possible_subcontent($foundsofar) {
         return array('match_any', 'match_all', 'match_options', 'not');
     }
+
     protected function formatted_opening() {
         return 'match_any';
     }
 }
 
+
 class pmatch_interpreter_match_all extends pmatch_interpreter_match {
     protected function interpret_subpattern_in_opening($options) {
         return ($options == '_all');
     }
+
     protected function next_possible_subcontent($foundsofar) {
         return array('match_any', 'match_all', 'match_options', 'not');
     }
+
     protected function formatted_opening() {
         return 'match_all';
     }
 }
+
+
 class pmatch_word_level_options {
     protected $allowextracharacters;
     protected $misspellingallowreplacechar;
@@ -399,42 +423,55 @@ class pmatch_word_level_options {
         $this->misspellingallowfewerchar = false;
         $this->misspellings = 1;
     }
+
     public function set_allow_extra_characters($allowextracharacters) {
         $this->allowextracharacters = $allowextracharacters;
     }
+
     public function set_misspelling_allow_replace_char($misspellingallowreplacechar) {
         $this->misspellingallowreplacechar = $misspellingallowreplacechar;
     }
+
     public function set_misspelling_allow_transpose_two_chars($misspellingallowtransposetwochars) {
         $this->misspellingallowtransposetwochars = $misspellingallowtransposetwochars;
     }
+
     public function set_misspelling_allow_extra_char($misspellingallowextrachar) {
         $this->misspellingallowextrachar = $misspellingallowextrachar;
     }
+
     public function set_misspelling_allow_fewer_char($misspellingallowfewerchar) {
         $this->misspellingallowfewerchar = $misspellingallowfewerchar;
     }
+
     public function set_misspellings($misspellings) {
         $this->misspellings = $misspellings;
     }
+
     public function get_allow_extra_characters() {
         return $this->allowextracharacters;
     }
+
     public function get_misspelling_allow_replace_char() {
         return $this->misspellingallowreplacechar;
     }
+
     public function get_misspelling_allow_transpose_two_chars() {
         return $this->misspellingallowtransposetwochars;
     }
+
     public function get_misspelling_allow_extra_char() {
         return $this->misspellingallowextrachar;
     }
+
     public function get_misspelling_allow_fewer_char() {
         return $this->misspellingallowfewerchar;
     }
+
     public function get_misspellings() {
         return $this->misspellings;
     }
+
     public function get_options_as_string() {
         $string = '';
         if ($this->misspellingallowreplacechar &&
@@ -468,6 +505,8 @@ class pmatch_word_level_options {
         return $string;
     }
 }
+
+
 class pmatch_phrase_level_options {
     protected $allowproximityof;
     protected $allowanywordorder;
@@ -480,26 +519,33 @@ class pmatch_phrase_level_options {
     public function get_allow_proximity_of() {
         return $this->allowproximityof;
     }
+
     public function get_allow_any_word_order() {
         return $this->allowanywordorder;
     }
+
     public function get_allow_extra_words() {
         return $this->allowextrawords;
     }
+
     public function reset_options() {
         $this->allowanywordorder = false;
         $this->allowextrawords = false;
         $this->allowproximityof = 2;
     }
+
     public function set_allow_proximity_of($allowproximityof) {
         $this->allowproximityof = $allowproximityof;
     }
+
     public function set_allow_any_word_order($allowanywordorder) {
         $this->allowanywordorder = $allowanywordorder;
     }
+
     public function set_allow_extra_words($allowextrawords) {
         $this->allowextrawords = $allowextrawords;
     }
+
     public function get_options_as_string() {
         $string = '';
         if ($this->allowanywordorder) {
@@ -514,16 +560,14 @@ class pmatch_phrase_level_options {
         return $string;
     }
 }
+
+
 class pmatch_interpreter_match_options extends pmatch_interpreter_match {
 
-    /**
-     * @var pmatch_word_level_options
-     */
+    /** @var pmatch_word_level_options */
     public $wordleveloptions;
 
-    /**
-     * @var pmatch_phrase_level_options
-     */
+    /** @var pmatch_phrase_level_options */
     public $phraseleveloptions;
 
     public function __construct($pmatchoptions) {
@@ -532,9 +576,8 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $this->phraseleveloptions = new pmatch_phrase_level_options();
     }
 
-
     protected function interpret_subpattern_in_opening($options) {
-        //general checks
+        // General checks.
         if (empty($options)) {
             return true;
         }
@@ -549,7 +592,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $wlopt = $this->wordleveloptions;
         $wlopt->reset_options();
         $misspellingoptionmatches = array();
-        $cursor = 1;//start at second character after '_'
+        $cursor = 1; // Start at second character after '_'.
         while ($cursor < strlen($options)) {
             if (0 === preg_match('!c|o|w|m([frtx2])*|p[0-4]!A',
                                         substr($options, $cursor),
@@ -621,6 +664,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         }
         return true;
     }
+
     protected function next_possible_subcontent($foundsofar) {
         switch ($this->last_subcontent_type_found($foundsofar)) {
             case '':
@@ -631,6 +675,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                 return array('word_delimiter_space', 'word_delimiter_proximity');
         }
     }
+
     public function get_formatted_expression_string($indentlevel = 0) {
         $string = $this->indent($indentlevel);
         $string .= $this->formatted_opening();
@@ -641,6 +686,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $string .= ")\n";
         return $string;
     }
+
     protected function formatted_opening() {
         $options = '';
         $options .= $this->wordleveloptions->get_options_as_string();
@@ -667,8 +713,9 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         }
         return array($found, $end);
     }
-
 }
+
+
 class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontents {
     protected function next_possible_subcontent($foundsofar) {
         switch ($this->last_subcontent_type_found($foundsofar)) {
@@ -682,6 +729,8 @@ class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontent
         }
     }
 }
+
+
 /**
  *
  * This is the same as an or_list but with no or_list_phrases.
@@ -699,20 +748,23 @@ class pmatch_interpreter_synonym extends pmatch_interpreter_item_with_subcontent
         }
     }
 }
+
+
 class pmatch_interpreter_or_character extends pmatch_interpreter_item {
     protected $pattern = '!\|!';
 }
+
+
 class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enclosed_subcontents {
 
     protected $openingpattern = '!\[!';
     protected $closingpattern = '!\]!';
     protected $missingclosingpatternerror = 'missingclosingbracket';
+    protected $limitsubcontents = 1;
 
     protected function next_possible_subcontent($foundsofar) {
         return array('phrase');
     }
-
-    protected $limitsubcontents = 1;
 
     public function get_formatted_expression_string($indentlevel = 0) {
         $string = '[';
@@ -722,8 +774,8 @@ class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enc
         $string .= ']';
         return $string;
     }
-
 }
+
 
 class pmatch_interpreter_phrase extends pmatch_interpreter_item_with_subcontents {
     protected function next_possible_subcontent($foundsofar) {
@@ -737,39 +789,55 @@ class pmatch_interpreter_phrase extends pmatch_interpreter_item_with_subcontents
         }
     }
 }
+
+
 class pmatch_interpreter_word_delimiter_space extends pmatch_interpreter_item {
     protected $pattern = '!\s+!';
 }
+
+
 class pmatch_interpreter_word_delimiter_proximity extends pmatch_interpreter_item {
     protected $pattern = '!\_!';
 }
+
+
 class pmatch_interpreter_word extends pmatch_interpreter_item_with_subcontents {
     protected function next_possible_subcontent($foundsofar) {
         return array('character_in_word', 'special_character_in_word',
                      'wildcard_match_multiple', 'wildcard_match_single');
     }
 }
+
+
 class pmatch_interpreter_number extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
         $this->pattern = '!'.PMATCH_NUMBER.'!';
     }
 }
+
+
 class pmatch_interpreter_character_in_word extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
         $this->pattern = '!'.PMATCH_CHARACTER.'!';
     }
 }
+
+
 class pmatch_interpreter_special_character_in_word extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
         $this->pattern = '!\\\\'.PMATCH_SPECIAL_CHARACTER.'!';
     }
 }
+
+
 class pmatch_interpreter_wildcard_match_single extends pmatch_interpreter_item {
     protected $pattern = '!\?!';
 }
+
+
 class pmatch_interpreter_wildcard_match_multiple extends pmatch_interpreter_item {
     protected $pattern = '!\*!';
 }

@@ -17,9 +17,9 @@
 /**
  * Question type class for the pattern-match question type.
  *
- * @package    qtype_pmatch
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_pmatch
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -33,10 +33,11 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 /**
  * The pattern-match question type.
  *
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch extends question_type {
+
     public function get_question_options($question) {
         global $DB;
         parent::get_question_options($question);
@@ -102,7 +103,7 @@ class qtype_pmatch extends question_type {
         }
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
-            // Parent function returns null if all is OK
+            // Parent function returns null if all is OK.
             return $parentresult;
         }
 
@@ -119,7 +120,7 @@ class qtype_pmatch extends question_type {
         $context = $question->context;
         $maxfraction = -1;
 
-        // Insert all the new answers
+        // Insert all the new answers.
         foreach ($question->answer as $key => $answerdata) {
             // Check for, and ignore, completely blank answer from the form.
             if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
@@ -173,7 +174,7 @@ class qtype_pmatch extends question_type {
             $DB->update_record('question_answers', $otheranswer);
             $this->save_extra_answer_data($question, 'other', $otheranswer->id);
         }
-        // Perform sanity checks on fractional grades
+        // Perform sanity checks on fractional grades.
         if ($maxfraction != 1) {
             $result = new stdClass();
             $result->noticeyesno = get_string('fractionsnomax', 'question', $maxfraction * 100);
@@ -286,12 +287,10 @@ class qtype_pmatch extends question_type {
         return array($questiondata->id => $responses);
     }
 
-
     public function delete_question($questionid, $contextid) {
         global $DB;
         $DB->delete_records('qtype_pmatch_synonyms', array('questionid' => $questionid));
 
         parent::delete_question($questionid, $contextid);
     }
-
 }
