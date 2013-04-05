@@ -286,16 +286,14 @@ class pmatch_parsed_string {
 
     protected function spell_check() {
         global $COURSE;
-        $langidparts = explode('_', $this->options->lang);
-        $langforspellchecker = $langidparts[0];
 
         if (!function_exists('pspell_new')) {
             add_to_log($COURSE->id, 'question', 'error', '', get_string('env_pspellmissing', 'qtype_pmatch'));
             return array();
         }
-        $pspell_link = pspell_new($langforspellchecker);
+        $pspell_link = pspell_new($this->options->lang);
         if ($pspell_link === false) {
-            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $langforspellchecker));
+            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $this->options->lang));
             return array(); // If dictionary is not installed for this language we cannot spell check.
         }
 

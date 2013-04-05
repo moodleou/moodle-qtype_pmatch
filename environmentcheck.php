@@ -49,12 +49,12 @@ if (!function_exists('pspell_new')) {
 } else {
     echo html_writer::tag('p', get_string('env_pspellok', 'qtype_pmatch'));
     $listofinstalledlangs = '';
+    $stringmanager = get_string_manager();
     foreach (get_string_manager()->get_list_of_translations() as $lang => $humanfriendlylang) {
-        $langidparts = explode('_', $lang);
         $a = new stdClass();
         $a->lang = $lang;
         $a->humanfriendlylang = $humanfriendlylang;
-        $a->langforspellchecker = $langidparts[0];
+        $a->langforspellchecker = $stringmanager->get_string('iso6391', 'langconfig', null, $lang);
         if (pspell_new($a->langforspellchecker)) {
             $listofinstalledlangs .= html_writer::tag('li', get_string('env_dictok', 'qtype_pmatch', $a));
         } else {

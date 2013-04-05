@@ -156,7 +156,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function start_attempt(question_attempt_step $step, $variant) {
-        $this->pmatchoptions->lang = current_language();
+        $this->pmatchoptions->lang = get_string('iso6391', 'langconfig');
         $step->set_qt_var('_responselang', $this->pmatchoptions->lang);
     }
 
