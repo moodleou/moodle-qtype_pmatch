@@ -40,6 +40,7 @@ $string['casesensitive'] = 'Case sensitivity';
 $string['caseyes'] = 'Yes, case must match';
 $string['converttospace'] = 'Convert the following characters to a space';
 $string['correctanswers'] = 'Correct answers';
+$string['errors'] = 'Please fix the following problems : {$a}';
 $string['env_dictmissing'] = 'Language pack \'{$a->humanfriendlylang}\' ({$a->lang}) installed but could not find pspell dictionary ({$a->langforspellchecker}).';
 $string['env_dictmissing2'] = 'Student attempted a spell check in language \'{$a}\'. But aspell dictionary for this language is not installed.';
 $string['env_dictok'] = 'Language pack \'{$a->humanfriendlylang}\' ({$a->lang}) installed and pspell dictionary for this language  ({$a->langforspellchecker}) is also correctly installed.';
