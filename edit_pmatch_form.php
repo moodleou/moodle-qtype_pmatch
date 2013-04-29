@@ -103,6 +103,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         get_string('converttospace', 'qtype_pmatch'),
                         array('size' => 60));
         $mform->setDefault('converttospace', ',;:');
+        $mform->setType('converttospace', PARAM_RAW_TRIMMED);
     }
 
     /**
