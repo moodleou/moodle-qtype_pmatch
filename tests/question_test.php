@@ -27,55 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+require_once($CFG->dirroot . '/question/type/pmatch/tests/helper.php');
 require_once($CFG->dirroot . '/question/type/pmatch/question.php');
-
-
-/**
- * Question maker for unit tests for the pmatch question definition class.
- *
- * @copyright 2012 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class test_pmatch_question_maker extends test_question_maker {
-    /**
-     * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
-     * correct answer 'Dick' and defaultmark 1.
-     * @param $applydictionarycheck false not to check. basic_testcase ($this in the test code) to check.
-     * @return qtype_pmatch_question
-     */
-    public static function make_a_pmatch_question($applydictionarycheck = false) {
-        if ($applydictionarycheck && !function_exists('pspell_new')) {
-            $applydictionarycheck->markTestSkipped(
-                    'pspell not installed on your server. Spell checking will not work.');
-        }
-        question_bank::load_question_definition_classes('pmatch');
-        $pm = new qtype_pmatch_question();
-        self::initialise_a_question($pm);
-        $pm->name = 'Short answer question';
-        $pm->questiontext = 'Who was Jane\'s companion : __________';
-        $pm->generalfeedback = 'Generalfeedback: Tom, Dick or Harry are all possible answers.';
-        $pm->pmatchoptions = new pmatch_options();
-        $pm->answers = array(
-            13 => new question_answer(13, 'match_w(Tom|Harry)', 1.0,
-                                'Either Tom or Harry is a very good answer.', FORMAT_HTML),
-            14 => new question_answer(14,
-                                'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
-            15 => new question_answer(15,
-                                '*', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
-        );
-        $pm->qtype = question_bank::get_qtype('pmatch');
-        $pm->applydictionarycheck = $applydictionarycheck;
-        if ($pm->applydictionarycheck) {
-            // These tests are in English,
-            // no matter what the current laguage of the user running the tests.
-            $pm->pmatchoptions->lang = 'en';
-        }
-        return $pm;
-    }
-
-
-}
-
 
 /**
  * Unit tests for the pattern-match question definition class.
@@ -118,7 +71,7 @@ class qtype_pmatch_question_test extends basic_testcase {
     }
 
     public function test_is_complete_response() {
-        $question = test_pmatch_question_maker::make_a_pmatch_question();
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertFalse($question->is_complete_response(array()));
         $this->assertFalse($question->is_complete_response(array('answer' => '')));
@@ -126,7 +79,7 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_complete_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_complete_response(array('answer' => 'x')));
 
-        $question = test_pmatch_question_maker::make_a_pmatch_question($this);
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question(true);
 
         $this->assertTrue($question->is_complete_response(array('answer' => 'The Queen is dead.')));
         $this->assertFalse($question->is_complete_response(
@@ -137,7 +90,7 @@ class qtype_pmatch_question_test extends basic_testcase {
     }
 
     public function test_is_gradable_response() {
-        $question = test_pmatch_question_maker::make_a_pmatch_question();
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertFalse($question->is_gradable_response(array()));
         $this->assertFalse($question->is_gradable_response(array('answer' => '')));
@@ -145,14 +98,14 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_gradable_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'x')));
 
-        $question = test_pmatch_question_maker::make_a_pmatch_question($this);
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question(true);
 
         $this->assertTrue($question->is_gradable_response(array('answer' => 'The Queen is dead.')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'Long kive the Kin.')));
     }
 
     public function test_grading() {
-        $question = test_pmatch_question_maker::make_a_pmatch_question();
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertEquals(array(0, question_state::$gradedwrong),
                 $question->grade_response(array('answer' => 'x')));
@@ -165,26 +118,26 @@ class qtype_pmatch_question_test extends basic_testcase {
     }
 
     public function test_get_correct_response() {
-        $question = test_pmatch_question_maker::make_a_pmatch_question();
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertEquals(array('answer' => 'match_w(Tom|Harry)'),
                 $question->get_correct_response());
     }
 
     public function test_get_question_summary() {
-        $sa = test_pmatch_question_maker::make_a_pmatch_question();
+        $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $qsummary = $sa->get_question_summary();
         $this->assertEquals('Who was Jane\'s companion : __________', $qsummary);
     }
 
     public function test_summarise_response() {
-        $sa = test_pmatch_question_maker::make_a_pmatch_question();
+        $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $summary = $sa->summarise_response(array('answer' => 'dog'));
         $this->assertEquals('dog', $summary);
     }
 
     public function test_classify_response() {
-        $sa = test_pmatch_question_maker::make_a_pmatch_question();
+        $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $sa->start_attempt(new question_attempt_step(), 1);
 
         $this->assertEquals(array(
