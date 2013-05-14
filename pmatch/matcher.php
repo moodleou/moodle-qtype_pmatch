@@ -19,7 +19,7 @@
  * This file containscode to match an already interpreted a pmatch expression to a student
  * response.
  *
- * @package pmatch
+ * @package   qtype_pmatch
  * @copyright 2011 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

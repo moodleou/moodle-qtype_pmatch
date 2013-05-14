@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Admin settings for the Opaque question type.
+ * Admin settings for the pmatch question type.
  *
- * @package    qtype
- * @subpackage opaque
+ * @package   qtype_pmatch
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
