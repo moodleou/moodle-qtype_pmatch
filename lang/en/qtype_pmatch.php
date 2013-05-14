@@ -18,8 +18,7 @@
 /**
  * OU pmatch question type language strings.
  *
- * @package    qtype
- * @subpackage pmatch
+ * @package   qtype_pmatch
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -38,6 +37,7 @@ $string['answerno'] = 'Answer {$a}';
 $string['caseno'] = 'No, case is unimportant';
 $string['casesensitive'] = 'Case sensitivity';
 $string['caseyes'] = 'Yes, case must match';
+$string['combinedcontrolnamepmatch'] = 'text input';
 $string['converttospace'] = 'Convert the following characters to a space';
 $string['correctanswers'] = 'Correct answers';
 $string['errors'] = 'Please fix the following problems : {$a}';
@@ -49,6 +49,7 @@ $string['env_peclnormalisationok'] = 'PECL Package for Unicode Normalizer appear
 $string['env_pspellmissing'] = 'Pspell library appears not to be correctly installed';
 $string['env_pspellok'] = 'Pspell library appears to be correctly installed';
 $string['environmentcheck'] = 'Environment checks for the pmatch question type';
+$string['err_providepmatchexpression'] = 'You must provide a pmatch expression here.';
 $string['extenddictionary'] = 'Add these words to dictionary';
 $string['filloutoneanswer'] = 'Use Pattern match syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
 $string['forcelength'] = 'If answer is more than 20 words';
