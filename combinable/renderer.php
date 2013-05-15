@@ -15,17 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Admin settings for the pmatch question type.
+ * Combined question embedded sub question renderer class.
  *
  * @package   qtype_pmatch
- * @copyright  2011 The Open University
+ * @copyright  2013 The Open University
+ * @author     Jamie Pratt <me@jamiep.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
-$settings = new admin_externalpage('qtypepmatchenvironmentcheck',
-        get_string('pluginname', 'qtype_pmatch'),
-        new moodle_url('/question/type/pmatch/environmentcheck.php'),
-        'moodle/question:config');
+
+class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_base {
+
+}
