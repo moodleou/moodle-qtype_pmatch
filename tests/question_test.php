@@ -79,7 +79,7 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_complete_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_complete_response(array('answer' => 'x')));
 
-        $question = qtype_pmatch_test_helper::make_a_pmatch_question(true);
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question($this);
 
         $this->assertTrue($question->is_complete_response(array('answer' => 'The Queen is dead.')));
         $this->assertFalse($question->is_complete_response(
@@ -98,7 +98,7 @@ class qtype_pmatch_question_test extends basic_testcase {
         $this->assertTrue($question->is_gradable_response(array('answer' => '0.0')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'x')));
 
-        $question = qtype_pmatch_test_helper::make_a_pmatch_question(true);
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question($this);
 
         $this->assertTrue($question->is_gradable_response(array('answer' => 'The Queen is dead.')));
         $this->assertTrue($question->is_gradable_response(array('answer' => 'Long kive the Kin.')));
