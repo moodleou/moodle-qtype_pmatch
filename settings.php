@@ -25,7 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$settings = new admin_externalpage('qtypepmatchenvironmentcheck',
-        get_string('pluginname', 'qtype_pmatch'),
-        new moodle_url('/question/type/pmatch/environmentcheck.php'),
-        'moodle/question:config');
+require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
+
+$settings->add(new qtype_pmatch_admin_setting_spell_checker('qtype_pmatch/spellchecker',
+        get_string('spellcheckertype', 'qtype_pmatch'),
+        get_string('spellcheckertype_desc', 'qtype_pmatch'), 'null', null));
+
+$settings->add(new qtype_pmatch_admin_setting_environment_check('qtype_pmatch_environment_check',
+        get_string('environmentcheck', 'qtype_pmatch'), null));

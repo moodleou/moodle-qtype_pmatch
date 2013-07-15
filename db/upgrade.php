@@ -15,18 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pattern-match question type version information.
+ * Pattern-match question type upgrade code.
  *
  * @package   qtype_pmatch
- * @copyright 2011 The Open University
+ * @copyright 2013 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2013021201;
-$plugin->requires  = 2012062500;
-$plugin->cron      = 0;
-$plugin->component = 'qtype_pmatch';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.2+ for Moodle 2.3+';
+/**
+ * Upgrade code for the Pattern-match question type.
+ * @param int $oldversion the version we are upgrading from.
+ */
+function xmldb_qtype_pmatch_upgrade($oldversion) {
+    global $CFG, $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2013021201) {
+
+        require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
+        $backends = qtype_pmatch_spell_checker::get_installed_backends();
+        end($backends);
+        set_config('spellchecker', key($backends), 'qtype_pmatch');
+
+        upgrade_plugin_savepoint(true, 2013021201, 'qtype', 'pmatch');
+    }
+
+    return true;
+}

@@ -24,6 +24,7 @@
  */
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
+require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
 
 // The following is required because the xdebug library defaults to throwing a fatal error if
 // there is more than 100 nested function calls.
@@ -287,15 +288,7 @@ class pmatch_parsed_string {
     protected function spell_check() {
         global $COURSE;
 
-        if (!function_exists('pspell_new')) {
-            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_pspellmissing', 'qtype_pmatch'));
-            return array();
-        }
-        $pspell_link = pspell_new($this->options->lang);
-        if ($pspell_link === false) {
-            add_to_log($COURSE->id, 'question', 'error', '', get_string('env_dictmissing2', 'qtype_pmatch', $this->options->lang));
-            return array(); // If dictionary is not installed for this language we cannot spell check.
-        }
+        $spellchecker = qtype_pmatch_spell_checker::make($this->options->lang);
 
         $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$!A';
         if ($this->options->ignorecase) {
@@ -309,7 +302,7 @@ class pmatch_parsed_string {
         foreach ($words as $word) {
             $word = $this->options->strip_sentence_divider($word);
 
-            if (!pspell_check($pspell_link, $word)) {
+            if (!$spellchecker->is_in_dictionary($word)) {
                 $misspelledwords[] = $word;
             }
         }
