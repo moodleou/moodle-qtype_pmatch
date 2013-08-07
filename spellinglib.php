@@ -36,6 +36,14 @@ require_once($CFG->libdir . '/adminlib.php');
 abstract class qtype_pmatch_spell_checker {
 
     /**
+     * @var array lang code => qtype_pmatch_spell_checker, so we only load each dictionary once.
+     * We were experiencing incomprehensible errors if we loaded the same dictionaries
+     * repeatedly (it just died on enchant_broker_request_dict with no error message).
+     * Using this cache avoids that.
+     */
+    protected static $checkers = array();
+
+    /**
      * Spell-check a word.
      * @param string $word the word to check.
      * @return bool whether the word is in the dictionary.
@@ -54,25 +62,40 @@ abstract class qtype_pmatch_spell_checker {
             $lang = get_string('iso6391', 'langconfig');
         }
 
+        if (isset(self::$checkers[$lang])) {
+            return self::$checkers[$lang];
+        }
+
         $backends = self::get_known_backends();
         if (!array_key_exists($spellchecker, $backends)) {
             debugging('Unknown spell checker back end ' . $spellchecker);
-            return new qtype_pmatch_null_spell_checker($lang);
+            return self::make_null_checker($lang);
         }
         $classname = $backends[$spellchecker];
         if (!$classname::is_available()) {
             debugging('Selected spell checker back end ' . $spellchecker . ' is not available.');
-            return new qtype_pmatch_null_spell_checker($lang);
+            return self::make_null_checker($lang);
         }
 
         $checker = new $classname($lang);
         if (!$checker->is_initialised()) {
             debugging('Spell checker back end ' . $spellchecker .
                     ' could not be initialised for language ' . $lang);
-            return new qtype_pmatch_null_spell_checker($lang);
+            return self::make_null_checker($lang);
         }
 
+        self::$checkers[$lang] = $checker;
         return $checker;
+    }
+
+    /**
+     * Helper method used by {@link make()} when a real dictionary can't be found.
+     * @param string $lang a language code.
+     * @return qtype_pmatch_null_spell_checker
+     */
+    protected static function make_null_checker($lang) {
+        self::$checkers[$lang] = new qtype_pmatch_null_spell_checker($lang);
+        return self::$checkers[$lang];
     }
 
     /**
@@ -291,8 +314,6 @@ class qtype_pmatch_admin_setting_environment_check extends admin_setting_heading
         if (!$spellchecker instanceof qtype_pmatch_null_spell_checker) {
                     $stringmanager = get_string_manager();
             foreach (get_string_manager()->get_list_of_translations() as $lang => $humanfriendlylang) {
-                $spellchecker = qtype_pmatch_spell_checker::make($lang);
-
                 $a = new stdClass();
                 $a->lang = $lang;
                 $a->humanfriendlylang = $humanfriendlylang;
