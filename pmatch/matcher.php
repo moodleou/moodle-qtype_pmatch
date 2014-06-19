@@ -306,6 +306,9 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
                                             $this->wordleveloptions)) {
                     // We matched a phrase.
                     $nextwordtotry = $wordtotry + $plength;
+                    if ($allowanywordorder) {
+                        $nextwordtotry = 0;
+                    }
                     $wordsmatchedandphrasewords = array_merge($wordsmatched,
                                                     range($wordtotry, $wordtotry + $plength -1));
                     // Was this the last item to match?

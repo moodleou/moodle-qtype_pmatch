@@ -552,7 +552,18 @@ EOF;
 
         $this->assertTrue($this->match('10.011<sup>3</sup>', 'match(10 011<sup>3</sup>)'));
         $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
+
+        // Problem from redmin issue 8018.
+        $this->assertTrue($this->match('first phrase second sequence',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('second sequence first phrase',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('firstphrase secondsequence',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('secondsequence firstphrase',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
     }
+
     public function test_pmatch_unicode_matching() {
         // Unicode normalisation means that the same characters with two different
         // unicode representations should match.
