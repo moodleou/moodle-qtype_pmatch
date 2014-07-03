@@ -33,9 +33,9 @@ define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
 define('PMATCH_HTML_EXPONENT', '[*xX]10<(sup|SUP)>([+-]?'.PMATCH_LNUM.')</(sup|SUP)>');
 define('PMATCH_EXPONENT_DNUM', '(('.PMATCH_LNUM.'|'.PMATCH_DNUM.')'.
                             '([eE][+-]?'.PMATCH_LNUM.'|'.PMATCH_HTML_EXPONENT.'))');
-define('PMATCH_NUMBER', '((([+|-]( )?)?'.PMATCH_EXPONENT_DNUM.')'.
-                            '|(([+|-]( )?)?'.PMATCH_DNUM.')'.
-                            '|(([+|-]( )?)?'.PMATCH_LNUM.'))');
+define('PMATCH_NUMBER', '((([+|-])?'.PMATCH_EXPONENT_DNUM.')'.
+                            '|(([+|-])?'.PMATCH_DNUM.')'.
+                            '|(([+|-])?'.PMATCH_LNUM.'))');
 
 abstract class pmatch_interpreter_item {
     protected $interpretererrormessage;

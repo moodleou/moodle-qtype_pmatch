@@ -511,12 +511,25 @@ EOF;
         $this->assertFalse($this->match('one two three.four five.', 'match_wp3(one_five)'));
         $this->assertFalse($this->match('one three.four five.', 'match_wp3(one_five)'));
         $this->assertFalse($this->match('one.five.', 'match_wp3(one_five)'));
+
+        // Problem from Redmine issue #8018.
+        $this->assertTrue($this->match('first phrase second sequence',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('second sequence first phrase',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('firstphrase secondsequence',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        $this->assertTrue($this->match('secondsequence firstphrase',
+                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+
+        // Problem from Redmine issue #8948.
+        $this->assertTrue($this->match('Pb<sup>2+</sup>(aq) + 2Cl<sup>-</sup>(aq) = PbCl<sub>2</sub>(s)',
+                'match(Pb<sup>2+</sup>\(aq\) + 2Cl<sup>-</sup>\(aq\) = PbCl<sub>2</sub>\(s\))'));
     }
 
     public function test_pmatch_number_matching() {
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '1.981'));
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-1.981'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101'));
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>3</sup>'));
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>-3</sup>'));
@@ -528,24 +541,17 @@ EOF;
         $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
 
         $this->assertTrue($this->match('1.981', 'match(1.981)'));
-        $this->assertTrue($this->match('-1.985', 'match(- 1.985)'));
         $this->assertTrue($this->match('1.98', 'match(+1.98)'));
         $this->assertTrue($this->match('+1.98', 'match(+1.98)'));
         $this->assertTrue($this->match('+101', 'match(101)'));
         $this->assertTrue($this->match('- 50', 'match(- 50)'));
         $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
 
-        $this->assertTrue($this->match('- 50', 'match(-50e0)'));
         $this->assertTrue($this->match('- 50', 'match(- 50e0)'));
         $this->assertTrue($this->match('- 50', 'match(- 5e1)'));
         $this->assertTrue($this->match('- 50', 'match(- 5e+1)'));
-        $this->assertTrue($this->match('-0.5', 'match(- 5e-1)'));
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-5*10<sup>-1</sup>'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
         $this->assertTrue($this->match('-0.5', 'match(-5*10<sup>-1</sup>)'));
-        $this->assertTrue($this->match('-0.5', 'match(- 5x10<sup>-1</sup>)'));
-        $this->assertTrue($this->match('-0.5', 'match(- 5X10<sup>-1</sup>)'));
 
         $this->assertTrue($this->match('100.11', 'match(1.001099e2)'));
         $this->assertTrue($this->match('1.234561x10<sup>3</sup>', 'match(1234.56)'));
@@ -553,15 +559,15 @@ EOF;
         $this->assertTrue($this->match('10.011<sup>3</sup>', 'match(10 011<sup>3</sup>)'));
         $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
 
-        // Problem from redmin issue 8018.
-        $this->assertTrue($this->match('first phrase second sequence',
-                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
-        $this->assertTrue($this->match('second sequence first phrase',
-                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
-        $this->assertTrue($this->match('firstphrase secondsequence',
-                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
-        $this->assertTrue($this->match('secondsequence firstphrase',
-                'match_mow ([first phrase]|firstphrase [second sequence]|secondsequence)'));
+        // Spaces after unary plus/minus are not allowed.
+        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
+        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
+        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
+        $this->assertFalse($this->match('-1.985', 'match(- 1.985)'));
+        $this->assertFalse($this->match('- 50', 'match(-50e0)'));
+        $this->assertFalse($this->match('-0.5', 'match(- 5e-1)'));
+        $this->assertFalse($this->match('-0.5', 'match(- 5x10<sup>-1</sup>)'));
+        $this->assertFalse($this->match('-0.5', 'match(- 5X10<sup>-1</sup>)'));
     }
 
     public function test_pmatch_unicode_matching() {
