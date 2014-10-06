@@ -540,6 +540,12 @@ EOF;
         $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11e-3'));
         $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
 
+        $this->assertTrue($this->match('2', 'match(2)'));
+        $this->assertTrue($this->match('1', 'match(1)'));
+        $this->assertTrue($this->match('0', 'match(0)'));
+        $this->assertTrue($this->match('-1', 'match(-1)'));
+        $this->assertTrue($this->match('-2', 'match(-2)'));
+
         $this->assertTrue($this->match('1.981', 'match(1.981)'));
         $this->assertTrue($this->match('1.98', 'match(+1.98)'));
         $this->assertTrue($this->match('+1.98', 'match(+1.98)'));
