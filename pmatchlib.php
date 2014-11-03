@@ -111,7 +111,7 @@ class pmatch_options {
         } else {
             // Limit the errors added to the log to one per pagee load.
             if (!$errorlogged) {
-                add_to_log($COURSE->id, 'question', 'error', '', get_string('env_peclnormalisationmissing', 'qtype_pmatch'));
+                debugging(get_string('env_peclnormalisationmissing', 'qtype_pmatch'), DEBUG_NORMAL);
                 $errorlogged = true;
             }
             return $unicodestring;
