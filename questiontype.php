@@ -174,6 +174,14 @@ class qtype_pmatch extends question_type {
             $DB->update_record('question_answers', $otheranswer);
             $this->save_extra_answer_data($question, 'other', $otheranswer->id);
         }
+
+        // Delete any left over old answer records.
+        $fs = get_file_storage();
+        foreach ($oldanswers as $oldanswer) {
+            $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
+            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
+        }
+
         // Perform sanity checks on fractional grades.
         if ($maxfraction != 1) {
             $result = new stdClass();
