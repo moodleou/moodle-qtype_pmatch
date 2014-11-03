@@ -34,6 +34,25 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
  */
 class qtype_pmatch_edit_form extends question_edit_form {
     /**
+     * @var stdClass the 'Any other' answer.
+     */
+    protected $otheranswer = null;
+
+    public function __construct($submiturl, $question, $category, $contexts, $formeditable = true) {
+        // Separate the Any other' answer from the list of normal answers.
+        if (!empty($question->options->answers)) {
+            foreach ($question->options->answers as $key => $answer) {
+                if ($answer->answer == '*') {
+                    $this->otheranswer = $answer;
+                    unset($question->options->answers[$key]);
+                    break;
+                }
+            }
+        }
+        parent::__construct($submiturl, $question, $category, $contexts, $formeditable = true);
+    }
+
+    /**
      * Add question-type specific form fields.
      *
      * @param MoodleQuickForm $mform the form being built.
@@ -150,33 +169,29 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     protected function data_preprocessing_other_answer($question) {
         // Special handling of otheranswer.
-        if (!empty($question->options->answers)) {
-            foreach ($question->options->answers as $key => $answer) {
-                if ($answer->answer == '*') {
-                    $question->otherfeedback = array();
-                    // Prepare the feedback editor to display files in draft area.
-                    $draftitemid = file_get_submitted_draft_itemid('otherfeedback');
-                    $question->otherfeedback['text'] = file_prepare_draft_area(
-                        $draftitemid,
-                        $this->context->id,
-                        'question',
-                        'answerfeedback',
-                        !empty($answer->id) ? (int) $answer->id : null,
-                        $this->fileoptions,
-                        $answer->feedback
-                    );
-                    $question->otherfeedback['itemid'] = $draftitemid;
-                    $question->otherfeedback['format'] = $answer->feedbackformat;
-                    unset($question->options->answers[$key]);
-                }
-            }
+        if ($this->otheranswer) {
+            $question->otherfeedback = array();
+            // Prepare the feedback editor to display files in draft area.
+            $draftitemid = file_get_submitted_draft_itemid('otherfeedback');
+            $question->otherfeedback['text'] = file_prepare_draft_area(
+                $draftitemid,
+                $this->context->id,
+                'question',
+                'answerfeedback',
+                !empty($answer->id) ? (int) $answer->id : null,
+                $this->fileoptions,
+                $this->otheranswer->feedback
+            );
+            $question->otherfeedback['itemid'] = $draftitemid;
+            $question->otherfeedback['format'] = $this->otheranswer->feedbackformat;
+            unset($question->options->answers[$this->otheranswer->id]);
         }
         return $question;
     }
 
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
-        $question = $this->data_preprocessing_other_answer($question);
+        $question = $this->data_preprocessing_other_answer($question); // Must come first.
         $question = $this->data_preprocessing_answers($question);
 
         $question = $this->data_preprocessing_hints($question);
