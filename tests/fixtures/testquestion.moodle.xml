@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>Imported questions</text>
+
+    </category>
+  </question>
+
+<!-- question: 2  -->
+  <question type="pmatch">
+    <name>
+      <text>Imported pattern match question</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Listen, translate and write<br></p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <usecase>0</usecase>
+    <allowsubscript>0</allowsubscript>
+    <allowsuperscript>0</allowsuperscript>
+    <forcelength>1</forcelength>
+    <applydictionarycheck>1</applydictionarycheck>
+    <extenddictionary></extenddictionary>
+    <converttospace>,;:</converttospace>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>match (testing one two three four)</text>
+      <feedback format="html">
+        <text><![CDATA[<p>Well done!<br></p>]]></text>
+      </feedback>
+      <sigfigs>0</sigfigs>
+      <error></error>
+      <syserrorpenalty>0.0000000</syserrorpenalty>
+      <checknumerical>0</checknumerical>
+      <checkscinotation>0</checkscinotation>
+      <checkpowerof10>0</checkpowerof10>
+      <checkrounding>0</checkrounding>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>*</text>
+      <feedback format="html">
+        <text><![CDATA[<p>Sorry, no.<br></p>]]></text>
+      </feedback>
+    </answer>
+    <synonym>
+      <word>
+        <text>any</text>
+      </word>
+      <synonyms>
+        <text>testing|one|two|three|four</text>
+      </synonyms>
+    </synonym>
+    <hint format="html">
+      <text><![CDATA[<p>Please try again.<br></p>]]></text>
+    </hint>
+    <hint format="html">
+      <text><![CDATA[<p>Use a calculator if necessary.<br></p>]]></text>
+    </hint>
+  </question>
+
+</quiz>

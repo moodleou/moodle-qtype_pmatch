@@ -43,7 +43,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $attributes = array(
             'class' => 'answerinputfield',
             'name' => $inputname,
-            'id' => $inputname
+            'id' => $inputname,
+            'aria-labelledby' => $inputname . '-label'
         );
 
         if ($options->readonly) {
@@ -108,16 +109,19 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
         if ($placeholder) {
-            $questiontext = substr_replace($questiontext, $input,
-                    strpos($questiontext, $placeholder), strlen($placeholder));
+            $inputinplace = html_writer::tag('label', get_string('answer'),
+                    array('for' => $inputattributes['id'], 'class' => 'accesshide'));
+            $inputinplace .= $input;
+            $questiontext = substr_replace($questiontext, $inputinplace,
+                     strpos($questiontext, $placeholder), strlen($placeholder));
         }
 
         $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         if (!$placeholder) {
-            $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-            $result .= get_string('answer', 'qtype_pmatch',
-                    html_writer::tag('div', $input, array('class' => 'answer')));
+            $result .= html_writer::start_tag('div', array('class' => 'ablock', 'id' => $inputname . '-label'));
+            $result .= html_writer::tag('label', get_string('answercolon', 'qtype_numerical'), array('for' => $attributes['id']));
+            $result .= html_writer::tag('div', $input, array('class' => 'answer'));
             $result .= html_writer::end_tag('div');
         }
 
