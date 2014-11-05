@@ -158,7 +158,7 @@ class pmatch_options {
     public function strip_sentence_divider($string) {
         $sd = $this->sentence_divider_pattern();
         if ($this->word_has_sentence_divider_suffix($string)) {
-            $string = textlib::substr($string, 0, -1);
+            $string = core_text::substr($string, 0, -1);
         }
         return $string;
     }
@@ -181,11 +181,11 @@ class pmatch_options {
 
     private function pattern_to_match_any_of($charsinstring) {
         $pattern = '';
-        for ($i = 0; $i < textlib::strlen($charsinstring); $i++) {
+        for ($i = 0; $i < core_text::strlen($charsinstring); $i++) {
             if ($pattern != '') {
                 $pattern .= '|';
             }
-            $pattern .= preg_quote(textlib::substr($charsinstring, $i, 1), '!');
+            $pattern .= preg_quote(core_text::substr($charsinstring, $i, 1), '!');
         }
         return $pattern;
     }

@@ -712,7 +712,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                                             $charpos = 0, $subcontentno = 0,
                                             $noofcharactertomatch = 1) {
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
-        $charslefttomatch = textlib::strlen($word) - ($charpos + $noofcharactertomatch);
+        $charslefttomatch = core_text::strlen($word) - ($charpos + $noofcharactertomatch);
         // Check if we have gone beyond limit of what can be matched.
         if ($itemslefttomatch < 0) {
             if ($charslefttomatch < 0) {
@@ -739,7 +739,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                 return false;
             }
         }
-        $thisfragment = textlib::substr($word, $charpos, $noofcharactertomatch);
+        $thisfragment = core_text::substr($word, $charpos, $noofcharactertomatch);
         if ($this->subcontents[$subcontentno] instanceof pmatch_can_match_multiple_or_no_chars) {
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_chars($thisfragment);
         } else {
@@ -768,10 +768,10 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                         ($itemslefttomatch > 0) && ($charslefttomatch > 0)) {
                 if (!$this->subcontents[$subcontentno + 1]
                                             instanceof pmatch_can_match_multiple_or_no_chars) {
-                    $wordtransposed = textlib::substr($word, 0, $charpos);
-                    $wordtransposed .= textlib::substr($word, $charpos+1, 1);
-                    $wordtransposed .= textlib::substr($word, $charpos, 1);
-                    $wordtransposed .= textlib::substr($word, $charpos+2, textlib::strlen($word));
+                    $wordtransposed = core_text::substr($word, 0, $charpos);
+                    $wordtransposed .= core_text::substr($word, $charpos+1, 1);
+                    $wordtransposed .= core_text::substr($word, $charpos, 1);
+                    $wordtransposed .= core_text::substr($word, $charpos+2, core_text::strlen($word));
 
                     if ($this->check_match_branches($wordtransposed, $allowmispellings - 1,
                                                         $charpos, $subcontentno, 1)) {
@@ -837,7 +837,7 @@ class pmatch_matcher_character_in_word extends pmatch_matcher_item
     public function match_char($character) {
         $codefragment = $this->interpreter->get_code_fragment();
         if ($this->externaloptions->ignorecase) {
-            return (textlib::strtolower($character) == textlib::strtolower($codefragment));
+            return (core_text::strtolower($character) == core_text::strtolower($codefragment));
         } else {
             return ($character == $codefragment);
         }
