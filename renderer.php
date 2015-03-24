@@ -110,7 +110,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
         if ($placeholder) {
             $inputinplace = html_writer::tag('label', get_string('answer'),
-                    array('for' => $inputattributes['id'], 'class' => 'accesshide'));
+                    array('for' => $attributes['id'], 'class' => 'accesshide'));
             $inputinplace .= $input;
             $questiontext = substr_replace($questiontext, $inputinplace,
                      strpos($questiontext, $placeholder), strlen($placeholder));
