@@ -26,7 +26,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\ \|\?\*_\[\]]');
-define('PMATCH_CHARACTER', '[\pL\pM\pN!"#£$%&\'/\-+<=>@\^`{}\~]');
+define('PMATCH_CHARACTER', '[\pL\pM\pN!"#£$%&\'/\-+<=>@\^`{}\~\.]');
 
 define('PMATCH_LNUM', '[0-9]+');
 define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
@@ -339,6 +339,14 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
 
 class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_subcontents {
     protected $limitsubcontents = 1;
+
+    public function interpret($string, $start = 0) {
+        if (preg_match('/[^0-9]\.|\.[^0-9]/', $string)) {
+            $this->set_error_message('nofullstop', null);
+            return array('', 0);
+        }
+        return parent::interpret($string, $start);
+    }
 
     protected function next_possible_subcontent($foundsofar) {
         return array('not', 'match_any', 'match_all', 'match_options');

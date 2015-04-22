@@ -57,6 +57,7 @@ $string['forcelength'] = 'If answer is more than 20 words';
 $string['forcelengthno'] = 'do not issue warning';
 $string['forcelengthyes'] = 'warn that answer is too long and invite respondee to shorten it';
 $string['ie_nomatchfound'] = 'Error in pattern match code.';
+$string['ie_nofullstop'] = 'Full stop characters are not allowed in pmatch expressions. (Decimal points in the middle of nubmers are OK.)';
 $string['ie_unrecognisedsubcontents'] = 'Non recognized sub content in code fragment "{$a}".';
 $string['ie_missingclosingbracket'] = 'Missing closing bracket in code fragment "{$a}".';
 $string['ie_lastsubcontenttypeorcharacter'] = 'Or character must not end subcontent in "{$a}".';

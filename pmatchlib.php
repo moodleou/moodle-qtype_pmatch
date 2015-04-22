@@ -182,10 +182,15 @@ class pmatch_options {
     private function pattern_to_match_any_of($charsinstring) {
         $pattern = '';
         for ($i = 0; $i < core_text::strlen($charsinstring); $i++) {
+            $char = core_text::substr($charsinstring, $i, 1);
             if ($pattern != '') {
                 $pattern .= '|';
             }
-            $pattern .= preg_quote(core_text::substr($charsinstring, $i, 1), '~');
+            $pattern .= preg_quote($char, '~');
+            if ($char === '.') {
+                // Full stop should only match if it is not a decimal point (followed by a digit).
+                $pattern .= '(?![0-9])';
+            }
         }
         return $pattern;
     }
