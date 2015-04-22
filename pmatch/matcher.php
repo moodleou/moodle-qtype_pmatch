@@ -139,7 +139,7 @@ abstract class pmatch_matcher_item {
         return $typeobj;
     }
     public function get_type_name($object) {
-        return substr(get_class($object), 15);
+        return core_text::substr(get_class($object), 15);
     }
 }
 abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item {

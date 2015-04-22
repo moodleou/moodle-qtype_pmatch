@@ -64,7 +64,7 @@ abstract class pmatch_interpreter_item {
         $this->interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
         if ($found) {
-            $this->codefragment = substr($string, $start, $endofmatch-$start);
+            $this->codefragment = core_text::substr($string, $start, $endofmatch-$start);
         } else {
             $this->codefragment = '';
         }
@@ -97,10 +97,10 @@ abstract class pmatch_interpreter_item {
      */
     public function find_pattern($pattern, $string, $start) {
         $matches = array();
-        preg_match($pattern.'iAu', substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
+        preg_match($pattern.'iAu', core_text::substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found) {
-            $endofpattern = $matches[0][1]+strlen($matches[0][0])+$start;
+            $endofpattern = $matches[0][1]+core_text::strlen($matches[0][0])+$start;
         } else {
             $endofpattern = $start;
         }
@@ -132,7 +132,7 @@ abstract class pmatch_interpreter_item {
         return new $matchclassname($this, $externaloptions);
     }
     public function get_type_name_of_interpreter_object($object) {
-        return substr(get_class($object), 19);
+        return core_text::substr(get_class($object), 19);
     }
     public function get_code_fragment() {
         return $this->codefragment;
@@ -304,7 +304,7 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
         list($this->subcontents, $endofcontents) =
                                             $this->interpret_subcontents($string, $endofopening);
         if (empty($this->subcontents)) {
-            $this->set_error_message('unrecognisedsubcontents', substr($string, $start, 20));
+            $this->set_error_message('unrecognisedsubcontents', core_text::substr($string, $start, 20));
             return array(false, $start);
         }
         list($found, $endofclosing, $subpatterns) =
@@ -312,7 +312,7 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
         if (!$found) {
             if (!empty($this->missingclosingpatternerror)) {
                 $this->set_error_message($this->missingclosingpatternerror,
-                                            substr($string, $start, $endofcontents - $start));
+                                            core_text::substr($string, $start, $endofcontents - $start));
             }
             return array(true, $start);
         }
@@ -593,9 +593,9 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $wlopt->reset_options();
         $misspellingoptionmatches = array();
         $cursor = 1; // Start at second character after '_'.
-        while ($cursor < strlen($options)) {
+        while ($cursor < core_text::strlen($options)) {
             if (0 === preg_match('~c|o|w|m([frtx2])*|p[0-4]~A',
-                                        substr($options, $cursor),
+                                        core_text::substr($options, $cursor),
                                         $misspellingoptionmatches)) {
                 $this->set_error_message('illegaloptions', $options);
                 return false;
@@ -603,7 +603,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
             $thisoption = $misspellingoptionmatches[0];
             switch ($thisoption[0]) {
                 case 'm' :
-                    if (strlen($thisoption) == 1) {
+                    if (core_text::strlen($thisoption) == 1) {
                         $wlopt->set_misspelling_allow_replace_char(true);
                         $wlopt->set_misspelling_allow_transpose_two_chars(true);
                         $wlopt->set_misspelling_allow_extra_char(true);
@@ -660,7 +660,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                     $this->set_error_message('illegaloptions', $options);
                     return false;
             }
-            $cursor = $cursor + strlen($thisoption);
+            $cursor = $cursor + core_text::strlen($thisoption);
         }
         return true;
     }
@@ -702,7 +702,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         list($found, $end) = parent::interpret_subcontents($string, $start, $branchfoundsofar);
         if (!count($branchfoundsofar)) {
             if ($found && !empty($this->pmatchoptions->wordstoreplace)) {
-                $subcontentsstr = substr($string, $start, $end - $start);
+                $subcontentsstr = core_text::substr($string, $start, $end - $start);
                 $subcontentsstrwithsyn = preg_replace($this->pmatchoptions->wordstoreplace,
                         $this->pmatchoptions->synonymtoreplacewith, $subcontentsstr);
                 if ($subcontentsstrwithsyn != $subcontentsstr) {

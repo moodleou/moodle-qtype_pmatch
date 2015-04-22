@@ -231,8 +231,8 @@ class pmatch_parsed_string {
         $wd = $this->options->word_divider_pattern();
         $wtis = $this->options->words_to_ignore_patterns();
         $po = $this->options->pattern_options();
-        while ($cursor < strlen($string)) {
-            $toprocess = substr($string, $cursor);
+        while ($cursor < core_text::strlen($string)) {
+            $toprocess = core_text::substr($string, $cursor);
             $matches = array();
             // Using a named sub pattern to make sure to capture the sentence divider.
             $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
@@ -254,9 +254,10 @@ class pmatch_parsed_string {
             }
             $this->words[$wordno] = $word;
             $wordno++;
-            $cursor = $cursor + strlen($matches[0]);
+            $cursor = $cursor + core_text::strlen($matches[0]);
+
             if ('' === $this->options->strip_sentence_divider($word)) {
-                $this->unrecognizedfragment = substr($string, 0, $cursor);
+                $this->unrecognizedfragment = core_text::substr($string, 0, $cursor);
             }
         }
 
@@ -371,7 +372,7 @@ class pmatch_expression {
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
         list($matched, $endofmatch) = $this->interpreter->interpret($expression);
         $this->errormessage = $this->interpreter->get_error_message();
-        if ($endofmatch == strlen($expression) && $matched && $this->errormessage == '') {
+        if ($endofmatch == core_text::strlen($expression) && $matched && $this->errormessage == '') {
             $this->valid = true;
         } else {
             $this->valid = false;
