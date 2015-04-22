@@ -38,6 +38,7 @@ class qtype_pmatch_test extends basic_testcase {
     protected function match($string, $expression, $options = null) {
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
+        $this->assertEquals('', $expression->get_parse_error());
         return $expression->matches($string);
     }
 
@@ -65,6 +66,18 @@ class qtype_pmatch_test extends basic_testcase {
         $this->assertEquals($this->error_message('match_mow([tom maud]_)'),
                 get_string('ie_lastsubcontenttypeworddelimiter',
                          'qtype_pmatch', 'match_mow([tom maud]_)'));
+    }
+
+    public function test_pmatch_error_full_stop() {
+        $expectederror = get_string('ie_nofullstop', 'qtype_pmatch');
+
+        // A full stop is only allowed in match expressions if surrounded on both sides by digits.
+        $this->assertEquals($expectederror, $this->error_message('match(abc.)'));
+        $this->assertEquals($expectederror, $this->error_message('match(abc.def)'));
+        $this->assertEquals($expectederror, $this->error_message('match(2.)'));
+        $this->assertEquals($expectederror, $this->error_message('match(.2)'));
+
+        $this->assertEquals('', $this->error_message('match(3.141)'));
     }
 
     public function test_pmatch_matching() {
@@ -562,9 +575,6 @@ EOF;
         $this->assertTrue($this->match('100.11', 'match(1.001099e2)'));
         $this->assertTrue($this->match('1.234561x10<sup>3</sup>', 'match(1234.56)'));
 
-        $this->assertTrue($this->match('10.011<sup>3</sup>', 'match(10 011<sup>3</sup>)'));
-        $this->assertTrue($this->match('a.011<sup>3</sup>', 'match(a 011<sup>3</sup>)'));
-
         // Spaces after unary plus/minus are not allowed.
         $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
         $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
@@ -574,6 +584,31 @@ EOF;
         $this->assertFalse($this->match('-0.5', 'match(- 5e-1)'));
         $this->assertFalse($this->match('-0.5', 'match(- 5x10<sup>-1</sup>)'));
         $this->assertFalse($this->match('-0.5', 'match(- 5X10<sup>-1</sup>)'));
+
+        // Numbers run into the surrounding 'unit'.
+        $this->assertTrue($this->match('2ml', 'match(2ml)'));
+        $this->assertTrue($this->match('0.21e1 ml', 'match(2.1 ml)'));
+        $this->assertTrue($this->match('2.5ml', 'match(2.5ml)'));
+        $this->assertFalse($this->match('2.6mm', 'match(2.6ml)'));
+        $this->assertTrue($this->match('2', 'match(2)'));
+        $this->assertTrue($this->match('a2', 'match(a2)'));
+        $this->assertTrue($this->match('a2b', 'match(a2b)'));
+        $this->assertFalse($this->match('c2d', 'match(a2b)'));
+        $this->assertTrue($this->match('2b', 'match(2b)'));
+        $this->assertTrue($this->match('2.4', 'match(2.4)'));
+        $this->assertTrue($this->match('a2.4', 'match(a2.4)'));
+        $this->assertTrue($this->match('a2.4b', 'match(a2.4b)'));
+        $this->assertTrue($this->match('2.4b', 'match(2.4b)'));
+        $this->assertFalse($this->match('0.24e1b', 'match(2.4b)'));
+        $this->assertTrue($this->match('0.24e1 b', 'match(2.4 b)'));
+        $this->assertTrue($this->match('2.6 ml', 'match(2.6|2.7 ml)'));
+        $this->assertTrue($this->match('2.7ml', 'match(2.6ml|2.7ml)'));
+        $this->assertFalse($this->match('2.8ml', 'match(2.6ml|2.7ml)'));
+        $this->assertTrue($this->match('$2.9million', 'match($2.9million)'));
+        $this->assertTrue($this->match('£2.9million', 'match(£2.9mill*)'));
+        $this->assertFalse($this->match('$2.9millian', 'match($2.9million)'));
+        $this->assertTrue($this->match('a1b2.3c4.5e6d7', 'match(a1b2.3c4.5e6d7)'));
+        $this->assertFalse($this->match('a1b2.3c4.8e6d7', 'match(a1b2.3c4.5e6d7)'));
     }
 
     public function test_pmatch_unicode_matching() {
