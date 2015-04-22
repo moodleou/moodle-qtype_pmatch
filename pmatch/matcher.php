@@ -634,7 +634,7 @@ class pmatch_matcher_number extends pmatch_matcher_item
 
     public function match_word($word, $wordleveloptions) {
         $word = $this->externaloptions->strip_sentence_divider($word);
-        if (0 === preg_match('!'.PMATCH_NUMBER.'$!A', $word)) {
+        if (0 === preg_match('~'.PMATCH_NUMBER.'$~A', $word)) {
             return false;
         } else {
             $studentinput = $this->cleanup_number($word);
@@ -650,7 +650,7 @@ class pmatch_matcher_number extends pmatch_matcher_item
      */
     public function cleanup_number($numberstr) {
         $numberstr = str_replace(' ', '', $numberstr);
-        $numberstr = preg_replace('!'.PMATCH_HTML_EXPONENT.'!', 'e$2', $numberstr);
+        $numberstr = preg_replace('~'.PMATCH_HTML_EXPONENT.'~', 'e$2', $numberstr);
         return (float)$numberstr;
     }
 }

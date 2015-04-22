@@ -26,7 +26,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\ \|\?\*_\[\]]');
-define('PMATCH_CHARACTER', '[\pL\pM\pN\!"#£$%&\'/\-+<=>@\^`{}~]');
+define('PMATCH_CHARACTER', '[\pL\pM\pN!"#£$%&\'/\-+<=>@\^`{}\~]');
 
 define('PMATCH_LNUM', '[0-9]+');
 define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
@@ -351,8 +351,8 @@ class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_s
 
 
 class pmatch_interpreter_not extends pmatch_interpreter_item_with_enclosed_subcontents {
-    protected $openingpattern = '!\s*not\s*\(\s*!';
-    protected $closingpattern = '!\s*\)\s*!';
+    protected $openingpattern = '~\s*not\s*\(\s*~';
+    protected $closingpattern = '~\s*\)\s*~';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     protected $limitsubcontents = 1;
 
@@ -367,8 +367,8 @@ class pmatch_interpreter_not extends pmatch_interpreter_item_with_enclosed_subco
 
 
 class pmatch_interpreter_match extends pmatch_interpreter_item_with_enclosed_subcontents {
-    protected $openingpattern = '!match([_a-z0-4]*)\s*\(\s*!';
-    protected $closingpattern = '!\s*\)\s*!';
+    protected $openingpattern = '~match([_a-z0-4]*)\s*\(\s*~';
+    protected $closingpattern = '~\s*\)\s*~';
     protected $missingclosingpatternerror = 'missingclosingbracket';
 }
 
@@ -594,7 +594,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $misspellingoptionmatches = array();
         $cursor = 1; // Start at second character after '_'.
         while ($cursor < strlen($options)) {
-            if (0 === preg_match('!c|o|w|m([frtx2])*|p[0-4]!A',
+            if (0 === preg_match('~c|o|w|m([frtx2])*|p[0-4]~A',
                                         substr($options, $cursor),
                                         $misspellingoptionmatches)) {
                 $this->set_error_message('illegaloptions', $options);
@@ -643,7 +643,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                     $wlopt->set_allow_extra_characters(true);
                     break;
                 case 'p' :
-                    if (0 === preg_match('![0-4]$!A', $thisoption[1])) {
+                    if (0 === preg_match('~[0-4]$~A', $thisoption[1])) {
                         $this->set_error_message('illegaloptions', $options);
                         return false;
                     } else {
@@ -751,14 +751,14 @@ class pmatch_interpreter_synonym extends pmatch_interpreter_item_with_subcontent
 
 
 class pmatch_interpreter_or_character extends pmatch_interpreter_item {
-    protected $pattern = '!\|!';
+    protected $pattern = '~\|~';
 }
 
 
 class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enclosed_subcontents {
 
-    protected $openingpattern = '!\[!';
-    protected $closingpattern = '!\]!';
+    protected $openingpattern = '~\[~';
+    protected $closingpattern = '~\]~';
     protected $missingclosingpatternerror = 'missingclosingbracket';
     protected $limitsubcontents = 1;
 
@@ -792,12 +792,12 @@ class pmatch_interpreter_phrase extends pmatch_interpreter_item_with_subcontents
 
 
 class pmatch_interpreter_word_delimiter_space extends pmatch_interpreter_item {
-    protected $pattern = '!\s+!';
+    protected $pattern = '~\s+~';
 }
 
 
 class pmatch_interpreter_word_delimiter_proximity extends pmatch_interpreter_item {
-    protected $pattern = '!\_!';
+    protected $pattern = '~\_~';
 }
 
 
@@ -812,7 +812,7 @@ class pmatch_interpreter_word extends pmatch_interpreter_item_with_subcontents {
 class pmatch_interpreter_number extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '!'.PMATCH_NUMBER.'!';
+        $this->pattern = '~'.PMATCH_NUMBER.'~';
     }
 }
 
@@ -820,7 +820,7 @@ class pmatch_interpreter_number extends pmatch_interpreter_item {
 class pmatch_interpreter_character_in_word extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '!'.PMATCH_CHARACTER.'!';
+        $this->pattern = '~'.PMATCH_CHARACTER.'~';
     }
 }
 
@@ -828,16 +828,16 @@ class pmatch_interpreter_character_in_word extends pmatch_interpreter_item {
 class pmatch_interpreter_special_character_in_word extends pmatch_interpreter_item {
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '!\\\\'.PMATCH_SPECIAL_CHARACTER.'!';
+        $this->pattern = '~\\\\'.PMATCH_SPECIAL_CHARACTER.'~';
     }
 }
 
 
 class pmatch_interpreter_wildcard_match_single extends pmatch_interpreter_item {
-    protected $pattern = '!\?!';
+    protected $pattern = '~\?~';
 }
 
 
 class pmatch_interpreter_wildcard_match_multiple extends pmatch_interpreter_item {
-    protected $pattern = '!\*!';
+    protected $pattern = '~\*~';
 }

@@ -80,11 +80,11 @@ class pmatch_options {
         foreach ($synonyms as $synonym) {
             $synonym->word = $this->unicode_normalisation($synonym->word);
             $synonym->synonyms = $this->unicode_normalisation($synonym->synonyms);
-            $toreplaceitem = preg_quote($synonym->word, '!');
-            $toreplaceitem = preg_replace('!\\\\\*!u',
+            $toreplaceitem = preg_quote($synonym->word, '~');
+            $toreplaceitem = preg_replace('~\\\\\*~u',
                         '('.$this->character_in_word_pattern().')*', $toreplaceitem);
             // The ?<= and ?= ensures that the adjacent characters are not replaced also.
-            $toreplaceitem = '!(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)!';
+            $toreplaceitem = '~(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)~';
             if ($this->ignorecase) {
                 $toreplaceitem .= 'i';
             }
@@ -100,7 +100,7 @@ class pmatch_options {
 
     public function set_extra_dictionary_words($wordlist) {
         $wordlist = $this->unicode_normalisation($wordlist);
-        $this->extradictionarywords = preg_split('!\s+!', $wordlist);
+        $this->extradictionarywords = preg_split('~\s+~', $wordlist);
     }
 
     public function unicode_normalisation($unicodestring) {
@@ -125,8 +125,8 @@ class pmatch_options {
             if (trim($word) === '') {
                 continue;
             }
-            $wordpattern = preg_quote($word, '!');
-            $wordpattern = preg_replace('!\\\\\*!u',
+            $wordpattern = preg_quote($word, '~');
+            $wordpattern = preg_replace('~\\\\\*~u',
                                         '('.$this->character_in_word_pattern().')*',
                                         $wordpattern);
             $wordpatterns[] = $wordpattern;
@@ -146,7 +146,7 @@ class pmatch_options {
      */
     public function word_has_sentence_divider_suffix($word) {
         $sd = $this->sentence_divider_pattern();
-        return (1 === preg_match('!('.$sd.')$!u', $word));
+        return (1 === preg_match('~('.$sd.')$~u', $word));
     }
 
     /**
@@ -164,7 +164,7 @@ class pmatch_options {
     }
 
     public function word_divider_pattern() {
-        return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace, '!');
+        return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace);
     }
 
     public function character_in_word_pattern() {
@@ -185,7 +185,7 @@ class pmatch_options {
             if ($pattern != '') {
                 $pattern .= '|';
             }
-            $pattern .= preg_quote(core_text::substr($charsinstring, $i, 1), '!');
+            $pattern .= preg_quote(core_text::substr($charsinstring, $i, 1), '~');
         }
         return $pattern;
     }
@@ -237,13 +237,13 @@ class pmatch_parsed_string {
             // Using a named sub pattern to make sure to capture the sentence divider.
             $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
-                if (preg_match("!({$wti})$endofword!Au$po", $toprocess, $matches)) {
+                if (preg_match("~({$wti})$endofword~Au$po", $toprocess, $matches)) {
                     // We found a number or extra dictionary word.
                     break;
                 }
             }
             if (!count($matches)) {
-                if (!preg_match("!(.+?)$endofword!A$po", $toprocess, $matches)) {
+                if (!preg_match("~(.+?)$endofword~A$po", $toprocess, $matches)) {
                     // Ignore the rest of the string.
                     break;
                 }
@@ -290,13 +290,13 @@ class pmatch_parsed_string {
 
         $spellchecker = qtype_pmatch_spell_checker::make($this->options->lang);
 
-        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$!A';
+        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$~A';
         if ($this->options->ignorecase) {
             $endofpattern .= 'i';
         }
         $words = array_unique($this->words);
         foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
-            $words = (preg_grep('!'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
+            $words = (preg_grep('~'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
         }
         $misspelledwords = array();
         foreach ($words as $word) {
