@@ -618,4 +618,16 @@ EOF;
         // "\xCC\x8A" = 'COMBINING RING ABOVE' (U+030A).
         $this->assertTrue($this->match("A\xCC\x8A", "match(\xC3\x85)"));
     }
+
+    public function test_pmatch_matching_countries() {
+        // This is a minimal failure in that doing any one of these things fixes it:
+        // - Removing the set_synonyms call.
+        // - Removing A from both the string and the pattern.
+        // - Removing B from both the string and the pattern.
+        $options = new pmatch_options();
+        $options->set_synonyms(array(
+            (object) array('word' => 'B', 'synonyms' => '*B*'),
+        ));
+        $this->assertTrue($this->match('A B', 'match (A B)', $options));
+    }
 }
