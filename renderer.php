@@ -183,8 +183,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
             return '';
         }
 
-        $urlparams = array('questionid' => $question->id);
-
         $link = html_writer::link(new moodle_url(
                 '/question/type/pmatch/testquestion.php', array('id' => $question->id)),
                 get_string('testthisquestion', 'qtype_pmatch'));
