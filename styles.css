@@ -62,3 +62,8 @@ body#page-question-type-pmatch #fitem_id_answer_0 {
     font-weight: bold;
     color: #f00;
 }
+
+.que.pmatch .formulation .questiontestslink {
+    float: right;
+    font-size: 0.7em;
+}

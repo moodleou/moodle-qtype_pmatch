@@ -42,20 +42,17 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class qtype_pmatch_test_form extends moodleform {
     protected function definition() {
-        $this->_form->addElement('header', 'header', 'Marked responses to upload');
+        $this->_form->addElement('header', 'header', get_string('testquestionformheader', 'qtype_pmatch'));
 
-        $this->_form->addElement('static', 'help', '', 'You should upload a CSV file with two columns.
-                The first column contains the expected mark for that response, and
-                the second column should contain that response. The first row in the
-                file is assumed to contain column headings, and is ignored.');
+        $this->_form->addElement('static', 'help', '', get_string('testquestionforminfo', 'qtype_pmatch'));
 
-        $this->_form->addElement('filepicker', 'responsesfile', 'Marked responses');
+        $this->_form->addElement('filepicker', 'responsesfile', get_string('testquestionformuploadlabel', 'qtype_pmatch'));
         $this->_form->addRule('responsesfile', null, 'required', null, 'client');
 
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
 
-        $this->_form->addElement('submit', 'submitbutton', 'Test the question using these responses');
+        $this->_form->addElement('submit', 'submitbutton', get_string('testquestionformsubmit', 'qtype_pmatch'));
     }
 }
 
@@ -64,7 +61,7 @@ $questionid = required_param('id', PARAM_INT);
 
 $questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUST_EXIST);
 if ($questiondata->qtype != 'pmatch') {
-    throw new coding_exception("That is not a pattern-match question.");
+    throw new coding_exception('That is not a pattern-match question.');
 }
 
 require_login();
@@ -76,8 +73,8 @@ $context = context::instance_by_id($question->contextid);
 
 $PAGE->set_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
 $PAGE->set_context($context);
-$PAGE->set_title('Pattern-match question testing tool');
-$PAGE->set_heading('Pattern-match question testing tool');
+$PAGE->set_title(get_string('testquestionformtitle', 'qtype_pmatch'));
+$PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
 $table = null;
 $form = new qtype_pmatch_test_form($PAGE->url);
@@ -94,14 +91,18 @@ if ($fromform = $form->get_data()) {
 
     $handle = fopen($responsefile, 'r');
     if (!$handle) {
-        throw new coding_exception("Could not open CSV file.");
+        throw new coding_exception('Could not open CSV file.');
     }
 
     $table = new html_table();
-    $table->head = array('Expected mark', 'Actual mark', 'Response');
-    $correct = 0;
-    $incorrectlymarkedright = 0;
-    $incorrectlymarkedwrong = 0;
+    $table->head = array(
+            get_string('testquestionexpectedmark', 'qtype_pmatch'),
+            get_string('testquestionactualmark', 'qtype_pmatch'),
+            get_string('testquestionresponse', 'qtype_pmatch'));
+    $counts = new stdClass();
+    $counts->correct = 0;
+    $counts->incorrectlymarkedright = 0;
+    $counts->incorrectlymarkedwrong = 0;
 
     $row = -1;
     while (($data = fgetcsv($handle)) !== false) {
@@ -111,7 +112,7 @@ if ($fromform = $form->get_data()) {
         }
     
         if (count($data) != 2 || !is_numeric($data[0])) {
-            throw new coding_exception("Each row should contain two items, a numerical mark and a response.");
+            throw new coding_exception('Each row should contain two items, a numerical mark and a response.');
         }
         list($expectedmark, $response) = $data;
 
@@ -121,11 +122,11 @@ if ($fromform = $form->get_data()) {
         $table->rowclasses[] = 'qtype_pmatch-selftest-' . ($expectedmark == $actualmark ? 'ok' : 'bad');
 
         if ($expectedmark == $actualmark) {
-            $correct += 1;
+            $counts->correct += 1;
         } else if ($expectedmark < $actualmark) {
-            $incorrectlymarkedright += 1;
+            $counts->incorrectlymarkedright += 1;
         } else {
-            $incorrectlymarkedwrong += 1;
+            $counts->incorrectlymarkedwrong += 1;
         }
     }
 
@@ -133,17 +134,16 @@ if ($fromform = $form->get_data()) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading('Testing question: ' . format_string($questiondata->name));
+echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
 echo '<p>' . $PAGE->get_renderer('core_question')->question_preview_link(
         $question->id, $context, true) . '</p>';
 
 if ($table) {
-    echo $OUTPUT->heading('Test results: ' . $filename);
+    echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', s($filename)));
     echo html_writer::table($table);
-    echo "<p>Marked correctly: <b>$correct</b>, incorrectly marked wrong <b>$incorrectlymarkedwrong</b>, " .
-            "incorrectly marked right <b>$incorrectlymarkedright</b>.</p>";
+    echo '<p>' . get_string('testquestionresultssummary','qtype_pmatch', $counts) . '</p>';
 
-    echo $OUTPUT->heading('Upload another file');
+    echo $OUTPUT->heading(get_string('testquestionuploadanother', 'qtype_pmatch'));
 }
 $form->display();
 echo $OUTPUT->footer();

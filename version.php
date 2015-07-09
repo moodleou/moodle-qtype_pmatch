@@ -29,6 +29,6 @@ $plugin->requires  = 2013101800;
 $plugin->cron      = 0;
 $plugin->component = 'qtype_pmatch';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.7 for Moodle 2.6+';
+$plugin->release   = '1.8 for Moodle 2.6+';
 
 $plugin->outestssufficient = true;

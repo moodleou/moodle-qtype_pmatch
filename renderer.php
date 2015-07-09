@@ -120,7 +120,8 @@ class qtype_pmatch_renderer extends qtype_renderer {
                      strpos($questiontext, $placeholder), strlen($placeholder));
         }
 
-        $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        $result = $this->question_tests_link($question, $options);
+        $result .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         if (!$placeholder) {
             $result .= html_writer::start_tag('div', array('class' => 'ablock', 'id' => $inputname . '-label'));
@@ -168,4 +169,26 @@ class qtype_pmatch_renderer extends qtype_renderer {
         return '';
     }
 
+    /**
+     * Displays a link to run the question tests, if applicable.
+     * @param qtype_stack_question $question
+     * @param question_display_options $options
+     * @return string HTML fragment.
+     */
+    protected function question_tests_link(qtype_pmatch_question $question, question_display_options $options) {
+        if (!empty($options->suppressruntestslink)) {
+            return '';
+        }
+        if (!$question->user_can_view()) {
+            return '';
+        }
+
+        $urlparams = array('questionid' => $question->id);
+
+        $link = html_writer::link(new moodle_url(
+                '/question/type/pmatch/testquestion.php', array('id' => $question->id)),
+                get_string('testthisquestion', 'qtype_pmatch'));
+
+        return html_writer::tag('div', $link, array('class' => 'questiontestslink'));
+    }
 }

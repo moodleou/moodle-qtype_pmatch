@@ -169,4 +169,19 @@ class qtype_pmatch_question extends question_graded_by_strategy
     public function apply_attempt_state(question_attempt_step $step) {
         $this->pmatchoptions->lang = $step->get_qt_var('_responselang');
     }
+
+    public function get_context() {
+        return context::instance_by_id($this->contextid);
+    }
+
+    protected function has_question_capability($type) {
+        global $USER;
+        $context = $this->get_context();
+        return has_capability("moodle/question:{$type}all", $context) ||
+                ($USER->id == $this->createdby && has_capability("moodle/question:{$type}mine", $context));
+    }
+
+    public function user_can_view() {
+        return $this->has_question_capability('view');
+    }
 }
