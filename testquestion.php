@@ -76,9 +76,13 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('testquestionformtitle', 'qtype_pmatch'));
 $PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
-$table = null;
 $form = new qtype_pmatch_test_form($PAGE->url);
 $form->set_data(array('id' => $questionid));
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
+echo '<p>' . $PAGE->get_renderer('core_question')->question_preview_link(
+        $question->id, $context, true) . '</p>';
 
 if ($fromform = $form->get_data()) {
     $filename = $form->get_new_filename('responsesfile');
@@ -94,8 +98,38 @@ if ($fromform = $form->get_data()) {
         throw new coding_exception('Could not open CSV file.');
     }
 
+    $alldata = array();
+    $problems = array();
+    $row = 0;
+    while (($data = fgetcsv($handle)) !== false) {
+        $row += 1;
+        if ($row == 1) {
+            continue; // Skipping header row or comment.
+        }
+
+        if (count($data) != 2 || !is_numeric($data[0])) {
+            $problems[] = 'Each row should contain exactly two items, ' .
+                    'a numerical mark and a response. Row ' . $row . ' contains ' .
+                    count($data) . ' items.';
+        }
+
+        if (count($data) >= 2 && fix_utf8($data[1]) !== $data[1]) {
+            $problems[] = 'The response in row ' . $row .
+                    ' contains unrecognised special characters. The input must be valid UTF-8.';
+        }
+
+        $alldata[$row] = $data;
+    }
+    fclose($handle);
+    $rowcount = $row;
+
+    if ($problems) {
+        throw new coding_exception(html_writer::alist($problems));
+    }
+
     $table = new html_table();
     $table->head = array(
+            get_string('row', 'qtype_pmatch'),
             get_string('testquestionexpectedmark', 'qtype_pmatch'),
             get_string('testquestionactualmark', 'qtype_pmatch'),
             get_string('testquestionresponse', 'qtype_pmatch'));
@@ -104,21 +138,14 @@ if ($fromform = $form->get_data()) {
     $counts->incorrectlymarkedright = 0;
     $counts->incorrectlymarkedwrong = 0;
 
-    $row = -1;
-    while (($data = fgetcsv($handle)) !== false) {
-        $row++;
-        if ($row == 0) {
-            continue; // Skipping header row or comment.
-        }
-    
-        if (count($data) != 2 || !is_numeric($data[0])) {
-            throw new coding_exception('Each row should contain two items, a numerical mark and a response.');
-        }
-        list($expectedmark, $response) = $data;
+    $pbar = new progress_bar('testingquestion', 500, true);
+    foreach ($alldata as $row => $data) {
+        \core_php_time_limit::raise(60);
 
+        list($expectedmark, $response) = $data;
         list($actualmark, $notused) = $question->grade_response(array('answer' => $response));
 
-        $table->data[] = array($expectedmark, 0 + $actualmark, s($response));
+        $table->data[] = array($row, $expectedmark, 0 + $actualmark, s($response));
         $table->rowclasses[] = 'qtype_pmatch-selftest-' . ($expectedmark == $actualmark ? 'ok' : 'bad');
 
         if ($expectedmark == $actualmark) {
@@ -128,22 +155,17 @@ if ($fromform = $form->get_data()) {
         } else {
             $counts->incorrectlymarkedwrong += 1;
         }
+
+        $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
+                array('row' => $row, 'total' => $rowcount)));
     }
 
-    fclose($handle);
-}
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
-echo '<p>' . $PAGE->get_renderer('core_question')->question_preview_link(
-        $question->id, $context, true) . '</p>';
-
-if ($table) {
     echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', s($filename)));
     echo html_writer::table($table);
     echo '<p>' . get_string('testquestionresultssummary','qtype_pmatch', $counts) . '</p>';
 
     echo $OUTPUT->heading(get_string('testquestionuploadanother', 'qtype_pmatch'));
 }
+
 $form->display();
 echo $OUTPUT->footer();
