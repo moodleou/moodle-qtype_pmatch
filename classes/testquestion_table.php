@@ -69,12 +69,35 @@ class qtype_pmatch_testquestion_table extends table_sql {
 
     /**
      * Generate the display of the checkbox column.
-     * @param object $attempt the table row being output.
+     * @param object $response the table row being output.
      * @return string HTML content to go inside the td.
      */
     public function col_checkbox($response) {
         if ($response->id) {
             return '<input type="checkbox" name="responseid[]" value="'.$response->id.'" />';
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Generate the display of the response id colunn
+     * @param object $response the table row being output.
+     * @return string HTML content to go inside the td.
+     */
+    public function col_id($response) {
+        return $response->id;
+    }
+
+    /**
+     * Generate the display of the rules column.
+     * @param object $response the table row being output.
+     * @return string HTML content to go inside the td.
+     */
+    public function col_rules($response) {
+        if (\qtype_pmatch\test_responses::has_rule_match_for_response($this->testresponses->rulematches, $response->id)) {
+            return implode(',',
+                    \qtype_pmatch\test_responses::get_matching_rule_indexes_for_response($this->testresponses, $response->id));
         } else {
             return '';
         }

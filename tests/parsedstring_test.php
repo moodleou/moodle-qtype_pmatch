@@ -84,7 +84,7 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
 
         $options = new pmatch_options();
         $options->lang = 'en';
-        $options->set_synonyms(array((object)array('word'=>'queek', 'synonyms' => 'abcde|fghij')));
+        $options->set_synonyms(array((object)array('word' => 'queek', 'synonyms' => 'abcde|fghij')));
 
         // For example passes as it is an extra dictionary word
         // tool passes as it is correctly spelt.
@@ -111,7 +111,7 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
         $options = new pmatch_options();
         $options->lang = 'en';
         $options->set_synonyms(
-                    array((object)array('word'=>'queek*', 'synonyms' => 'abcde|fghij')));
+                    array((object)array('word' => 'queek*', 'synonyms' => 'abcde|fghij')));
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queeking.', $options);
         $this->assertTrue($parsedstring->is_spelt_correctly());
 

@@ -40,6 +40,9 @@ class test_responses {
 
     /** @var \question the question the test responses relate to. */
     protected $questionobj = null;
+    protected $responses = null;
+    public $rulematches = null;
+    const SQLGRADED = 'AND expectedfraction IS NOT NULL AND gradedfraction IS NOT NULL';
 
     /**
      * Create an instance of this class representing a question with no saved test responses.
@@ -55,13 +58,36 @@ class test_responses {
      * @return test_responses
      */
     public static function create_for_question($questionobj) {
-        $responses = self::create();
-        $responses->questionobj = $questionobj;
-        return $responses;
+        $handler = self::create();
+        $handler->questionobj = $questionobj;
+        $handler->responses = self::get_responses_by_questionid($handler->questionobj->id);
+        $responseids = array_keys($handler->responses);
+        $handler->rulematches = self::get_rule_matches_for_responses($responseids, $handler->questionobj->id);
+        return $handler;
     }
 
     /**
-     * Set up this class with the saved test responses for the given question.
+     * Get all saved test responses for a question.
+     */
+    public static function get_responses_by_questionid($questionid) {
+        global $DB;
+        $responses = $DB->get_records('qtype_pmatch_test_responses', array('questionid' => $questionid), 'id ASC');
+        return self::data_to_responses($responses);
+    }
+
+    /**
+     * Get only the graded test responses for a question.
+     */
+    public static function get_graded_responses_by_questionid($questionid) {
+        global $DB;
+        $sqlgraded = "SELECT * FROM {qtype_pmatch_test_responses} WHERE questionid = ? " .
+                self::SQLGRADED . " ORDER BY id ASC";
+        $responses = $DB->get_records_sql($sqlgraded, array('questionid' => $questionid));
+        return self::data_to_responses($responses);
+    }
+
+    /**
+     * Get all saved test responses details for a set of response ids.
      */
     public static function get_responses_by_ids($responseids) {
         global $DB;
@@ -77,7 +103,7 @@ class test_responses {
     public static function data_to_responses($data) {
         $responses = array();
         foreach ($data as $datarow) {
-            $response = \qtype_pmatch\test_response::create($datarow);
+            $response = \qtype_pmatch\test_response::create($datarow);  // Ignore codechecker warning.
             $responses[$response->id] = $response;
         }
         return $responses;
@@ -131,6 +157,7 @@ class test_responses {
      */
     public static function delete_responses_by_ids ($responseids) {
         global $DB;
+        $DB->delete_records_list('qtype_pmatch_rule_matches', 'testresponseid', $responseids);
         return $DB->delete_records_list('qtype_pmatch_test_responses', 'id', $responseids);
     }
 
@@ -144,7 +171,7 @@ class test_responses {
 
         // Get graded count.
         $sqlgraded = "SELECT COUNT(1) FROM {qtype_pmatch_test_responses}
-                WHERE questionid = ? AND expectedfraction IS NOT NULL AND gradedfraction IS NOT NULL";
+                WHERE questionid = ? " . self::SQLGRADED;
         $params = array('questionid' => $question->id);
         $counts->graded = $DB->count_records_sql($sqlgraded, $params);
 
@@ -230,19 +257,94 @@ class test_responses {
      */
     public static function get_individual_grade_accuracy($responses, $ruleid) {
         $accuracy = array('positive' => 0, 'negative' => 0);
+
         foreach ($responses as $response) {
             if (!in_array($ruleid, $response->ruleids)) {
                 continue;
             }
 
             if ($response->expectedfraction) {
+                // Matches human expectation.
                 $accuracy['positive']++;
             } else {
+                // Does not match human expectation.
                 $accuracy['negative']++;
             }
         }
 
         return $accuracy;
+    }
+
+    /**
+     * Grade the responses with the given rule and question.
+     * @param array[] test_response $responses response objects to grade
+     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param qtype_pmatch_question question to do the grading
+     */
+    public static function get_rule_accuracy_counts($responses, $ruleid, $matches) {
+        $accuracy = array('positive' => 0, 'negative' => 0);
+
+        $responseids = array();
+        if (array_key_exists($ruleid, $matches['ruleidstoresponseids'])) {
+            $responseids = $matches['ruleidstoresponseids'][$ruleid];
+        }
+        foreach ($responseids as $responseid) {
+            if (!array_key_exists($responseid, $responses)) {
+                continue;
+            }
+
+            $response = $responses[$responseid];
+            if ($response->expectedfraction) {
+                // Matches human expectation.
+                $accuracy['positive']++;
+            } else {
+                // Does not match human expectation.
+                $accuracy['negative']++;
+            }
+        }
+
+        return $accuracy;
+    }
+
+    /**
+     * Save a record of of each match between a rule and test response.s
+     * @param qtype_pmatch_question question to do the grading
+     */
+    public static function save_rule_matches($question) {
+        global $DB;
+
+        $rules = $question->get_answers();
+        $responses = self::get_graded_responses_by_questionid($question->id);
+        $questionid = $question->id;
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        foreach ($responses as $response) {
+            if (!is_double($response->gradedfraction) || !is_double($response->expectedfraction)) {
+                continue;
+            }
+            foreach ($rules as $aid => $rule) {
+                $match = false;
+                $match = $question->compare_response_with_answer(
+                                                    array('answer' => $response->response), $rule);
+                if ($match) {
+                    $response->ruleids[] = $aid;
+                    $rulematch = new \stdclass();
+                    $rulematch->answerid = $rule->id;
+                    $rulematch->testresponseid = $response->id;
+                    $rulematch->questionid = $question->id;
+                    $DB->insert_record('qtype_pmatch_rule_matches', $rulematch);
+                }
+            }
+            self::grade_response($response, $question);
+        }
+    }
+
+    /**
+     * Delete the record of each match between a rule and test response for a given question.s
+     * @param qtype_pmatch_question question
+     */
+    public static function delete_rule_matches($question) {
+        global $DB;
+        $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $question->id));
     }
 
     /**
@@ -253,15 +355,24 @@ class test_responses {
      * @param \question_answer $rule Answer oobject containing the rule to grade with
      * @param qtype_pmatch_question question to do the grading
      */
-    public static function get_rule_matches_for_responses($responseids) {
+    public static function get_rule_matches_for_responses($responseids, $questionid) {
         global $DB;
+        $matchresponseidstoruleids = array();
+        $matchruleidstoresponseids = array();
+        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids);
+
+        // If there are no responses return an empty matches object.
+        if (!count($responseids)) {
+            return $matches;
+        }
 
         // Get the response ids for the question.
         $sql = "SELECT id, testresponseid, answerid FROM {qtype_pmatch_rule_matches}
-                    WHERE testresponseid IN(". implode(',', $responseids) . ")";
+                    WHERE questionid='" . $questionid . "' AND
+                            testresponseid IN(". implode(',', $responseids) . ")";
         $data = $DB->get_records_sql($sql);
-        $matchresponseidstoruleids = array();
-        $matchruleidstoresponseids = array();
+
         foreach ($data as $record) {
             // Match responses to rules.
             // if the matching array hasn't be created, create it.
@@ -288,8 +399,43 @@ class test_responses {
 
         }
 
-        $matches = array('responseids to ruleids' => $matchresponseidstoruleids,
-                'ruleids to responseids' => $matchruleidstoresponseids);
+        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        return $matches;
+    }
+
+    /**
+     * Do any rules match a give response. Use the lookup array to find out.
+     *
+     * @param $rulematches array[] lookup array of response ids to rule ids.
+     * @param $responseid id of the response to find matching rules for.
+     * @return bool
+     */
+    public static function has_rule_match_for_response($rulematches, $responseid) {
+        return array_key_exists($responseid, $rulematches['responseidstoruleids']);
+    }
+
+    /**
+     * Link each rule that matches the given response to it's order in its related question.
+     *
+     * @param \qtype_pmatch\test_responses $testresponsehandler object the testresponses handler
+     * @param int $responseid id of the test response the rules much match
+     * @retun array
+     */
+    public static function get_matching_rule_indexes_for_response($testresponsehandler, $responseid) {
+        $ruleids = array_keys($testresponsehandler->questionobj->get_answers());
+        $rulematch = $testresponsehandler->rulematches['responseidstoruleids'][$responseid];
+
+        $matches = array();
+        foreach ($rulematch as $matchid) {
+            $index = array_search($matchid, $ruleids) + 1;
+            if ($index != null) {
+                $matches[] = $index;
+            }
+        }
+
+        // Order values from low to high.
+        asort($matches);
         return $matches;
     }
 
@@ -302,7 +448,7 @@ class test_responses {
      * @param qtype_pmatch_question question to do the grading
      */
     public static function update_responses_with_ruleids($responses, $matches) {
-        $matchresponseidstoruleids = $matches['responseids to ruleids'];
+        $matchresponseidstoruleids = $matches['responseidstoruleids'];
         foreach ($matchresponseidstoruleids as $responseid => $ruleids) {
             if (!array_key_exists($responseid, $responses)) {
                 continue;

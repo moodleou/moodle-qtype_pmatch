@@ -28,7 +28,7 @@ Feature: Grade a test response for a pattern match question
   Scenario: Grade an existing test response for pattern match question.
     # Check responses are listed correctly
     Given I am on the pattern match test responses page for question "My first pattern match question"
-    Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I set the field with xpath "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c0']//input" to "1"
     And I press "Test the question using these responses"
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
@@ -37,6 +37,6 @@ Feature: Grade a test response for a pattern match question
     When I press "Continue"
     Then I should see "Pos=1/1 Neg=0/0 Unm=12 Acc=100%"
     # Confirm the computer mark
-    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c1" "css_element"
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
     # Confirm the response
-    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"

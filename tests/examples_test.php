@@ -103,7 +103,7 @@ class qtype_pmatch_examples_test extends basic_testcase {
 
             if (count($data) < 2 || !is_numeric($data[1])) {
                 $this->fail('Skipping bad line in responses file '.
-                            '(file ' . $name . '.responses.csv, line ' . ($row+1) . ').');
+                            '(file ' . $name . '.responses.csv, line ' . ($row + 1) . ').');
                 continue;
             }
             $options = new pmatch_options();
@@ -118,7 +118,7 @@ class qtype_pmatch_examples_test extends basic_testcase {
 
             $string = new pmatch_parsed_string($data[0], $options);
             $this->assertEquals((bool) trim($data[1]), $expression->matches($string),
-                    'File ' . $name . '.responses.csv, line ' . ($row+1) .
+                    'File ' . $name . '.responses.csv, line ' . ($row + 1) .
                     ' "' . s($data[0]) . '", %s');
         }
 

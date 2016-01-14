@@ -33,7 +33,9 @@ Use cases
 What situations will this feature help?
 Author has finished creating a question without rules and wants to upload sample responses to help create the rules.
 Author has finished creating a question with rules and want to upload sample responses to test/refine the rules.
-Author has previously created a question, rules and uploaded sample answers. The question has been used by students and the author wants to check/refine the rules based on additional sets of responses because the question didn’t perform as expected.
+Author has previously created a question, rules and uploaded sample answers. The question has been
+used by students and the author wants to check/refine the rules based on additional sets of responses
+because the question didn’t perform as expected.
 
 h1. Functionality
 What can the feature actually do?

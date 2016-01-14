@@ -66,13 +66,13 @@ class behat_qtype_pmatch extends behat_base {
      * @param qtype_pmatch_question $question (optional) question to associate responses with.
      * @return array $responses, $problems
      */
-    protected function load_responses($question, $path_to_responses = null) {
+    protected function load_responses($question, $pathtoresponses = null) {
         if (!$question) {
             throw new ExpectationException('Question not provided', $this->getSession());
         }
 
-        $path_to_responses = $path_to_responses ? $path_to_responses : behat_qtype_pmatch::$responsesfilepath;
-        $responsesfile = dirname(__FILE__) . '/../' . $path_to_responses;
+        $pathtoresponses = $pathtoresponses ? $pathtoresponses : self::$responsesfilepath;
+        $responsesfile = dirname(__FILE__) . '/../' . $pathtoresponses;
 
         return qtype_pmatch\test_responses::load_responses_from_file($responsesfile, $question);
     }
@@ -92,11 +92,11 @@ class behat_qtype_pmatch extends behat_base {
      * load the default result set and store in the database.
      * @return array \qtype_pmatch\test_response
      */
-    protected function intialise_default_responses($questionname, $path_to_responses = null) {
+    protected function intialise_default_responses($questionname, $pathtoresponses = null) {
         global $DB;
         $question = $this->get_question_by_name($questionname);
 
-        list($responses, $problems) = $this->load_responses($question, $path_to_responses);
+        list($responses, $problems) = $this->load_responses($question, $pathtoresponses);
 
         //  Add responses.
         \qtype_pmatch\test_responses::add_responses($responses);

@@ -109,7 +109,24 @@ class qtype_pmatch extends question_type {
 
         $this->save_hints($question);
 
-        return $this->save_answers($question);
+        $savedanswersresult = $this->save_answers($question);
+
+        $this->save_rule_matches($question);
+
+        return $savedanswersresult;
+    }
+
+    protected function save_rule_matches($question) {
+
+        // Purge this question from the cache.
+        question_bank::notify_question_edited($question->id);
+        // If there are test responses grade them with the new answers and record matches.
+        $questionobj = question_bank::load_question($question->id);
+        // Delete existing rule matches for the question.
+        \qtype_pmatch\test_responses::delete_rule_matches($questionobj);
+
+        // Save rule matches for the question.
+        \qtype_pmatch\test_responses::save_rule_matches($questionobj);
     }
 
     protected function save_answers($question) {
@@ -205,7 +222,7 @@ class qtype_pmatch extends question_type {
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
         } else {
-            $question->synonymsdata =array();
+            $question->synonymsdata = array();
         }
         $format->import_hints($question, $data, true, false,
                 $format->get_format($question->questiontextformat));

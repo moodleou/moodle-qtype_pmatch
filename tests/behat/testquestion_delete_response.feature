@@ -27,7 +27,7 @@ Feature: Delete a test response for a pattern match question
   Scenario: Delete an existing test response for a pattern match question.
     Given I am on the pattern match test responses page for question "My first pattern match question"
     # Check responses are listed correctly
-    Given I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    Given I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I set the field with xpath "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c0']//input" to "1"
     And I press "Delete selected responses"
     #The step When I click on "Yes" "button" confirming the dialogue doesn't find a dialogue so we use the following step instead.
@@ -39,6 +39,6 @@ Feature: Delete a test response for a pattern match question
     When I press "Continue"
     Then I should see "Pos=0/0 Neg=0/0 Unm=12 Acc=0%"
     # Confirm the computer mark
-    And I should see "0" in the "#qtype-pmatch-testquestion_r0_c2" "css_element"
+    And I should see "0" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     # Confirm the response
-    And I should see "testing" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    And I should see "testing" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"

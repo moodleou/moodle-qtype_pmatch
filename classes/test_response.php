@@ -59,6 +59,9 @@ class test_response {
     /** @var gradedfraction. */
     public $gradedfraction = null;
 
+    /** @var ruleids. */
+    public $ruleids = array();
+
     /**
      * Create an instance of this class representing an empty test response.
      * @param $response stdClass data object to translate into a test_response class

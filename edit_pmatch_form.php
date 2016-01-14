@@ -68,11 +68,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
     }
 
     protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
-            $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD){
-        parent::add_per_answer_fields($mform, $label, $gradeoptions);
+            $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
 
+        parent::add_per_answer_fields($mform, $label, $gradeoptions);
         $results = '';
-        if($hasresponses = \qtype_pmatch\test_responses::has_responses($this->question)) {
+        if ($hasresponses = \qtype_pmatch\test_responses::has_responses($this->question)) {
             $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->question);
             $results = html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts));
         }
@@ -82,8 +82,50 @@ class qtype_pmatch_edit_form extends question_edit_form {
                                                 $results);
         $mform->insertElementBefore($answersinstruct, 'answer[0]');
 
+        $this->add_answer_accuracy_fields($mform);
         $this->add_other_answer_fields($mform);
 
+    }
+
+    /**
+     * Add answer options for any other (wrong) answer.
+     *
+     * @param MoodleQuickForm $mform the form being built.
+     */
+    protected function add_answer_accuracy_fields($mform) {
+        if (!$this->question || !property_exists ($this->question, 'id')) {
+            return;
+        }
+        $questionobj = question_bank::load_question($this->question->id);
+        if (!$hasrepsonses = \qtype_pmatch\test_responses::has_responses($questionobj)) {
+            return;
+        }
+
+        $rules = $questionobj->get_answers();
+        $responses = \qtype_pmatch\test_responses::get_graded_responses_by_questionid($questionobj->id);
+        $responseids = array_keys($responses);
+        $matches = \qtype_pmatch\test_responses::get_rule_matches_for_responses($responseids, $this->question->id);
+
+        // If there are no matches.
+        if (!$matches) {
+            return;
+        }
+        $count = 0;
+        foreach ($rules as $aid => $rule) {
+            $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+            $ruleaccuracylabel = html_writer::label(get_string('ruleaccuracylabel', 'qtype_pmatch'),
+                                                        'fitem_accuracy_' . $count);
+            $labelhtml = html_writer::div($ruleaccuracylabel, 'fitemtitle');
+            $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
+                                                        'felement fselect');
+            $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy',
+                                        array('id' => 'fitem_accuracy_' . $count));
+            $answersaccuracy = $mform->createElement('html', $html);
+            if ($mform->elementExists('fraction[' . $count . ']')) {
+                $mform->insertElementBefore(clone ($answersaccuracy), 'fraction[' . $count . ']');
+            }
+            $count++;
+        }
     }
 
     /**
@@ -100,7 +142,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function add_other_answer_fields($mform) {
         $otheranswerhdr = $mform->addElement('static', 'otheranswerhdr',
                                                 get_string('anyotheranswer', 'qtype_pmatch'));
-        $otheranswerhdr->setAttributes(array('class'=>'otheranswerhdr'));
+        $otheranswerhdr->setAttributes(array('class' => 'otheranswerhdr'));
         $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
         $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
                                                         array('rows' => 5), $this->editoroptions);
@@ -246,7 +288,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $answercount++;
             }
         }
-        if ($answercount==0) {
+        if ($answercount == 0) {
             $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_pmatch', 1);
         }
         if ($maxgrade == false) {
@@ -357,9 +399,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function add_synonym($mform) {
         $grouparray = array();
         $grouparray[] = $mform->createElement('text', 'word',
-                            get_string('wordwithsynonym', 'qtype_pmatch'), array('size'=>15));
+                            get_string('wordwithsynonym', 'qtype_pmatch'), array('size' => 15));
         $grouparray[] = $mform->createElement('text', 'synonyms',
-                            get_string('synonym', 'qtype_pmatch'), array('size'=>50));
+                            get_string('synonym', 'qtype_pmatch'), array('size' => 50));
         return $grouparray;
     }
 

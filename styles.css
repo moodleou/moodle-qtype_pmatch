@@ -33,6 +33,7 @@ body#page-question-type-pmatch #fitem_id_addanswers + .fitem .fitemtitle {
 
 /* Middle */
 body#page-question-type-pmatch div[id^=fitem_id_][id*=fraction_],
+body#page-question-type-pmatch div.fitem.fitem_accuracy,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
     background: #EEE;
     margin-bottom: 0;

@@ -150,8 +150,8 @@ class qtype_pmatch_question_test extends basic_testcase {
                 new question_classified_response(14, 'Dick', 0.8)),
                 $sa->classify_response(array('answer' => 'Dick')));
         $this->assertEquals(array(
-                new question_classified_response(15, 'cat', 0.0)),
-                $sa->classify_response(array('answer' => 'cat')));
+                new question_classified_response(15, 'Felicity', 0.0)),
+                $sa->classify_response(array('answer' => 'Felicity')));
         $this->assertEquals(array(
                 question_classified_response::no_response()),
                 $sa->classify_response(array('answer' => '')));

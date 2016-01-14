@@ -35,6 +35,4 @@ Feature: Test uploading test responses in the pattern match test this question f
     And I should see "Saved 13 responses"
     And I should see "The following 3 responses were not saved"
     And I should see "Each row should contain exactly two items, a numerical mark and a response. Row 11 contains 3 items."
-    And I should see "The expected mark in row 12 is empty. The input must be a number."
-    And I should see "The expected mark in row 15 is empty. The input must be a number."
     And I should see "Upload another file"

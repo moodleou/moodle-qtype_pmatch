@@ -61,7 +61,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
             14 => new question_answer(14,
                                       'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
             15 => new question_answer(15,
-                                      '*', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
+                                      'match_w(Felicity)', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
         );
         $pm->qtype = question_bank::get_qtype('pmatch');
         $pm->applydictionarycheck = $applydictionarycheck;

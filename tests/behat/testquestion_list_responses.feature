@@ -32,6 +32,6 @@ Feature: List test responses for a pattern match question
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
     # Confirm the human mark
-    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c2" "css_element"
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     # Confirm the response
-    Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"

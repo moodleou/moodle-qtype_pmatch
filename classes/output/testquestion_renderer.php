@@ -133,6 +133,16 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
      */
     protected function add_columns($table, &$columns, &$headers) {
         if (!$table->is_downloading()) {
+            $columns[] = 'id';
+            $headers[] = get_string('testquestionidlabel', 'qtype_pmatch');
+        }
+
+        if (!$table->is_downloading()) {
+            $columns[] = 'rules';
+            $headers[] = get_string('testquestionruleslabel', 'qtype_pmatch');
+        }
+
+        if (!$table->is_downloading()) {
             $columns[] = 'gradedfraction';
             $headers[] = get_string('testquestionactualmark', 'qtype_pmatch');
         }
@@ -153,6 +163,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     protected function configure_columns($table) {
         $table->column_suppress('id');
 
+        $table->column_class('rules', 'bold');
         $table->column_class('gradedfraction', 'bold');
         $table->column_class('expectedfraction', 'bold');
         $table->column_class('response', 'bold');
@@ -178,6 +189,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
         $this->configure_columns($table);
 
         $table->column_class('response', 'bold');
+        $table->no_sorting('rules');
 
         $table->set_attribute('id', 'responses');
 
@@ -201,6 +213,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
         if (optional_param('test', 0, PARAM_BOOL) && confirm_sesskey()) {
             if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
                 $this->render_grading_responses($responseids);
+                \qtype_pmatch\test_responses::save_rule_matches($this->question);
                 echo $this->output->continue_button($redirecturl);
                 echo $this->footer();
                 exit;

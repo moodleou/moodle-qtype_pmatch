@@ -24,10 +24,7 @@
  */
 
 global $CFG;
-require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
-require_once($CFG->dirroot . '/question/type/pmatch/tests/helper.php');
-require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
-
+require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
 
 /**
  * Test driver class that tests the pmatch library by loading examples from
@@ -37,50 +34,47 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     qtype_pmatch
  */
-class qtype_pmatch_testquestion_test extends advanced_testcase {
-
-    public static $responsesfilepath = "fixtures/myfirstquestion_responses.csv";
-    protected $currentquestion = null; // holder for the current question object
+class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase {
 
     /**
      * Test basic instantiation of the test_response class.
      */
     public function test_intialise_test_response() {
         $this->resetAfterTest();
-        //  No data returns null
-        $test_response = \qtype_pmatch\test_response::create();
-        $this->assertEquals($test_response, null);
+        //  No data returns null.
+        $testresponse = \qtype_pmatch\test_response::create();
+        $this->assertEquals($testresponse, null);
 
-        // Initialise a test_response object with proper data
+        // Initialise a test_response object with proper data.
         $data = new stdClass();
         $data->id = 1000;
         $data->questionid = 1900;
         $data->expectedfraction = 0;
         $data->gradedfraction = 0;
         $data->response = 0;
-        $test_response = \qtype_pmatch\test_response::create($data);
+        $testresponse = \qtype_pmatch\test_response::create($data);
 
         // No contents.
-        $this->assertEquals($test_response->id, $data->id);
-        $this->assertEquals($test_response->questionid, $data->questionid);
-        $this->assertEquals($test_response->response, $data->response);
-        $this->assertEquals($test_response->expectedfraction, $data->expectedfraction);
-        $this->assertEquals($test_response->gradedfraction, $data->gradedfraction);
+        $this->assertEquals($testresponse->id, $data->id);
+        $this->assertEquals($testresponse->questionid, $data->questionid);
+        $this->assertEquals($testresponse->response, $data->response);
+        $this->assertEquals($testresponse->expectedfraction, $data->expectedfraction);
+        $this->assertEquals($testresponse->gradedfraction, $data->gradedfraction);
 
-        // Set grade fraction
-        $test_response->set_gradedfraction(0.5);
-        $this->assertEquals($test_response->gradedfraction, 1);
+        // Set grade fraction.
+        $testresponse->set_gradedfraction(0.5);
+        $this->assertEquals($testresponse->gradedfraction, 1);
 
-        $test_response->set_gradedfraction(0.4);
-        $this->assertEquals($test_response->gradedfraction, 0);
+        $testresponse->set_gradedfraction(0.4);
+        $this->assertEquals($testresponse->gradedfraction, 0);
 
-        //  Fraction fields contain floating numbers
+        // Fraction fields contain floating numbers.
         $data->expectedfraction = 0.9999;
         $data->gradedfraction = 0.0001;
-        $test_response = \qtype_pmatch\test_response::create($data);
+        $testresponse = \qtype_pmatch\test_response::create($data);
 
-        $this->assertEquals($test_response->expectedfraction, 1);
-        $this->assertEquals($test_response->gradedfraction, 0);
+        $this->assertEquals($testresponse->expectedfraction, 1);
+        $this->assertEquals($testresponse->gradedfraction, 0);
     }
 
     /**
@@ -88,7 +82,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
      */
     public function test_data_to_responses() {
         $this->resetAfterTest();
-        // Empty array
+        // Empty array.
         $responses = \qtype_pmatch\test_responses::data_to_responses(array());
         $this->assertEquals($responses, array());
 
@@ -101,14 +95,14 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         $data->response = 'one two';
 
         $responses = \qtype_pmatch\test_responses::data_to_responses(array($data));
-        $test_response = array_pop($responses);
+        $testresponse = array_pop($responses);
 
         // No contents.
-        $this->assertEquals($test_response->id, $data->id);
-        $this->assertEquals($test_response->questionid, $data->questionid);
-        $this->assertEquals($test_response->response, $data->response);
-        $this->assertEquals($test_response->expectedfraction, $data->expectedfraction);
-        $this->assertEquals($test_response->gradedfraction, $data->gradedfraction);
+        $this->assertEquals($testresponse->id, $data->id);
+        $this->assertEquals($testresponse->questionid, $data->questionid);
+        $this->assertEquals($testresponse->response, $data->response);
+        $this->assertEquals($testresponse->expectedfraction, $data->expectedfraction);
+        $this->assertEquals($testresponse->gradedfraction, $data->gradedfraction);
     }
 
     /**
@@ -124,8 +118,8 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         //  Before we test the DB.
-        $test_response = \qtype_pmatch\test_responses::create_for_question($question);
-        $this->assertEquals(get_class($test_response), 'qtype_pmatch\test_responses');
+        $testresponse = \qtype_pmatch\test_responses::create_for_question($question);
+        $this->assertEquals(get_class($testresponse), 'qtype_pmatch\test_responses');
     }
 
     /**
@@ -145,7 +139,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
 
         $responses = \qtype_pmatch\test_responses::data_to_responses($responses);
 
-        // Get an array of the ids
+        // Get an array of the ids.
         $responseids = array_keys($responses);
 
         // Get responses udsing the ids array.
@@ -162,7 +156,8 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
 
         $question = $this->create_default_question();
 
-        list($responses, $problems) = $this->load_responses($question);
+        $path = "fixtures/myfirstquestion_responses.csv";
+        list($responses, $problems) = $this->load_responses($question, $path);
 
         //  Add responses to an empty DB table and get feedback.
         $feedback = \qtype_pmatch\test_responses::add_responses($responses);
@@ -173,7 +168,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         $this->assertEquals($feedback->saved, 13);
         $this->assertEquals(count($feedback->duplicates), 0);
 
-        //  test for duplicates by adding responses for the second time.
+        // Test for duplicates by adding responses for the second time.
         $feedback = \qtype_pmatch\test_responses::add_responses($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
@@ -182,7 +177,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         $this->assertEquals($feedback->saved, 0);
         $this->assertEquals(count($feedback->duplicates), 13);
 
-        //  Add the same data for a different question.
+        // Add the same data for a different question.
         $response = $responses[0];
         $response->questionid = 2;
 
@@ -196,7 +191,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
     }
 
     /**
-     * Test that responses are correctly updated in the db.
+     * Test update_response.
      */
     public function test_update_response() {
         global $DB;
@@ -220,7 +215,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
     }
 
     /**
-     * Test that responses are correctly deleted from the db.
+     * Test delete_responses_by_ids.
      */
     public function test_delete_responses_by_ids() {
         global $DB;
@@ -239,7 +234,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
     }
 
     /**
-     * Test that responses are correctly deleted from the db.
+     * Test get_grade_summary_counts.
      */
     public function test_get_grade_summary_counts() {
         global $DB;
@@ -271,7 +266,7 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         // Update computer marked grade from fixture and saved to DB.
         $this->update_response_grades_from_file($responses, $path);
 
-        // Update expectations
+        // Update expectations.
         $expectedcounts = $counts = new \stdClass();
         $expectedcounts->correct = 8;
         $expectedcounts->total = 15;
@@ -286,12 +281,12 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         // Get current grade counts.
         $actualcounts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->currentquestion);
 
-        // Confirm counts for grades now they have been marked by the cvomputer.
+        // Confirm counts for grades now they have been marked by the computer.
         $this->assertEquals($expectedcounts, $actualcounts);
     }
 
     /**
-     * Test that responses are correctly deleted from the db.
+     * Tests grade_response.
      */
     public function test_grade_response() {
         global $DB;
@@ -300,23 +295,29 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
         $responses = $this->load_default_responses("fixtures/shortanswerquestion_gradedresponses.csv");
 
         // Test grading for a correct response.
-        $response = array_shift($responses);
+        foreach ($responses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $response = $r;
+            }
+            if ($r->response == 'Felicity') {
+                $wrongresponse = $r;
+            }
+        }
         $expectedcomputergrade = 1;
         \qtype_pmatch\test_responses::grade_response($response, $this->currentquestion);
 
         $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids(array($response->id));
-        $dbresponse = array_pop($dbresponses);
+        $dbresponse = array_shift($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
         // Confirm graded correct.
         $this->assertEquals($expectedcomputergrade, $actualcomputergrade);
 
         // Test grading for a wrong response.
-        $response = array_pop($responses);
         $expectedcomputergrade = 0;
-        \qtype_pmatch\test_responses::grade_response($response, $this->currentquestion);
+        \qtype_pmatch\test_responses::grade_response($wrongresponse, $this->currentquestion);
 
-        $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids(array($response->id));
+        $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids(array($wrongresponse->id));
         $dbresponse = array_pop($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
@@ -325,14 +326,14 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
     }
 
     /**
-     * Test that responses are correctly added to the db.
+     * Test load_responses.
      */
     public function test_load_responses_from_file() {
-        $responsesfile = dirname(__FILE__) . '/' . qtype_pmatch_testquestion_test::$responsesfilepath;
         $this->resetAfterTest();
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
         $question->id = 1;
-        list($responses, $problems) = $this->load_responses();
+        $responsesfile = '/fixtures/myfirstquestion_responses.csv';
+        list($responses, $problems) = $this->load_responses($question, $responsesfile);
 
         // Create expected responses.
         $data = array(
@@ -371,90 +372,5 @@ class qtype_pmatch_testquestion_test extends advanced_testcase {
 
         // Test responses.
         $this->assertEquals($expectedresponses, $responses);
-    }
-
-    /**
-     * Load a csv file into an array of response objects reporting feedback
-     * @param qtype_pmatch_question $question (optional) question to associate responses with.
-     * @return array $responses, $problems
-     */
-    protected function load_responses($question = null, $path_to_responses = null) {
-        $path_to_responses = $path_to_responses ? $path_to_responses : qtype_pmatch_testquestion_test::$responsesfilepath;
-        $responsesfile = dirname(__FILE__) . '/' . $path_to_responses;
-        if (!$question) {
-            $question = $this->create_default_question();
-        }
-
-        return qtype_pmatch\test_responses::load_responses_from_file($responsesfile, $question);
-    }
-
-    /**
-     * Create a default pmatch question object
-     * @return qtype_pmatch_question
-     */
-    protected function create_default_question() {
-        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
-        $question->id = 1;
-        return $question;
-    }
-
-    /**
-     * load the default result set and store in the database.
-     * @return array \qtype_pmatch\test_response
-     */
-    protected function load_default_responses($path_to_responses = null) {
-        global $DB;
-        $this->currentquestion =  $this->create_default_question();
-
-        list($responses, $problems) = $this->load_responses($this->currentquestion, $path_to_responses);
-
-        //  Add responses.
-        \qtype_pmatch\test_responses::add_responses($responses);
-        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
-        return \qtype_pmatch\test_responses::data_to_responses($dbresponses);
-    }
-
-    /**
-     * Load graded data for responses.
-     *
-     * To match up with a set of responses.
-     */
-    protected function load_graded_data($path_to_responses) {
-        $absolute_path = dirname(__FILE__) . '/' . $path_to_responses;
-
-        $handle = fopen($absolute_path, 'r');
-        if (!$handle) {
-            throw new coding_exception('Could not open testquestionresponses CSV file.');
-        }
-        $gradeddata = array();
-        while (($data = fgetcsv($handle)) !== false) {
-            if (count($data) == 2) {
-                $data[2] = null;
-            }
-            $gradeddata[$data[1]] = $data[2];
-        }
-        return $gradeddata;
-    }
-
-    /**
-     * Update the computer grade for each response using the grades in the given file.
-     */
-    protected function update_response_grades_from_file($responses, $path_to_responses) {
-        $gradeddata = $this->load_graded_data($path_to_responses);
-
-        // Update computer marked grade.
-        foreach ($responses as $response) {
-                if (!array_key_exists($response->response, $gradeddata)) {
-                    continue;
-                }
-
-                $response->gradedfraction = $gradeddata[$response->response];
-
-                if ($response->gradedfraction == null) {
-                    continue;
-                }
-
-                \qtype_pmatch\test_responses::update_response($response);
-        }
     }
 }

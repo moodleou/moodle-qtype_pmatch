@@ -495,7 +495,7 @@ EOF;
 
         $options = new pmatch_options();
         $this->assertFalse($this->match('fghij', 'match(abcde)', $options));
-        $options->set_synonyms(array((object)array('word'=>'abcde', 'synonyms' => 'xyz|fghij')));
+        $options->set_synonyms(array((object)array('word' => 'abcde', 'synonyms' => 'xyz|fghij')));
         $this->assertTrue($this->match('fghij', 'match(abcde)', $options));
 
         // Further tests to check that phrase is matching the right no of words.
@@ -541,17 +541,17 @@ EOF;
     }
 
     public function test_pmatch_number_matching() {
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '1.981'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-1.981'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>3</sup>'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>-3</sup>'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x10<sup>-3</sup>'));
-        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11<sup>-3</sup>'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101e3'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101e-3'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11e-3'));
-        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '1.981'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '-1.981'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>3</sup>'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>-3</sup>'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x10<sup>-3</sup>'));
+        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11<sup>-3</sup>'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101e3'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101e-3'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11e-3'));
+        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
 
         $this->assertTrue($this->match('2', 'match(2)'));
         $this->assertTrue($this->match('1', 'match(1)'));
@@ -569,16 +569,16 @@ EOF;
         $this->assertTrue($this->match('- 50', 'match(- 50e0)'));
         $this->assertTrue($this->match('- 50', 'match(- 5e1)'));
         $this->assertTrue($this->match('- 50', 'match(- 5e+1)'));
-        $this->assertTrue(1===preg_match('!'.PMATCH_NUMBER.'$!A', '-5*10<sup>-1</sup>'));
+        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '-5*10<sup>-1</sup>'));
         $this->assertTrue($this->match('-0.5', 'match(-5*10<sup>-1</sup>)'));
 
         $this->assertTrue($this->match('100.11', 'match(1.001099e2)'));
         $this->assertTrue($this->match('1.234561x10<sup>3</sup>', 'match(1234.56)'));
 
         // Spaces after unary plus/minus are not allowed.
-        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
-        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
-        $this->assertTrue(0===preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
+        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
+        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
+        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
         $this->assertFalse($this->match('-1.985', 'match(- 1.985)'));
         $this->assertFalse($this->match('- 50', 'match(-50e0)'));
         $this->assertFalse($this->match('-0.5', 'match(- 5e-1)'));

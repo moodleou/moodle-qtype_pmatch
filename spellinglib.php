@@ -113,7 +113,7 @@ abstract class qtype_pmatch_spell_checker {
      * @return array a list of the back-end library classes that might work on this server.
      */
     public static function get_installed_backends() {
-        $backends = qtype_pmatch_spell_checker::get_known_backends();
+        $backends = self::get_known_backends();
         $installedbackends = array();
         foreach ($backends as $key => $classname) {
             if ($classname::is_available()) {

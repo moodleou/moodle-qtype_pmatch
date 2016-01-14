@@ -26,7 +26,7 @@
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\\|\?\*_\[\]]');
-define('PMATCH_CHARACTER', '[\pL\pM\pN!"#£$%&\'/\-+<=>@\^`{}\~\.]');
+define('PMATCH_CHARACTER', '[\pL\pM\pN!"#£$%&\'/\-+<=>@\^`{}\~\.]'); // Ignore codechecker warning.
 
 define('PMATCH_LNUM', '[0-9]+');
 define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
@@ -64,7 +64,7 @@ abstract class pmatch_interpreter_item {
         $this->interpretererrormessage = '';
         list($found, $endofmatch) = $this->interpret_contents($string, $start);
         if ($found) {
-            $this->codefragment = core_text::substr($string, $start, $endofmatch-$start);
+            $this->codefragment = core_text::substr($string, $start, $endofmatch - $start);
         } else {
             $this->codefragment = '';
         }
@@ -100,7 +100,7 @@ abstract class pmatch_interpreter_item {
         preg_match($pattern.'iAu', core_text::substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found) {
-            $endofpattern = $matches[0][1]+core_text::strlen($matches[0][0])+$start;
+            $endofpattern = $matches[0][1] + core_text::strlen($matches[0][0]) + $start;
         } else {
             $endofpattern = $start;
         }
@@ -204,7 +204,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      */
     protected function last_subcontent_type_found($foundsofar) {
         if (!empty($foundsofar)) {
-            return $this->get_type_name_of_interpreter_object($foundsofar[count($foundsofar)-1]);
+            return $this->get_type_name_of_interpreter_object($foundsofar[count($foundsofar) - 1]);
         } else {
             return '';
         }
@@ -269,7 +269,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
     public function get_formatted_expression_string($indentlevel = 0) {
         $string = '';
         foreach ($this->subcontents as $subcontent) {
-            $string .= $subcontent->get_formatted_expression_string($indentlevel+1);
+            $string .= $subcontent->get_formatted_expression_string($indentlevel + 1);
         }
         return $string;
     }
@@ -689,7 +689,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $string .= $this->formatted_opening();
         $string .= ' (';
         foreach ($this->subcontents as $subcontent) {
-            $string .= $subcontent->get_formatted_expression_string($indentlevel+1);
+            $string .= $subcontent->get_formatted_expression_string($indentlevel + 1);
         }
         $string .= ")\n";
         return $string;
@@ -777,7 +777,7 @@ class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enc
     public function get_formatted_expression_string($indentlevel = 0) {
         $string = '[';
         foreach ($this->subcontents as $subcontent) {
-            $string .= $subcontent->get_formatted_expression_string($indentlevel+1);
+            $string .= $subcontent->get_formatted_expression_string($indentlevel + 1);
         }
         $string .= ']';
         return $string;
