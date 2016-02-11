@@ -36,8 +36,8 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="points to the question that these relate to"/>
-        <FIELD NAME="response" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="expectedfraction" TYPE="number" LENGTH="12" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="7"/>
+        <FIELD NAME="response" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="expectedfraction" TYPE="number" LENGTH="12" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="7"/>
         <FIELD NAME="gradedfraction" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
       </FIELDS>
       <KEYS>
