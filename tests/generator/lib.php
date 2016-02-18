@@ -45,10 +45,10 @@ class qtype_pmatch_generator extends component_generator_base {
         $this->responsecount++;
 
         $defaults = array(
-            'response'       => 'Test response ' . $this->responsecount,
-            'questionid'  => $question ? $question->id : 0,
-            'expectedfraction'     => 0,
-            'gradedfraction'  => 0,
+            'response' => 'Test response ' . $this->responsecount,
+            'questionid' => $question ? $question->id : 0,
+            'expectedfraction' => null,
+            'gradedfraction' => null
         );
 
         $record = $this->datagenerator->combine_defaults_and_record($defaults, $record);

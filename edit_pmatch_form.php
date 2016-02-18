@@ -80,7 +80,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                                                 get_string('correctanswers', 'qtype_pmatch'),
                                                 get_string('filloutoneanswer', 'qtype_pmatch') .
                                                 $results);
-        $mform->insertElementBefore($answersinstruct, 'answer[0]');
+        $mform->insertElementBefore($answersinstruct, 'topborder[0]');
 
         $this->add_answer_accuracy_fields($mform);
         $this->add_other_answer_fields($mform);
@@ -112,17 +112,51 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
         $count = 0;
         foreach ($rules as $aid => $rule) {
-            $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
-            $ruleaccuracylabel = html_writer::label(get_string('ruleaccuracylabel', 'qtype_pmatch'),
-                                                        'fitem_accuracy_' . $count);
-            $labelhtml = html_writer::div($ruleaccuracylabel, 'fitemtitle');
-            $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
-                                                        'felement fselect');
-            $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy',
-                                        array('id' => 'fitem_accuracy_' . $count));
-            $answersaccuracy = $mform->createElement('html', $html);
+            if (array_key_exists($rule->id, $matches['ruleidstoresponseids'])) {
+                // Add the Show coverage section.
+                $items = array();
+                foreach ($matches['ruleidstoresponseids'][$rule->id] as $responseid) {
+                    if ($responses[$responseid]->expectedfraction == $responses[$responseid]->gradedfraction) {
+                        if ($responses[$responseid]->expectedfraction) {
+                            $items[] = '<span>' .
+                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    '</span>';
+                        } else {
+                            $items[] = '<span>' .
+                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    '</span>';
+                        }
+                    } else {
+                        if ($responses[$responseid]->expectedfraction) {
+                            $items[] = '<span class="qtype_pmatch-selftest-missed-negative">' .
+                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    '</span>';
+                        } else {
+                            $items[] = '<span class="qtype_pmatch-selftest-missed-positive">' .
+                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    '</span>';
+                        }
+                    }
+                }
+                if ($mform->elementExists('fraction[' . $count . ']')) {
+                    $reponseslist = print_collapsible_region_start('', 'matchedresponses_' . $count,
+                            get_string('showcoverage', 'qtype_pmatch'), '', true, true);
+                    $reponseslist .= html_writer::alist($items);
+                    $reponseslist .= print_collapsible_region_end(true);
+                    $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
+                    $matchedresponses = $mform->createElement('html', $html);
+                    $mform->insertElementBefore(clone ($matchedresponses), 'fraction[' . $count . ']');
+                }
+            }
+            // Add the Rule accuracy section - but do not add to the 'Any other answer' section.
             if ($mform->elementExists('fraction[' . $count . ']')) {
-                $mform->insertElementBefore(clone ($answersaccuracy), 'fraction[' . $count . ']');
+                $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+                $labelhtml = html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitemtitle');
+                $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
+                        'felement fselect', array('id' => 'fitem_accuracy_' . $count));
+                $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
+                $answersaccuracy = $mform->createElement('html', $html);
+                $mform->insertElementBefore(clone ($answersaccuracy), 'answer[' . $count . ']');
             }
             $count++;
         }
@@ -154,7 +188,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function general_answer_fields($mform) {
-        $mform->addElement('header', 'generalheader',
+        $mform->addElement('header', 'answeroptionsheader',
                                                 get_string('answeroptions', 'qtype_pmatch'));
         $mform->addElement('static', 'generaldescription', '',
                                                 get_string('answeringoptions', 'qtype_pmatch'));
@@ -202,6 +236,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                                             &$repeatedoptions, &$answersoption) {
         $repeated = array();
+        // Add an empty label to provide the top border for an answer (rule).
+        // It would be nice to add a class to this element for styling, but it does not work.
+        $repeated[] = $mform->createElement('static', 'topborder', '', ' ');
         $repeated[] = $mform->createElement('textarea', 'answer', $label,
                             array('rows' => '8', 'cols' => '60', 'class' => 'textareamonospace'));
         $repeated[] = $mform->createElement('select', 'fraction',

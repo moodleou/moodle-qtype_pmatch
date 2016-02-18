@@ -41,12 +41,24 @@ class qtype_pmatch_testquestion_generator_testcase extends advanced_testcase {
         $count = $DB->count_records('qtype_pmatch_test_responses');
         $response = $generator->create_test_response();
         $this->assertEquals($count + 1, $DB->count_records('qtype_pmatch_test_responses'));
+        $this->assertTrue(is_null($response->expectedfraction),
+                'Generator should create a default response with a null entry for expectedfraction');
+        $this->assertTrue(is_null($response->gradedfraction),
+                'Generator should create a default response with a null entry for gradedfraction');
+
+        $response->expectedfraction = 1;
+        $response->gradedfraction = 0;
+        $response1 = $generator->create_test_response($response);
+        $this->assertEquals(1, $response1->expectedfraction,
+                'Generator should use response data for expectedfraction');
+        $this->assertEquals(0, $response->gradedfraction,
+                'Generator should use response data for gradedfraction');
 
         for ($x = 0; $x < 10; $x ++) {
             $generator->create_test_response();
         }
 
-        $this->assertEquals($count + 11, $DB->count_records('qtype_pmatch_test_responses'));
+        $this->assertEquals($count + 12, $DB->count_records('qtype_pmatch_test_responses'));
 
     }
 }

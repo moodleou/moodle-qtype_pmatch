@@ -81,6 +81,7 @@ $string['ruleaccuracylabel'] = 'Accuracy';
 $string['ruleaccuracy'] = 'Pos = {$a->positive} Neg = {$a->negative}';
 $string['row'] = 'Row';
 $string['savedxresponses'] = 'Saved {$a} responses';
+$string['showcoverage'] = 'Show coverage';
 $string['showingresponsesforquestion'] = 'Showing the responses for the selected question: {$a}';
 $string['spellcheckerenchant'] = 'Enchant spell-checking library';
 $string['spellcheckernull'] = 'No spell checking available';

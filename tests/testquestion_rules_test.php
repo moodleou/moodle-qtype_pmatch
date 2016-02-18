@@ -146,6 +146,69 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
     }
 
     /**
+     * Test re-grading.
+     */
+    public function test_regrading() {
+        global $DB;
+        $this->resetAfterTest();
+        $path = "fixtures/shortanswerquestion_gradedresponses.csv";
+        $responses = $this->load_default_responses($path);
+        $tomcat = $tomdickharry = '';
+        foreach ($responses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertTrue(is_null($tomdickharry));
+        $this->assertTrue(is_null($tomcat));
+        // Update computer marked grade from fixture and saved to DB.
+        $this->update_response_grades_from_file($responses, $path);
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry);
+        $this->assertEquals(1.0, $tomcat); // Note fixture file has computer mark incorrect.
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry);
+        $this->assertEquals(0.0, $tomcat); // Note re-grading is marking $tomcat correctly now.
+        // Update the question rules and check a re-grading.
+        $rules = $this->currentquestion->get_answers();
+        $rules[13]->answer = 'match_w(Tomcat)';
+        $this->currentquestion->answers = $rules;
+        \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry); // Note does not change.
+        $this->assertEquals(1.0, $tomcat); // Note new rule affects $tomcat.
+    }
+
+    /**
      * Test the rule matching table
      */
     public function test_save_rule_matches() {
@@ -213,8 +276,6 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         // Update the question rules.
         $this->currentquestion->answers = $rules;
 
-        // We should get the same answer if we saved the rule amtches again.
-
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
 
@@ -228,7 +289,6 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->assertEquals($deletedrulecomparerulematches, $responseandrulematches);
 
         // Add the rule back
-        // We should get the same answer if we saved the rule amtches again.
         // Delete existing rule matches for the question.
         \qtype_pmatch\test_responses::delete_rule_matches($this->currentquestion);
 

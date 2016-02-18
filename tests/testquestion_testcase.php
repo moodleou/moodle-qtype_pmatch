@@ -48,7 +48,7 @@ class qtype_pmatch_testquestion_testcase extends advanced_testcase {
      * @return array $responses, $problems
      */
     protected function load_responses($question = null, $pathtoresponses = null) {
-        $pathtoresponses = $pathtoresponses ? $pathtoresponses : qtype_pmatch_testquestion_test::$responsesfilepath;
+        $pathtoresponses = $pathtoresponses ? $pathtoresponses : self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/' . $pathtoresponses;
         if (!$question) {
             $question = $this->create_default_question();

@@ -15,7 +15,7 @@
 }
 
 /* Top */
-body#page-question-type-pmatch div[id^=fitem_id_][id*=answer_],
+body#page-question-type-pmatch div.fitem.femptylabel,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem {
     background: #EEE;
     margin-top: 0;
@@ -27,12 +27,29 @@ body#page-question-type-pmatch #fitem_id_addanswers + .fitem {
 }
 
 body#page-question-type-pmatch div[id^=fitem_id_][id*=_answer_] .fitemtitle,
+body#page-question-type-pmatch div.fitem.fitem_accuracy .fitemtitle,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem .fitemtitle {
     font-weight: bold;
 }
+body#page-question-type-pmatch #region-main div.fitem.femptylabel {
+    padding: 0;
+}
+body#page-question-type-pmatch #region-main div.fitem.femptylabel .fitemtitle {
+    padding: 0;
+    margin: 0;
+}
+body#page-question-type-pmatch #region-main div.fitem.femptylabel .fstatic {
+    margin: 0;
+}
+body#page-question-type-pmatch #region-main #fgroup_id_updatebuttonar {
+    background: none;
+    border: none;
+}
 
 /* Middle */
+body#page-question-type-pmatch div[id^=fitem_id_][id*=answer_],
 body#page-question-type-pmatch div[id^=fitem_id_][id*=fraction_],
+body#page-question-type-pmatch div.fitem.fitem_matchedresponses,
 body#page-question-type-pmatch div.fitem.fitem_accuracy,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
     background: #EEE;
@@ -58,9 +75,6 @@ body#page-question-type-pmatch div[id^=fitem_id_][id*=otherfeedback] {
 }
 body#page-question-type-pmatch #fitem_id_addanswers {
     margin-bottom: 2em;
-}
-body#page-question-type-pmatch #fitem_id_answer_0 {
-    margin-top: 1em;
 }
 
 /* Styles for the question-testing interface. */

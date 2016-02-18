@@ -156,8 +156,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
 
         $question = $this->create_default_question();
 
-        $path = "fixtures/myfirstquestion_responses.csv";
-        list($responses, $problems) = $this->load_responses($question, $path);
+        list($responses, $problems) = $this->load_responses($question);
 
         //  Add responses to an empty DB table and get feedback.
         $feedback = \qtype_pmatch\test_responses::add_responses($responses);
