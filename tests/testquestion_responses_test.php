@@ -163,8 +163,8 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 13);
-        $this->assertEquals($feedback->saved, 13);
+        $this->assertEquals(count($dbresponses), 15);
+        $this->assertEquals($feedback->saved, 15);
         $this->assertEquals(count($feedback->duplicates), 0);
 
         // Test for duplicates by adding responses for the second time.
@@ -172,9 +172,9 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 13);
+        $this->assertEquals(count($dbresponses), 15);
         $this->assertEquals($feedback->saved, 0);
-        $this->assertEquals(count($feedback->duplicates), 13);
+        $this->assertEquals(count($feedback->duplicates), 15);
 
         // Add the same data for a different question.
         $response = $responses[0];
@@ -184,7 +184,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 14);
+        $this->assertEquals(count($dbresponses), 16);
         $this->assertEquals($feedback->saved, 1);
         $this->assertEquals(count($feedback->duplicates), 0);
     }
