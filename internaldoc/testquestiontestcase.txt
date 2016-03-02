@@ -1,0 +1,85 @@
+This file contains a sequence of test cases for most pattern match test question features.
+
+Each section has a unique (within this test case) three letter code and the
+steps are numbered so that the location where a failure occurs can be reported.
+
+Steps are shown in the following format:
+
+XXX01 / U.S1 [change]
+  Do something
+  - Check something
+
+The unique step number is followed by the user that you should be logged
+in as for that step. If the user changes from the previous step, the word
+[Change] will be noted.
+
+Some steps don't have specific items to check. In that case, the check
+'passes' if there are no errors or warnings while completing the task.
+
+
+Initial set-up
+==============
+
+The test assumes you have the pattern match question type installed and configured.
+Ideal you will already have questions created.
+
+It is probably worth having a test course with a 'Pattern Match' question category
+set up in its question bank.
+
+
+Configuration
+=============
+
+Testing a question
+==================
+TST01 / author
+Using the "Test this question" feature
+To access the "test this question" feature:
+access the appropriate test quiz 
+    Open
+        a question in preview
+    Click 
+        the "test this question" link in the top right hand corner. 
+    Upload
+        responses as described in the Upload responses section
+    Select
+        the checkbox next to each response you wish to grade or click "select all".
+    Click
+        "Test selected responses"
+    Verify
+        a mark is added or updated in the "Actual mark" column of each selected grade 
+    
+Uploading Responses
+==================
+UPL01 / author
+    Follow
+        the procedure for "Using the test this question" feature 
+    Click
+        "Upload responses"
+    Create
+        a file containing test responses to upload containing
+            a header row containing mark,response
+            a series of rows with the human graded mark (expected mark) and response
+            separated by a comma e.g. 0,the mass of the oil is less than the water
+    Drag the test file into the upload field
+    Click
+        "Upload the question using these repsonses"
+
+Deleting a response
+==================
+DEL01 / author
+Using the "Test this question" feature
+To access the "test this question" feature:
+access the appropriate test quiz 
+    Open
+        a question in preview
+    Click 
+        the "test this question" link in the top right hand corner. 
+    Upload
+        responses as described in the Upload responses section
+    Select
+        the checkbox next to each response you wish to delete or click "select all".
+    Click
+        "Test selected responses"
+    Verify
+        the seleceted responses have been deleted.

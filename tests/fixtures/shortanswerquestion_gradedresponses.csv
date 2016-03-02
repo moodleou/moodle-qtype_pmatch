@@ -1,0 +1,20 @@
+mark,response,computer grade
+1,Tom Dick or Harry,1
+0,Tom,1
+1,Dick,1
+1,Harry,1
+1,Tom was janes companion,1
+1,John,0
+0,Adam,0
+0,Felicity,0
+0,€£¥©®™±≠≤≥÷×∞µαβπΩ∑,0
+1,!"£$%^&*()_+-=[]{}:@~;'#./<?>`¬¦,0
+,,
+0,Tomcat,1
+1,Richard,0
+,Harriet,0
+0,Harley,0
+1,Gemma,
+,Gatlin,1
+0,Kevin,
+,Johnny,0

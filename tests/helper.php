@@ -31,7 +31,12 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2013 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_pmatch_test_helper {
+class qtype_pmatch_test_helper extends question_test_helper {
+
+    public function get_test_questions() {
+        return array('listen');
+    }
+
     /**
      * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
      * correct answer 'Dick' and defaultmark 1.
@@ -68,5 +73,53 @@ class qtype_pmatch_test_helper {
         return $pm;
     }
 
+    /**
+     * @return stdClass data to create a pattern match question.
+     */
+    public function get_pmatch_question_form_data_listen() {
+        global $CFG, $USER;
 
+        $fromform = new stdClass();
+
+        $fromform->name = 'My first pattern match question';
+        $fromform->questiontext = array('text' => 'Listen, translate and write.', 'format' => FORMAT_HTML);
+        $fromform->defaultmark = 1.0;
+        $fromform->generalfeedback = array('text' => 'This is the simplest aromatic molecule.', 'format' => FORMAT_HTML);
+        $fromform->allowsubscript = 0;
+        $fromform->allowsuperscript = 0;
+         $fromform->synonymsdata = array(
+            array(
+                'word' => 'any',
+                'synonyms' => 'testing\|one\|two\|three\|four',
+            ),
+        );
+
+        $fromform->extenddictionary = '';
+        $fromform->converttospace = ',;:';
+        $fromform->answer = array('match (testing one two three four)');
+        $fromform->fraction = array('1');
+        $fromform->feedback = array(
+                array('text' => 'Well done!', 'format' => FORMAT_HTML),
+        );
+
+        $fromform->otherfeedback = array('text' => 'Sorry, no.', 'format' => FORMAT_HTML);
+        $fromform->penalty = 0.3333333;
+
+        $fromform->hint = array(
+            array(
+                'text' => 'Please try again.',
+                'format' => FORMAT_HTML,
+            ),
+            array(
+                'text' => 'Use a calculator if necessary.',
+                'format' => FORMAT_HTML,
+            ),
+        );
+
+        $fromform->hintshownumcorrect = array(1, 1);
+        $fromform->hintclearwrong = array(0, 1);
+        $fromform->hintoptions = array(0, 1);
+
+        return $fromform;
+    }
 }

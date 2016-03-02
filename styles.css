@@ -58,9 +58,24 @@ body#page-question-type-pmatch #fitem_id_answer_0 {
     margin-top: 1em;
 }
 
-.qtype_pmatch-selftest-bad {
+.qtype_pmatch-selftest-missed-negative {
     font-weight: bold;
     color: #f00;
+}
+
+.qtype_pmatch-selftest-null {
+    font-weight: bold;
+    color: #B38686;
+}
+
+.qtype_pmatch-selftest-missed-positive {
+    font-weight: bold;
+    color: #00f;
+}
+
+.que.pmatch .formulation .questiontestslink {
+    float: right;
+    font-size: 0.7em;
 }
 
 .que.pmatch .formulation .questiontestslink {

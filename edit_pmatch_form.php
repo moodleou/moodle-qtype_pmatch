@@ -71,9 +71,15 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD){
         parent::add_per_answer_fields($mform, $label, $gradeoptions);
 
+        $results = '';
+        if($hasresponses = \qtype_pmatch\test_responses::has_responses($this->question)) {
+            $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->question);
+            $results = html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts));
+        }
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
                                                 get_string('correctanswers', 'qtype_pmatch'),
-                                                get_string('filloutoneanswer', 'qtype_pmatch'));
+                                                get_string('filloutoneanswer', 'qtype_pmatch') .
+                                                $results);
         $mform->insertElementBefore($answersinstruct, 'answer[0]');
 
         $this->add_other_answer_fields($mform);

@@ -32,140 +32,56 @@
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/formslib.php');
-
-
-/**
- * The upload form.
- *
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_pmatch_test_form extends moodleform {
-    protected function definition() {
-        $this->_form->addElement('header', 'header', get_string('testquestionformheader', 'qtype_pmatch'));
-
-        $this->_form->addElement('static', 'help', '', get_string('testquestionforminfo', 'qtype_pmatch'));
-
-        $this->_form->addElement('filepicker', 'responsesfile', get_string('testquestionformuploadlabel', 'qtype_pmatch'));
-        $this->_form->addRule('responsesfile', null, 'required', null, 'client');
-
-        $this->_form->addElement('hidden', 'id', 0);
-        $this->_form->setType('id', PARAM_INT);
-
-        $this->_form->addElement('submit', 'submitbutton', get_string('testquestionformsubmit', 'qtype_pmatch'));
-    }
-}
-
+require_once($CFG->dirroot . '/question/type/pmatch/classes/output/testquestion_renderer.php');
 
 $questionid = required_param('id', PARAM_INT);
-
 $questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUST_EXIST);
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
 }
-
 require_login();
-question_require_capability_on($questiondata, 'view');
-$canedit = question_has_capability_on($questiondata, 'edit');
-
 $question = question_bank::load_question($questionid);
 $context = context::instance_by_id($question->contextid);
 
+$url = new moodle_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
+$PAGE->set_pagelayout('popup');
 $PAGE->set_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
 $PAGE->set_context($context);
+
+// Check permissions after initialising $PAGE so messages (not exceptions) can be rendered.
+$canview = question_has_capability_on($questiondata, 'view');
+try {
+    question_require_capability_on($questiondata, 'view');
+} catch (moodle_exception $e) {
+    if (defined('BEHAT_SITE_RUNNING')) {
+            echo $OUTPUT->header();
+            echo get_string('nopermissions', 'error', 'view');
+            echo $OUTPUT->footer();
+            exit;
+    } else {
+        throw $e;
+    }
+}
+
 $PAGE->set_title(get_string('testquestionformtitle', 'qtype_pmatch'));
 $PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
-$form = new qtype_pmatch_test_form($PAGE->url);
-$form->set_data(array('id' => $questionid));
+$output = $PAGE->get_renderer('qtype_pmatch', 'testquestion');
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
-echo '<p>' . $PAGE->get_renderer('core_question')->question_preview_link(
-        $question->id, $context, true) . '</p>';
+// Display headers.
+echo $output->header();
+echo $output->heading(get_string('testquestionformtitle', 'qtype_pmatch') . ': ' .
+        get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
 
-if ($fromform = $form->get_data()) {
-    $filename = $form->get_new_filename('responsesfile');
+$output->init($question);
+echo $output->render_display_options();
 
-    make_temp_directory('questionimport');
-    $responsefile = "{$CFG->tempdir}/questionimport/{$filename}";
-    if (!$result = $form->save_file('responsesfile', $responsefile, true)) {
-        throw new moodle_exception('uploadproblem');
-    }
+// Display link to upload  responses.
+echo html_writer::tag('p', html_writer::link(new moodle_url('/question/type/pmatch/uploadresponses.php',
+                        array('id' => $questionid)), 'Upload responses'));
 
-    $handle = fopen($responsefile, 'r');
-    if (!$handle) {
-        throw new coding_exception('Could not open CSV file.');
-    }
+echo html_writer::tag('p', get_string('showingresponsesforquestion', 'qtype_pmatch', $question->name));
+echo $output->render_grade_summary();
+echo $output->render_table();
 
-    $alldata = array();
-    $problems = array();
-    $row = 0;
-    while (($data = fgetcsv($handle)) !== false) {
-        $row += 1;
-        if ($row == 1) {
-            continue; // Skipping header row or comment.
-        }
-
-        if (count($data) != 2 || !is_numeric($data[0])) {
-            $problems[] = 'Each row should contain exactly two items, ' .
-                    'a numerical mark and a response. Row ' . $row . ' contains ' .
-                    count($data) . ' items.';
-        }
-
-        if (count($data) >= 2 && fix_utf8($data[1]) !== $data[1]) {
-            $problems[] = 'The response in row ' . $row .
-                    ' contains unrecognised special characters. The input must be valid UTF-8.';
-        }
-
-        $alldata[$row] = $data;
-    }
-    fclose($handle);
-    $rowcount = $row;
-
-    if ($problems) {
-        throw new coding_exception(html_writer::alist($problems));
-    }
-
-    $table = new html_table();
-    $table->head = array(
-            get_string('row', 'qtype_pmatch'),
-            get_string('testquestionexpectedmark', 'qtype_pmatch'),
-            get_string('testquestionactualmark', 'qtype_pmatch'),
-            get_string('testquestionresponse', 'qtype_pmatch'));
-    $counts = new stdClass();
-    $counts->correct = 0;
-    $counts->incorrectlymarkedright = 0;
-    $counts->incorrectlymarkedwrong = 0;
-
-    $pbar = new progress_bar('testingquestion', 500, true);
-    foreach ($alldata as $row => $data) {
-        \core_php_time_limit::raise(60);
-
-        list($expectedmark, $response) = $data;
-        list($actualmark, $notused) = $question->grade_response(array('answer' => $response));
-
-        $table->data[] = array($row, $expectedmark, 0 + $actualmark, s($response));
-        $table->rowclasses[] = 'qtype_pmatch-selftest-' . ($expectedmark == $actualmark ? 'ok' : 'bad');
-
-        if ($expectedmark == $actualmark) {
-            $counts->correct += 1;
-        } else if ($expectedmark < $actualmark) {
-            $counts->incorrectlymarkedright += 1;
-        } else {
-            $counts->incorrectlymarkedwrong += 1;
-        }
-
-        $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
-                array('row' => $row, 'total' => $rowcount)));
-    }
-
-    echo $OUTPUT->heading(get_string('testquestionheader', 'qtype_pmatch', s($filename)));
-    echo html_writer::table($table);
-    echo '<p>' . get_string('testquestionresultssummary','qtype_pmatch', $counts) . '</p>';
-
-    echo $OUTPUT->heading(get_string('testquestionuploadanother', 'qtype_pmatch'));
-}
-
-$form->display();
-echo $OUTPUT->footer();
+echo $output->footer();
