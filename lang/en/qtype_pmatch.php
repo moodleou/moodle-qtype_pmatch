@@ -79,6 +79,8 @@ $string['processingxofy'] = 'Processing response {$a->row} of {$a->total}: {$a->
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['ruleaccuracylabel'] = 'Accuracy';
 $string['ruleaccuracy'] = 'Pos = {$a->positive} Neg = {$a->negative}';
+$string['rulecreationasst'] = 'Show/hide rule creation assistant';
+$string['rulecreationtoomanyterms'] = 'Sorry too many terms.';
 $string['row'] = 'Row';
 $string['savedxresponses'] = 'Saved {$a} responses';
 $string['showcoverage'] = 'Show coverage';

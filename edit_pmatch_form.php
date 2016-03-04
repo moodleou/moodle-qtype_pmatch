@@ -112,8 +112,22 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
         $count = 0;
         foreach ($rules as $aid => $rule) {
+            // Avoid adding anything to the 'Any other answer' section.
+            if (!$mform->elementExists('fraction[' . $count . ']')) {
+                continue;
+            }
+
+            // Add the Rule accuracy section.
+            $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+            $labelhtml = html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitemtitle');
+            $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
+                    'felement fselect', array('id' => 'fitem_accuracy_' . $count));
+            $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
+            $answersaccuracy = $mform->createElement('html', $html);
+            $mform->insertElementBefore(clone ($answersaccuracy), 'answer[' . $count . ']');
+
+            // Add the Show coverage section - for rules that have been marked.
             if (array_key_exists($rule->id, $matches['ruleidstoresponseids'])) {
-                // Add the Show coverage section.
                 $items = array();
                 foreach ($matches['ruleidstoresponseids'][$rule->id] as $responseid) {
                     if ($responses[$responseid]->expectedfraction == $responses[$responseid]->gradedfraction) {
@@ -138,25 +152,13 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         }
                     }
                 }
-                if ($mform->elementExists('fraction[' . $count . ']')) {
-                    $reponseslist = print_collapsible_region_start('', 'matchedresponses_' . $count,
-                            get_string('showcoverage', 'qtype_pmatch'), '', true, true);
-                    $reponseslist .= html_writer::alist($items);
-                    $reponseslist .= print_collapsible_region_end(true);
-                    $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
-                    $matchedresponses = $mform->createElement('html', $html);
-                    $mform->insertElementBefore(clone ($matchedresponses), 'fraction[' . $count . ']');
-                }
-            }
-            // Add the Rule accuracy section - but do not add to the 'Any other answer' section.
-            if ($mform->elementExists('fraction[' . $count . ']')) {
-                $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
-                $labelhtml = html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitemtitle');
-                $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
-                        'felement fselect', array('id' => 'fitem_accuracy_' . $count));
-                $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
-                $answersaccuracy = $mform->createElement('html', $html);
-                $mform->insertElementBefore(clone ($answersaccuracy), 'answer[' . $count . ']');
+                $reponseslist = print_collapsible_region_start('', 'matchedresponses_' . $count,
+                        get_string('showcoverage', 'qtype_pmatch'), '', true, true);
+                $reponseslist .= html_writer::alist($items);
+                $reponseslist .= print_collapsible_region_end(true);
+                $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
+                $matchedresponses = $mform->createElement('html', $html);
+                $mform->insertElementBefore(clone ($matchedresponses), 'fraction[' . $count . ']');
             }
             $count++;
         }
@@ -241,6 +243,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $repeated[] = $mform->createElement('static', 'topborder', '', ' ');
         $repeated[] = $mform->createElement('textarea', 'answer', $label,
                             array('rows' => '8', 'cols' => '60', 'class' => 'textareamonospace'));
+        if ($this->question->qtype == 'pmatch') {
+            $title = $this->get_rc_title();
+            $content = $this->get_rc_content();
+            $repeated[] = $mform->createElement('static', 'rule-creator-wrapper', $title, $content);
+        }
         $repeated[] = $mform->createElement('select', 'fraction',
                                                                 get_string('grade'), $gradeoptions);
         $repeated[] = $mform->createElement('editor', 'feedback',
@@ -250,6 +257,71 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $repeatedoptions['fraction']['default'] = 0;
         $answersoption = 'answers';
         return $repeated;
+    }
+
+    /**
+     * Gets the rule creation assistant link.
+     * @return string
+     */
+    protected function get_rc_title() {
+        global $OUTPUT;
+        return html_writer::link('#', get_string('rulecreationasst', 'qtype_pmatch') . ' ' .
+                $OUTPUT->pix_icon('t/collapsed', ''), array('class' => 'rule-creator-btn'));
+    }
+
+    /**
+     * Gets the rule creation assistant content.
+     * This could be added as a template at a later stage.
+     * @return string
+     */
+    protected function get_rc_content() {
+        $html = html_writer::start_div('rule-creator rc-hidden');
+        $html .=  <<<EOT
+<div>
+    <div class="rc-notice"></div>
+</div>
+<div>
+    <label for="term">Term</label>
+    <input type="text" name="term" value="">
+    <input type="submit" name="termadd" value="Add">
+    <input type="submit" name="termexclude" value="Exclude">
+    <input type="submit" name="termor" value="Or">
+</div>
+<div>
+    <label for="template">Template</label>
+    <input type="text" name="template" value="">
+    <input type="submit" name="templateadd" value="Add">
+    <input type="submit" name="templateexclude" value="Exclude">
+</div>
+<div>
+    <label for="precedesadd">Precedes</label>
+    <select name="precedes1">
+        <option value="0">Choose token</option>
+    </select>
+    <select name="precedes2">
+        <option value="0">Choose token</option>
+    </select>
+    <input type="submit" name="precedesadd" value="Add">
+</div>
+<div>
+    <label for="cprecedesadd">Closely precedes</label>
+    <select name="cprecedes1">
+        <option value="0">Choose token</option>
+    </select>
+    <select name="cprecedes2">
+        <option value="0">Choose token</option>
+    </select>
+    <input type="submit" name="cprecedesadd" value="Add">
+</div>
+<div>
+    <div>Rule</div>
+    <div class="rc-result"></div>
+    <input type="submit" name="add" value="Add to answer">
+    <input type="submit" name="clear" value="Reset rule">
+</div>
+EOT;
+        $html .= html_writer::end_div();
+        return $html;
     }
 
     protected function data_preprocessing_other_answer($question) {
@@ -299,6 +371,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $key++;
             }
         }
+        $this->js_call();
         return $question;
     }
 
@@ -444,5 +517,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     public function qtype() {
         return 'pmatch';
+    }
+
+    public function js_call() {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
+        $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
     }
 }

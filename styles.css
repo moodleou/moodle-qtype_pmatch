@@ -15,7 +15,7 @@
 }
 
 /* Top */
-body#page-question-type-pmatch div.fitem.femptylabel,
+body#page-question-type-pmatch #id_answerhdr div.fitem.femptylabel,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem {
     background: #EEE;
     margin-top: 0;
@@ -51,6 +51,7 @@ body#page-question-type-pmatch div[id^=fitem_id_][id*=answer_],
 body#page-question-type-pmatch div[id^=fitem_id_][id*=fraction_],
 body#page-question-type-pmatch div.fitem.fitem_matchedresponses,
 body#page-question-type-pmatch div.fitem.fitem_accuracy,
+body#page-question-type-pmatch div.fitem.rcw,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
     background: #EEE;
     margin-bottom: 0;
@@ -101,4 +102,10 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 .que.pmatch .formulation .questiontestslink {
     float: right;
     font-size: 0.7em;
+}
+#page-question-type-pmatch .rule-creator-wrapper input[type=submit] {
+    margin: 0 0 10px 5px;
+}
+#page-question-type-pmatch .rc-hidden {
+    display: none;
 }
