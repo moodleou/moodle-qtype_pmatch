@@ -40,3 +40,8 @@ Feature: Grade a test response for a pattern match question
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
     # Confirm the response
     And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
+
+    # Now test changing the human mark
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
+    When I click on "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c4']//a" "xpath_element"
+    Then I should see "0" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"

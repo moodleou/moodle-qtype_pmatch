@@ -14,34 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * Class to store the options for a {@link qtype_pmatch_testquestion_report}.
+ * Class to store options for {@link \qtype_pmatch\testquestion_controller}.
+ * Design references are:
+ * mod_quiz_attempts_report_options in mod/quiz/report/attemptsreport_options.php
+ * quiz_overview_options in mod/quiz/report/overview/overview_options.php
  *
  * @package   qtype_pmatch
  * @copyright 2015 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/formslib.php');
-
-/**
- * Class to store the options for a {@link qtype_pmatch_testresponses_report}.
- * Design references are:
- * mod_quiz_attempts_report_options in mod/quiz/report/attemptsreport_options.php
- * quiz_overview_options in mod/quiz/report/overview/overview_options.php
- *
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_pmatch_testresponses_options {
+class testquestion_options {
 
     /** @var object the settings for the question we are reporting on. */
     public $question;
-
-    /** @var object the page context . */
-    protected $context;
 
     /**
      * @var array form field name => corresponding type_pmatch_testresponses:: state constant.
@@ -61,7 +51,7 @@ class qtype_pmatch_testresponses_options {
             \qtype_pmatch\test_response::MISSED_NEGATIVE, \qtype_pmatch\test_response::UNGRADED);
 
     /** @var int Number of attempts to show per page. */
-    public $pagesize = qtype_pmatch_testquestion_renderer::DEFAULT_PAGE_SIZE;
+    public $pagesize = \qtype_pmatch\testquestion_controller::DEFAULT_PAGE_SIZE;
 
     /** @var string whether the data should be downloaded in some format, or '' to display it. */
     public $download = '';
@@ -74,38 +64,32 @@ class qtype_pmatch_testresponses_options {
      * @param object $question the settings for the question being reported on.
      * @param object $context the context object for the question being reported on.
      */
-    public function __construct($question, $context) {
+    public function __construct($question) {
         $this->question = $question;
-        $this->context  = $context;
     }
 
     protected function get_url_params() {
         $params = array();
         $params['id'] = $this->question->id;
-
         if ($this->states) {
             $params['states'] = implode('-', $this->states);
         }
-
         return $params;
     }
 
     public function get_initial_form_data() {
-        $toform = new stdClass();
+        $toform = new \stdClass();
         $toform->pagesize   = $this->pagesize;
-
         if ($this->states) {
             foreach (self::$statefields as $field => $state) {
                 $toform->$field = in_array($state, $this->states);
             }
         }
-
         return $toform;
     }
 
     public function setup_from_form_data($fromform) {
         $this->pagesize   = $fromform->pagesize;
-
         $this->states = array();
         foreach (self::$statefields as $field => $state) {
             if (!empty($fromform->$field)) {
@@ -115,8 +99,7 @@ class qtype_pmatch_testresponses_options {
     }
 
     public function setup_from_params() {
-        $this->pagesize   = optional_param('pagesize', $this->pagesize, PARAM_INT);
-
+        $this->pagesize = optional_param('pagesize', $this->pagesize, PARAM_INT);
         $states = optional_param('states', '', PARAM_ALPHAEXT);
         if (!empty($states)) {
             $this->states = explode('-', $states);
@@ -128,7 +111,7 @@ class qtype_pmatch_testresponses_options {
      * @return moodle_url the URL.
      */
     public function get_url() {
-        return new moodle_url('/question/type/pmatch/testquestion.php', $this->get_url_params());
+        return new \moodle_url('/question/type/pmatch/testquestion.php', $this->get_url_params());
     }
 
     /**
@@ -173,7 +156,6 @@ class qtype_pmatch_testresponses_options {
      * Check the settings, and remove any 'impossible' combinations.
      */
     public function resolve_dependencies() {
-
         $cleanstates = array();
         foreach (self::$statefields as $state) {
             if (in_array($state, $this->states)) {
@@ -186,11 +168,9 @@ class qtype_pmatch_testresponses_options {
             // required in the SQL, so clear the array.
             $this->states = null;
         }
-
         if ($this->pagesize < 1) {
-            $this->pagesize = qtype_pmatch_testquestion_renderer::DEFAULT_PAGE_SIZE;
+            $this->pagesize = \qtype_pmatch\testquestion_controller::DEFAULT_PAGE_SIZE;
         }
-
         // We only want to show the checkbox to delete attempts
         // if the user has permissions and if the report mode is showing attempts.
         $this->checkboxcolumn = question_require_capability_on($this->question, 'edit');

@@ -21,236 +21,63 @@
  * @copyright  2015 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/lib/questionlib.php');
-require_once($CFG->dirroot . '/question/type/pmatch/classes/testquestion_options.php');
-require_once($CFG->dirroot . '/question/type/pmatch/classes/testquestion_form.php');
-require_once($CFG->dirroot . '/question/type/pmatch/classes/testquestion_table.php');
 
 class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
 
-    /** @var int default page size for reports. */
-    const DEFAULT_PAGE_SIZE = 50;
-
-    /** @var object the settings for the question we are reporting on. */
-    public $question;
-
-    /** @var object the testresponses handler. */
-    protected $testresponses;
-
-    /** @var object the page context . */
-    protected $context;
-
-    /** @var qtype_pmatch_testquestion_form The form to use. */
-    protected $form;
-
-    /** @var qtype_pmatch_testresponses_options The options to use. */
-    protected $options;
-
-    public function init($question) {
-        $this->question = $question;
-        $this->testresponses = \qtype_pmatch\test_responses::create_for_question($question);
-        $this->context = $this->page->context;
-        $pagesize = optional_param('pagesize', self::DEFAULT_PAGE_SIZE, PARAM_INT);
-        $page = optional_param('page', 0, PARAM_INT);
-
-        // Assemble the options requried to reload this page.
-        $optparams = array('page');
-        foreach ($optparams as $param) {
-            if ($$param) {
-                $this->viewoptions[$param] = $$param;
-            }
-        }
-        if ($pagesize != self::DEFAULT_PAGE_SIZE) {
-            $this->viewoptions['pagesize'] = $pagesize;
-        }
-
-        $this->form = new qtype_pmatch_testquestion_form($this->get_base_url(),
-                array('question' => $question, 'context' => $this->context));
-
-        $this->options = new qtype_pmatch_testresponses_options($this->question, $this->context);
-
-        if ($fromform = $this->form->get_data()) {
-            $this->options->process_settings_from_form($fromform);
-
-        } else {
-            $this->options->process_settings_from_params();
-        }
-
-        $this->form->set_data($this->options->get_initial_form_data());
-
-        $this->process_actions($this->options->get_url());
+    public function get_display_options_form($controller) {
+        return $controller->handle_display_options_form();
     }
 
-    public function render_display_options () {
-        // Print the display options.
-        $this->form->display();
+    public function get_responses_table_form($controller) {
+        return $controller->handle_responses_table_form();
     }
 
-    public function render_table () {
-        $table = new qtype_pmatch_testquestion_table($this->question, $this->context,
-                $this->testresponses, $this->options, $this->get_base_url());
+    public function get_uploadresponses_link($question) {
+        return html_writer::tag('p', html_writer::link(new moodle_url('/question/type/pmatch/uploadresponses.php',
+                        array('id' => $question->id)), 'Upload responses'));
+    }
 
-        // Start output.
-
-        // Print information on the number of existing responses.
-        // Use mod/quiz/report/overview/report.php::display() as reference.
-
-        // Print the display options.
-        // Use mod/quiz/report/overview/report.php::display() as reference.
-
-        // Construct the SQL.
-        list($fields, $from, $where, $params) = $table->base_sql();
-
-        $table->set_count_sql("SELECT COUNT(1) FROM $from WHERE $where", $params);
-        $table->set_sql($fields, $from, $where, $params);
-
-        // Output the regrade buttons.
-        // Use mod/quiz/report/overview/report.php::display() as reference.
-
-        // Define table columns.
-        $columns = array();
-        $headers = array();
-
-        if (!$table->is_downloading() && $this->options->checkboxcolumn) {
-            $columns[] = 'checkbox';
-            $headers[] = null;
-        }
-
-        $this->add_columns($table, $columns, $headers);
-
-        $this->set_up_table_columns($table, $columns, $headers, $this->get_base_url(), $this->options, false);
-        $table->set_attribute('class', 'generaltable generalbox grades');
-
-        $table->out($this->options->pagesize, false);
+    public function get_responses_heading($question) {
+        return html_writer::tag('h3', get_string('showingresponsesforquestion', 'qtype_pmatch', $question->name));
     }
 
     /**
-     * Add all the user-related columns to the $columns and $headers arrays.
-     * @param table_sql $table the table being constructed.
-     * @param array $columns the list of columns. Added to.
-     * @param array $headers the columns headings. Added to.
+     * This looks like (Pos=12/12 Neg=1/1 Unm=180 Acc=100%).
+     * @param object $question
      */
-    protected function add_columns($table, &$columns, &$headers) {
-        if (!$table->is_downloading()) {
-            $columns[] = 'id';
-            $headers[] = get_string('testquestionidlabel', 'qtype_pmatch');
-        }
-
-        if (!$table->is_downloading()) {
-            $columns[] = 'rules';
-            $headers[] = get_string('testquestionruleslabel', 'qtype_pmatch');
-        }
-
-        if (!$table->is_downloading()) {
-            $columns[] = 'gradedfraction';
-            $headers[] = get_string('testquestionactualmark', 'qtype_pmatch');
-        }
-
-        if (!$table->is_downloading()) {
-            $columns[] = 'expectedfraction';
-            $headers[] = get_string('testquestionexpectedfraction', 'qtype_pmatch');
-
-            $columns[] = 'response';
-            $headers[] = get_string('testquestionresponse', 'qtype_pmatch');
-        }
+    public function get_grade_summary($question) {
+        $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($question);
+        return html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
+                array('id' => 'testquestion_gradesummary'));
     }
 
     /**
-     * Set the display options for the user-related columns in the table.
-     * @param table_sql $table the table being constructed.
+     * Output any submit buttons required by the attempts (responses table) form.
+     * @param object $question
      */
-    protected function configure_columns($table) {
-        $table->column_suppress('id');
-
-        $table->column_class('rules', 'bold');
-        $table->column_class('gradedfraction', 'bold');
-        $table->column_class('expectedfraction', 'bold');
-        $table->column_class('response', 'bold');
-    }
-
-    /**
-     * Set up the table.
-     * @param table_sql $table the table being constructed.
-     * @param array $columns the list of columns.
-     * @param array $headers the columns headings.
-     * @param moodle_url $reporturl the URL of this report.
-     * @param mod_quiz_attempts_report_options $options the display options.
-     * @param bool $collapsible whether to allow columns in the report to be collapsed.
-     */
-    protected function set_up_table_columns($table, $columns, $headers, $reporturl,
-            qtype_pmatch_testresponses_options $options, $collapsible) {
-        $table->define_columns($columns);
-        $table->define_headers($headers);
-        $table->sortable(true, 'uniqueid');
-
-        $table->define_baseurl($options->get_url());
-
-        $this->configure_columns($table);
-
-        $table->column_class('response', 'bold');
-        $table->no_sorting('rules');
-
-        $table->set_attribute('id', 'responses');
-
-        $table->collapsible($collapsible);
-    }
-
-    /**
-     * Get the base URL for this report.
-     * @return moodle_url the URL.
-     */
-    protected function get_base_url() {
-        return new moodle_url('/question/type/pmatch/testquestion.php',
-                array('id' => $this->question->id));
-    }
-
-    /**
-     * Process the results of the form.
-     * @return void.
-     */
-    protected function process_actions($redirecturl) {
-        if (optional_param('test', 0, PARAM_BOOL) && confirm_sesskey()) {
-            if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
-                $this->render_grading_responses($responseids);
-                \qtype_pmatch\test_responses::save_rule_matches($this->question);
-                echo $this->output->continue_button($redirecturl);
-                echo $this->footer();
-                exit;
-            }
+    public function get_table_bottom_buttons($question) {
+        $html = '';
+        if (question_has_capability_on($question, 'edit')) {
+            $html .= html_writer::start_div('', array('id' => 'commands'));
+            $html .= '<a href="javascript:select_all_in(\'DIV\', null, \'tablecontainer\');">' .
+                    get_string('selectall', 'quiz') . '</a> / ';
+            $html .= '<a href="javascript:deselect_all_in(\'DIV\', null, \'tablecontainer\');">' .
+                    get_string('selectnone', 'quiz') . '</a> &nbsp;&nbsp;';
+            // Test responses.
+            $html .= '<input type="submit" id="testresponsesbutton" name="test" value="' .
+                    get_string('testquestionformtestsubmit', 'qtype_pmatch') . '"/> ';
+            // Delete responses.
+            $html .= '<input type="submit" id="deleteresponsesbutton" name="delete" value="' .
+                    get_string('testquestionformdeletesubmit', 'qtype_pmatch') . '"/>';
+            $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
+                    array('message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')));
+            $html .= html_writer::end_div();
+            // Add ajax updater.
+            $this->page->requires->js_call_amd('qtype_pmatch/updater', 'init');
+            $this->page->requires->string_for_js('testquestionresultssummary', 'qtype_pmatch');
         }
-
-        if (optional_param('delete', 0, PARAM_BOOL) && confirm_sesskey()) {
-            if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
-                question_require_capability_on($this->question, 'edit');
-                \qtype_pmatch\test_responses::delete_responses_by_ids($responseids);
-                echo get_string('testquestiondeletedresponses', 'qtype_pmatch');
-                echo $this->output->continue_button($redirecturl);
-                echo $this->footer();
-                exit;
-            }
-        }
-    }
-
-    protected function render_grading_responses($responseids) {
-        $responses = \qtype_pmatch\test_responses::get_responses_by_ids($responseids);
-        $pbar = new progress_bar('testingquestion', 500, true);
-        $row = 0;
-        $rowcount = count($responseids);
-        // Release the session, so the user can do other things while this runs.
-        \core\session\manager::write_close();
-
-        foreach ($responses as $response) {
-            \core_php_time_limit::raise(60);
-            $row++;
-            \qtype_pmatch\test_responses::grade_response($response, $this->question);
-            $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
-                    array('row' => $row, 'total' => $rowcount, 'response' => $response->response)));
-        }
-    }
-
-    public function render_grade_summary($responses = array()) {
-        $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->question);
-        return html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts));
+        return $html;
     }
 }

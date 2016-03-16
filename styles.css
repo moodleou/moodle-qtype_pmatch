@@ -109,3 +109,18 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 #page-question-type-pmatch .rc-hidden {
     display: none;
 }
+/* The missing style for the successful progress bar colour.
+  This is due to theme/base/style/core.css not having this rule (though it has
+  .progress-stripped etc.) Note theme/bootstrapbase/ has the full css, but our
+  themes (ou, osep) are not based on it. */
+body#page-question-type-pmatch-testquestion .progress-success .bar,
+body#page-question-type-pmatch-testquestion .progress .bar-success {
+    background-color: #5eb95e;
+    background-image: -moz-linear-gradient(top, #62c462, #57a957);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#57a957));
+    background-image: -webkit-linear-gradient(top, #62c462, #57a957);
+    background-image: -o-linear-gradient(top, #62c462, #57a957);
+    background-image: linear-gradient(to bottom, #62c462, #57a957);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
+}

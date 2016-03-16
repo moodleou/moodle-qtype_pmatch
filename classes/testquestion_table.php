@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/tablelib.php');
+
 /**
  * class for the table used by the test question feature.
  *
@@ -21,21 +27,7 @@
  * @copyright 2015 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir.'/tablelib.php');
-
-/**
- * class for the table used by the test question feature.
- *
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_pmatch_testquestion_table extends table_sql {
-    /** @var moodle_url the URL of this report. */
-    protected $reporturl;
+class testquestion_table extends \table_sql {
 
     /** @var object the settings for the question we are reporting on. */
     protected $question;
@@ -52,17 +44,14 @@ class qtype_pmatch_testquestion_table extends table_sql {
     /**
      * Constructor
      * @param object $question
-     * @param context $context
-     * @param $options
-     * @param moodle_url $reporturl
+     * @param \qtype_pmatch\test_responses $testresponses
+     * @param \qtype_pmatch\testquestion_options $options
      */
-    public function __construct($question, $context, $testresponses, qtype_pmatch_testresponses_options $options, $reporturl) {
+    public function __construct($question, $testresponses, \qtype_pmatch\testquestion_options $options) {
         $this->uniqueid = 'qtype-pmatch-testquestion';
         parent::__construct($this->uniqueid);
         $this->question = $question;
-        $this->context = $context;
         $this->testresponses = $testresponses;
-        $this->reporturl = $reporturl;
         $this->options = $options;
         $this->includecheckboxes = $options->checkboxcolumn;
     }
@@ -150,7 +139,6 @@ class qtype_pmatch_testquestion_table extends table_sql {
                 if (!array_key_exists($state, $statesqllist)) {
                     continue;
                 }
-
                 if ($count) {
                     $statesql .= ' OR ';
                 }
@@ -158,7 +146,6 @@ class qtype_pmatch_testquestion_table extends table_sql {
                 $count++;
             }
             $statesql .= ')';
-
             $where .= $statesql;
         }
 
@@ -166,27 +153,27 @@ class qtype_pmatch_testquestion_table extends table_sql {
     }
 
     /**
-     * Convenience method to call a number of methods for you to display the
-     * table.
+     * Prints the responses table form. Overrides parent functionality.
+     * Parameters passed here are not used, but must refect parent function declaration.
      */
-    public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
+    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
+        $this->set_up_table_form();
         $this->setup();
-        $this->query_db($pagesize, $useinitialsbar);
+        $this->query_db($this->options->pagesize, false);
         $this->format_data();
         $this->build_table();
         $this->finish_output();
     }
 
     /**
-     * Format the data into test question classes.
+     * Format the data into test responses classes.
      */
     protected function format_data() {
         $this->rawdata = \qtype_pmatch\test_responses::data_to_responses($this->rawdata);;
-
     }
 
     /**
-     * Default by sorting on test response id.
+     * Default sorting on test response id.
      * @see flexible_table::get_sort_columns()
      */
     public function get_sort_columns() {
@@ -199,53 +186,71 @@ class qtype_pmatch_testquestion_table extends table_sql {
         if ($this->is_downloading() || !$this->includecheckboxes) {
             return;
         }
-
         $url = $this->options->get_url();
         $url->param('sesskey', sesskey());
-
         echo '<div id="tablecontainer">';
+        // The table is wrapped inside the attempts form.
         echo '<form id="attemptsform" method="post" action="' . $url->out_omit_querystring() . '">';
-
-        echo html_writer::input_hidden_params($url);
-        echo '<div>';
+        echo \html_writer::input_hidden_params($url);
     }
 
     public function wrap_html_finish() {
+        global $PAGE;
         if ($this->is_downloading() || !$this->includecheckboxes) {
             return;
         }
-
-        echo '<div id="commands">';
-        echo '<a href="javascript:select_all_in(\'DIV\', null, \'tablecontainer\');">' .
-                get_string('selectall', 'quiz') . '</a> / ';
-        echo '<a href="javascript:deselect_all_in(\'DIV\', null, \'tablecontainer\');">' .
-                get_string('selectnone', 'quiz') . '</a> ';
-        echo '&nbsp;&nbsp;';
-        $this->submit_buttons();
-        echo '</div>';
-
+        $output = $PAGE->get_renderer('qtype_pmatch', 'testquestion');
+        echo $output->get_table_bottom_buttons($this->question);
         // Close the form.
-        echo '</div>';
         echo '</form></div>';
     }
 
     /**
-     * Output any submit buttons required by the $this->includecheckboxes form.
+     * Add all the user-related columns to the $columns and $headers arrays.
+     * @param array $columns the list of columns. Added to.
+     * @param array $headers the columns headings. Added to.
      */
-    protected function submit_buttons() {
-        global $PAGE;
-        // Test responses.
-        if (question_has_capability_on($this->question, 'edit')) {
-            echo '<input type="submit" id="testresponsesbutton" name="test" value="' .
-                    get_string('testquestionformtestsubmit', 'qtype_pmatch') . '"/>';
+    protected function add_columns(&$columns, &$headers) {
+        if (!$this->is_downloading()) {
+            if ($this->options->checkboxcolumn) {
+                $columns[] = 'checkbox';
+                $headers[] = null;
+            }
+            $columns[] = 'id';
+            $headers[] = get_string('testquestionidlabel', 'qtype_pmatch');
+            $columns[] = 'rules';
+            $headers[] = get_string('testquestionruleslabel', 'qtype_pmatch');
+            $columns[] = 'gradedfraction';
+            $headers[] = get_string('testquestionactualmark', 'qtype_pmatch');
+            $columns[] = 'expectedfraction';
+            $headers[] = get_string('testquestionexpectedfraction', 'qtype_pmatch');
+            $columns[] = 'response';
+            $headers[] = get_string('testquestionresponse', 'qtype_pmatch');
         }
+    }
 
-        // Delete responses.
-        if (question_has_capability_on($this->question, 'edit')) {
-            echo '<input type="submit" id="deleteresponsesbutton" name="delete" value="' .
-                    get_string('testquestionformdeletesubmit', 'qtype_pmatch') . '"/>';
-            $PAGE->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
-                    array('message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')));
-        }
+    /**
+     * Local set up for the table (called before parent setup).
+     */
+    protected function set_up_table_form() {
+        // Set up the table's SQL.
+        list($fields, $from, $where, $params) = $this->base_sql();
+        $this->set_count_sql("SELECT COUNT(1) FROM $from WHERE $where", $params);
+        $this->set_sql($fields, $from, $where, $params);
+        // Define table columns and headers.
+        $columns = array();
+        $headers = array();
+        $this->add_columns($columns, $headers);
+        $this->define_columns($columns);
+        // Add a column class to help distinguish updatable human marks.
+        $this->column_class('expectedfraction', 'updater-expectedfraction');
+        $this->define_headers($headers);
+        // Set up other table parameters.
+        $this->define_baseurl($this->options->get_url());
+        $this->sortable(true, 'uniqueid');
+        $this->no_sorting('rules');
+        $this->collapsible(false);
+        $this->set_attribute('class', 'generaltable generalbox grades');
+        $this->set_attribute('id', 'responses');
     }
 }

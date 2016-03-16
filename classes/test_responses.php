@@ -309,12 +309,17 @@ class test_responses {
     /**
      * Save a record of of each match between a rule and test response.s
      * @param qtype_pmatch_question question to do the grading
+     * @param array $responseids an array of response ids that need rule matching.
      */
-    public static function save_rule_matches($question) {
+    public static function save_rule_matches($question, $responseids=null) {
         global $DB;
 
         $rules = $question->get_answers();
-        $responses = self::get_graded_responses_by_questionid($question->id);
+        if (empty($responseids)) {
+            $responses = self::get_graded_responses_by_questionid($question->id);
+        } else {
+            $responses = self::get_responses_by_ids($responseids);
+        }
         $questionid = $question->id;
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         foreach ($responses as $response) {
@@ -405,7 +410,65 @@ class test_responses {
     }
 
     /**
-     * Do any rules match a give response. Use the lookup array to find out.
+     * Return a look up array linking the id of each response with the ids of the rules
+     * that match it, and an opposite version linking each rule with the response it matches.
+     *
+     * @param array[] test_response $responses response objects to grade
+     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param qtype_pmatch_question question to do the grading
+     */
+    public static function get_rule_matches_from_responses($responses) {
+        global $DB;
+        $matchresponseidstoruleids = array();
+        $matchruleidstoresponseids = array();
+        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids);
+
+        // If there are no responses return an empty matches object.
+        if (!count($responses)) {
+            return $matches;
+        }
+
+        foreach ($responses as $response) {
+            if (empty($response->ruleids) || !count($response)) {
+                continue;
+            }
+
+            // Match responses to rules.
+            // if the matching array hasn't be created, create it.
+            if (!array_key_exists($response->id, $matchresponseidstoruleids)) {
+                $matchresponseidstoruleids[$response->id] = array();
+            }
+
+            foreach ($response->ruleids as $ruleid) {
+                $matchresponseidtoruleid = $matchresponseidstoruleids[$response->id];
+                if (!in_array($ruleid, $matchresponseidtoruleid)) {
+                    $matchresponseidtoruleid[] = $ruleid;
+                }
+                $matchresponseidstoruleids[$response->id] = $matchresponseidtoruleid;
+
+                // Match rules to responses.
+
+                // If the matching array hasn't be created, create it.
+                if (!array_key_exists($ruleid, $matchruleidstoresponseids)) {
+                    $matchruleidstoresponseids[$ruleid] = array();
+                }
+                $matchruleidtoresponseid = $matchruleidstoresponseids[$ruleid];
+                if (!in_array($response->id, $matchruleidtoresponseid)) {
+                    $matchruleidtoresponseid[] = $response->id;
+                }
+                $matchruleidstoresponseids[$ruleid] = $matchruleidtoresponseid;
+            }
+
+        }
+
+        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        return $matches;
+    }
+
+    /**
+     * Do any rules match a given response. Use the lookup array to find out.
      *
      * @param $rulematches array[] lookup array of response ids to rule ids.
      * @param $responseid id of the response to find matching rules for.

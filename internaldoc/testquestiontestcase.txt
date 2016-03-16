@@ -83,3 +83,11 @@ access the appropriate test quiz
         "Test selected responses"
     Verify
         the seleceted responses have been deleted.
+
+Adjusting a response's human mark
+=================================
+On the "Test this question" page with uploaded responses already computer marked:
+    Click on a "Human mark"
+        Check change has occured in human mark
+        Check overall marks string has also changed
+        Check it is possible to click again to reverse this change.

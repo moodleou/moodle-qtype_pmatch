@@ -16,9 +16,19 @@
 
 
 /**
- * This is a quick and dirty script to test a question against a list of
- * responses in a .csv file.
+ * This page allows responses to be uploaded and tested against the rule contained
+ * in the question. The user can select one or more responses, and have the computer
+ * mark these, or delete them (so long as the user has edit capability).
  *
+ * A summary of positive response marks (i.e. the rules when applied to the responses marked
+ * give the same results as the human mark), negative response marks (computer marks response as
+ * 0, but so does the human mark), unmarked responses and the current accuracy of the marked
+ * responses is displayed (when available).
+ *
+ * The table of responses can be sorted, paged, and manipulated with the options in the top
+ * section of the page.
+ *
+ * Uploaded responses file:
  * The CSV file should contain two columns, the first contains 0 or 1 (or
  * any number between) for whether that response should be considered correct.
  * The second column contains the response. The first row in the file is ignored
@@ -31,7 +41,6 @@
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/question/type/pmatch/classes/output/testquestion_renderer.php');
 
 $questionid = required_param('id', PARAM_INT);
@@ -67,21 +76,18 @@ $PAGE->set_title(get_string('testquestionformtitle', 'qtype_pmatch'));
 $PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
 $output = $PAGE->get_renderer('qtype_pmatch', 'testquestion');
+$controller = new \qtype_pmatch\testquestion_controller($question, $context);
 
-// Display headers.
 echo $output->header();
 echo $output->heading(get_string('testquestionformtitle', 'qtype_pmatch') . ': ' .
         get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
 
-$output->init($question);
-echo $output->render_display_options();
+echo $output->get_display_options_form($controller);
 
-// Display link to upload  responses.
-echo html_writer::tag('p', html_writer::link(new moodle_url('/question/type/pmatch/uploadresponses.php',
-                        array('id' => $questionid)), 'Upload responses'));
+echo $output->get_uploadresponses_link($question);
+echo $output->get_responses_heading($question);
+echo $output->get_grade_summary($question);
 
-echo html_writer::tag('p', get_string('showingresponsesforquestion', 'qtype_pmatch', $question->name));
-echo $output->render_grade_summary();
-echo $output->render_table();
+echo $output->get_responses_table_form($controller);
 
 echo $output->footer();
