@@ -24,7 +24,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * class for the table used by the test question feature.
  *
  * @package   qtype_pmatch
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_table extends \table_sql {
@@ -44,7 +44,7 @@ class testquestion_table extends \table_sql {
     /**
      * Constructor
      * @param object $question
-     * @param \qtype_pmatch\test_responses $testresponses
+     * @param \qtype_pmatch\testquestion_responses $testresponses
      * @param \qtype_pmatch\testquestion_options $options
      */
     public function __construct($question, $testresponses, \qtype_pmatch\testquestion_options $options) {
@@ -84,9 +84,11 @@ class testquestion_table extends \table_sql {
      * @return string HTML content to go inside the td.
      */
     public function col_rules($response) {
-        if (\qtype_pmatch\test_responses::has_rule_match_for_response($this->testresponses->rulematches, $response->id)) {
+        if (\qtype_pmatch\testquestion_responses::has_rule_match_for_response(
+                    $this->testresponses->rulematches, $response->id)) {
             return implode(',',
-                    \qtype_pmatch\test_responses::get_matching_rule_indexes_for_response($this->testresponses, $response->id));
+                    \qtype_pmatch\testquestion_responses::get_matching_rule_indexes_for_response(
+                            $this->testresponses, $response->id));
         } else {
             return '';
         }
@@ -111,8 +113,6 @@ class testquestion_table extends \table_sql {
         return $class;
     }
 
-
-
     /**
      * Construct all the parts of the main database query.
      * @return array with 4 elements ($fields, $from, $where, $params) that can be used to
@@ -128,10 +128,10 @@ class testquestion_table extends \table_sql {
 
         if ($this->options->states) {
             $statesqllist = array(
-                   \qtype_pmatch\test_response::MATCHED => '(expectedfraction = gradedfraction)',
-                   \qtype_pmatch\test_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
-                   \qtype_pmatch\test_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
-                   \qtype_pmatch\test_response::UNGRADED => '(gradedfraction IS NULL)'
+                   \qtype_pmatch\testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
+                   \qtype_pmatch\testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
+                   \qtype_pmatch\testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
+                   \qtype_pmatch\testquestion_response::UNGRADED => '(gradedfraction IS NULL)'
             );
             $statesql = ' AND (';
             $count = 0;
@@ -169,7 +169,7 @@ class testquestion_table extends \table_sql {
      * Format the data into test responses classes.
      */
     protected function format_data() {
-        $this->rawdata = \qtype_pmatch\test_responses::data_to_responses($this->rawdata);;
+        $this->rawdata = \qtype_pmatch\testquestion_responses::data_to_responses($this->rawdata);
     }
 
     /**

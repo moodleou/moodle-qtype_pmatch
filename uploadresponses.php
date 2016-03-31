@@ -26,13 +26,14 @@
  * (on the assumption that it contains the column headers "mark","response".)
  *
  * @package   qtype_pmatch
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/lib.php');
 
 /**
  * The upload form.
@@ -59,8 +60,10 @@ $questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUS
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
 }
+$question = question_bank::load_question($questionid);
 
-require_login();
+// Process any other URL parameters, and do require_login.
+list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
 question_require_capability_on($questiondata, 'edit');
 
 $question = question_bank::load_question($questionid);
@@ -71,6 +74,7 @@ $title = get_string('testquestionformtitle', 'qtype_pmatch');
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($title);
+$PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
 $form = new upload_form();
 $form->set_data(array('id' => $questionid));
@@ -94,17 +98,17 @@ if ($fromform = $form->get_data()) {
         throw new moodle_exception('uploadproblem');
     }
 
-    list($responses, $problems) = \qtype_pmatch\test_responses::load_responses_from_file(
+    list($responses, $problems) = \qtype_pmatch\testquestion_responses::load_responses_from_file(
             $responsefile, $question);
 
     // Save responses to the database.
-    $feedback = \qtype_pmatch\test_responses::add_responses($responses);
+    $feedback = \qtype_pmatch\testquestion_responses::add_responses($responses);
     $feedback->problems = $problems;
     // Because this process could take a long time if there are a large number of responses
     // and a large number of rules, we could add a spinner or other indicator of progress here.
     // The best rule of thumb is to keep the number of responses under 100 if the number of
     // rules is greater than maybe 10. More responses are OK if there are fewer rules.
-    \qtype_pmatch\test_responses::grade_responses_and_save_matches($question);
+    \qtype_pmatch\testquestion_responses::grade_responses_and_save_matches($question);
 
     echo $renderer->display_feedback($feedback);
 

@@ -35,12 +35,13 @@
  * (on the assumption that it contains the column headers "mark","response".)
  *
  * @package   qtype_pmatch
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/lib.php');
 require_once($CFG->dirroot . '/question/type/pmatch/classes/output/testquestion_renderer.php');
 
 $questionid = required_param('id', PARAM_INT);
@@ -48,14 +49,14 @@ $questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUS
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
 }
-require_login();
 $question = question_bank::load_question($questionid);
-$context = context::instance_by_id($question->contextid);
+
+// Process any other URL parameters, and do require_login.
+list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
 
 $url = new moodle_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
 $PAGE->set_pagelayout('popup');
 $PAGE->set_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
-$PAGE->set_context($context);
 
 // Check permissions after initialising $PAGE so messages (not exceptions) can be rendered.
 $canview = question_has_capability_on($questiondata, 'view');

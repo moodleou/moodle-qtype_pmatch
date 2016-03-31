@@ -25,7 +25,7 @@ require_once($CFG->dirroot . '/lib/questionlib.php');
  * Manages the testquestion page - particularly the forms actions.
  *
  * @package    qtype_pmatch
- * @copyright  2015 The Open University
+ * @copyright  2016 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_controller {
@@ -53,7 +53,7 @@ class testquestion_controller {
 
     public function __construct($question, $context) {
         $this->question = $question;
-        $this->testresponses = \qtype_pmatch\test_responses::create_for_question($question);
+        $this->testresponses = \qtype_pmatch\testquestion_responses::create_for_question($question);
         $this->context = $context;
         $pagesize = optional_param('pagesize', self::DEFAULT_PAGE_SIZE, PARAM_INT);
         $page = optional_param('page', 0, PARAM_INT);
@@ -100,7 +100,7 @@ class testquestion_controller {
         if (optional_param('test', 0, PARAM_BOOL) && confirm_sesskey()) {
             if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
                 $this->print_grading_responses_progressbar($responseids);
-                \qtype_pmatch\test_responses::save_rule_matches($this->question, $responseids);
+                \qtype_pmatch\testquestion_responses::save_rule_matches($this->question, $responseids);
                 echo $OUTPUT->continue_button($redirecturl);
                 echo $OUTPUT->footer();
                 exit;
@@ -110,7 +110,7 @@ class testquestion_controller {
         if (optional_param('delete', 0, PARAM_BOOL) && confirm_sesskey()) {
             if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
                 question_require_capability_on($this->question, 'edit');
-                \qtype_pmatch\test_responses::delete_responses_by_ids($responseids);
+                \qtype_pmatch\testquestion_responses::delete_responses_by_ids($responseids);
                 echo get_string('testquestiondeletedresponses', 'qtype_pmatch');
                 echo $OUTPUT->continue_button($redirecturl);
                 echo $OUTPUT->footer();
@@ -120,7 +120,7 @@ class testquestion_controller {
     }
 
     protected function print_grading_responses_progressbar($responseids) {
-        $responses = \qtype_pmatch\test_responses::get_responses_by_ids($responseids);
+        $responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids($responseids);
         $pbar = new \progress_bar('testingquestion', 500, true);
         $row = 0;
         $rowcount = count($responseids);
@@ -130,7 +130,7 @@ class testquestion_controller {
         foreach ($responses as $response) {
             \core_php_time_limit::raise(60);
             $row++;
-            \qtype_pmatch\test_responses::grade_response($response, $this->question);
+            \qtype_pmatch\testquestion_responses::grade_response($response, $this->question);
             $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
                     array('row' => $row, 'total' => $rowcount, 'response' => $response->response)));
         }

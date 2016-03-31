@@ -33,3 +33,11 @@ $settings->add(new qtype_pmatch_admin_setting_spell_checker('qtype_pmatch/spellc
 
 $settings->add(new qtype_pmatch_admin_setting_environment_check('qtype_pmatch_environment_check',
         get_string('environmentcheck', 'qtype_pmatch'), null));
+
+$settings->add(new admin_setting_configtext('qtype_pmatch/amatiwsurl',
+        get_string('amatiwsurl', 'qtype_pmatch'),
+        get_string('amatiwsurl_desc', 'qtype_pmatch'), '', PARAM_URL));
+
+$settings->add(new admin_setting_configtext('qtype_pmatch/minresponses',
+        get_string('minresponses', 'qtype_pmatch'),
+        get_string('minresponses_desc', 'qtype_pmatch'), 10, PARAM_INT));

@@ -19,7 +19,7 @@
  *
  * @package   qtype_pmatch
  * @category  test
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
 /**
  * Steps definitions related with the pattern match question type.
  *
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_qtype_pmatch extends behat_base {
@@ -74,7 +74,7 @@ class behat_qtype_pmatch extends behat_base {
         $pathtoresponses = $pathtoresponses ? $pathtoresponses : self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/../' . $pathtoresponses;
 
-        return qtype_pmatch\test_responses::load_responses_from_file($responsesfile, $question);
+        return qtype_pmatch\testquestion_responses::load_responses_from_file($responsesfile, $question);
     }
 
     /**
@@ -99,7 +99,7 @@ class behat_qtype_pmatch extends behat_base {
         list($responses, $problems) = $this->load_responses($question, $pathtoresponses);
 
         //  Add responses.
-        \qtype_pmatch\test_responses::add_responses($responses);
+        \qtype_pmatch\testquestion_responses::add_responses($responses);
     }
 
 }

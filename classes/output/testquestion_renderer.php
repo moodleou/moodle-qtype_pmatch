@@ -18,7 +18,7 @@
  * Render methods.
  *
  * @package    qtype_pmatch
- * @copyright  2015 The Open University
+ * @copyright  2016 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -48,7 +48,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
      * @param object $question
      */
     public function get_grade_summary($question) {
-        $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($question);
+        $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($question);
         return html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
                 array('id' => 'testquestion_gradesummary'));
     }

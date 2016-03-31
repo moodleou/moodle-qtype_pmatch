@@ -28,12 +28,12 @@ function try_rule($question) {
     $fraction = unformat_float(optional_param('fraction', '1.0', PARAM_RAW));
     if (empty($ruletxt)) {
         $return = 'The rule is empty, please add a rule in the Answer textbox above.';
-    } else if (!\qtype_pmatch\test_responses::has_responses($question)) {
+    } else if (!\qtype_pmatch\testquestion_responses::has_responses($question)) {
         $return = 'There are no responses, please upload a set of human marked responses.';
     } else if ($fraction != '1.0' && $fraction != '0.0') {
         $return = get_string('tryrulegradeerror', 'qtype_pmatch');
     } else {
-        $return = \qtype_pmatch\test_responses::try_rule($question, $ruletxt, $fraction);
+        $return = \qtype_pmatch\testquestion_responses::try_rule($question, $ruletxt, $fraction);
     }
     return $return;
 }

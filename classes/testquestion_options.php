@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  * quiz_overview_options in mod/quiz/report/overview/overview_options.php
  *
  * @package   qtype_pmatch
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_options {
@@ -37,18 +37,18 @@ class testquestion_options {
      * @var array form field name => corresponding type_pmatch_testresponses:: state constant.
      */
     protected static $statefields = array(
-            'statematches' => \qtype_pmatch\test_response::MATCHED,
-            'statemissedpositive' => \qtype_pmatch\test_response::MISSED_POSITIVE,
-            'statemissednegative' => \qtype_pmatch\test_response::MISSED_NEGATIVE,
-            'stateungraded' => \qtype_pmatch\test_response::UNGRADED
+            'statematches' => \qtype_pmatch\testquestion_response::MATCHED,
+            'statemissedpositive' => \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
+            'statemissednegative' => \qtype_pmatch\testquestion_response::MISSED_NEGATIVE,
+            'stateungraded' => \qtype_pmatch\testquestion_response::UNGRADED
     );
 
     /**
      * @var array|null of quiz_attempt::IN_PROGRESS, etc. constants. null means
      *      no restriction.
      */
-    public $states = array(\qtype_pmatch\test_response::MATCHED, \qtype_pmatch\test_response::MISSED_POSITIVE,
-            \qtype_pmatch\test_response::MISSED_NEGATIVE, \qtype_pmatch\test_response::UNGRADED);
+    public $states = array(\qtype_pmatch\testquestion_response::MATCHED, \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
+            \qtype_pmatch\testquestion_response::MISSED_NEGATIVE, \qtype_pmatch\testquestion_response::UNGRADED);
 
     /** @var int Number of attempts to show per page. */
     public $pagesize = \qtype_pmatch\testquestion_controller::DEFAULT_PAGE_SIZE;

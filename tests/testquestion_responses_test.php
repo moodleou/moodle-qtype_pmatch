@@ -19,7 +19,7 @@
  * This file contains of the pmatch library using files of examples.
  *
  * @package   qtype_pmatch
- * @copyright 2012 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,14 +27,13 @@ global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
 
 /**
- * Test driver class that tests the pmatch library by loading examples from
- * text files in the examples folder.
+ * Test the responses used in the test this question function.
  *
- * @copyright 2012 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     qtype_pmatch
  */
-class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase {
+class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion_testcase {
 
     /**
      * Test basic instantiation of the test_response class.
@@ -42,7 +41,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
     public function test_intialise_test_response() {
         $this->resetAfterTest();
         //  No data returns null.
-        $testresponse = \qtype_pmatch\test_response::create();
+        $testresponse = \qtype_pmatch\testquestion_response::create();
         $this->assertEquals($testresponse, null);
 
         // Initialise a test_response object with proper data.
@@ -52,7 +51,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $data->expectedfraction = 0;
         $data->gradedfraction = 0;
         $data->response = 0;
-        $testresponse = \qtype_pmatch\test_response::create($data);
+        $testresponse = \qtype_pmatch\testquestion_response::create($data);
 
         // No contents.
         $this->assertEquals($testresponse->id, $data->id);
@@ -71,19 +70,19 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         // Fraction fields contain floating numbers.
         $data->expectedfraction = 0.9999;
         $data->gradedfraction = 0.0001;
-        $testresponse = \qtype_pmatch\test_response::create($data);
+        $testresponse = \qtype_pmatch\testquestion_response::create($data);
 
         $this->assertEquals($testresponse->expectedfraction, 1);
         $this->assertEquals($testresponse->gradedfraction, 0);
     }
 
     /**
-     * Main entry point. Run all the tests in all the example files.
+     * Test data is correctly converted to a response object.
      */
     public function test_data_to_responses() {
         $this->resetAfterTest();
         // Empty array.
-        $responses = \qtype_pmatch\test_responses::data_to_responses(array());
+        $responses = \qtype_pmatch\testquestion_responses::data_to_responses(array());
         $this->assertEquals($responses, array());
 
         // One class with all fields filled out.
@@ -94,7 +93,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $data->gradedfraction = 1;
         $data->response = 'one two';
 
-        $responses = \qtype_pmatch\test_responses::data_to_responses(array($data));
+        $responses = \qtype_pmatch\testquestion_responses::data_to_responses(array($data));
         $testresponse = array_pop($responses);
 
         // No contents.
@@ -118,8 +117,8 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         //  Before we test the DB.
-        $testresponse = \qtype_pmatch\test_responses::create_for_question($question);
-        $this->assertEquals(get_class($testresponse), 'qtype_pmatch\test_responses');
+        $testresponse = \qtype_pmatch\testquestion_responses::create_for_question($question);
+        $this->assertEquals(get_class($testresponse), 'qtype_pmatch\testquestion_responses');
     }
 
     /**
@@ -137,13 +136,13 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
             $responses[$response->id] = $response;
         }
 
-        $responses = \qtype_pmatch\test_responses::data_to_responses($responses);
+        $responses = \qtype_pmatch\testquestion_responses::data_to_responses($responses);
 
         // Get an array of the ids.
         $responseids = array_keys($responses);
 
         // Get responses udsing the ids array.
-        $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids($responseids);
+        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids($responseids);
         $this->assertEquals($responses, $dbresponses);
     }
 
@@ -159,7 +158,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         list($responses, $problems) = $this->load_responses($question);
 
         //  Add responses to an empty DB table and get feedback.
-        $feedback = \qtype_pmatch\test_responses::add_responses($responses);
+        $feedback = \qtype_pmatch\testquestion_responses::add_responses($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
@@ -168,7 +167,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $this->assertEquals(count($feedback->duplicates), 0);
 
         // Test for duplicates by adding responses for the second time.
-        $feedback = \qtype_pmatch\test_responses::add_responses($responses);
+        $feedback = \qtype_pmatch\testquestion_responses::add_responses($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
@@ -180,7 +179,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $response = $responses[0];
         $response->questionid = 2;
 
-        $feedback = \qtype_pmatch\test_responses::add_responses(array($response));
+        $feedback = \qtype_pmatch\testquestion_responses::add_responses(array($response));
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
@@ -202,11 +201,11 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $response = array_pop($responses);
         $response->gradedfraction = 1;
         $response->response = "this is updated";
-        $updated = \qtype_pmatch\test_responses::update_response($response);
+        $updated = \qtype_pmatch\testquestion_responses::update_response($response);
 
         $dbresponse = $DB->get_record('qtype_pmatch_test_responses', array('id' => $response->id));
         // Convert to test_response object.
-        $dbresponse = \qtype_pmatch\test_response::create($dbresponse);
+        $dbresponse = \qtype_pmatch\testquestion_response::create($dbresponse);
 
         // Confirm the updated response is returned from the db.
         $this->assertEquals($response, $dbresponse);
@@ -224,7 +223,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
 
         // Get one response and delete it.
         $response = array_pop($responses);
-        \qtype_pmatch\test_responses::delete_responses_by_ids(array($response->id));
+        \qtype_pmatch\testquestion_responses::delete_responses_by_ids(array($response->id));
 
         // Confirm only the correct response was deleted.
         $dbresponseids = array_keys($DB->get_records('qtype_pmatch_test_responses'));
@@ -233,9 +232,9 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
     }
 
     /**
-     * Test get_grade_summary_counts.
+     * Test get_question_grade_summary_counts.
      */
-    public function test_get_grade_summary_counts() {
+    public function test_get_question_grade_summary_counts() {
         global $DB;
         $this->resetAfterTest();
 
@@ -253,7 +252,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $expectedcounts->accuracy = 0;
 
         // Get current grade counts.
-        $actualcounts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->currentquestion);
+        $actualcounts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->currentquestion);
 
         // Confirm counts for unmarked grades.
         $this->assertEquals($expectedcounts, $actualcounts);
@@ -277,7 +276,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $expectedcounts->accuracy = 62.0;
 
         // Get current grade counts.
-        $actualcounts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->currentquestion);
+        $actualcounts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->currentquestion);
 
         // Confirm counts for grades now they have been marked by the computer.
         $this->assertEquals($expectedcounts, $actualcounts);
@@ -302,9 +301,9 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
             }
         }
         $expectedcomputergrade = 1;
-        \qtype_pmatch\test_responses::grade_response($response, $this->currentquestion);
+        \qtype_pmatch\testquestion_responses::grade_response($response, $this->currentquestion);
 
-        $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids(array($response->id));
+        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($response->id));
         $dbresponse = array_shift($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
@@ -313,9 +312,9 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
 
         // Test grading for a wrong response.
         $expectedcomputergrade = 0;
-        \qtype_pmatch\test_responses::grade_response($wrongresponse, $this->currentquestion);
+        \qtype_pmatch\testquestion_responses::grade_response($wrongresponse, $this->currentquestion);
 
-        $dbresponses = \qtype_pmatch\test_responses::get_responses_by_ids(array($wrongresponse->id));
+        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($wrongresponse->id));
         $dbresponse = array_pop($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
@@ -352,7 +351,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         );
         $expectedresponses  = array();
         foreach ($data as $datarow) {
-            $response = new \qtype_pmatch\test_response();
+            $response = new \qtype_pmatch\testquestion_response();
             $response->questionid = $question->id;
             $response->response = $datarow[1];
             $response->expectedfraction = $datarow[0];
@@ -378,15 +377,15 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $this->resetAfterTest();
         $responses = $this->load_default_responses();
         foreach ($responses as $response) {
-            \qtype_pmatch\test_responses::grade_response($response, $this->currentquestion);
+            \qtype_pmatch\testquestion_responses::grade_response($response, $this->currentquestion);
         }
         $ruletxt = 'match_w(A non existant bit of text)';
         $grade = 1;
-        $try = \qtype_pmatch\test_responses::try_rule($this->currentquestion, $ruletxt, $grade);
+        $try = \qtype_pmatch\testquestion_responses::try_rule($this->currentquestion, $ruletxt, $grade);
         $expected = '<div>This rule does not match any graded responses.</div>';
         $this->assertEquals($expected, $try);
         $ruletxt = 'match_w(Tom)';
-        $try = \qtype_pmatch\test_responses::try_rule($this->currentquestion, $ruletxt, $grade);
+        $try = \qtype_pmatch\testquestion_responses::try_rule($this->currentquestion, $ruletxt, $grade);
         // Note at this point try will contain ids that could change, and will look something like:
         // '<div>Accuracy</div><div>Pos = 2 Neg = 1</div><div>Coverage</div><div><ul><li>' .
         // '<span>133000: Tom Dick or Harry</span></li><li>' .
@@ -397,5 +396,266 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $this->assertTrue(strpos($try, 'Tom Dick or Harry') !== false);
         $this->assertTrue(strpos($try, 'Tom was janes companion') !== false);
         $this->assertTrue(strpos($try, 'qtype_pmatch-selftest-missed-positive') !== false);
+    }
+
+    /**
+     * Test grading a response by a rule.
+     *
+     * Explore which method is used to grade a response to a specific rule.
+     * question/type/questionbase.php::grade_response() the root method used by pmatch
+     * grade_response calles grading strategy question_first_matching_answer_grading_strategy::grade()
+     * which uses pmatch/question.php::compare_response_with_answer()
+     */
+    public function test_grade_rule_with_response() {
+        $this->resetAfterTest();
+        $this->currentquestion = $this->create_default_question();
+        $answers = $this->currentquestion->get_answers();
+
+        // Test grading for a correct response.
+        // Note the response is fixed here as using load_default_responses gives unreliable results.
+        $response = (object) array('response' => 'Tom or Dick');
+        $answerstoruleids = array();
+        foreach ($answers as $aid => $answer) {
+            $match = false;
+            $match = $this->currentquestion->compare_response_with_answer(array('answer' => $response->response), $answer);
+            if ($match === true) {
+                $response->ruleids[] = $aid;
+            }
+            $answerstoruleids[$answer->answer] = $aid;
+        }
+
+        $this->assertEquals(array($answerstoruleids['match_w(Tom|Harry)'],
+                $answerstoruleids['match_w(Dick)']),
+                $response->ruleids);
+    }
+
+    /**
+     * Test grading responses by a rule.
+     */
+    public function test_grade_rule_with_responses() {
+        $this->resetAfterTest();
+        $this->currentquestion = $this->create_default_question();
+        $rules = $this->currentquestion->get_answers();
+        $rule = $rules[array_keys($rules)[0]];
+        $responses = $this->load_default_responses();
+
+        $responseids = array_keys($responses);
+        $compareresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids($responseids);
+        $responsestoruleids = array(
+                                'Tom Dick or Harry' => array(13),
+                                'Tom' => array(13),
+                                'Harry' => array(13),
+                                'Tom was janes companion' => array(13)
+                            );
+
+        foreach ($compareresponses as $compareresponse) {
+            if (array_key_exists($compareresponse->response, $responsestoruleids)) {
+                $compareresponse->ruleids = $responsestoruleids[$compareresponse->response];
+            }
+        }
+
+        // Test grading for a correct response.
+        \qtype_pmatch\testquestion_responses::grade_responses_by_rule($responses, $rule, $this->currentquestion);
+
+        $this->assertEquals($compareresponses, $responses);
+    }
+
+    /**
+     * Test individual grading rule accuracy.
+     */
+    public function test_get_rule_accuracy_counts() {
+        $this->resetAfterTest();
+
+        $this->currentquestion = $this->create_default_question();
+        $rules = $this->currentquestion->get_answers();
+        $rule = $rules[array_keys($rules)[0]];
+        $responses = $this->load_default_responses();
+        // Update computer marked grade from fixture and saved to DB.
+        $this->update_response_grades_from_file($responses, 'fixtures/testresponsesgraded.csv');
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        \qtype_pmatch\testquestion_responses::save_rule_matches($this->currentquestion);
+
+        $responseids = array_keys($responses);
+        $matches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids, $this->currentquestion->id);
+
+        $compareaccuracy = array('positive' => 3, 'negative' => 1);
+
+        // Test grading for a correct response.
+        $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+
+        $this->assertEquals($compareaccuracy, $accuracy);
+    }
+
+    /**
+     * Test re-grading.
+     *
+     * Test the grading process including saving rule matches works correctly by re grading responses
+     * after updating a rule.
+     */
+    public function test_regrading() {
+        global $DB;
+        $this->resetAfterTest();
+
+        // Start with responses with a null computer grade.
+        $responses = $this->load_default_responses();
+        $tomcat = $tomdickharry = '';
+        foreach ($responses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        // Confirm computer mark grade is null.
+        $this->assertTrue(is_null($tomdickharry));
+        $this->assertTrue(is_null($tomcat));
+
+        // Update computer marked grades to 1.0 using a fixture.
+        $this->update_response_grades_from_file($responses, 'fixtures/testresponsesgraded.csv');
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry);
+        $this->assertEquals(1.0, $tomcat); // Note fixture file has computer mark incorrect.
+
+        // Grade a response and check the computer marked grades are now correct.
+        \qtype_pmatch\testquestion_responses::grade_responses_and_save_matches($this->currentquestion);
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry);
+        $this->assertEquals(0.0, $tomcat); // Note re-grading is marking $tomcat correctly now.
+
+        // Update the question rules and check re-grading assigns computer marks correctly.
+        $rules = $this->currentquestion->get_answers();
+        $rules[13]->answer = 'match_w(Tomcat)';
+        $this->currentquestion->answers = $rules;
+        \qtype_pmatch\testquestion_responses::grade_responses_and_save_matches($this->currentquestion);
+        $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
+        foreach ($dbresponses as $r) {
+            if ($r->response == 'Tom Dick or Harry') {
+                $tomdickharry = $r->gradedfraction;
+            }
+            if ($r->response == 'Tomcat') {
+                $tomcat = $r->gradedfraction;
+            }
+        }
+        $this->assertEquals(1.0, $tomdickharry); // Note does not change.
+        $this->assertEquals(1.0, $tomcat); // Note new rule affects $tomcat.
+    }
+
+    /**
+     * Test the rule matching table
+     */
+    public function test_save_rule_matches() {
+        global $DB;
+        $this->resetAfterTest();
+
+        $responses = $this->load_default_responses();
+        // Update computer marked grade from fixture and saved to DB.
+        $this->update_response_grades_from_file($responses, 'fixtures/testresponsesgraded.csv');
+
+        $rules = $this->currentquestion->get_answers();
+        // Remove last rule.
+        $ignorerule = array_pop($rules);
+        // Update the question rules.
+        $this->currentquestion->answers = $rules;
+
+        $responseids = array_keys($responses);
+        $comparerulematches = array (
+            'responseidstoruleids' => array(
+                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
+                    'Tom' => array(0 => 'match_w(Tom|Harry)'),
+                    'Dick' => array(0 => 'match_w(Dick)'),
+                    'Harry' => array(0 => 'match_w(Tom|Harry)'),
+                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)')
+                ),
+            'ruleidstoresponseids' => array(
+                    'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                    3 => 'Tom was janes companion'),
+                    'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick')
+                )
+        );
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        \qtype_pmatch\testquestion_responses::save_rule_matches($this->currentquestion);
+
+        // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
+        $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
+                                                                            $this->currentquestion->id);
+
+        // Translate the rule and response ids into responses and rules to test.
+        $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches,
+                                                                            $rules, $responses);
+
+        $this->assertEquals($comparerulematches, $responseandrulematches);
+
+        // Delete a rule.
+        // Delete existing rule matches for the question.
+        \qtype_pmatch\testquestion_responses::delete_rule_matches($this->currentquestion);
+
+        // Set new expectations.
+        $deletedrulecomparerulematches = array (
+            'responseidstoruleids' => array(
+                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)'),
+                    'Tom' => array(0 => 'match_w(Tom|Harry)'),
+                    'Harry' => array(0 => 'match_w(Tom|Harry)'),
+                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)')
+                ),
+            'ruleidstoresponseids' => array(
+                    'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                    3 => 'Tom was janes companion')
+                )
+        );
+
+        $deletedrule = array_pop($rules);
+        // Update the question rules.
+        $this->currentquestion->answers = $rules;
+
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        \qtype_pmatch\testquestion_responses::save_rule_matches($this->currentquestion);
+
+        // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
+        $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
+                                                                            $this->currentquestion->id);
+
+        // Translate the rule and response ids into responses and rules to test.
+        $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
+
+        $this->assertEquals($deletedrulecomparerulematches, $responseandrulematches);
+
+        // Add the rule back
+        // Delete existing rule matches for the question.
+        \qtype_pmatch\testquestion_responses::delete_rule_matches($this->currentquestion);
+
+        // Restore the deleted rule.
+        array_push($rules, $deletedrule);
+
+        // Update the question rules.
+        $this->currentquestion->answers = $rules;
+
+        // Grade a response and save results to the qtype_pmatch_rule_matches table.
+        \qtype_pmatch\testquestion_responses::save_rule_matches($this->currentquestion);
+
+        // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
+        $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
+                                                                            $this->currentquestion->id);
+
+        // Translate the rule and response ids into responses and rules to test.
+        $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
+
+        $this->assertEquals($comparerulematches, $responseandrulematches);
     }
 }

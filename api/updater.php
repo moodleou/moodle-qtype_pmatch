@@ -72,16 +72,16 @@ try {
 // Now update the computed mark (though this will never change), as it allows us
 // to get the correct row class. It also means that if you change the human mark
 // of a response that has not been computer marked yet, the computed mark will be inserted.
-$responses = \qtype_pmatch\test_responses::get_responses_by_ids(array($rid));
+$responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($rid));
 $response = $responses[$rid];
-\qtype_pmatch\test_responses::grade_response($response, $question);
-\qtype_pmatch\test_responses::save_rule_matches($question, array($rid));
+\qtype_pmatch\testquestion_responses::grade_response($response, $question);
+\qtype_pmatch\testquestion_responses::save_rule_matches($question, array($rid));
 $options = new \qtype_pmatch\testquestion_options($question);
 $table = new \qtype_pmatch\testquestion_table($question, $responses, $options);
 // Counts could be returned as the lang string 'testquestionresultssummary', and that
 // would mean any changes in the string would not need to be replicated in updater.js,
 // but it was felt that just passing an object of integers is better.
-$counts = \qtype_pmatch\test_responses::get_grade_summary_counts($question);
+$counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($question);
 
 $return['status'] = 'success';
 $return['ef'] = $response->expectedfraction;

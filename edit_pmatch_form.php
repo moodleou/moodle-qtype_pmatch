@@ -38,6 +38,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected $otheranswer = null;
 
+    /**
+     * @var string[] place holder for suggested rules.
+     */
+    protected $suggestedrules = null;
+
     public function __construct($submiturl, $question, $category, $contexts, $formeditable = true) {
         // Separate the Any other' answer from the list of normal answers.
         if (!empty($question->options->answers)) {
@@ -70,10 +75,19 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
             $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
 
+        // Nasty hack. The auto suggest answers button is a no submit button so it doesn't
+        // appear in the normal form flow. Though it is in the $_FORM object so we access it
+        // there to see if rules need to be suggested.
+        $suggestrules = optional_param('answersuggestbutton', '', PARAM_TEXT);
+        if ($suggestrules && $suggestrules !== '') {
+            $this->add_suggested_answers($mform);
+        }
+
         parent::add_per_answer_fields($mform, $label, $gradeoptions);
         $results = '';
-        if ($hasresponses = \qtype_pmatch\test_responses::has_responses($this->question)) {
-            $counts = \qtype_pmatch\test_responses::get_grade_summary_counts($this->question);
+
+        if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
+            $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->question);
             $results = html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts));
         }
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
@@ -82,9 +96,13 @@ class qtype_pmatch_edit_form extends question_edit_form {
                                                 $results);
         $mform->insertElementBefore($answersinstruct, 'topborder[0]');
 
+        if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
+            // Add rule suggestion button.
+            $answerssuggest = $this->add_rule_suggestion_fields($mform);
+        }
+
         $this->add_answer_accuracy_fields($mform);
         $this->add_other_answer_fields($mform);
-
     }
 
     /**
@@ -93,14 +111,19 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_answer_accuracy_fields($mform) {
-        if (!$this->check_has_responses()) {
+        if (!$this->question || !property_exists ($this->question, 'id')) {
+            return;
+        }
+        $questionobj = question_bank::load_question($this->question->id);
+        if (!$hasrepsonses = \qtype_pmatch\testquestion_responses::has_responses($questionobj)) {
             return;
         }
 
-        $rules = $this->question->questionobj->get_answers();
-        $responses = \qtype_pmatch\test_responses::get_graded_responses_by_questionid($this->question->id);
+        $rules = $questionobj->get_answers();
+        $responses = \qtype_pmatch\testquestion_responses::get_graded_responses_by_questionid($questionobj->id);
+
         $responseids = array_keys($responses);
-        $matches = \qtype_pmatch\test_responses::get_rule_matches_for_responses($responseids, $this->question->id);
+        $matches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids, $this->question->id);
 
         // If there are no matches.
         if (!$matches) {
@@ -114,7 +137,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
             }
 
             // Add the Rule accuracy section.
-            $accuracy = \qtype_pmatch\test_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+            $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
             $labelhtml = html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitemtitle');
             $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
                     'felement fselect', array('id' => 'fitem_accuracy_' . $count));
@@ -158,25 +181,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
             }
             $count++;
         }
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    private function check_has_responses() {
-        if (!$this->question || !property_exists($this->question, 'id')) {
-            return false;
-        }
-        if (property_exists($this->question, 'hasresponses')) {
-            return $this->question->hasresponses;
-        } else {
-            $questionobj = question_bank::load_question($this->question->id);
-            $this->question->questionobj = $questionobj;
-            $this->question->hasresponses = \qtype_pmatch\test_responses::has_responses($questionobj);
-            return $this->question->hasresponses;
-        }
-
     }
 
     /**
@@ -279,7 +283,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     protected function get_try_button() {
         $html = '';
-        if (!$this->check_has_responses()) {
+        if (!\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             return $html;
         }
         $button = '<input type="button" name="tryrule" value="Try rule" disabled="disabled">';
@@ -305,7 +309,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected function get_rc_content() {
         $html = html_writer::start_div('rule-creator rc-hidden');
-        $html .=  <<<EOT
+        $html .= <<<EOT
 <div>
     <div class="rc-notice"></div>
 </div>
@@ -352,6 +356,57 @@ EOT;
         $html .= html_writer::end_div();
         return $html;
     }
+
+    /*
+     * Adds the rule suggestion fields to the form
+     * @param object $mform
+     */
+    protected function add_rule_suggestion_fields($mform) {
+        $feedback = '';
+
+        // If the rule suggestion button has been pressed feedback how many rules were
+        // suggested.
+        if ($this->suggestedrules !== null) {
+            $rulecount = $this->suggestedrules ? count($this->suggestedrules) : 0;
+            $feedback = get_string('xrulesuggested', 'qtype_pmatch', $rulecount);
+        }
+
+        $textelement = $mform->createElement('static', 'answersuggesttext',
+                                                get_string('rulesuggestionlabel', 'qtype_pmatch'), $feedback);
+        $mform->insertElementBefore($textelement, 'topborder[0]');
+        $buttonelement = $mform->createElement('submit', 'answersuggestbutton',
+                                                get_string('rulesuggestionbutton', 'qtype_pmatch'));
+        $mform->insertElementBefore($buttonelement, 'topborder[0]');
+        $mform->registerNoSubmitButton('answersuggestbutton');
+    }
+
+    /**
+     * Retrieves suggested answers processes them and appends to the existing question answers.
+     * @param object $fromform form contents
+     */
+    protected function add_suggested_answers($mform) {
+        try {
+            $suggestedrules = \qtype_pmatch\amati_rule_suggestion::suggest_rules($mform, $this->question);
+            // Now we have removed duplicate and invalid rules we can store them for use later.
+            $this->suggestedrules = $suggestedrules;
+
+            // Formslib.php::repeat_elements checks the submitted form to
+            // establish the number of answer fields required. To accomdate the suggested
+            // rules we just added we must override this form parameter with the new
+            // number of answers.
+            $_POST['noanswers'] = count($this->question->options->answers);
+        } catch (moodle_exception $e) {
+            switch ($e->getMessage()) {
+                case 'No rules were suggested.':
+                    $this->suggestedrules = array();
+                    break;
+                default:
+                    $this->_form->setElementError('answersuggesttext', $e->getMessage());
+            }
+        }
+    }
+
+
 
     protected function data_preprocessing_other_answer($question) {
         // Special handling of otheranswer.

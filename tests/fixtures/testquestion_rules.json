@@ -1,0 +1,19 @@
+[
+{"id":1,"rule":"correct_response(A) :- term_in_response(A,tom)."},
+{"id":2,"rule":"correct_response(A) :- term_in_response(A,B,tom), term_in_response(A,C,harry)."},
+{"id":3,"rule":"correct_response(A) :- not term_in_response(A,B,harry)."},
+{"id":4,"rule":"correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry)."},
+{"id":5,"rule":"correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)."},
+{"id":6,"rule":"correct_response(A) :- template_in_response(A,tom)."},
+{"id":7,"rule":"correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry)."},
+{"id":8,"rule":"correct_response(A) :- not template_in_response(A,B,harry)."},
+{"id":9,"rule":"correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)."},
+{"id":10,"rule":"correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), precedes(B, C)."},
+{"id":11,"rule":"correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), closely_precedes(B, C)."},
+{"id":12,"rule":"correct_response(A) :- template_in_response(A,B,comp), term_in_response(A,C,tom), template_in_response(A,D,jane)."},
+{"id":13,"rule":"correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), not term_in_response(A,D,not)."},
+{"id":14,"rule":"correct_response(A) :- not template_in_response(A,B,annoy), term_in_response(A,C,dick), not term_in_response(A,D,dont)."},
+{"id":15,"rule":"correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,dick); term_in_response(A,D,harry), not template_in_response(A,E,annoy)."},
+{"id":16,"rule":"correct_response(A) :- term_in_response(A,dick)."},
+{"id":17,"rule":"correct_response(A) :- term_in_response(A,felicity)."}
+]

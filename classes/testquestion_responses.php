@@ -18,7 +18,7 @@
  * Defines the \qtype_pmatch\test responses class.
  *
  * @package   qtype_pmatch
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,20 +33,32 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  *
  * Manages the test responses associated with a given question.
  *
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class test_responses {
+class testquestion_responses {
 
     /** @var \question the question the test responses relate to. */
     protected $questionobj = null;
+
+    /**
+     * @var \testquestion_response[] placeholder for the test responses associated with the
+     * give question when \testquestion_controller stores an instance of \testquestion_responses
+     * a handler for the question it is working wth.
+     * @see testquestion_controller::__construct()
+     */
     protected $responses = null;
+
+    /** @var array lookup array linking responses to rules that match them. */
     public $rulematches = null;
+
+    /** SQL query fragment that determines which responses should be graded and part of the
+     * rule and question summary counts. */
     const SQLGRADED = 'AND expectedfraction IS NOT NULL AND gradedfraction IS NOT NULL';
 
     /**
      * Create an instance of this class representing a question with no saved test responses.
-     * @return test_responses
+     * @return \testquestion_responses
      */
     public static function create() {
         return new self();
@@ -55,7 +67,9 @@ class test_responses {
     /**
      * Create an instance of this class representing the saved test responses of a given question.
      * @param \question $questionobj the quiz.
-     * @return test_responses
+     * @see testquestion_controller::__construct()
+     * @param \question the question to prepare test responses for.
+     * @return \testquestion_responses
      */
     public static function create_for_question($questionobj) {
         $handler = self::create();
@@ -68,6 +82,8 @@ class test_responses {
 
     /**
      * Get all saved test responses for a question.
+     * @param int $questionid id of the question to get responses for.
+     * @return \testquestion_response[]
      */
     public static function get_responses_by_questionid($questionid) {
         global $DB;
@@ -77,6 +93,8 @@ class test_responses {
 
     /**
      * Get only the graded test responses for a question.
+     * @param int $questionid id of the question to get responses for.
+     * @return \testquestion_response[]
      */
     public static function get_graded_responses_by_questionid($questionid) {
         global $DB;
@@ -87,7 +105,9 @@ class test_responses {
     }
 
     /**
-     * Get all saved test responses details for a set of response ids.
+     * Get the test responses matching the given response ids from the DB.
+     * @param int[] $responseids ids of the \test_response items.
+     * @return \testquestion_response[]
      */
     public static function get_responses_by_ids($responseids) {
         global $DB;
@@ -96,25 +116,39 @@ class test_responses {
     }
 
     /**
-     * Convert the passed data
+     * Convert the passed data to test responses.
      * @param array $data data records to convert
      * @return test_response[] array of convert records as test_response objects
      */
     public static function data_to_responses($data) {
         $responses = array();
         foreach ($data as $datarow) {
-            $response = \qtype_pmatch\test_response::create($datarow);  // Ignore codechecker warning.
+            $response = \qtype_pmatch\testquestion_response::create($datarow);
             $responses[$response->id] = $response;
         }
         return $responses;
     }
 
     /**
-     * Save given responses to the database and return feedback on number saved and duplicates.
-     *
-     * Ugly to combine saving to the database with validating data but works for now.
+     * Convert the passed test_response objects to a data array.
+     * @param array $responses test_response objects convert
+     * @return array[]
      */
-    public static function add_responses ($responses) {
+    public static function responses_to_data($responses) {
+        $data = array();
+        foreach ($responses as $response) {
+            $datarow = array($response->id, $response->response, $response->expectedfraction);
+            $data[] = $datarow;
+        }
+        return $data;
+    }
+
+    /**
+     * Save given responses to the database and return feedback on number saved and duplicates.
+     * @param array $responses test_response objects convert
+     * @return \stdClass
+     */
+    public static function add_responses($responses) {
         global $DB;
 
         $feedback = new \stdClass();
@@ -143,8 +177,9 @@ class test_responses {
     }
 
     /**
-     * Update the database with the given test_response data
+     * Helper method to update the database with the given test_response data
      * @param \test_response $response updated response object
+     * @return bool
      */
     public static function update_response($response) {
         global $DB;
@@ -154,6 +189,7 @@ class test_responses {
     /**
      * Delete test_responses from the database with the given ids
      * @param array $responseids ids of responses to delete
+     * @return bool
      */
     public static function delete_responses_by_ids ($responseids) {
         global $DB;
@@ -162,10 +198,33 @@ class test_responses {
     }
 
     /**
-     * Return test response grade summary counts for the given question.
+     * Calculate and return the AMATI grading statistic for the given question.
+     *
+     * With the AMATI approach We calculate how good a question is at grading its given human marked
+     * response set correctly. The human mark tells us how many of the responses should be given
+     * a mark. The computer mark tells us what the question would give each response.
+     *
+     * By comparing the two we can determine how many responses were:
+     * 1) matched: the computer gives a mark a human would give
+     * 2) missed positive: The human marked it correct, the computer marked it incorrect
+     * 3) missed negative: The human marked it incorrect, the computer marked it correct
+     * 4) Ungraded: The computed mark is not available because the response has not been tested.
+     *
+     * To calculate these statistics we query the database. There are more DB calls than we would like
+     * and given that this is calculated each time the edit question form or the testquestion form is
+     * shown we need the calls to be as fast and light weight as possible.
+     *
+     * We tried to reduce the number of calls but couldn't find a way that would actually improve
+     * performance.
+     *
+     * To establish which grades to include in our calculations we exclude responses with either
+     * a null expectedfracttion or graded fraction. This is not ideal but for a pilot and for the
+     * current feature requirements this was acceptable.
+     *
+     * We use the constant self::SQLGRADED to keep this check in one place and easy to manage.
      * @return $counts \stdClass
      */
-    public static function get_grade_summary_counts($question) {
+    public static function get_question_grade_summary_counts($question) {
         global $DB;
         $counts = new \stdClass();
 
@@ -190,7 +249,8 @@ class test_responses {
         $counts->correct = $counts->correctlymarkedright + $counts->correctlymarkedwrong;
 
         // Get human marks v computer marks.
-        // Remove expectedfraction and gradedfraction as we are using count_records_sql and excluding null values.
+        // Remove expectedfraction and gradedfraction as we are using count_records_sql and excluding
+        // null values.
         unset($params['expectedfraction']);
         unset($params['gradedfraction']);
         $sqlhumanmarkedwrong = $sqlgraded . " AND expectedfraction = 0 AND gradedfraction IS NOT NULL";
@@ -208,6 +268,10 @@ class test_responses {
 
     /**
      * Does the given question have linked test responses?
+     *
+     * This method is called several times. I understand that
+     * moodle db handling will cache the result and not query the
+     * db excessively.
      * @return bool
      */
     public static function has_responses($question) {
@@ -236,8 +300,8 @@ class test_responses {
 
     /**
      * Grade the responses with the given rule and question.
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param \testquestion_response[] $responses response objects to grade
+     * @param \question_answer $rule Answer object containing the rule to grade with
      * @param qtype_pmatch_question question to do the grading
      */
     public static function grade_responses_by_rule($responses, $rule, $question) {
@@ -250,41 +314,38 @@ class test_responses {
     }
 
     /**
-     * Grade the responses with the given rule and question.
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
-     */
-    public static function get_individual_grade_accuracy($responses, $ruleid) {
-        $accuracy = array('positive' => 0, 'negative' => 0);
-
-        foreach ($responses as $response) {
-            if (!in_array($ruleid, $response->ruleids)) {
-                continue;
-            }
-
-            if ($response->expectedfraction) {
-                // Matches human expectation.
-                $accuracy['positive']++;
-            } else {
-                // Does not match human expectation.
-                $accuracy['negative']++;
-            }
-        }
-
-        return $accuracy;
-    }
-
-    /**
-     * Grade the responses with the given rule and question.
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
+     * Return accuracy statistics for the given rule.
+     *
+     * Amati uses the terms pos and neg differently for individual rules
+     * compared to the statistics for the whole question.
+     *
+     * Amati is focused entirely on creating rules that match correct reponses. Therefore
+     * amati doesn't like rules matching incorrect answers. So the statistics for the rule
+     * reflect this.
+     *
+     * For rule pos and neg mean:
+     * Pos: how many correct matches the rule makes
+     * Neg: how many incorrect matches the rule makes
+     * e.g. Pos = 15 Neg = 2
+     *
+     * The rule statistics are displayed on the question edit form along with a show
+     * coverage tool. The show coverage tool lets the author see the responses the
+     * statistics refer to.
+     *
+     * THese statistics show the author exactly how accurate each rule is so they can
+     * determine how it impacts the overall question accuracy.
+     * @param \test_response[]  $responses response objects to grade
+     * @param int $ruleid Id of rule
+     * @param array $matches lookup array matching ruleids to response ids from
+     *            self::get_rule_matches_for_responses
      */
     public static function get_rule_accuracy_counts($responses, $ruleid, $matches) {
         $accuracy = array('positive' => 0, 'negative' => 0);
 
         $responseids = array();
+        // The matches array lists the responseids that match each rule.
+        // This is how we quickly determine which responses to use for
+        // the calculation.
         if (array_key_exists($ruleid, $matches['ruleidstoresponseids'])) {
             $responseids = $matches['ruleidstoresponseids'][$ruleid];
         }
@@ -456,12 +517,13 @@ class test_responses {
     }
 
     /**
-     * Return a look up array linking the id of each respone with the ids of the rules
+     * Return a look up array linking the id of each response with the ids of the rules
      * that match it, and an opposite version linking each rule with the response it matches.
      *
      * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param \question_answer $rule Answer object containing the rule to grade with
      * @param qtype_pmatch_question question to do the grading
+     * @return array lookup array linking responses to rules that match them
      */
     public static function get_rule_matches_for_responses($responseids, $questionid) {
         global $DB;
@@ -518,7 +580,7 @@ class test_responses {
      * that match it, and an opposite version linking each rule with the response it matches.
      *
      * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param \question_answer $rule Answer object containing the rule to grade with
      * @param qtype_pmatch_question question to do the grading
      */
     public static function get_rule_matches_from_responses($responses) {
@@ -585,7 +647,7 @@ class test_responses {
     /**
      * Link each rule that matches the given response to it's order in its related question.
      *
-     * @param \qtype_pmatch\test_responses $testresponsehandler object the testresponses handler
+     * @param \qtype_pmatch\testquestion_responses $testresponsehandler object the testresponses handler
      * @param int $responseid id of the test response the rules much match
      * @retun array
      */
@@ -611,7 +673,7 @@ class test_responses {
      * array
      *
      * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer oobject containing the rule to grade with
+     * @param \question_answer $rule Answer object containing the rule to grade with
      * @param qtype_pmatch_question question to do the grading
      */
     public static function update_responses_with_ruleids($responses, $matches) {
@@ -624,6 +686,24 @@ class test_responses {
         }
     }
 
+    /**
+     * Rerieve and return valid test responses from a given csv file and feedback
+     * and problems that occurred.
+     *
+     * This is a helper method to quickly retrieve responses ready to save to the
+     * database and also provide feedback to users the problems that occurred.
+     *
+     * This was initially developed for Used by uploadresponses.php as part of the
+     * process of uploading responses. Later the unit and behat test classes used
+     * it to reduce duplication and ensure a consistent approach to loading
+     * responses from csv files.
+     *
+     * @param string $filepath path to the file
+     * @param object $question question object
+     * @param int $count the number of responses to load (optional)
+     * @throws coding_exception
+     * @return \qtype_pmatch\testquestion_response[] string[]
+     */
     public static function load_responses_from_file($filepath, $question, $count=0) {
         if (!$contents = file_get_contents($filepath)) {
             throw new coding_exception('Could not open testquestionresponses CSV file.');
@@ -677,7 +757,7 @@ class test_responses {
             }
 
             if (!$problem) {
-                $response = new \qtype_pmatch\test_response();
+                $response = new \qtype_pmatch\testquestion_response();
                 $response->questionid = $question->id;
                 $response->response = $text;
                 $response->expectedfraction = $score;

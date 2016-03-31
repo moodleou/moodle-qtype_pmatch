@@ -64,13 +64,13 @@ class qtype_pmatch extends question_type {
         $this->delete_files_in_hints($questionid, $contextid);
     }
 
-    public function save_question_options($question) {
+    public function save_question_options($questionform) {
         global $DB;
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
-                array('questionid' => $question->id), 'id ASC');
+                array('questionid' => $questionform->id), 'id ASC');
 
-        foreach ($question->synonymsdata as $key => $synonymfromform) {
+        foreach ($questionform->synonymsdata as $key => $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
             $word = trim($synonymfromform['word']);
             if ($word == '') {
@@ -81,7 +81,7 @@ class qtype_pmatch extends question_type {
             $synonym = array_shift($oldsynonyms);
             if (!$synonym) {
                 $synonym = new stdClass();
-                $synonym->questionid = $question->id;
+                $synonym->questionid = $questionform->id;
                 $synonym->synonyms = '';
                 $synonym->word = '';
                 $synonym->id = $DB->insert_record('qtype_pmatch_synonyms', $synonym);
@@ -98,31 +98,31 @@ class qtype_pmatch extends question_type {
             $DB->delete_records('qtype_pmatch_synonyms', array('id' => $oldsynonym->id));
         }
 
-        if (!isset($question->extenddictionary)) {
-            $question->extenddictionary = '';
+        if (!isset($questionform->extenddictionary)) {
+            $questionform->extenddictionary = '';
         }
-        $parentresult = parent::save_question_options($question);
+        $parentresult = parent::save_question_options($questionform);
+
         if ($parentresult !== null) {
             // Parent function returns null if all is OK.
             return $parentresult;
         }
 
-        $this->save_hints($question);
+        $this->save_hints($questionform);
 
-        $savedanswersresult = $this->save_answers($question);
+        $savedanswersresult = $this->save_answers($questionform);
 
-        $this->save_rule_matches($question);
+        $this->save_rule_matches($questionform);
 
         return $savedanswersresult;
     }
 
     protected function save_rule_matches($question) {
-
         // Purge this question from the cache.
         question_bank::notify_question_edited($question->id);
         $questionobj = question_bank::load_question($question->id);
         // If there are test responses grade them with the new answers and record matches.
-        \qtype_pmatch\test_responses::grade_responses_and_save_matches($questionobj);
+        \qtype_pmatch\testquestion_responses::grade_responses_and_save_matches($questionobj);
     }
 
     protected function save_answers($question) {

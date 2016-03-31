@@ -30,10 +30,10 @@ defined('MOODLE_INTERNAL') || die();
  *
  * A simple object representing one test response.
  *
- * @copyright 2015 The Open University
+ * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class test_response {
+class testquestion_response {
 
     /** @var string to identify the matched state. */
     const MATCHED = 'matched';

@@ -340,7 +340,7 @@ define(['jquery'], function($) {
                     // First term processing.
                     if (mystore[i].op === 'and' || mystore[i].op === 'or') {
                         // While match_ow works and was originally used here, please keep this
-                        // code in line with classes/test_rules.php.
+                        // code in line with classes/amati_rule_suggestion.php.
                         if (mystore[i].type === 'term') {
                             currentterm = 'match_w(' + mystore[i].term + ')';
                         } else {
