@@ -52,6 +52,15 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         $elepath = $this->get_pathfor('/synonyms/synonym');
         $paths[] = new restore_path_element($elename, $elepath);
 
+        $elename = 'test_response';
+        $elepath = $this->get_pathfor('/test_responses/test_response');
+        $paths[] = new restore_path_element($elename, $elepath);
+
+        $elename = 'rule_match';
+        //$elepath = $this->get_pathfor('/rule_matches/rule_match');
+        $elepath = $this->get_pathfor('/test_responses/test_response/rule_matches/rule_match');
+        $paths[] = new restore_path_element($elename, $elepath);
+
         return $paths; // And we return the interesting paths.
     }
 
@@ -103,4 +112,44 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         }
     }
 
+    /**
+     * Process the qtype/test_responses/test_response element.
+     */
+    public function process_test_response($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $oldquestionid   = $this->get_old_parentid('question');
+        $newquestionid   = $this->get_new_parentid('question');
+        $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
+
+        if ($questioncreated) {
+            $data->questionid = $newquestionid;
+            $newitemid = $DB->insert_record('qtype_pmatch_test_responses', $data);
+            // A mapping is required by the rule_match process below.
+            $this->set_mapping('test_response', $oldid, $newitemid);
+        }
+    }
+
+    /**
+     * Process the qtype/rule_matches/rule_match element.
+     */
+    public function process_rule_match($data) {
+        global $DB;
+
+        $data = (object)$data;
+
+        $oldquestionid   = $this->get_old_parentid('question');
+        $newquestionid   = $this->get_new_parentid('question');
+        $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
+
+        if ($questioncreated) {
+            $data->questionid = $newquestionid;
+            $data->testresponseid = $this->get_new_parentid('test_response');
+            $data->answerid = $this->get_mappingid('question_answer', $data->answerid);
+            $newitemid = $DB->insert_record('qtype_pmatch_rule_matches', $data);
+        }
+    }
 }

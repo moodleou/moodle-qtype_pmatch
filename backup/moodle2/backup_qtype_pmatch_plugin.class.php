@@ -59,15 +59,32 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
 
         $synonym = new backup_nested_element('synonym', array('id'), array('word', 'synonyms'));
 
+        $responses = new backup_nested_element('test_responses');
+        $response = new backup_nested_element('test_response', array('id'),
+                array('response', 'expectedfraction', 'gradedfraction'));
+
+        $matches = new backup_nested_element('rule_matches');
+        $match = new backup_nested_element('rule_match', array('id'),
+                array('answerid'));
+
         $pluginwrapper->add_child($pmatchoptions);
         $pluginwrapper->add_child($synonyms);
         $synonyms->add_child($synonym);
+        $pluginwrapper->add_child($responses);
+        $responses->add_child($response);
+        // Add matches within responses.
+        $response->add_child($matches);
+        $matches->add_child($match);
 
         // Set source to populate the data.
         $pmatchoptions->set_source_table('qtype_pmatch',
                                                     array('questionid' => backup::VAR_PARENTID));
         $synonym->set_source_table('qtype_pmatch_synonyms',
                                                     array('questionid' => backup::VAR_PARENTID));
+        $response->set_source_table('qtype_pmatch_test_responses',
+                array('questionid' => backup::VAR_PARENTID));
+        $match->set_source_table('qtype_pmatch_rule_matches',
+                array('testresponseid' => backup::VAR_PARENTID));
 
         // Don't need to annotate ids nor files.
 
