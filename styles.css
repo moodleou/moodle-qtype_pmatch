@@ -52,6 +52,7 @@ body#page-question-type-pmatch div[id^=fitem_id_][id*=fraction_],
 body#page-question-type-pmatch div.fitem.fitem_matchedresponses,
 body#page-question-type-pmatch div.fitem.fitem_accuracy,
 body#page-question-type-pmatch div.fitem.rcw,
+body#page-question-type-pmatch div.fitem.try-rule,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
     background: #EEE;
     margin-bottom: 0;
@@ -103,7 +104,7 @@ body#page-question-type-pmatch #fitem_id_addanswers {
     float: right;
     font-size: 0.7em;
 }
-#page-question-type-pmatch .rule-creator-wrapper input[type=submit] {
+#page-question-type-pmatch .rcw input[type=submit] {
     margin: 0 0 10px 5px;
 }
 #page-question-type-pmatch .rc-hidden {

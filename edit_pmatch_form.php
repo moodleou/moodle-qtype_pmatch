@@ -247,6 +247,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $title = $this->get_rc_title();
             $content = $this->get_rc_content();
             $repeated[] = $mform->createElement('static', 'rule-creator-wrapper', $title, $content);
+            if ($html = $this->get_try_button()) {
+                $repeated[] = $mform->createElement('html', $html);
+            }
         }
         $repeated[] = $mform->createElement('select', 'fraction',
                                                                 get_string('grade'), $gradeoptions);
@@ -257,6 +260,21 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $repeatedoptions['fraction']['default'] = 0;
         $answersoption = 'answers';
         return $repeated;
+    }
+
+    protected function get_try_button() {
+        $html = '';
+        if (!$this->question || !property_exists($this->question, 'id')) {
+            return $html;
+        }
+        $questionobj = question_bank::load_question($this->question->id);
+        if (!$hasrepsonses = \qtype_pmatch\test_responses::has_responses($questionobj)) {
+            return $html;
+        }
+        $button = '<input type="button" name="tryrule" value="Try rule" disabled="disabled">';
+        $result = html_writer::div('', 'try-rule-result');
+        $html .= html_writer::div($button . $result, 'fitem try-rule');
+        return $html;
     }
 
     /**
@@ -523,5 +541,6 @@ EOT;
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
         $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
+        $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
     }
 }

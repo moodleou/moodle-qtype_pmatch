@@ -1,0 +1,39 @@
+Try rule testcase.
+==================
+
+Test on new pmatch question:
+  Create a new blank pmatch question.
+    Check there is no Try rule button on any answer.
+  Add anything in the question name and text, and with match_w(a) in answer 1 textbox.
+  Click Save changes and continue editing.
+  At the bottom of the page click on preview.
+  In the preview window (popup) click on Test this question.
+  Use the upload responses link to upload a set of marked responses.
+PS you could use the following 12 lines if saved to a file called anything.csv:-
+first,line is ignored but required as first line of file.
+1,an apple is ok
+1,two apple maybe
+1,no apple is actually right
+0,a banana is not ok
+1,apple banana yep
+0,cherry apple (deliberately wrong!)
+1,apple pie is better
+1,apple apple
+0,pear banana orange
+1,apple
+1,some stuff before an apple
+Please note you will also need to ensure the Admin setting for Pattern match minresponses = 10.
+  Ensure these responses have been computer graded (use Test the question using these responses).
+  Return to the question edit page, refresh the page.
+    Check the Try rule button now shows against answer 1
+  Click on the Try rule button
+    Check the response is the same as currently displays (you may need to click on show coverage).
+  Now change the rule from match_w(a) to match_w(apple) and then click on Try rule again.
+    Check the response now shows the correct accuracy and coverage.
+  Please test for invalid or incorrect rules.
+  Now click Blanks for 3 More Answers
+  Find Answer 2 and add match_w(apple), then click the try rule.
+    Check the response now shows many lines in red - indicating that the rule finds the right
+    resonses, but the grade to be given is not what the human marker gave.
+  Correct the grade by choosing Grade 100% for Answer 2, and click the try rule again.
+    Check responses now changed colour.

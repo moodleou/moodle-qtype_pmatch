@@ -348,6 +348,81 @@ class test_responses {
     }
 
     /**
+     * Method providing results for trying a rule on a response set for a question,
+     * without storing anything back into the database.
+     * @param qtype_pmatch_question $question
+     * @param string $ruletxt
+     * @param int $grade must be 1 or 0.
+     * @return string
+     */
+    public static function try_rule($question, $ruletxt, $grade) {
+        $id = 0;
+        $fraction = 1.0;
+        $feedback = '';
+        $feedbackformat = 1;
+        $answer = new \question_answer($id, $ruletxt, $fraction, $feedback, $feedbackformat);
+        $expression = new \pmatch_expression($answer->answer);
+        if ($expression->is_valid()) {
+            $answer->answer = $expression->get_formatted_expression_string();
+        } else {
+            return \html_writer::div(get_string('tryrulenovalidrule', 'qtype_pmatch'));
+        }
+        $responses = self::get_graded_responses_by_questionid($question->id);
+        if (empty($responses)) {
+            return \html_writer::div(get_string('tryrulenogradedresponses', 'qtype_pmatch'));
+        }
+        $accuracy = array('positive' => 0, 'negative' => 0);
+        $responsematches = array();
+        foreach ($responses as $response) {
+            if (!$question->compare_response_with_answer(array('answer' => $response->response), $answer)) {
+                // Only responses that are matched by the rule need be considered further.
+                continue;
+            }
+            // Do not grade using $question->grade_response() as this returns the grade from the
+            // database. Rather use the fact that we have a match and rely on the grade from the
+            // form - that is how grade_response works anyway, but without a db hit.
+            if ($response->expectedfraction) {
+                $accuracy['positive']++;
+            } else {
+                $accuracy['negative']++;
+            }
+            if ($response->expectedfraction == $grade) {
+                if ($response->expectedfraction) {
+                    $responsematches[] = '<span>' .
+                            $response->id . ': ' . $response->response .
+                            '</span>';
+                } else {
+                    $responsematches[] = '<span>' .
+                            $response->id . ': ' . $response->response .
+                            '</span>';
+                }
+            } else {
+                if ($response->expectedfraction) {
+                    $responsematches[] = '<span class="qtype_pmatch-selftest-missed-negative">' .
+                            $response->id . ': ' . $response->response .
+                            '</span>';
+                } else {
+                    $responsematches[] = '<span class="qtype_pmatch-selftest-missed-positive">' .
+                            $response->id . ': ' . $response->response .
+                            '</span>';
+                }
+            }
+        }
+        // Prepare output.
+        if (empty($responsematches)) {
+            return \html_writer::div(get_string('tryrulenomatch', 'qtype_pmatch'));
+        } else {
+            $out = \html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'));
+            $out .= \html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy));
+            $out .= \html_writer::div(get_string('tryrulecoverage', 'qtype_pmatch'));
+            $out .= \html_writer::start_div();
+            $out .= \html_writer::alist($responsematches);
+            $out .= \html_writer::end_div();
+            return $out;
+        }
+    }
+
+    /**
      * Delete the record of each match between a rule and test response for a given question.s
      * @param qtype_pmatch_question question
      */
