@@ -320,13 +320,17 @@ class test_responses {
         } else {
             $responses = self::get_responses_by_ids($responseids);
         }
-        $questionid = $question->id;
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         foreach ($responses as $response) {
+            // Do not re-grade responses that have not already been graded.
             if (!is_double($response->gradedfraction) || !is_double($response->expectedfraction)) {
                 continue;
             }
             foreach ($rules as $aid => $rule) {
+                // Do not grade responses for answers that are 'catch all' (any other answer).
+                if ($rule->answer == '*') {
+                    continue;
+                }
                 $match = false;
                 $match = $question->compare_response_with_answer(
                                                     array('answer' => $response->response), $rule);
