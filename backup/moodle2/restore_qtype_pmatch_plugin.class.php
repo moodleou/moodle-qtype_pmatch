@@ -57,7 +57,6 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         $elename = 'rule_match';
-        //$elepath = $this->get_pathfor('/rule_matches/rule_match');
         $elepath = $this->get_pathfor('/test_responses/test_response/rule_matches/rule_match');
         $paths[] = new restore_path_element($elename, $elepath);
 

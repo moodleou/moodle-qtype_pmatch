@@ -24,10 +24,9 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
-    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
-    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
-    # Now mark one response only.
-    When I set the field with xpath "//td[@id='qtype-pmatch-testquestion_r1_c0']/input" to "1"
+    And I should see "1" in the "testing one two three four" "table_row"
+    # Now mark responses in order to test their backup.
+    When I click on "Select all" "link"
     And I press "Test the question using these responses"
     And I press "Continue"
     # Make a backup and restore to new course.
@@ -46,11 +45,10 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And I follow "Preview"
     And I switch to "questionpreview" window
     And I follow "Test this question"
+    # Final check that the marked responses have been restored properly.
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
-    # Now check the marked row - this will have moved to a different row during restore - so re-order.
-    When I follow "Computed mark"
-    And I should see "testing" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
-    And I should see "0" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
-    And I should see "0" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
-    And I should see "2" in the "#qtype-pmatch-testquestion_r0_c2" "css_element"
-    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r1_c5" "css_element"
+    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
+    And I should see "1" in the "#qtype-pmatch-testquestion_r0_c2" "css_element"
+    And I should see "Pos=1/7 Neg=6/6 Unm=0 Acc=54%"
