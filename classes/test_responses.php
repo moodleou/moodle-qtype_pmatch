@@ -331,6 +331,11 @@ class test_responses {
                 if ($rule->answer == '*') {
                     continue;
                 }
+                // Prevent rule matches being saved if the rule grade is 0. Amati has no
+                // equivalent to a grade of 0, and saving these makes the show coverage confusing.
+                if ($rule->fraction == 0) {
+                    continue;
+                }
                 $match = false;
                 $match = $question->compare_response_with_answer(
                                                     array('answer' => $response->response), $rule);
