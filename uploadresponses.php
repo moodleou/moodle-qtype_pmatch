@@ -16,8 +16,9 @@
 
 
 /**
- * This is a quick and dirty script to test a question against a list of
- * responses in a .csv file.
+ * This script allows an author to upload a .csv file listing marked test responses to a question.
+ * The responses are graded using the current rules and rule matches are recorded.
+ * This allows calculation and display of the accuracy of the question and each rule.
  *
  * The CSV file should contain two columns, the first contains 0 or 1 (or
  * any number between) for whether that response should be considered correct.
@@ -35,23 +36,20 @@ require_once($CFG->libdir . '/formslib.php');
 
 /**
  * The upload form.
- *
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_pmatch_test_form extends moodleform {
+class upload_form extends moodleform {
     protected function definition() {
-        $this->_form->addElement('header', 'header', get_string('testquestionformheader', 'qtype_pmatch'));
-
-        $this->_form->addElement('static', 'help', '', get_string('testquestionforminfo', 'qtype_pmatch'));
-
-        $this->_form->addElement('filepicker', 'responsesfile', get_string('testquestionformuploadlabel', 'qtype_pmatch'));
+        $this->_form->addElement('header', 'header',
+                get_string('testquestionformheader', 'qtype_pmatch'));
+        $this->_form->addElement('static', 'help', '',
+                get_string('testquestionforminfo', 'qtype_pmatch'));
+        $this->_form->addElement('filepicker', 'responsesfile',
+                get_string('testquestionformuploadlabel', 'qtype_pmatch'));
         $this->_form->addRule('responsesfile', null, 'required', null, 'client');
-
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
-
-        $this->_form->addElement('submit', 'submitbutton', get_string('testquestionuploadresponses', 'qtype_pmatch'));
+        $this->_form->addElement('submit', 'submitbutton',
+                get_string('testquestionuploadresponses', 'qtype_pmatch'));
     }
 }
 
@@ -63,69 +61,58 @@ if ($questiondata->qtype != 'pmatch') {
 }
 
 require_login();
-question_require_capability_on($questiondata, 'view');
-$canedit = question_has_capability_on($questiondata, 'edit');
+question_require_capability_on($questiondata, 'edit');
 
 $question = question_bank::load_question($questionid);
 $context = context::instance_by_id($question->contextid);
+$url = new moodle_url('/question/type/pmatch/uploadresponses.php', array('id' => $questionid));
+$title = get_string('testquestionformtitle', 'qtype_pmatch');
 
-$PAGE->set_url('/question/type/pmatch/uploadresponses.php', array('id' => $questionid));
+$PAGE->set_url($url);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('testquestionformtitle', 'qtype_pmatch'));
-$PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
+$PAGE->set_title($title);
 
-if ($context->contextlevel == CONTEXT_MODULE) {
-    // Calling $PAGE->set_context should be enough, but it seems that it is not.
-    // Therefore, we get the right $cm and $course, and set things up ourselves.
-    $cm = get_coursemodule_from_id(false, $context->instanceid, 0, false, MUST_EXIST);
-    $PAGE->set_cm($cm, $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST));
-}
-
-$form = new qtype_pmatch_test_form($PAGE->url);
+$form = new upload_form();
 $form->set_data(array('id' => $questionid));
 
+$renderer = $PAGE->get_renderer('qtype_pmatch');
+$link = $renderer->back_to_test_question_link($questionid);
+
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('testquestionformtitle', 'qtype_pmatch') . ': ' .
+echo $OUTPUT->heading($title . ': ' .
         get_string('testquestionheader', 'qtype_pmatch', format_string($questiondata->name)));
 
 // Display link back to test question.
-echo html_writer::tag('p', html_writer::link(new moodle_url('/question/type/pmatch/testquestion.php',
-        array('id' => $questionid)), 'Back to Test question'));
+echo $link;
 
 if ($fromform = $form->get_data()) {
     $filename = $form->get_new_filename('responsesfile');
 
-    make_temp_directory('questionimport');
-    $responsefile = "{$CFG->tempdir}/questionimport/{$filename}";
+    $path = make_temp_directory('questionimport');
+    $responsefile = $path . '/' . $filename;
     if (!$result = $form->save_file('responsesfile', $responsefile, true)) {
         throw new moodle_exception('uploadproblem');
     }
 
-    list($responses, $problems) = qtype_pmatch\test_responses::load_responses_from_file($responsefile, $question);
+    list($responses, $problems) = \qtype_pmatch\test_responses::load_responses_from_file(
+            $responsefile, $question);
 
     // Save responses to the database.
     $feedback = \qtype_pmatch\test_responses::add_responses($responses);
     $feedback->problems = $problems;
+    // Because this process could take a long time if there are a large number of responses
+    // and a large number of rules, we could add a spinner or other indicator of progress here.
+    // The best rule of thumb is to keep the number of responses under 100 if the number of
+    // rules is greater than maybe 10. More responses are OK if there are fewer rules.
+    \qtype_pmatch\test_responses::grade_responses_and_save_matches($question);
 
-    // Display feedback.
-    echo html_writer::div(get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved)));
-    if (count($feedback->duplicates)) {
-        echo html_writer::div(get_string('xresponsesduplicated', 'qtype_pmatch', (count($feedback->duplicates))));
-        echo html_writer::alist($feedback->duplicates);
-    }
-
-    if (count($feedback->problems)) {
-        echo html_writer::div(get_string('xresponsesproblems', 'qtype_pmatch', (count($feedback->problems))));
-        echo html_writer::alist($feedback->problems);
-    }
+    echo $renderer->display_feedback($feedback);
 
     echo $OUTPUT->heading(get_string('testquestionuploadanother', 'qtype_pmatch'));
 }
 
 $form->display();
 
-// Display link back to test question.
-echo html_writer::tag('p', html_writer::link(new moodle_url('/question/type/pmatch/testquestion.php',
-        array('id' => $questionid)), 'Back to Test question'));
+echo $link;
 
 echo $OUTPUT->footer();

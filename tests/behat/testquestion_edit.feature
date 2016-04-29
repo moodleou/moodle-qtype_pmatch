@@ -42,7 +42,7 @@ Feature: Test answer accuracy and response coverage
     And I press "Test the question using these responses"
     Then I should see "Processing response 13 of 13: ."
     And I press "Continue"
-    Then I should see "Pos=1/7 Neg=6/6 Unm=0 Acc=54%"
+    Then I should see "Pos=1/6 Neg=6/6 Unm=1 Acc=58%"
     # Now check edit question page for updated accuracy and coverage.
     When I switch to the main window
     And I am on homepage

@@ -51,4 +51,4 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c2" "css_element"
-    And I should see "Pos=1/7 Neg=6/6 Unm=0 Acc=54%"
+    And I should see "Pos=1/6 Neg=6/6 Unm=1 Acc=58%"

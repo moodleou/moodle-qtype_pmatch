@@ -35,7 +35,7 @@ Feature: Test the try rule feature
   Scenario: Create, edit then preview a pattern match question.
     # Confirm list responses is correct.
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
-    And I should see "(Pos=1/7 Neg=6/6 Unm=0 Acc=54%)"
+    And I should see "(Pos=1/6 Neg=6/6 Unm=1 Acc=58%)"
     And I switch to the main window
     # The page needs refreshing now.
     And I navigate to "Question bank" node in "Course administration"

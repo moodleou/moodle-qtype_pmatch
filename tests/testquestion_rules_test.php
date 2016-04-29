@@ -76,7 +76,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->currentquestion = $this->create_default_question();
         $rules = $this->currentquestion->get_answers();
         $rule = $rules[array_keys($rules)[0]];
-        $responses = $this->load_default_responses("fixtures/shortanswerquestion_gradedresponses.csv");
+        $responses = $this->load_default_responses();
 
         $responseids = array_keys($responses);
         $compareresponses = \qtype_pmatch\test_responses::get_responses_by_ids($responseids);
@@ -107,7 +107,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->currentquestion = $this->create_default_question();
         $rules = $this->currentquestion->get_answers();
         $rule = $rules[array_keys($rules)[0]];
-        $responses = $this->load_default_responses("fixtures/shortanswerquestion_gradedresponses.csv");
+        $responses = $this->load_default_responses();
 
         $compareaccuracy = array('positive' => 3, 'negative' => 1);
 
@@ -127,10 +127,9 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->currentquestion = $this->create_default_question();
         $rules = $this->currentquestion->get_answers();
         $rule = $rules[array_keys($rules)[0]];
-        $path = "fixtures/shortanswerquestion_gradedresponses.csv";
-        $responses = $this->load_default_responses($path);
+        $responses = $this->load_default_responses();
         // Update computer marked grade from fixture and saved to DB.
-        $this->update_response_grades_from_file($responses, $path);
+        $this->update_response_grades_from_file($responses);
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
 
@@ -151,8 +150,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
     public function test_regrading() {
         global $DB;
         $this->resetAfterTest();
-        $path = "fixtures/shortanswerquestion_gradedresponses.csv";
-        $responses = $this->load_default_responses($path);
+        $responses = $this->load_default_responses();
         $tomcat = $tomdickharry = '';
         foreach ($responses as $r) {
             if ($r->response == 'Tom Dick or Harry') {
@@ -165,7 +163,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->assertTrue(is_null($tomdickharry));
         $this->assertTrue(is_null($tomcat));
         // Update computer marked grade from fixture and saved to DB.
-        $this->update_response_grades_from_file($responses, $path);
+        $this->update_response_grades_from_file($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
         foreach ($dbresponses as $r) {
             if ($r->response == 'Tom Dick or Harry') {
@@ -178,7 +176,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $this->assertEquals(1.0, $tomdickharry);
         $this->assertEquals(1.0, $tomcat); // Note fixture file has computer mark incorrect.
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
-        \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
+        \qtype_pmatch\test_responses::grade_responses_and_save_matches($this->currentquestion);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
         foreach ($dbresponses as $r) {
             if ($r->response == 'Tom Dick or Harry') {
@@ -194,7 +192,7 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         $rules = $this->currentquestion->get_answers();
         $rules[13]->answer = 'match_w(Tomcat)';
         $this->currentquestion->answers = $rules;
-        \qtype_pmatch\test_responses::save_rule_matches($this->currentquestion);
+        \qtype_pmatch\test_responses::grade_responses_and_save_matches($this->currentquestion);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
         foreach ($dbresponses as $r) {
             if ($r->response == 'Tom Dick or Harry') {
@@ -215,10 +213,9 @@ class qtype_pmatch_testquestion_test_rules extends qtype_pmatch_testquestion_tes
         global $DB;
         $this->resetAfterTest();
 
-        $path = "fixtures/shortanswerquestion_gradedresponses.csv";
-        $responses = $this->load_default_responses($path);
+        $responses = $this->load_default_responses();
         // Update computer marked grade from fixture and saved to DB.
-        $this->update_response_grades_from_file($responses, $path);
+        $this->update_response_grades_from_file($responses);
 
         $rules = $this->currentquestion->get_answers();
         // Remove last rule.

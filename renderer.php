@@ -171,7 +171,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
     /**
      * Displays a link to run the question tests, if applicable.
-     * @param qtype_stack_question $question
+     * @param qtype_pmatch_question $question
      * @param question_display_options $options
      * @return string HTML fragment.
      */
@@ -188,5 +188,26 @@ class qtype_pmatch_renderer extends qtype_renderer {
                 get_string('testthisquestion', 'qtype_pmatch'));
 
         return html_writer::tag('div', $link, array('class' => 'questiontestslink'));
+    }
+
+    public function back_to_test_question_link($qid) {
+        return html_writer::tag('p', html_writer::link(
+                new moodle_url('/question/type/pmatch/testquestion.php', array('id' => $qid)),
+                get_string('testquestionbacklink', 'qtype_pmatch')));
+    }
+
+    public function display_feedback($feedback) {
+        $html = html_writer::div(get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved)));
+        if (count($feedback->duplicates)) {
+            $html .= html_writer::div(get_string('xresponsesduplicated', 'qtype_pmatch',
+                    (count($feedback->duplicates))));
+            $html .= html_writer::alist($feedback->duplicates);
+        }
+        if (count($feedback->problems)) {
+            $html .= html_writer::div(get_string('xresponsesproblems', 'qtype_pmatch',
+                    (count($feedback->problems))));
+            $html .= html_writer::alist($feedback->problems);
+        }
+        return $html;
     }
 }

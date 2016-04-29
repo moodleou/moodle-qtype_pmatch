@@ -39,7 +39,8 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  */
 class qtype_pmatch_testquestion_testcase extends advanced_testcase {
 
-    public static $responsesfilepath = "fixtures/shortanswerquestion_gradedresponses.csv";
+    public static $responsesfilepath = "fixtures/testresponses.csv";
+    public static $gradedresponses = "fixtures/testresponsesgraded.csv";
     protected $currentquestion = null; // Holder for the current question object.
 
     /**
@@ -89,7 +90,10 @@ class qtype_pmatch_testquestion_testcase extends advanced_testcase {
      *
      * To match up with a set of responses.
      */
-    protected function load_graded_data($pathtoresponses) {
+    protected function load_graded_data($pathtoresponses = null) {
+        if (empty($pathtoresponses)) {
+            $pathtoresponses = self::$gradedresponses;
+        }
         $absolutepath = dirname(__FILE__) . '/' . $pathtoresponses;
 
         $handle = fopen($absolutepath, 'r');
@@ -109,7 +113,7 @@ class qtype_pmatch_testquestion_testcase extends advanced_testcase {
     /**
      * Update the computer grade for each response using the grades in the given file.
      */
-    protected function update_response_grades_from_file($responses, $pathtoresponses) {
+    protected function update_response_grades_from_file($responses, $pathtoresponses = null) {
         $gradeddata = $this->load_graded_data($pathtoresponses);
 
         // Update computer marked grade.

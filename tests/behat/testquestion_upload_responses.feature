@@ -33,6 +33,6 @@ Feature: Test uploading test responses in the pattern match test this question f
     And I upload "question/type/pmatch/tests/fixtures/myfirstquestion_responses.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
     And I should see "Saved 13 responses"
-    And I should see "The following 3 responses were not saved"
-    And I should see "Each row should contain exactly two items, a numerical mark and a response. Row 11 contains 3 items."
+    And I should see "The following 1 responses were not saved"
+    And I should see "Each row should contain exactly two items, a numerical mark and a response. Row 11 contains 3 item(s)."
     And I should see "Upload another file"

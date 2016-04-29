@@ -307,17 +307,19 @@ class test_responses {
     }
 
     /**
-     * Save a record of of each match between a rule and test response.s
+     * Save a record of of each match between a rule and a graded test response.
      * @param qtype_pmatch_question question to do the grading
      * @param array $responseids an array of response ids that need rule matching.
      */
-    public static function save_rule_matches($question, $responseids=null) {
+    public static function save_rule_matches($question, $responseids=array()) {
         global $DB;
 
         $rules = $question->get_answers();
         if (empty($responseids)) {
+            self::delete_rule_matches($question);
             $responses = self::get_graded_responses_by_questionid($question->id);
         } else {
+            self::delete_rule_matches($question, $responseids);
             $responses = self::get_responses_by_ids($responseids);
         }
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
@@ -340,16 +342,26 @@ class test_responses {
                 $match = $question->compare_response_with_answer(
                                                     array('answer' => $response->response), $rule);
                 if ($match) {
-                    $response->ruleids[] = $aid;
-                    $rulematch = new \stdclass();
-                    $rulematch->answerid = $rule->id;
-                    $rulematch->testresponseid = $response->id;
-                    $rulematch->questionid = $question->id;
-                    $DB->insert_record('qtype_pmatch_rule_matches', $rulematch);
+                    $rulematch = array();
+                    $rulematch['answerid'] = $rule->id;
+                    $rulematch['testresponseid'] = $response->id;
+                    $rulematch['questionid'] = $question->id;
+                    $DB->insert_record('qtype_pmatch_rule_matches', (object)$rulematch);
                 }
             }
+        }
+    }
+
+    /**
+     * Grade all responses and save rule matches for a question.
+     * @param qtype_pmatch_question $question
+     */
+    public static function grade_responses_and_save_matches($question) {
+        $responses = self::get_responses_by_questionid($question->id);
+        foreach ($responses as $response) {
             self::grade_response($response, $question);
         }
+        self::save_rule_matches($question);
     }
 
     /**
@@ -429,10 +441,18 @@ class test_responses {
     /**
      * Delete the record of each match between a rule and test response for a given question.s
      * @param qtype_pmatch_question question
+     * @param array $responseids Optional array of response ids
      */
-    public static function delete_rule_matches($question) {
+    public static function delete_rule_matches($question, $responseids=array()) {
         global $DB;
-        $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $question->id));
+        if (empty($responseids)) {
+            $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $question->id));
+        } else {
+            list ($sql, $params) = $DB->get_in_or_equal($responseids);
+            $params[] = $question->id;
+            $DB->delete_records_select('qtype_pmatch_rule_matches',
+                    "testresponseid $sql AND questionid = ?", $params);
+        }
     }
 
     /**
@@ -457,8 +477,9 @@ class test_responses {
 
         // Get the response ids for the question.
         $sql = "SELECT id, testresponseid, answerid FROM {qtype_pmatch_rule_matches}
-                    WHERE questionid='" . $questionid . "' AND
-                            testresponseid IN(". implode(',', $responseids) . ")";
+                    WHERE questionid='" . $questionid . "'
+                    AND testresponseid IN(". implode(',', $responseids) . ")
+                    ORDER BY testresponseid ASC";
         $data = $DB->get_records_sql($sql);
 
         foreach ($data as $record) {
@@ -603,53 +624,70 @@ class test_responses {
         }
     }
 
-    public static function load_responses_from_file($filepath, $question) {
-        global $CFG;
-
-        $handle = fopen($filepath, 'r');
-        if (!$handle) {
+    public static function load_responses_from_file($filepath, $question, $count=0) {
+        if (!$contents = file_get_contents($filepath)) {
             throw new coding_exception('Could not open testquestionresponses CSV file.');
         }
-
-        $alldata = array();
+        $lines = str_getcsv($contents, "\n");
         $responses = array();
         $problems = array();
         $row = 0;
-        while (($data = fgetcsv($handle)) !== false) {
+        foreach ($lines as $line) {
             $row += 1;
             $problem = false;
             if ($row == 1) {
                 continue; // Skipping header row or comment.
             }
+            if (empty($line)) {
+                continue;
+            }
+            $data = str_getcsv($line, ',');
 
             if (!is_numeric($data[0])) {
-                $problems[] = get_string('testquestionuploadexpectedfractionnull', 'qtype_pmatch',
-                                    $row);
-                $problem = true;
+                // The first column of the uploaded file should contain a human mark
+                // for the response text in the next column.
+                // There has been a request to allow unmarked responses within the upload file.
+                // Previously this check would have placed an entry in the problems array.
+                $score = null;
+            } else {
+                $score = (float)$data[0];
             }
+
+            if (is_null($score) && empty($data[1])) {
+                // Ignore blank rows.
+                continue;
+            }
+
             if (count($data) !== 2) {
                 $problems[] = get_string('testquestionuploadrowhastwoitems', 'qtype_pmatch',
                                     array('row' => $row, 'items' => count($data)));
-            }
-
-            // Remove special characters.
-            $data[1] = fix_utf8($data[1]);
-            if (count($data) >= 2 && fix_utf8($data[1]) !== $data[1]) {
-                $problems[] = get_string('testquestionuploadrownotvalidutf8', 'qtype_pmatch',
-                                    $row);
                 $problem = true;
             }
 
-            $alldata[$row] = $data;
+            if (!$problem) {
+                // Only utf8 characters are allowed.
+                $text = fix_utf8($data[1]);
+                if ($text !== $data[1]) {
+                    $problems[] = get_string('testquestionuploadrownotvalidutf8', 'qtype_pmatch',
+                                        $row);
+                    $problem = true;
+                } else {
+                    $text = trim($text);
+                }
+            }
+
             if (!$problem) {
                 $response = new \qtype_pmatch\test_response();
                 $response->questionid = $question->id;
-                $response->response = $data[1];
-                $response->expectedfraction = $data[0];
+                $response->response = $text;
+                $response->expectedfraction = $score;
                 $responses[] = $response;
+                // If we have loaded the right number of responses stop.
+                if ($count && $row > $count) {
+                    break;
+                }
             }
         }
-        fclose($handle);
 
         return array($responses, $problems);
     }

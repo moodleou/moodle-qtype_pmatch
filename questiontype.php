@@ -120,13 +120,9 @@ class qtype_pmatch extends question_type {
 
         // Purge this question from the cache.
         question_bank::notify_question_edited($question->id);
-        // If there are test responses grade them with the new answers and record matches.
         $questionobj = question_bank::load_question($question->id);
-        // Delete existing rule matches for the question.
-        \qtype_pmatch\test_responses::delete_rule_matches($questionobj);
-
-        // Save rule matches for the question.
-        \qtype_pmatch\test_responses::save_rule_matches($questionobj);
+        // If there are test responses grade them with the new answers and record matches.
+        \qtype_pmatch\test_responses::grade_responses_and_save_matches($questionobj);
     }
 
     protected function save_answers($question) {
@@ -323,6 +319,8 @@ class qtype_pmatch extends question_type {
     public function delete_question($questionid, $contextid) {
         global $DB;
         $DB->delete_records('qtype_pmatch_synonyms', array('questionid' => $questionid));
+        $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $questionid));
+        $DB->delete_records('qtype_pmatch_test_responses', array('questionid' => $questionid));
 
         parent::delete_question($questionid, $contextid);
     }

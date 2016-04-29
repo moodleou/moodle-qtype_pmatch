@@ -48,6 +48,9 @@ define(['jquery'], function($) {
                     var x = iden.slice(0, -1) + '1';
                     var id = $(this).prevAll('#' + x).text();
                     var val = $(this).text();
+                    if (val === '') {
+                        val = '&nbsp;&nbsp;'; // Two spaces looks better than one.
+                    }
                     // Make the Human marks column items clickable (updateable).
                     $(this).html('<a href="#" title="Change score" id="updater-ef_' + id + '">' +
                             val + '</a>');

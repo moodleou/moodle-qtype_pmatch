@@ -163,8 +163,8 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 15);
-        $this->assertEquals($feedback->saved, 15);
+        $this->assertEquals(count($dbresponses), 18);
+        $this->assertEquals($feedback->saved, 18);
         $this->assertEquals(count($feedback->duplicates), 0);
 
         // Test for duplicates by adding responses for the second time.
@@ -172,9 +172,9 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 15);
+        $this->assertEquals(count($dbresponses), 18);
         $this->assertEquals($feedback->saved, 0);
-        $this->assertEquals(count($feedback->duplicates), 15);
+        $this->assertEquals(count($feedback->duplicates), 18);
 
         // Add the same data for a different question.
         $response = $responses[0];
@@ -184,7 +184,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
-        $this->assertEquals(count($dbresponses), 16);
+        $this->assertEquals(count($dbresponses), 19);
         $this->assertEquals($feedback->saved, 1);
         $this->assertEquals(count($feedback->duplicates), 0);
     }
@@ -239,17 +239,16 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         global $DB;
         $this->resetAfterTest();
 
-        $path = "fixtures/shortanswerquestion_gradedresponses.csv";
-        $responses = $this->load_default_responses($path);
+        $responses = $this->load_default_responses();
 
         $expectedcounts = $counts = new \stdClass();
         $expectedcounts->correct = 0;
-        $expectedcounts->total = 15;
+        $expectedcounts->total = 18;
         $expectedcounts->correctlymarkedright = 0;
         $expectedcounts->correctlymarkedwrong = 0;
         $expectedcounts->humanmarkedright = 0;
         $expectedcounts->humanmarkedwrong = 0;
-        $expectedcounts->ungraded = 15;
+        $expectedcounts->ungraded = 18;
         $expectedcounts->graded = 0;
         $expectedcounts->accuracy = 0;
 
@@ -263,17 +262,17 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         $params['gradedfraction'] = 0;
 
         // Update computer marked grade from fixture and saved to DB.
-        $this->update_response_grades_from_file($responses, $path);
+        $this->update_response_grades_from_file($responses);
 
         // Update expectations.
         $expectedcounts = $counts = new \stdClass();
         $expectedcounts->correct = 8;
-        $expectedcounts->total = 15;
+        $expectedcounts->total = 18;
         $expectedcounts->correctlymarkedright = 4;
         $expectedcounts->correctlymarkedwrong = 4;
         $expectedcounts->humanmarkedright = 7;
         $expectedcounts->humanmarkedwrong = 6;
-        $expectedcounts->ungraded = 2;
+        $expectedcounts->ungraded = 5;
         $expectedcounts->graded = 13;
         $expectedcounts->accuracy = 62.0;
 
@@ -291,7 +290,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         global $DB;
         $this->resetAfterTest();
 
-        $responses = $this->load_default_responses("fixtures/shortanswerquestion_gradedresponses.csv");
+        $responses = $this->load_default_responses();
 
         // Test grading for a correct response.
         foreach ($responses as $r) {
@@ -325,13 +324,14 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
     }
 
     /**
-     * Test load_responses.
+     * Test load_responses using the helper. This was the original method prior to the amati
+     * testquestion as used above.
      */
     public function test_load_responses_from_file() {
         $this->resetAfterTest();
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
         $question->id = 1;
-        $responsesfile = '/fixtures/myfirstquestion_responses.csv';
+        $responsesfile = 'fixtures/myfirstquestion_responses.csv';
         list($responses, $problems) = $this->load_responses($question, $responsesfile);
 
         // Create expected responses.
@@ -345,10 +345,10 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
                     array(0, "for"),
                     array(0, "free"),
                     array(0, "€£¥©®™±≠≤≥÷×∞µαβπΩ∑"),
-                    array(1, "!\"£$%^&*()_+-=[]{}:@~;'#"),
                     array(0, "one not two but three and four."),
                     array(1, "another test"),
-                    array(0, '')
+                    array(null, 'testing anything.'),
+                    array(null, '')
         );
         $expectedresponses  = array();
         foreach ($data as $datarow) {
@@ -362,9 +362,7 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         // Test problems.
         $expectedproblems = array(
                 'Each row should contain exactly two items, a numerical mark and a response.' .
-                    ' Row <b>11</b> contains <b>3</b> items.',
-                'The expected mark in row <b>12</b> is empty. The input must be a number.',
-                'The expected mark in row <b>15</b> is empty. The input must be a number.'
+                    ' Row <b>11</b> contains <b>3</b> item(s).'
                     );
 
         $this->assertEquals($expectedproblems, $problems);
