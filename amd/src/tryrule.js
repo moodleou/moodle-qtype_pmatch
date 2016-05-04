@@ -39,7 +39,7 @@ define(['jquery'], function($) {
         enablebtn: [],
 
         /**
-         * Initialise the rule creation assistant button.
+         * Initialise the try rule button.
          *
          * @param {String} title the title of the dialogue.
          */
@@ -48,7 +48,7 @@ define(['jquery'], function($) {
             t.pendingid = 'tryrule_' + Math.random().toString(36).slice(2); // Random string.
             var base = window.location;
             t.baseUrl = base.protocol + '//' + base.host +
-                    base.pathname.replace('question.php', 'type/pmatch/api/tryrule.php');
+                    base.pathname.replace('question.php', 'type/pmatch/api/api.php');
             t.sessKey = $('#mform1 input[name="sesskey"]').val();
             t.qid = $('#mform1 input[name="id"]').val();
             // Add ids to try rule buttons.
@@ -84,9 +84,9 @@ define(['jquery'], function($) {
                 return false;
             }
             var display = $('#id_tryrule_' + id).next();
-            var grade = $('#id_fraction_' + id).val();
+            var fraction = $('#id_fraction_' + id).val();
             // Send request for tryrule result.
-            var data = {qid: t.qid, ruletxt: rule, sesskey: t.sessKey, grade: grade};
+            var data = {type: 'tryrule', qid: t.qid, ruletxt: rule, sesskey: t.sessKey, fraction: fraction};
             $.post(t.baseUrl, data, function(result) {
                 // Display feedback to the user.
                 display.html(result);

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Ajax endpoint for try rule.
+ * Ajax endpoint for pmatch.
  *
  * @package question
  * @subpackage qtype_pmatch/tryrule
@@ -27,6 +27,7 @@ define('AJAX_SCRIPT', true);
 
 require_once('../../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
+require_once('locallib.php');
 
 try {
     require_login();
@@ -38,10 +39,8 @@ try {
     die();
 }
 
-$qid = optional_param('qid', 0, PARAM_INT);
-$ruletxt = optional_param('ruletxt', '', PARAM_RAW);
-$grade = unformat_float(optional_param('grade', '1.0', PARAM_RAW));
 try {
+    $qid = required_param('qid', PARAM_INT);
     $question = question_bank::load_question($qid);
 } catch (Exception $e) {
     $return = 'Question id error: ' . $e->getMessage();
@@ -50,18 +49,34 @@ try {
     die();
 }
 
+try {
+    $type = required_param('type', PARAM_ALPHA);
+} catch (Exception $e) {
+    $return = 'API call type error: ' . $e->getMessage();
+    header('Content-type: application/json');
+    echo json_encode($return);
+    die();
+}
+
 if (!$question || !is_a($question->qtype, 'qtype_pmatch')) {
     $return = 'The question id is not a pattern match question.';
-} else if (!question_has_capability_on($question, 'edit')) {
+    header('Content-type: application/json');
+    echo json_encode($return);
+    die();
+}
+
+if (!question_has_capability_on($question, 'edit')) {
     $return = 'You do not have permission to edit this record.';
-} else if (empty($ruletxt)) {
-    $return = 'The rule is empty, please add a rule in the Answer textbox above.';
-} else if (!\qtype_pmatch\test_responses::has_responses($question)) {
-    $return = 'There are no responses, please upload a set of human marked responses.';
-} else if ($grade != '1.0' && $grade != '0.0') {
-    $return = get_string('tryrulegradeerror', 'qtype_pmatch');
-} else {
-    $return = \qtype_pmatch\test_responses::try_rule($question, $ruletxt, $grade);
+    header('Content-type: application/json');
+    echo json_encode($return);
+    die();
+}
+
+$return = '';
+switch ($type) {
+    case 'tryrule':
+        $return = try_rule($question);
+        break;
 }
 
 header('Content-type: application/json');

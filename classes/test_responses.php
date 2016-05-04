@@ -352,15 +352,14 @@ class test_responses {
      * without storing anything back into the database.
      * @param qtype_pmatch_question $question
      * @param string $ruletxt
-     * @param int $grade must be 1 or 0.
+     * @param number $fraction 1 or 0.
      * @return string
      */
-    public static function try_rule($question, $ruletxt, $grade) {
+    public static function try_rule($question, $ruletxt, $fraction) {
         $id = 0;
-        $fraction = 1.0;
         $feedback = '';
         $feedbackformat = 1;
-        $answer = new \question_answer($id, $ruletxt, $fraction, $feedback, $feedbackformat);
+        $answer = new \question_answer($id, $ruletxt, $fraction, '', 1);
         $expression = new \pmatch_expression($answer->answer);
         if ($expression->is_valid()) {
             $answer->answer = $expression->get_formatted_expression_string();
@@ -386,7 +385,7 @@ class test_responses {
             } else {
                 $accuracy['negative']++;
             }
-            if ($response->expectedfraction == $grade) {
+            if ($response->expectedfraction == $fraction) {
                 if ($response->expectedfraction) {
                     $responsematches[] = '<span>' .
                             $response->id . ': ' . $response->response .

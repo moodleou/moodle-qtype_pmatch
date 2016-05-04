@@ -372,4 +372,32 @@ class qtype_pmatch_testquestion_test extends qtype_pmatch_testquestion_testcase 
         // Test responses.
         $this->assertEquals($expectedresponses, $responses);
     }
+
+    /**
+     * Test the try rule function.
+     */
+    public function test_try_rule() {
+        $this->resetAfterTest();
+        $responses = $this->load_default_responses();
+        foreach ($responses as $response) {
+            \qtype_pmatch\test_responses::grade_response($response, $this->currentquestion);
+        }
+        $ruletxt = 'match_w(A non existant bit of text)';
+        $grade = 1;
+        $try = \qtype_pmatch\test_responses::try_rule($this->currentquestion, $ruletxt, $grade);
+        $expected = '<div>This rule does not match any graded responses.</div>';
+        $this->assertEquals($expected, $try);
+        $ruletxt = 'match_w(Tom)';
+        $try = \qtype_pmatch\test_responses::try_rule($this->currentquestion, $ruletxt, $grade);
+        // Note at this point try will contain ids that could change, and will look something like:
+        // '<div>Accuracy</div><div>Pos = 2 Neg = 1</div><div>Coverage</div><div><ul><li>' .
+        // '<span>133000: Tom Dick or Harry</span></li><li>' .
+        // '<span class="qtype_pmatch-selftest-missed-positive">133001: Tom</span></li><li>' .
+        // '<span>133004: Tom was janes companion</span></li></ul></div>'.
+        // So lets just look for some elements of text.
+        $this->assertTrue(strpos($try, 'Pos = 2 Neg = 1') !== false);
+        $this->assertTrue(strpos($try, 'Tom Dick or Harry') !== false);
+        $this->assertTrue(strpos($try, 'Tom was janes companion') !== false);
+        $this->assertTrue(strpos($try, 'qtype_pmatch-selftest-missed-positive') !== false);
+    }
 }

@@ -93,16 +93,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_answer_accuracy_fields($mform) {
-        if (!$this->question || !property_exists ($this->question, 'id')) {
-            return;
-        }
-        $questionobj = question_bank::load_question($this->question->id);
-        if (!$hasrepsonses = \qtype_pmatch\test_responses::has_responses($questionobj)) {
+        if (!$this->check_has_responses()) {
             return;
         }
 
-        $rules = $questionobj->get_answers();
-        $responses = \qtype_pmatch\test_responses::get_graded_responses_by_questionid($questionobj->id);
+        $rules = $this->question->questionobj->get_answers();
+        $responses = \qtype_pmatch\test_responses::get_graded_responses_by_questionid($this->question->id);
         $responseids = array_keys($responses);
         $matches = \qtype_pmatch\test_responses::get_rule_matches_for_responses($responseids, $this->question->id);
 
@@ -162,6 +158,25 @@ class qtype_pmatch_edit_form extends question_edit_form {
             }
             $count++;
         }
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    private function check_has_responses() {
+        if (!$this->question || !property_exists($this->question, 'id')) {
+            return false;
+        }
+        if (property_exists($this->question, 'hasresponses')) {
+            return $this->question->hasresponses;
+        } else {
+            $questionobj = question_bank::load_question($this->question->id);
+            $this->question->questionobj = $questionobj;
+            $this->question->hasresponses = \qtype_pmatch\test_responses::has_responses($questionobj);
+            return $this->question->hasresponses;
+        }
+
     }
 
     /**
@@ -264,11 +279,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     protected function get_try_button() {
         $html = '';
-        if (!$this->question || !property_exists($this->question, 'id')) {
-            return $html;
-        }
-        $questionobj = question_bank::load_question($this->question->id);
-        if (!$hasrepsonses = \qtype_pmatch\test_responses::has_responses($questionobj)) {
+        if (!$this->check_has_responses()) {
             return $html;
         }
         $button = '<input type="button" name="tryrule" value="Try rule" disabled="disabled">';
