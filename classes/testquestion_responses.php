@@ -693,7 +693,7 @@ class testquestion_responses {
      * This is a helper method to quickly retrieve responses ready to save to the
      * database and also provide feedback to users the problems that occurred.
      *
-     * This was initially developed for Used by uploadresponses.php as part of the
+     * This was initially developed for uploadresponses.php as part of the
      * process of uploading responses. Later the unit and behat test classes used
      * it to reduce duplication and ensure a consistent approach to loading
      * responses from csv files.
@@ -739,27 +739,26 @@ class testquestion_responses {
             }
 
             if (count($data) !== 2) {
+                // We only want a human mark and an answer string. Any more elements in this
+                // csv file are not wanted. Often a comma will exist within a students answer,
+                // and tutors are expected to wrap those answers within speech marks for this
+                // upload. See e.g. in fixtures/shortanswerquestion_webserviceresponses.csv.
                 $problems[] = get_string('testquestionuploadrowhastwoitems', 'qtype_pmatch',
                                     array('row' => $row, 'items' => count($data)));
                 $problem = true;
             }
 
             if (!$problem) {
-                // Only utf8 characters are allowed.
-                $text = fix_utf8($data[1]);
-                if ($text !== $data[1]) {
-                    $problems[] = get_string('testquestionuploadrownotvalidutf8', 'qtype_pmatch',
-                                        $row);
-                    $problem = true;
-                } else {
-                    $text = trim($text);
+                // Data needs to be in utf8 format. Authors using Excel will often have
+                // xA0 or #160 (non-breaking spaces) present in the data, as well as other
+                // extended characters allowed by iso-8859-1 encoding.
+                if (function_exists('mb_detect_encoding') && !mb_detect_encoding($data[1], 'UTF-8', true)) {
+                    // Convert to utf8.
+                    $data[1] = \core_text::convert($data[1], mb_detect_encoding($data[1]));
                 }
-            }
-
-            if (!$problem) {
                 $response = new \qtype_pmatch\testquestion_response();
                 $response->questionid = $question->id;
-                $response->response = $text;
+                $response->response = trim($data[1]);
                 $response->expectedfraction = $score;
                 $responses[] = $response;
                 // If we have loaded the right number of responses stop.

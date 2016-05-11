@@ -66,15 +66,13 @@ $question = question_bank::load_question($questionid);
 list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
 question_require_capability_on($questiondata, 'edit');
 
-$question = question_bank::load_question($questionid);
-$context = context::instance_by_id($question->contextid);
 $url = new moodle_url('/question/type/pmatch/uploadresponses.php', array('id' => $questionid));
 $title = get_string('testquestionformtitle', 'qtype_pmatch');
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($title);
-$PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
+$PAGE->set_heading($title);
 
 $form = new upload_form();
 $form->set_data(array('id' => $questionid));
