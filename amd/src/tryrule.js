@@ -36,7 +36,6 @@ define(['jquery'], function($) {
         sessKey: '',
         qid: '',
         pendingid: '',
-        enablebtn: [],
 
         /**
          * Initialise the try rule button.
@@ -55,21 +54,11 @@ define(['jquery'], function($) {
             $('.textareamonospace').each(function() {
                 var id = $(this).attr('id').replace('id_answer_', '');
                 $(this).parent().parent().next().next().find('input').attr('id', 'id_tryrule_' + id);
-                // Only enable the try rule button if there has been a change to the rule.
-                $(this).on('change', function(e) {
-                    e.preventDefault();
-                    if (t.enablebtn.indexOf(id) === -1) {
-                        t.enablebtn.push(id);
-                        $('input[id="id_tryrule_' + id + '"]').removeAttr('disabled');
-                    }
-                });
             });
             $('input[name="tryrule"]').on('click', function(e) {
                 e.preventDefault();
                 var id = $(this).attr('id').replace('id_tryrule_', '');
-                if (t.enablebtn.indexOf(id) !== -1) {
                     t.tryrule(id);
-                }
             });
         },
 

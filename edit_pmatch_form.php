@@ -286,7 +286,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if (!\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             return $html;
         }
-        $button = '<input type="button" name="tryrule" value="Try rule" disabled="disabled">';
+        $button = '<input type="button" name="tryrule" value="Try rule">';
         $result = html_writer::div('', 'try-rule-result');
         $html .= html_writer::div($button . $result, 'fitem try-rule');
         return $html;
