@@ -125,3 +125,8 @@ body#page-question-type-pmatch-testquestion .progress .bar-success {
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
 }
+
+/* Align reset table preferences button */
+body#page-question-type-pmatch-testquestion .resettable {
+    text-align: left;
+}
