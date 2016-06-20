@@ -1,4 +1,4 @@
-@ou @ou_vle @qtype @qtype_pmatch
+@ou @ou_vle @qtype @qtype_pmatch @_switch_window @javascript
 Feature: Test backup and restore of a pmatch question with responses and matches
   In order to manage pmatch questions
   As an admin
@@ -17,7 +17,6 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And the default question test responses exist for question "My first pattern match question"
     And I log in as "admin"
 
-  @javascript @_switch_window
   Scenario: Test backup and restore with testquestion data.
     Given I am on the pattern match test responses page for question "My first pattern match question"
     # Check course C1 version of uploaded responses.

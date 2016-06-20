@@ -1,4 +1,4 @@
-@ou @ou_vle @qtype @qtype_pmatch
+@ou @ou_vle @qtype @qtype_pmatch @_switch_window @javascript
 Feature: Test all the basic functionality of this question type
   In order evaluate students understanding
   As an teacher
@@ -18,7 +18,6 @@ Feature: Test all the basic functionality of this question type
     And I follow "Course 1"
     And I navigate to "Question bank" node in "Course administration"
 
-  @javascript @_switch_window
   Scenario: Create, edit then preview a pattern match question.
     # Create a new question.
     And I add a "Pattern match" question filling the form with:
