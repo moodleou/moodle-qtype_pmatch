@@ -31,29 +31,32 @@ Feature: Test the rule creation assistant
     # Test term add
     When I set the field "Term" to "a"
     And I press "rc_termadd_0"
-    Then I should see "match_all(match_w(a))"
+    Then I should see "match_w(a)"
     # Test term exclude
     When I set the field "Term" to "b"
     And I press "rc_termexclude_0"
-    Then I should see "match_all(match_w(a) not(match_w(b)))"
+    Then I should see "not(match_w(b))"
+    And I should see "match_all"
     # Test term or
     When I set the field "Term" to "c"
     And I press "rc_termor_0"
-    Then I should see "match_any(match_all(match_w(a) not(match_w(b))) match_w(c))"
+    Then I should see "match_w(c)"
+    And I should see "match_any"
     # Test reset
     When I press "rc_clear_0"
-    Then I should not see "match_any(match_all(match_w(a) not(match_w(b))) match_w(c))"
+    Then I should not see "match_w(c)"
     # Test template
     When I set the field "Term" to "a"
     And I press "rc_termadd_0"
+    Then I should see "match_w(a)"
     And I set the field "Template" to "b"
     And I press "rc_templateadd_0"
-    Then I should see "match_all(match_w(a) match_wm(b*))"
+    Then I should see "match_wm(b*)"
     # Test precedes
     When I select "a" from the "precedes1" singleselect
     And I select "b*" from the "precedes2" singleselect
     And I press "rc_precedesadd_0"
-    Then I should see "match_all(match_w(a) match_wm(b*) match_w(a b*))"
+    Then I should see "match_w(a b*)"
     And I press "rc_clear_0"
     # Test closely precedes
     When I set the field "Term" to "a"
@@ -63,7 +66,8 @@ Feature: Test the rule creation assistant
     When I select "a" from the "cprecedes1" singleselect
     And I select "b" from the "cprecedes2" singleselect
     And I press "rc_cprecedesadd_0"
-    Then I should see "match_all(match_w(a) match_w(b) match_w(a_b))"
-    # Test add to answer
-    When I press "rc_add_0"
-    Then the field "Answer 1" matches value "match_all(match_w(a) match_w(b) match_w(a_b))"
+    Then I should see "match_w(a_b)"
+    # It would have been nice to check for the full string
+    # but "match_all(match_w(a) match_w(b) match_w(a_b))" is now
+    # multi-line (for better user experience) and that seems
+    # difficult to test for with current tests.

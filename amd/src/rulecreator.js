@@ -183,7 +183,7 @@ define(['jquery'], function($) {
             if (!terms) {
                 return;
             }
-            this.addToStore(id, terms, 'precedes');
+            this.addToStore(id, terms, 'and', 'precedes');
             this.removeFromPrecedes(id, terms);
             this.displayResult(id);
         },
@@ -193,7 +193,7 @@ define(['jquery'], function($) {
             if (!terms) {
                 return;
             }
-            this.addToStore(id, terms, 'cprecedes');
+            this.addToStore(id, terms, 'and', 'cprecedes');
             this.removeFromPrecedes(id, terms);
             this.displayResult(id);
         },
@@ -323,77 +323,180 @@ define(['jquery'], function($) {
             var rule = '';
             // Temporary store of rule elements.
             var temp = [];
-            var tempid = 0;
             // Clone the bit of the store we are interested in, so we can change elements.
             var mystore = this.store[ref].slice(0);
             var num = mystore.length;
             var i = 0;
             var first = 0;
             var second = 0;
+            var orpos = [];
+            var orcount = 0;
             if (num === 0) {
                 return rule;
             }
             for (i = 0; i < num; i++) {
                 var currentterm = '';
-                var previousterm = '';
-                if (i === 0) {
-                    // First term processing.
-                    if (mystore[i].op === 'and' || mystore[i].op === 'or') {
-                        // While match_ow works and was originally used here, please keep this
-                        // code in line with classes/amati_rule_suggestion.php.
-                        if (mystore[i].type === 'term') {
-                            currentterm = 'match_w(' + mystore[i].term + ')';
-                        } else {
-                            currentterm = 'match_wm(' + mystore[i].term + ')';
-                        }
-                    } else if (mystore[i].op === 'not') {
-                        if (mystore[i].type === 'term') {
-                            currentterm = 'not(match_w(' + mystore[i].term + '))';
-                        } else {
-                            currentterm = 'not(match_wm(' + mystore[i].term + '))';
-                        }
-                    } else {
-                        continue;
-                    }
-                    temp.push(currentterm);
-                } else {
-                    previousterm = temp[tempid];
+                if (mystore[i].type === 'term') {
                     if (mystore[i].op === 'and') {
-                        if (mystore[i].type === 'term') {
-                            currentterm = previousterm + ' match_w(' + mystore[i].term + ')';
-                        } else {
-                            currentterm = previousterm + ' match_wm(' + mystore[i].term + ')';
-                        }
-                    } else if (mystore[i].op === 'not') {
-                        if (mystore[i].type === 'term') {
-                            currentterm = previousterm + ' not(match_w(' + mystore[i].term + '))';
-                        } else {
-                            currentterm = previousterm + ' not(match_wm(' + mystore[i].term + '))';
-                        }
-                    } else if (mystore[i].op === 'or') {
-                        tempid++;
                         currentterm = 'match_w(' + mystore[i].term + ')';
-                    } else if (mystore[i].op === 'precedes') {
-                        first = mystore[i].term[0] - 1;
-                        second = mystore[i].term[1] - 1;
-                        currentterm = previousterm + ' match_w(' + mystore[first].term + ' ' + mystore[second].term + ')';
-                    } else if (mystore[i].op === 'cprecedes') {
-                        first = mystore[i].term[0] - 1;
-                        second = mystore[i].term[1] - 1;
-                        currentterm = previousterm + ' match_w(' + mystore[first].term + '_' + mystore[second].term + ')';
-                    } else {
-                        continue;
                     }
-                    temp[tempid] = currentterm;
+                    if (mystore[i].op === 'or') {
+                        currentterm = 'match_w(' + mystore[i].term + ')';
+                        if (i > 0) {
+                            // The first item is not really an 'or'.
+                            orpos.push(i);
+                        }
+                    }
+                    if (mystore[i].op === 'not') {
+                        currentterm = 'not(match_w(' + mystore[i].term + '))';
+                    }
                 }
+                if (mystore[i].type === 'template') {
+                    if (mystore[i].op === 'and') {
+                        currentterm = 'match_wm(' + mystore[i].term + ')';
+                    }
+                    if (mystore[i].op === 'not') {
+                        currentterm = 'match_wm(' + mystore[i].term + ')';
+                    }
+                }
+                if (mystore[i].type === 'precedes') {
+                    first = mystore[i].term[0] - 1;
+                    second = mystore[i].term[1] - 1;
+                    currentterm = ' match_w(' + mystore[first].term + ' ' + mystore[second].term + ')';
+                }
+                if (mystore[i].type === 'cprecedes') {
+                    first = mystore[i].term[0] - 1;
+                    second = mystore[i].term[1] - 1;
+                    currentterm = ' match_w(' + mystore[first].term + '_' + mystore[second].term + ')';
+                }
+                temp.push(currentterm);
             }
             num = temp.length;
-            for (i = 0; i < num; i++) {
-                if (i === 0) {
-                    rule = rule + ' match_all(' + temp[i] + ')';
-                } else {
-                    rule = ' match_any(' + rule.trim() + ' ' + temp[i] + ')';
+            // Simplest scenarios first.
+            if (num === 0) {
+                return '';
+            }
+            if (num === 1) {
+                return temp[0];
+            }
+            orcount = orpos.length;
+            if (orcount === 0) {
+                // For term, template, precedes or closely precedes and press 'add' or 'exclude'.
+                // So no 'or' pressed, e.g. a add, b add. (Type a in term, press 'add', then ...)
+                rule = 'match_all(\n  ' + temp[0];
+                for (i = 1; i < num; i++) {
+                    rule = rule + ' ' + temp[i];
                 }
+                rule = rule + '\n)';
+                return rule;
+            }
+            if (num === (orcount + 1)) {
+                // For a or, b or; a add, b or, c or.
+                rule = 'match_any(\n  ' + temp[0];
+                for (i = 1; i < num; i++) {
+                    rule = rule + ' ' + temp[i];
+                }
+                rule = rule + '\n)';
+                return rule;
+            }
+            // And the more tricky scenarios.
+            if (orcount === 1) {
+                if (orpos[0] === 1) { // Note orpos[0] can never be 0).
+                    if (num === 2) {
+                        // For a add, b or.
+                        rule = 'match_any(\n  ' + temp[0] + ' ' + temp[1] + '\n)';
+                    } else {
+                        // For a add, b or, c add.
+                        rule = 'match_all(\n  match_any(\n    ' + temp[0] + ' ' + temp[1] + '\n  )\n ';
+                        for (i = 2; i < num; i++) {
+                            rule = rule + ' ' + temp[i];
+                        }
+                        rule = rule + '\n)';
+                    }
+                } else {
+                    // For a add, b add, c or.
+                    rule = 'match_all(\n    ' + temp[0];
+                    for (i = 1; i < orpos[0]; i++) {
+                        rule = rule + ' ' + temp[i];
+                    }
+                    rule = 'match_any(\n  ' + rule + '\n  )\n  ' + temp[orpos[0]] + '\n)';
+                    if (num > (orpos[0] + 1)) {
+                        // For a add, b add, c or, d add.
+                        rule = 'match_all(\n' + rule + '\n';
+                        for (i = orpos[0] + 1; i < num; i++) {
+                            rule = rule + ' ' + temp[i];
+                        }
+                        rule = rule + '\n)';
+                    }
+                }
+            } else if (orcount === 2) {
+                if (orpos[0] === 1) {
+                    rule = 'match_any(\n  ' + temp[0] + ' ' + temp[1];
+                    if (orpos[1] === 2) {
+                        // For a add, b or, c or, d add.
+                        rule = 'match_all(\n' + rule + ' ' + temp[2] + '\n)\n';
+                        for (i = 3; i < num; i++) {
+                            rule = rule + ' ' + temp[i];
+                        }
+                        rule = rule + '\n)';
+                    } else {
+                        // For a add, b or, c add, d or.
+                        rule = 'match_all(\n' + rule + '\n)\n';
+                        for (i = 2; i < orpos[1]; i++) {
+                            rule = rule + ' ' + temp[i];
+                        }
+                        rule = 'match_any(\n' + rule + '\n)\n ' + temp[orpos[1]];
+                        if (num > (orpos[1] + 1)) {
+                            // For a add, b or, c add, d or, e add.
+                            rule = '\nmatch_all(\n' + rule;
+                            for (i = orpos[1] + 1; i < num; i++) {
+                                rule = rule + ' ' + temp[i];
+                            }
+                            rule = rule + '\n)';
+                        }
+                        rule = rule + '\n)';
+                    }
+                } else {
+                    // For a add, b add, c or, d or/add.
+                    rule = 'match_all(\n' + temp[0];
+                    for (i = 1; i < orpos[0]; i++) {
+                        rule = rule + ' ' + temp[i];
+                    }
+                    // For a add, b add, c or.
+                    rule = 'match_any(\n' + rule + '\n)\n  ' + temp[orpos[0]];
+                    if (orpos[1] === orpos[0] + 1) {
+                        // For a add, b add, c or, d or.
+                        rule = rule + ' ' + temp[orpos[1]] + '\n)\n';
+                        if (num > (orpos[1] + 1)) {
+                            // For a add, b add, c or, d or, e add.
+                            rule = 'match_all(\n' + rule;
+                            for (i = orpos[1] + 1; i < num; i++) {
+                                rule = rule + ' ' + temp[i];
+                            }
+                            rule = rule + '\n)';
+                        }
+                    } else {
+                        rule = 'match_all(\n' + rule + '\n)\n';
+                        for (i = orpos[0] + 1; i < orpos[1]; i++) {
+                            rule = rule + ' ' + temp[i];
+                        }
+                        // For a add, b add, c or, d add, e or.
+                        rule = 'match_any(\n' + rule + '\n)\n' + temp[orpos[1]] + '\n)\n';
+                        if (num > (orpos[1] + 1)) {
+                            // For a add, b add, c or, d add, e or, f add.
+                            rule = 'match_all(\n' + rule;
+                            for (i = orpos[1] + 1; i < num; i++) {
+                                rule = rule + ' ' + temp[i];
+                            }
+                            rule = rule + '\n)\n';
+                        }
+                    }
+                }
+            } else {
+                // Currently this simple interface cannot cope with more than two 'or's,
+                // though adding all or's will work.
+                $('#rc_notice_' + id).text(M.util.get_string('rulecreationtoomanyors', 'qtype_pmatch'));
+                return '';
             }
             return rule.trim();
         },

@@ -84,6 +84,7 @@ $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['ruleaccuracylabel'] = 'Accuracy';
 $string['ruleaccuracy'] = 'Pos = {$a->positive} Neg = {$a->negative}';
 $string['rulecreationasst'] = 'Show/hide rule creation assistant';
+$string['rulecreationtoomanyors'] = 'Sorry too many or\'s.';
 $string['rulecreationtoomanyterms'] = 'Sorry too many terms.';
 $string['rulesuggestionlabel'] = 'Rule suggestion';
 $string['rulesuggestionbutton'] = 'Auto generate matching rules';

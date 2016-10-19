@@ -607,6 +607,7 @@ EOT;
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
         $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
+        $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');
         $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
     }
 }
