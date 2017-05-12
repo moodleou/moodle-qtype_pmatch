@@ -15,7 +15,7 @@
 
 /**
  * This class provides functionality for the rule creation assistant.
- * 
+ *
  * This is based on the work of Dr Alistair Willis published:
  * http://aclweb.org/anthology/W/W15/W15-0628.pdf
  *
@@ -35,12 +35,10 @@ define(['jquery'], function($) {
         store: {},
 
         /**
-         * Initialise the rule creation assistant button.
-         *
-         * @param {String} title the title of the dialogue.
+         * Initialise the rule creation assistant.
          */
         init: function() {
-            $('.textareamonospace').each(function() {
+            $('textarea[name^="answer"]').each(function() {
                 var id = $(this).attr('id').replace('id_answer_', '');
                 var ref = 'id_' + id;
                 t.store[ref] = [];

@@ -15,7 +15,7 @@
 
 /**
  * This class provides functionality for try rule.
- * 
+ *
  * This is based on the work of Dr Alistair Willis published:
  * http://aclweb.org/anthology/W/W15/W15-0628.pdf
  *
@@ -39,8 +39,6 @@ define(['jquery'], function($) {
 
         /**
          * Initialise the try rule button.
-         *
-         * @param {String} title the title of the dialogue.
          */
         init: function() {
             // Set up base variables.
@@ -51,7 +49,7 @@ define(['jquery'], function($) {
             t.sessKey = $('#mform1 input[name="sesskey"]').val();
             t.qid = $('#mform1 input[name="id"]').val();
             // Add ids to try rule buttons.
-            $('.textareamonospace').each(function() {
+            $('textarea[name^="answer"]').each(function() {
                 var id = $(this).attr('id').replace('id_answer_', '');
                 $(this).parent().parent().next().next().find('input').attr('id', 'id_tryrule_' + id);
             });
