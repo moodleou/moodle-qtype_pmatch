@@ -33,6 +33,7 @@ Feature: Import and export pattern match questions
     # Now export again.
     When I navigate to "Export" node in "Course administration > Question bank"
     And I set the field "id_format_xml" to "1"
+    And I set the field "category" to "Imported questions (1)"
     And I press "Export questions to file"
     Then following "click here" should download between "1500" and "2500" bytes
     # If the download step is the last in the scenario then we can sometimes run
