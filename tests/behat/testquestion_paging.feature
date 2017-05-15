@@ -33,11 +33,11 @@ Feature: Test the paging functionality of the test this question feature of this
     And the field "id_pagesize" matches value "50"
     
     # No paging should exist yet
-    Then "div.paging span.current-page" "css_element" should not exist
+    Then ".pagination" "css_element" should not exist
     
     # Set paging to 10 and check results
     When I set the field "id_pagesize" to "10"
     Then I press "id_submitbutton"
     Then the field "id_pagesize" matches value "10"
-    And I should see "1" in the "ul.pagination li.page-item.active a.page-link" "css_element"
-    And I should see "Next" in the "ul.pagination li.page-item:last-child span.sr-only" "css_element"
+    And I should see "1" in the ".pagination .page-item.active" "css_element"
+    And I should see "Next" in the ".pagination" "css_element"
