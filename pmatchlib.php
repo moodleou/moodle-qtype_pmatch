@@ -306,10 +306,12 @@ class pmatch_parsed_string {
         }
         $misspelledwords = array();
         foreach ($words as $word) {
+            $originalword = $word;
+            $word = core_text::strtolower($word);
             $word = $this->options->strip_sentence_divider($word);
 
             if (!$spellchecker->is_in_dictionary($word)) {
-                $misspelledwords[] = $word;
+                $misspelledwords[] = $originalword;
             }
         }
         return $misspelledwords;
