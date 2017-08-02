@@ -24,7 +24,7 @@ Feature: Test the paging functionality of the test this question feature of this
     And I log in as "teacher"
 
   @javascript
-  Scenario: Create, edit then preview a pattern match question.
+  Scenario: Test this question paging
     # Confirm list responses pagin options is correctly displayed
     Given I am on the pattern match test responses page for question "My first pattern match question"
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"

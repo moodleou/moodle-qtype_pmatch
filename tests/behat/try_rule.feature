@@ -32,7 +32,7 @@ Feature: Test the try rule feature
     And I press "Continue"
 
   @javascript
-  Scenario: Create, edit then preview a pattern match question.
+  Scenario: Test the pmatch try rule feature
     # Confirm list responses is correct.
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "(Pos=1/6 Neg=6/6 Unm=1 Acc=58%)"

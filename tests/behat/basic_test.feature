@@ -1,5 +1,5 @@
 @ou @ou_vle @qtype @qtype_pmatch @_switch_window @javascript
-Feature: Test all the basic functionality of this question type
+Feature: Test all the basic functionality of pmatch question type
   In order evaluate students understanding
   As an teacher
   I need to create and preview pattern match questions.
