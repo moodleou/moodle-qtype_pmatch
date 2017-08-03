@@ -22,7 +22,7 @@ Feature: Test answer accuracy and response coverage
       | Test questions   | pmatch   | My first pattern match question | listen   |
     And the default question test responses exist for question "My first pattern match question"
     And I log in as "teacher"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I navigate to "Question bank" node in "Course administration"
 
   @javascript
@@ -46,7 +46,7 @@ Feature: Test answer accuracy and response coverage
     # Now check edit question page for updated accuracy and coverage.
     When I switch to the main window
     And I am on homepage
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I navigate to "Question bank" node in "Course administration"
     And I click on "Edit" "link" in the "My first pattern match question" "table_row"
     Then I should see "Editing a Pattern match question"

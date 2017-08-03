@@ -15,7 +15,7 @@ Feature: Import and export pattern match questions
       | user    | course | role           |
       | teacher | C1     | editingteacher |
     And I log in as "teacher"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
 
   @javascript
   Scenario: Import and export pattern match questions
