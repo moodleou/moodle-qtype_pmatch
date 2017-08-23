@@ -61,9 +61,9 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
         $html = '';
         if (question_has_capability_on($question, 'edit')) {
             $html .= html_writer::start_div('', array('id' => 'commands'));
-            $html .= '<a href="javascript:select_all_in(\'DIV\', null, \'tablecontainer\');">' .
+            $html .= '<a id="select-all" href="javascript:return false;">' .
                     get_string('selectall', 'quiz') . '</a> / ';
-            $html .= '<a href="javascript:deselect_all_in(\'DIV\', null, \'tablecontainer\');">' .
+            $html .= '<a id="de-select-all" href="javascript:return false;">' .
                     get_string('selectnone', 'quiz') . '</a> &nbsp;&nbsp;';
             // Test responses.
             $html .= '<input type="submit" id="testresponsesbutton" name="test" value="' .

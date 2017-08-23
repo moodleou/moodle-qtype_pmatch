@@ -66,6 +66,16 @@ define(['jquery'], function($) {
                         'Please try again later. (Sometimes refreshing the page can ' +
                         'avoid a session timeout issue.)');
             });
+            $('#select-all').click(function() {
+                $('#tablecontainer :checkbox').each(function() {
+                    this.checked = true;
+                });
+            });
+            $('#de-select-all').click(function() {
+                $('#tablecontainer :checkbox').each(function() {
+                    this.checked = false;
+                });
+            });
         },
         update: function(id) {
             var val = $('#updater-ef_' + id).text();
