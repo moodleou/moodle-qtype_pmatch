@@ -64,7 +64,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected function definition_inner($mform) {
         $this->general_answer_fields($mform);
-        $this->add_synonyms($mform);
+        \qtype_pmatch\form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
 
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 question_bank::fraction_options());
@@ -406,8 +406,6 @@ EOT;
         }
     }
 
-
-
     protected function data_preprocessing_other_answer($question) {
         // Special handling of otheranswer.
         if ($this->otheranswer) {
@@ -489,55 +487,10 @@ EOT;
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
         }
 
+        $errors += \qtype_pmatch\form_utils::validate_synonyms($data);
+
         $errors += $this->place_holder_errors($data['questiontext']['text'],
                                               $data['allowsubscript'] || $data['allowsuperscript']);
-
-        $wordssofar = array();
-        foreach ($data['synonymsdata'] as $key => $synonym) {
-            $trimmedword = trim($synonym['word']);
-            $trimmedsynonyms = trim($synonym['synonyms']);
-            if ($trimmedword == '' && $trimmedsynonyms == '') {
-                continue;
-            }
-
-            if ($trimmedword != '' && $trimmedsynonyms == '') {
-                $errors['synonymsdata['.$key.']'] =
-                                            get_string('nomatchingsynonymforword', 'qtype_pmatch');
-                continue;
-            } else if ($trimmedword == '' && $trimmedsynonyms != '') {
-                $errors['synonymsdata['.$key.']'] =
-                                            get_string('nomatchingwordforsynonym', 'qtype_pmatch');
-                continue;
-            }
-
-            $wordinterpreter = new pmatch_interpreter_word();
-            list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
-            if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))) {
-                $errors['synonymsdata['.$key.']'] =
-                                        get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
-                continue;
-            } else if ($wordinterpreter->get_error_message()) {
-                $errors['synonymsdata['.$key.']'] = $wordinterpreter->get_error_message();
-                continue;
-            }
-
-            $synonyminterpreter = new pmatch_interpreter_synonym();
-            list($synonymmatched, $endofmatch) = $synonyminterpreter->interpret($trimmedsynonyms);
-            if ((!$synonymmatched) || !($endofmatch == (strlen($trimmedsynonyms)))) {
-                $errors['synonymsdata['.$key.']'] =
-                                get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
-                continue;
-            } else if ($synonyminterpreter->get_error_message()) {
-                $errors['synonymsdata['.$key.']'] = $synonyminterpreter->get_error_message();
-                continue;
-            }
-
-            if (in_array($trimmedword, $wordssofar)) {
-                $errors['synonymsdata['.$key.']'] = get_string('repeatedword', 'qtype_pmatch');
-            }
-            $wordssofar[] = $trimmedword;
-        }
-
         return $errors;
     }
 
@@ -561,42 +514,6 @@ EOT;
             $errors['questiontext'] = get_string('subsuponelineonly', 'qtype_pmatch');
         }
         return $errors;
-    }
-
-
-    protected function add_synonyms($mform) {
-        $mform->addElement('header', 'synonymshdr', get_string('synonym', 'qtype_pmatch'));
-        $mform->addElement('static', 'synonymsdescription', '',
-                                                get_string('synonymsheader', 'qtype_pmatch'));
-        $textboxgroup = array();
-        $textboxgroup[] = $mform->createElement('group', 'synonymsdata',
-                get_string('synonymsno', 'qtype_pmatch', '{no}'), $this->add_synonym($mform));
-        $repeatedoptions = array('synonymsdata[word]' => array('type' => PARAM_RAW),
-                                'synonymsdata[synonyms]' => array('type' => PARAM_RAW));
-
-        if (isset($this->question->options)) {
-            $countsynonyms = count($this->question->options->synonyms);
-        } else {
-            $countsynonyms = 0;
-        }
-
-        if ($this->question->formoptions->repeatelements) {
-            $repeatsatstart = max(3, $countsynonyms + 2);
-        } else {
-            $repeatsatstart = $countsynonyms;
-        }
-
-        $this->repeat_elements($textboxgroup, $repeatsatstart, $repeatedoptions, 'nosynonyms',
-                        'addsynonyms', 2, get_string('addmoresynonymblanks', 'qtype_pmatch'), true);
-    }
-
-    protected function add_synonym($mform) {
-        $grouparray = array();
-        $grouparray[] = $mform->createElement('text', 'word',
-                            get_string('wordwithsynonym', 'qtype_pmatch'), array('size' => 15));
-        $grouparray[] = $mform->createElement('text', 'synonyms',
-                            get_string('synonym', 'qtype_pmatch'), array('size' => 50));
-        return $grouparray;
     }
 
     public function qtype() {

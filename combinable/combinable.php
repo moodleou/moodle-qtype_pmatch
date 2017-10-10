@@ -32,7 +32,7 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
     protected $identifier = 'pmatch';
 
     protected function extra_question_properties() {
-        return array('forcelength' => '0', 'converttospace' => ',;:', 'synonymsdata' => array());
+        return array('forcelength' => '0');
     }
 
     protected function extra_answer_properties() {
@@ -44,7 +44,9 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
                      'allowsuperscript' => null,
                      'usecase' => null,
                      'applydictionarycheck' => null,
-                     'extenddictionary' => '');
+                     'extenddictionary' => '',
+                     'converttospace' => ',;:',
+                     'synonymsdata' => array());
     }
 }
 
@@ -82,9 +84,16 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
             array('rows' => '3', 'cols' => '57'));
 
+        $mform->addElement('text', $this->form_field_name('converttospace'), get_string('converttospace', 'qtype_pmatch'));
+        $mform->setDefault($this->form_field_name('converttospace'), ',;:');
+        \qtype_pmatch\form_utils::add_synonyms($combinedform, $mform, $this->questionrec, false,
+                $this->form_field_name('synonymsdata'), 1, 0);
+
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answer', 'question'),
                                                              array('rows' => '6', 'cols' => '57', 'class' => 'textareamonospace'));
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
+        $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
+        $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
     }
 
     public function data_to_form($context, $fileoptions) {
@@ -93,7 +102,18 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
             $answer = array_pop($this->questionrec->options->answers);
             $answers['answer'][] = $answer->answer;
         }
-        return parent::data_to_form($context, $fileoptions) + $answers;
+
+        $data = parent::data_to_form($context, $fileoptions) + $answers;
+
+        if (isset($this->questionrec)) {
+            // Convert synonyms from record into synonymsdata for form fields.
+            $data['synonymsdata'] = array_values($this->questionrec->options->synonyms);
+            foreach ($data['synonymsdata'] as $key => $item) {
+                $data['synonymsdata'][$key] = (array)$item;
+            }
+        }
+
+        return $data;
     }
 
 
@@ -108,6 +128,9 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         } else {
             $errors[$this->form_field_name('answer[0]')] = get_string('err_providepmatchexpression', 'qtype_pmatch');
         }
+
+        $errors += \qtype_pmatch\form_utils::validate_synonyms((array)$this->formdata, $this->form_field_name('synonymsdata'));
+
         return $errors;
     }
 
