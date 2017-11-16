@@ -78,11 +78,11 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
 
         // Set source to populate the data.
         $pmatchoptions->set_source_table('qtype_pmatch',
-                                                    array('questionid' => backup::VAR_PARENTID));
-        $synonym->set_source_table('qtype_pmatch_synonyms',
-                                                    array('questionid' => backup::VAR_PARENTID));
-        $response->set_source_table('qtype_pmatch_test_responses',
                 array('questionid' => backup::VAR_PARENTID));
+        $synonym->set_source_table('qtype_pmatch_synonyms',
+                array('questionid' => backup::VAR_PARENTID), 'id ASC');
+        $response->set_source_table('qtype_pmatch_test_responses',
+                array('questionid' => backup::VAR_PARENTID), 'id ASC');
         $match->set_source_table('qtype_pmatch_rule_matches',
                 array('testresponseid' => backup::VAR_PARENTID));
 
