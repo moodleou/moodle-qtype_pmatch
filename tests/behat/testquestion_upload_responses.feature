@@ -30,9 +30,31 @@ Feature: Test uploading test responses in the pattern match test this question f
     And I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Back to Test question"
     And I should see "Marked responses to upload"
-    And I upload "question/type/pmatch/tests/fixtures/myfirstquestion_responses.csv" file to "Marked responses" filemanager
+    When I upload "question/type/pmatch/tests/fixtures/uploadreponses.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    And I should see "Saved 13 responses"
-    And I should see "The following 1 responses were not saved"
-    And I should see "Each row should contain exactly two items, a numerical mark and a response. Row 11 contains 3 item(s)."
+    Then I should see "Saved 8 responses"
     And I should see "Upload another file"
+
+  @javascript
+  Scenario: Test error message if the file doesn't meet the condition.
+    # Case 1: The file must be in .csv format.
+    When I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "The file must be in .csv format."
+    # Case 2: The file requires at least two rows (the first row is the header row, the second row onwards for responses).
+    When I upload "question/type/pmatch/tests/fixtures/testerrorcase2.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
+    # Case 3: The file has more than two columns. Please only include the expected mark and response.
+    When I upload "question/type/pmatch/tests/fixtures/testerrorcase3.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "The file has more than two columns. Please only include the expected mark and response."
+    # Case 4: The file requires at least two columns (the first column for expected marks, the second column for responses).
+    When I upload "question/type/pmatch/tests/fixtures/testerrorcase4.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+    # Case 5: test error case 2 and case 4
+    When I upload "question/type/pmatch/tests/fixtures/testerror.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
+    And I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."

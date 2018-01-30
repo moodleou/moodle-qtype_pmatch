@@ -146,3 +146,7 @@ $string['wordcontainsillegalcharacters'] = 'Word contains illegal characters.';
 $string['xresponsesduplicated'] = 'The following {$a} responses were duplicated';
 $string['xresponsesproblems'] = 'The following {$a} responses were not saved';
 $string['xrulesuggested'] = '{$a} new answer(s) were suggested and added to the end of the existing answers';
+$string['errorfileformat'] = 'The file must be in .csv format.';
+$string['errorfilecell'] = 'The file requires at least two rows (the first row is the header row, the second row onwards for responses).';
+$string['errorfilecolumnbigger'] = 'The file has more than two columns. Please only include the expected mark and response.';
+$string['errorfilecolumnless'] = 'The file requires at least two columns (the first column for expected marks, the second column for responses).';

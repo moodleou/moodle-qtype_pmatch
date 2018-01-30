@@ -45,12 +45,84 @@ class upload_form extends moodleform {
         $this->_form->addElement('static', 'help', '',
                 get_string('testquestionforminfo', 'qtype_pmatch'));
         $this->_form->addElement('filepicker', 'responsesfile',
-                get_string('testquestionformuploadlabel', 'qtype_pmatch'));
+                get_string('testquestionformuploadlabel', 'qtype_pmatch'), null,
+                ['accepted_types' => 'csv']);
         $this->_form->addRule('responsesfile', null, 'required', null, 'client');
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
         $this->_form->addElement('submit', 'submitbutton',
                 get_string('testquestionuploadresponses', 'qtype_pmatch'));
+    }
+
+    /**
+     *
+     * Override function validation for custom form validation of moodle form
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws coding_exception
+     */
+    function validation($data, $files) {
+        global $USER;
+
+        // Initialize.
+        $errors = parent::validation($data, $files);
+        $errcase = [];
+        $fileoption = ['mimetype' => ['text/csv'], 'mincell' => 2, 'column' => 2];
+        $context = context_user::instance($USER->id);
+        $fs = get_file_storage();
+        $draftid = file_get_submitted_draft_itemid('responsesfile');
+        $attachfiles = $fs->get_area_files($context->id, 'user', 'draft', $draftid);
+
+        // Handle.
+        foreach ($attachfiles as $file) {
+            if (!in_array($file->get_filename(), ['.', '..'])) {
+                if (!in_array($file->get_mimetype(), $fileoption['mimetype'])) {
+                    array_push($errcase, 'format');
+                } else {
+                    $contents = str_getcsv($file->get_content(), "\n");
+                    if (count($contents) < $fileoption['mincell']) {
+                        array_push($errcase, 'cell');
+                    }
+                    foreach ($contents as $content) {
+                        $columns = explode(',', $content);
+                        $counter = count($columns);
+                        if ($counter === $fileoption['column']) {
+                            continue;
+                        }
+                        if ($counter > $fileoption['column']) {
+                            array_push($errcase, 'columnbigger');
+                            break;
+                        } else {
+                            array_push($errcase, 'columnless');
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get error case and return.
+        if (in_array('format', $errcase)) {
+            $errortext = get_string('errorfileformat', 'qtype_pmatch');
+        } else {
+            $errortextarr = [];
+            if (in_array('cell', $errcase)) {
+                $errortextarr[] = get_string('errorfilecell', 'qtype_pmatch');
+            }
+            if (in_array('columnbigger', $errcase)) {
+                $errortextarr[] = get_string('errorfilecolumnbigger', 'qtype_pmatch');
+            }
+            if (in_array('columnless', $errcase)) {
+                $errortextarr[] = get_string('errorfilecolumnless', 'qtype_pmatch');
+            }
+            $errortext = implode('<br>', $errortextarr);
+        }
+        if ($errortext) {
+            $errors['responsesfile'] = $errortext;
+        }
+        return $errors;
     }
 }
 
