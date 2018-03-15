@@ -596,7 +596,7 @@ class testquestion_responses {
         }
 
         foreach ($responses as $response) {
-            if (empty($response->ruleids) || !count($response)) {
+            if (empty($response->ruleids)) {
                 continue;
             }
 
