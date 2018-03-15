@@ -143,7 +143,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
                     'felement fselect', array('id' => 'fitem_accuracy_' . $count));
             $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
             $answersaccuracy = $mform->createElement('html', $html);
-            $mform->insertElementBefore(clone ($answersaccuracy), 'answer[' . $count . ']');
+            $cloneanswersaccuracy = clone $answersaccuracy;
+            $mform->insertElementBefore($cloneanswersaccuracy, 'answer[' . $count . ']');
 
             // Add the Show coverage section - for rules that have been marked.
             if (array_key_exists($rule->id, $matches['ruleidstoresponseids'])) {
@@ -177,7 +178,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $reponseslist .= print_collapsible_region_end(true);
                 $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
                 $matchedresponses = $mform->createElement('html', $html);
-                $mform->insertElementBefore(clone ($matchedresponses), 'fraction[' . $count . ']');
+                $clonematchedresponses = clone ($matchedresponses);
+                $mform->insertElementBefore($clonematchedresponses, 'fraction[' . $count . ']');
             }
             $count++;
         }
