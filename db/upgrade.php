@@ -64,7 +64,7 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         }
 
         // Question savepoint reached.
-        upgrade_plugin_savepoint(true, 2015101200, 'qtype', 'pmatch');
+        upgrade_plugin_savepoint(true, 2015101300, 'qtype', 'pmatch');
     }
 
     if ($oldversion < 2016010400) {
