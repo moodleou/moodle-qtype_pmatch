@@ -23,7 +23,6 @@ Feature: Grade a test response for a pattern match question
     And the default question test responses exist for question "My first pattern match question"
     And I log in as "teacher"
 
-
   @javascript
   Scenario: Grade an existing test response for pattern match question.
     # Check responses are listed correctly

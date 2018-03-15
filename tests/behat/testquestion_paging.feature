@@ -31,10 +31,10 @@ Feature: Test the paging functionality of the test this question feature of this
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And the field "id_pagesize" matches value "50"
-    
+
     # No paging should exist yet
     Then ".pagination" "css_element" should not exist
-    
+
     # Set paging to 10 and check results
     When I set the field "id_pagesize" to "10"
     Then I press "id_submitbutton"
