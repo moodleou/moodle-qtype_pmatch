@@ -17,12 +17,19 @@
 /**
  * Local library supporting the API.
  *
- * @package question
- * @subpackage qtype_pmatch
+ * @package qtype_pmatch
  * @copyright 2016 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Try a rule against the data for a question.
+ *
+ * @param qtype_pmatch_question $question
+ * @return string
+ */
 function try_rule($question) {
     $ruletxt = optional_param('ruletxt', '', PARAM_RAW);
     $fraction = unformat_float(optional_param('fraction', '1.0', PARAM_RAW));

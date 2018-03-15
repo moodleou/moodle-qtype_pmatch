@@ -241,13 +241,13 @@ class amati_rule_suggestion {
         // In pmatch The OR and ADD operator wrap the sub rule so we must add them now.
         // Start with default match operator (ADD).
         $rule = 'match_all';
-        //  Should the match operator be an OR? Check the operator of the first subrule.
+        // Should the match operator be an OR? Check the operator of the first subrule.
         if ($subrulesasparameters[0]->operator == self::RULE_OPERATOR_OR) {
             $rule = 'match_any';
         }
         $rule .= '(';
         $count = 0;
-        // Looop through the array of subrule parameters creating a pmatch rule
+        // Loop through the array of subrule parameters creating a pmatch rule
         // from each parameter object.
         foreach ($subrulesasparameters as $parameters) {
             $rule = $count ? $rule . ' ' : $rule;
@@ -388,9 +388,9 @@ class amati_rule_suggestion {
         // Translate the amati rules into pmatch equivalents.
         $suggestedrules = self::get_pmatch_rules_from_amati_rules($amatirules);
         // Ensure the translated rules:
-        //  are formatted correctly
-        //  are valid
-        //  don't duplicate the existing rules.
+        // - are formatted correctly
+        // - are valid
+        // - don't duplicate the existing rules.
         $suggestedrules = self::prepare_suggested_rules($question, $suggestedrules);
 
         // Add the suggested rules to the question object so they are presented correctly

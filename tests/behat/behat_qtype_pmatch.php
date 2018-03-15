@@ -98,7 +98,7 @@ class behat_qtype_pmatch extends behat_base {
 
         list($responses, $problems) = $this->load_responses($question, $pathtoresponses);
 
-        //  Add responses.
+        // Add responses.
         \qtype_pmatch\testquestion_responses::add_responses($responses);
     }
 

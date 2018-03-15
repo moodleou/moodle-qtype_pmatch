@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
 
@@ -85,11 +87,11 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $comparerulematches = array(
                 // Add.
                 // The AMATI rule and responses returned.
-                //   'term_in_response(A,tom)' => array(
-                //        1 => 'tom dick or harry',
-                //        2 => 'tom',
-                //        7 => 'tom was janes companion'
-                //    )
+                // |  'term_in_response(A,tom)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       2 => 'tom',
+                // |       7 => 'tom was janes companion'
+                // |   )
                 // The best match in Pmatch.
                 'match_w(tom)' => array(
                         0 => 'Tom Dick or Harry',
@@ -97,10 +99,10 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                         2 => 'Tom was janes companion'),
                 // Try Harry
                 // The amati rule with responses.
-                //    term_in_response(A,harry)' => array(
-                //        1 => 'tom dick or harry',
-                //        6 => 'harry'
-                //    )
+                // |   term_in_response(A,harry)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       6 => 'harry'
+                // |   )
                 // The best match in Pmatch.
                 'match_w(harry)' => array(
                         0 => 'Tom Dick or Harry',
@@ -108,15 +110,15 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                     ),
                 // Not.
                 // The Amati rule used with matched responses.
-                // 'not term_in_response(A,tom)' => array(
-                //        3 => 'dick',
-                //        4 => 'john',
-                //        5 => 'tomato',
-                //        6 => 'harry',
-                //        8 => 'adam',
-                //        9 => 'felicity',
-                //        10 => '',
-                //    ),
+                // |'not term_in_response(A,tom)' => array(
+                // |       3 => 'dick',
+                // |       4 => 'john',
+                // |       5 => 'tomato',
+                // |       6 => 'harry',
+                // |       8 => 'adam',
+                // |       9 => 'felicity',
+                // |       10 => '',
+                // |   ),
                 // The pmatch equivalent with matches.
                 // Notes:AMATI only stores alphanumeric responses '€£¥©®™±≠≤≥÷×∞µαβπΩ∑' became '' so
                 // these are equivlanet matches.
@@ -130,11 +132,11 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                         6 => '€£¥©®™±≠≤≥÷×∞µαβπΩ∑',
                     ),
                 // Or.
-                // term_in_response(A,B,felicity); term_in_response(A,C,dick)' => array(
-                //        1 => 'tom dick or harry',
-                //        3 => 'dick',
-                //        9 => 'felicity'
-                //    ),
+                // |term_in_response(A,B,felicity); term_in_response(A,C,dick)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       3 => 'dick',
+                // |       9 => 'felicity'
+                // |   ),
                 // The pmatch equivalent with matches.
                 'match_w(dick|felicity)' => array(
                         0 => 'Tom Dick or Harry',
@@ -158,33 +160,33 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         // Set correct expectation.
         $comparerulematches = array(
                 // A Single term.
-                // 'term_in_response(A,tom)' => array(
-                //        1 => 'tom dick or harry',
-                //        2 => 'tom',
-                //        7 => 'tom was janes companion',
-                //        27 => 'tom is janes companion'
-                //    ),.
+                // |'term_in_response(A,tom)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       2 => 'tom',
+                // |       7 => 'tom was janes companion',
+                // |       27 => 'tom is janes companion'
+                // |   ),.
             'match_w(tom)' => array(
                     0 => 'Tom Dick or Harry',
                     1 => 'Tom',
                     2 => 'Tom was janes companion',
                     3 => 'tom is jane\'s companion'),
                 // Another single term.
-                // 'term_in_response(A,harry)' => array(
-                //        1 => 'tom dick or harry',
-                //        6 => 'harry',
-                //        28 => 'harry is janes buddy'
-                //    ).
+                // |'term_in_response(A,harry)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       6 => 'harry',
+                // |       28 => 'harry is janes buddy'
+                // |   ).
             'match_w(harry)' => array(
                     0 => 'Tom Dick or Harry',
                     1 => 'Harry',
                     2 => 'harry is jane\'s buddy'
                 ),
                 // A rule combining And, or and Not.
-                // 'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
-                //        25 => 'richard is janes friend',
-                //        26 => 'thomas is janes mate'
-                //    ).
+                // |'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
+                // |       25 => 'richard is janes friend',
+                // |       26 => 'thomas is janes mate'
+                // |   ).
             'match_all(match_any(match_w(friend) match_w(mate)) not(match_w(harrriet)))' => array(
                     0 => 'Richard is jane\'s friend',
                     1 => 'Thomas is jane\'s mate',
@@ -204,14 +206,14 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
          // Set correct expectation.
         $comparerulematches = array(
                 // A single template command.
-                // 'template_in_response(A,tom)' => array(
-                //        1 => 'tom dick or harry',
-                //        2 => 'tom',
-                //        5 => 'tomato',
-                //        7 => 'tom was janes companion',
-                //        13 => 'tomcat',
-                //        27 => 'tom is janes companion'
-                //    ).
+                // |'template_in_response(A,tom)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       2 => 'tom',
+                // |       5 => 'tomato',
+                // |       7 => 'tom was janes companion',
+                // |       13 => 'tomcat',
+                // |       27 => 'tom is janes companion'
+                // |   ).
                     'match_wmr(tom*)' => array(
                             0 => 'Tom Dick or Harry',
                             1 => 'Tom',
@@ -220,14 +222,14 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                             4 => 'Tomcat',
                             5 => 'tom is jane\'s companion'),
                 // Another single template command.
-                // 'template_in_response(A,harry)' => array(
-                //        1 => 'tom dick or harry',
-                //        6 => 'harry',
-                //        15 => 'harriet',
-                //        28 => 'harry is janes buddy',
-                //        29 => 'harriet is janes companion',
-                //        30 => 'harrriet is janes most treasured friend and companion'
-                //    ),.
+                // |'template_in_response(A,harry)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       6 => 'harry',
+                // |       15 => 'harriet',
+                // |       28 => 'harry is janes buddy',
+                // |       29 => 'harriet is janes companion',
+                // |       30 => 'harrriet is janes most treasured friend and companion'
+                // |   ),.
                     'match_wm(harry*)' => array(
                             0 => 'Tom Dick or Harry',
                             1 => 'Harry',
@@ -237,12 +239,12 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                             5 => 'harrriet is jane\'s most treasured friend and companion'
                         ),
                 // A template rule using not(exclude).
-                // 'template_in_response(A,B,tom), not template_in_response(A,C,companion)' => array(
-                //        1 => 'tom dick or harry',
-                //        2 => 'tom',
-                //        5 => 'tomato',
-                //        13 => 'tomcat'
-                //    ).
+                // |'template_in_response(A,B,tom), not template_in_response(A,C,companion)' => array(
+                // |       1 => 'tom dick or harry',
+                // |       2 => 'tom',
+                // |       5 => 'tomato',
+                // |       13 => 'tomcat'
+                // |   ).
                     'match_all(match_wm(tom*) not(match_wm(companion*)))' => array(
                             0 => 'Tom Dick or Harry',
                             1 => 'Tom',
@@ -270,21 +272,21 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         // Set the correct expectation.
         $comparerulematches = array(
                 // A single AMATI precedes rule.
-                // 'term_in_response(A,B,is), term_in_response(A,C,companion), precedes(B, C).' => array(
-                //        24 => 'frederick is janes companion',
-                //        27 => 'tom is janes companion',
-                //        29 => 'harriet is janes companion',
-                //        30 => 'harrriet is janes most treasured friend and companion',
-                //        32 => 'tim is not janes favourite close companion',
-                //        33 => 'tim is janes closest companion',
-                //        35 -> 'dick is janes most trusted confidante best friend and closest companion'
-                //    ).
+                // |'term_in_response(A,B,is), term_in_response(A,C,companion), precedes(B, C).' => array(
+                // |       24 => 'frederick is janes companion',
+                // |       27 => 'tom is janes companion',
+                // |       29 => 'harriet is janes companion',
+                // |       30 => 'harrriet is janes most treasured friend and companion',
+                // |       32 => 'tim is not janes favourite close companion',
+                // |       33 => 'tim is janes closest companion',
+                // |       35 -> 'dick is janes most trusted confidante best friend and closest companion'
+                // |   ).
 
                 // First attempt using pmatch wp4 parameters and _ between target words to match words
                 // with a max of 4 words apart.
                 // Pmatch misses these 2 responses because it cannot match words more than 4 words apart.
-                //  'harrriet is jane\'s most treasured friend and companion'
-                //  'Dick is jane\'s most trusted confidante, best friend and closest companion'.
+                // 'harrriet is jane\'s most treasured friend and companion'
+                // 'Dick is jane\'s most trusted confidante, best friend and closest companion'.
                 'match_wp4(is_companion)' => array(
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
@@ -338,12 +340,12 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // An AMATI rules using closely_precedes and the responses it matches.
                 // We needed to confirm what the difference was between precedes and closely precedes. Is it just
                 // the number of words allowed between the target words?
-                // 'term_in_response(A,B,is), term_in_response(A,C,companion), closely_precedes(B, C).' => array(
-                //        24 => 'frederick is janes companion',
-                //        27 => 'tom is janes companion',
-                //        29 => 'harriet is janes companion',
-                //        33 => 'tim is janes closest companion',
-                //    )
+                // |'term_in_response(A,B,is), term_in_response(A,C,companion), closely_precedes(B, C).' => array(
+                // |       24 => 'frederick is janes companion',
+                // |       27 => 'tom is janes companion',
+                // |       29 => 'harriet is janes companion',
+                // |       33 => 'tim is janes closest companion',
+                // |   )
                 // An equivalent pmatch rule using _ to which only allows 2 words between matching words.
                 // This proved that closely_precedes matches target words not more than 2 words apart.
                 'match_w(is_companion)' => array(
@@ -408,59 +410,59 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_parameters_from_amati_term_rules() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These AMATI rules should be broken down into their associated array of parameters.
-            "correct_response(A) :- term_in_response(A,tom)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        )
-                ),
-            "correct_response(A) :- term_in_response(A,B,tom), term_in_response(A,C,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                ),
-            "correct_response(A) :- not term_in_response(A,B,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'OR',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                )
-        );
+            "correct_response(A) :- term_in_response(A,tom)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+            ],
+            "correct_response(A) :- term_in_response(A,B,tom), term_in_response(A,C,harry)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'harry'
+                ],
+            ],
+            "correct_response(A) :- not term_in_response(A,B,harry)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'harry'
+                ],
+            ],
+            "correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'harry'
+                ],
+            ],
+            "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'OR',
+                    'word' => 'tom'
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'harry'
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_parameters_from_amati_rules($comparerulesandparameters);
 
@@ -474,47 +476,47 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_parameters_from_amati_template_rules() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These AMATI rules should be broken down into their associated array of parameters.
-            "correct_response(A) :- template_in_response(A,tom)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        )
-                ),
-            "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                ),
-            "correct_response(A) :- not template_in_response(A,B,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                )
-        );
+            "correct_response(A) :- template_in_response(A,tom)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+            ],
+            "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'harry'
+                ],
+            ],
+            "correct_response(A) :- not template_in_response(A,B,harry)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'harry'
+                ],
+            ],
+            "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom'
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'harry'
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_parameters_from_amati_rules($comparerulesandparameters);
 
@@ -528,30 +530,29 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_parameters_from_amati_precedes_rules() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // This AMATI rule should be broken down into its associated array of parameters.
-            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), precedes(B, C)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'jane'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'comp'
-                        ),
-                    2 => (object) array
-                        (
-                            'operator' => 'AND',
-                            'command' => 'precedes',
-                            'word' => array (
-                                            0 => 'jane*',
-                                            1 => 'comp*'
-                                        )
-                        )
-                )
-        );
+            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), precedes(B, C)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'jane'
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'comp'
+                ],
+                2 => (object) [
+                    'operator' => 'AND',
+                    'command' => 'precedes',
+                    'word' => [
+                        0 => 'jane*',
+                        1 => 'comp*',
+                    ],
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_parameters_from_amati_rules($comparerulesandparameters);
 
@@ -565,29 +566,30 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_parameters_from_amati_closely_precedes_rules() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // This AMATI rule should be broken down into its associated array of parameters.
-            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), closely_precedes(B, C)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'jane'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'comp'
-                        ),
-                    2 => (object) array (
-                            'command' => 'closely_precedes',
-                            'operator' => 'AND',
-                            'word' => array (
-                                            0 => 'jane*',
-                                            1 => 'comp*'
-                                        )
-                        )
-                )
-        );
+            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), " .
+            "closely_precedes(B, C)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'jane',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'comp',
+                ],
+                2 => (object) [
+                    'command' => 'closely_precedes',
+                    'operator' => 'AND',
+                    'word' => [
+                        0 => 'jane*',
+                        1 => 'comp*'
+                    ],
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_parameters_from_amati_rules($comparerulesandparameters);
 
@@ -607,82 +609,86 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_parameters_from_amati_complex_rules() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These AMATI rules should be broken down into their associated array of parameters.
-            "correct_response(A) :- template_in_response(A,B,comp), term_in_response(A,C,tom), template_in_response(A,D,jane)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'comp'
-                        ),
-                    1 => (object) array  (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    2 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'jane'
-                        )
-                ),
-            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), not term_in_response(A,D,not)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'jane'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'comp'
-                        ),
-                    2 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'not'
-                        ),
-                ),
-            "correct_response(A) :- not template_in_response(A,B,annoy), term_in_response(A,C,dick), not term_in_response(A,D,dont)." => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'annoy'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'dick'
-                        ),
-                    2 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'dont'
-                        )
-                ),
-            "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,dick); term_in_response(A,D,harry), not template_in_response(A,E,annoy)." => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'OR',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'OR',
-                            'word' => 'dick'
-                        ),
-                    2 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        ),
-                    3 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'annoy'
-                        )
-                )
-        );
+            "correct_response(A) :- template_in_response(A,B,comp), term_in_response(A,C,tom), " .
+            "template_in_response(A,D,jane)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'comp',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                2 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'jane',
+                ],
+            ],
+            "correct_response(A) :- template_in_response(A,B,jane), template_in_response(A,C,comp), " .
+            "not term_in_response(A,D,not)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'jane',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'comp',
+                ],
+                2 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'not',
+                ],
+            ],
+            "correct_response(A) :- not template_in_response(A,B,annoy), term_in_response(A,C,dick), " .
+            "not term_in_response(A,D,dont)." => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'annoy',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'dick',
+                ],
+                2 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'dont',
+                ],
+            ],
+            "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,dick); " .
+            "term_in_response(A,D,harry), not template_in_response(A,E,annoy)." => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'OR',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'OR',
+                    'word' => 'dick',
+                ],
+                2 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+                3 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'annoy',
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_parameters_from_amati_rules($comparerulesandparameters);
 
@@ -710,59 +716,59 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rule_from_term_rule_parameters() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These Pmatch rules should be generated from their associated array of parameters.
-            'match_all(match_w(tom))' => array (
-                    0 => (object) array  (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        )
-                ),
-            "match_all(match_w(tom) match_w(harry))" => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                ),
-            "match_all(not( match_w(harry)))" => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "match_all(match_w(tom) not( match_w(harry)))" => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "match_any(match_w(tom) match_w(harry))" => array (
-                    0 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'OR',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'term',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                )
-            );
+            'match_all(match_w(tom))' => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+            ],
+            "match_all(match_w(tom) match_w(harry))" => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+            ],
+            "match_all(not( match_w(harry)))" => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'harry',
+                ],
+            ],
+            "match_all(match_w(tom) not( match_w(harry)))" => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'NOT',
+                    'word' => 'harry',
+                ],
+            ],
+            "match_any(match_w(tom) match_w(harry))" => [
+                0 => (object) [
+                    'command' => 'term',
+                    'operator' => 'OR',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'term',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_pmatch_rules_from_parameters($comparerulesandparameters);
 
@@ -777,47 +783,47 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rule_from_template_rule_parameters() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These Pmatch rules should be generated from their associated array of parameters.
-            'match_all(match_wm(tom*))' => array (
-                    0 => (object) array  (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        )
-                ),
-            "match_all(match_wm(tom*) match_wm(harry*))" => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        )
-                ),
-            "match_all(not( match_wm(harry*)))" => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                ),
-            "match_all(match_wm(tom*) not( match_wm(harry*)))" => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'NOT',
-                            'word' => 'harry'
-                        )
-                )
-            );
+            'match_all(match_wm(tom*))' => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+            ],
+            "match_all(match_wm(tom*) match_wm(harry*))" => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+            ],
+            "match_all(not( match_wm(harry*)))" => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'harry',
+                ],
+            ],
+            "match_all(match_wm(tom*) not( match_wm(harry*)))" => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'NOT',
+                    'word' => 'harry',
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_pmatch_rules_from_parameters($comparerulesandparameters);
 
@@ -839,29 +845,29 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rule_from_precedes_rule_parameters() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These Pmatch rules should be generated from their associated array of parameters.
-            "match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))" => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        ),
-                    2 => (object) array (
-                            'command' => 'precedes',
-                            'operator' => 'AND',
-                            'word' => array (
-                                            0 => 'tom*',
-                                            1 => 'harry*'
-                                        )
-                        )
-                )
-        );
+            "match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))" => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+                2 => (object) [
+                    'command' => 'precedes',
+                    'operator' => 'AND',
+                    'word' => [
+                        0 => 'tom*',
+                        1 => 'harry*',
+                    ],
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_pmatch_rules_from_parameters($comparerulesandparameters);
 
@@ -876,29 +882,29 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rule_from_closely_precedes_rule_parameters() {
 
         // Set the expectation.
-        $comparerulesandparameters = array (
+        $comparerulesandparameters = [
             // These Pmatch rules should be generated from their associated array of parameters.
-            "match_all(match_wm(tom*) match_wm(harry*) match_w(tom*_harry*))" => array (
-                    0 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'tom'
-                        ),
-                    1 => (object) array (
-                            'command' => 'template',
-                            'operator' => 'AND',
-                            'word' => 'harry'
-                        ),
-                    2 => (object) array (
-                            'command' => 'closely_precedes',
-                            'operator' => 'AND',
-                            'word' => array (
-                                            0 => 'tom*',
-                                            1 => 'harry*'
-                                        )
-                        )
-                )
-        );
+            "match_all(match_wm(tom*) match_wm(harry*) match_w(tom*_harry*))" => [
+                0 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'tom',
+                ],
+                1 => (object) [
+                    'command' => 'template',
+                    'operator' => 'AND',
+                    'word' => 'harry',
+                ],
+                2 => (object) [
+                    'command' => 'closely_precedes',
+                    'operator' => 'AND',
+                    'word' => [
+                        0 => 'tom*',
+                        1 => 'harry*',
+                    ],
+                ],
+            ],
+        ];
 
         $rulesandparameters = $this->get_pmatch_rules_from_parameters($comparerulesandparameters);
 
@@ -926,7 +932,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rules_from_amati_term_rules() {
 
         // Set the expectation.
-        $comparerules = array (
+        $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             'match_all(match_w(tom))' => "correct_response(A) :- term_in_response(A,tom).",
             "match_all(match_w(tom) match_w(harry))" =>
@@ -935,7 +941,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 "correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry).",
             "match_any(match_w(tom) match_w(harry))" =>
                 "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)."
-        );
+        ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
 
@@ -950,7 +956,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rules_from_amati_template_rules() {
 
         // Set the expectation.
-        $comparerules = array (
+        $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             'match_all(match_wm(tom*))' => "correct_response(A) :- template_in_response(A,tom).",
             "match_all(match_wm(tom*) match_wm(harry*))" =>
@@ -959,7 +965,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 "correct_response(A) :- not template_in_response(A,B,harry).",
             "match_all(match_wm(tom*) not( match_wm(harry*)))" =>
                 "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)."
-        );
+        ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
 
@@ -974,11 +980,11 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rules_from_amati_precedes_rules() {
 
             // Set the expectation.
-        $comparerules = array (
+        $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             "match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))" =>
                 "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), precedes(B, C)."
-        );
+        ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
 
@@ -993,11 +999,11 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
     public function get_pmatch_rules_from_amati_closely_precedes_rules() {
 
         // Set the expectation.
-        $comparerules = array (
+        $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             "match_all(match_wm(tom*) match_wm(harry*) match_w(tom*_harry*))" =>
                 "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), closely_precedes(B, C)."
-        );
+        ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
 

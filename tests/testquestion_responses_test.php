@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
 
@@ -40,7 +42,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
      */
     public function test_intialise_test_response() {
         $this->resetAfterTest();
-        //  No data returns null.
+        // No data returns null.
         $testresponse = \qtype_pmatch\testquestion_response::create();
         $this->assertEquals($testresponse, null);
 
@@ -116,7 +118,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         // An example not using the DB.
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
-        //  Before we test the DB.
+        // Before we test the DB.
         $testresponse = \qtype_pmatch\testquestion_responses::create_for_question($question);
         $this->assertEquals(get_class($testresponse), 'qtype_pmatch\testquestion_responses');
     }
@@ -157,7 +159,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         list($responses, $problems) = $this->load_responses($question);
 
-        //  Add responses to an empty DB table and get feedback.
+        // Add responses to an empty DB table and get feedback.
         $feedback = \qtype_pmatch\testquestion_responses::add_responses($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 

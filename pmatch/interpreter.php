@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
 
 define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\\|\?\*_\[\]]');
@@ -119,10 +121,11 @@ abstract class pmatch_interpreter_item {
         $this->interpretererrormessage =
                                 get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
     }
+
     /**
-     *
      * Get the matcher tree for this interpreter object. Can be used from an interpreter object at
      * any point in the tree.
+     *
      * @param pmatch_options $externaloptions
      * @return pmatch_matcher_item a tree of child classes of pmatch_matcher_item
      */

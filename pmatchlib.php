@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
 require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
 

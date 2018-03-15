@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/pmatch/tests/helper.php');
@@ -108,7 +110,7 @@ class qtype_pmatch_testquestion_testcase extends advanced_testcase {
 
         list($responses, $problems) = $this->load_responses($this->currentquestion, $pathtoresponses, $count);
 
-        //  Add responses to the db.
+        // Add responses to the db.
         \qtype_pmatch\testquestion_responses::add_responses($responses);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
         return \qtype_pmatch\testquestion_responses::data_to_responses($dbresponses);
