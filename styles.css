@@ -17,12 +17,12 @@
 /* Top */
 body#page-question-type-pmatch #id_answerhdr div.fitem.femptylabel,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem {
-    background: #EEE;
+    background: #eee;
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-bottom: 0;
 }
 
@@ -54,12 +54,12 @@ body#page-question-type-pmatch div.fitem.fitem_accuracy,
 body#page-question-type-pmatch div.fitem.rcw,
 body#page-question-type-pmatch div.fitem.try-rule,
 body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
-    background: #EEE;
+    background: #eee;
     margin-bottom: 0;
     margin-top: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-top: 0;
     border-bottom: 0;
 }
@@ -67,12 +67,12 @@ body#page-question-type-pmatch #fitem_id_addanswers + .fitem + .fitem {
 /* Bottom */
 body#page-question-type-pmatch div[id^=fitem_id_][id*=feedback_],
 body#page-question-type-pmatch div[id^=fitem_id_][id*=otherfeedback] {
-    background: #EEE;
+    background: #eee;
     margin-bottom: 2em;
     margin-top: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-top: 0;
 }
 body#page-question-type-pmatch #fitem_id_addanswers {
@@ -87,7 +87,7 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 
 .qtype_pmatch-selftest-null {
     font-weight: bold;
-    color: #B38686;
+    color: #b38686;
 }
 
 .qtype_pmatch-selftest-missed-positive {
@@ -117,13 +117,8 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 body#page-question-type-pmatch-testquestion .progress-success .bar,
 body#page-question-type-pmatch-testquestion .progress .bar-success {
     background-color: #5eb95e;
-    background-image: -moz-linear-gradient(top, #62c462, #57a957);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#57a957));
-    background-image: -webkit-linear-gradient(top, #62c462, #57a957);
-    background-image: -o-linear-gradient(top, #62c462, #57a957);
     background-image: linear-gradient(to bottom, #62c462, #57a957);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
 }
 
 /* Align reset table preferences button */
