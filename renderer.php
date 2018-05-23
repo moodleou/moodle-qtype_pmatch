@@ -65,11 +65,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         $htmlresponse = $question->allowsubscript || $question->allowsuperscript;
         if ($htmlresponse) {
-            if (class_exists('editor_ousupsub_helper')) {
-                $editor = editor_ousupsub_helper::get_editor();
-            } else {
-                $editor = get_texteditor('supsub');
-            }
+            $editor = get_texteditor('ousupsub');
             if ($editor === false) {
                 $htmlresponse = false;
             }

@@ -12,7 +12,7 @@ This question type is has been available since Moodle 2.1+. This version is
 compatible with Moodle 3.2+.
 
 You will want to install superscript/subscript editor plugin
-(see https://github.com/moodleou/moodle-editor_supsub). This makes the superscript
+(see https://github.com/moodleou/moodle-editor_ousupsub). This makes the superscript
 and subscript options in the question editing form.  If the editor is not
 installed the question type can still be used but these options will not be
 available.
@@ -26,5 +26,5 @@ Moodle install
 
     git clone git://github.com/moodleou/moodle-qtype_pmatch.git question/type/pmatch
     echo /question/type/pmatch/ >> .git/info/exclude
-    git clone git://github.com/moodleou/moodle-editor_supsub.git lib/editor/supsub
-    echo /lib/editor/supsub/ >> .git/info/exclude
+    git clone git://github.com/moodleou/moodle-editor_ousupsub.git lib/editor/ousupsub
+    echo /lib/editor/ousupsub/ >> .git/info/exclude
