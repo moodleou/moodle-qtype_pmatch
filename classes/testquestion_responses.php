@@ -770,4 +770,19 @@ class testquestion_responses {
 
         return array($responses, $problems);
     }
+
+    /**
+     * Check duplicate response in test question.
+     *
+     * @param int $questionid The question id.
+     * @param string $response The response.
+     *
+     * @return bool true if exist, otherwise false.
+     */
+    public static function check_duplicate_response($questionid, $response) {
+        global $DB;
+
+        return $DB->record_exists_select('qtype_pmatch_test_responses', 'response = ? AND questionid = ?',
+                ['response' => $response, 'questionid' => $questionid]);
+    }
 }

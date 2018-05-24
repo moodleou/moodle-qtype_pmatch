@@ -61,22 +61,30 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
         $html = '';
         if (question_has_capability_on($question, 'edit')) {
             $html .= html_writer::start_div('', array('id' => 'commands'));
-            $html .= '<a id="select-all" href="javascript:return false;">' .
-                    get_string('selectall', 'quiz') . '</a> / ';
-            $html .= '<a id="de-select-all" href="javascript:return false;">' .
-                    get_string('selectnone', 'quiz') . '</a> &nbsp;&nbsp;';
+            $html = \html_writer::start_tag('p');
+            $html .= \html_writer::tag('button',
+                    get_string('testquestionformnewresponsebutton', 'qtype_pmatch'),
+                    ['id' => 'newresponsebutton']);
+            $html .= \html_writer::end_tag('p');
+            $html .= html_writer::tag('strong', get_string('withselected', 'question') . ':');
+            $html .= html_writer::empty_tag('br');
+            // Delete responses.
+            $html .= '<input type="submit" id="deleteresponsesbutton" name="delete" value="' .
+                get_string('testquestionformdeletesubmit', 'qtype_pmatch') . '"/> ';
             // Test responses.
             $html .= '<input type="submit" id="testresponsesbutton" name="test" value="' .
                     get_string('testquestionformtestsubmit', 'qtype_pmatch') . '"/> ';
-            // Delete responses.
-            $html .= '<input type="submit" id="deleteresponsesbutton" name="delete" value="' .
-                    get_string('testquestionformdeletesubmit', 'qtype_pmatch') . '"/>';
             $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
                     array('message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')));
             $html .= html_writer::end_div();
             // Add ajax updater.
             $this->page->requires->js_call_amd('qtype_pmatch/updater', 'init');
-            $this->page->requires->string_for_js('testquestionresultssummary', 'qtype_pmatch');
+            // Add ajax create response.
+            $this->page->requires->js_call_amd('qtype_pmatch/creator', 'init');
+
+            $this->page->requires->strings_for_js(['selectall', 'deselectall'], 'moodle');
+            $this->page->requires->strings_for_js(['testquestionresultssummary', 'testquestionformsaveresponsebutton',
+                    'testquestionformcancelresponsebutton'], 'qtype_pmatch');
         }
         return $html;
     }

@@ -70,6 +70,23 @@ class testquestion_table extends \table_sql {
     }
 
     /**
+     * Generate the display of the expectedfraction column.
+     * @param object $response the table row being output.
+     * @return string HTML content to go inside the td.
+     */
+    public function col_expectedfraction($response) {
+        if (!is_null($response->expectedfraction )) {
+            return \html_writer::tag('a',
+                    $response->expectedfraction,
+                    ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
+                            'title' => get_string('testquestionchangescore', 'qtype_pmatch') ]);
+        } else {
+            // Two spaces looks better than one.
+            return '&nbsp;&nbsp;';
+        }
+    }
+
+    /**
      * Generate the display of the response id colunn
      * @param object $response the table row being output.
      * @return string HTML content to go inside the td.
@@ -214,7 +231,8 @@ class testquestion_table extends \table_sql {
         if (!$this->is_downloading()) {
             if ($this->options->checkboxcolumn) {
                 $columns[] = 'checkbox';
-                $headers[] = null;
+                $headers[] = $this->get_checkbox_header();
+                $this->column_nosort[] = 'checkbox';
             }
             $columns[] = 'id';
             $headers[] = get_string('testquestionidlabel', 'qtype_pmatch');
@@ -252,5 +270,33 @@ class testquestion_table extends \table_sql {
         $this->collapsible(false);
         $this->set_attribute('class', 'generaltable generalbox grades');
         $this->set_attribute('id', 'responses');
+    }
+
+    /**
+     * Render input checkbox for header.
+     *
+     * @return string The checkbox for header.
+     */
+    protected function get_checkbox_header() {
+        return '<input type="checkbox" id="tqheadercheckbox" title="' .
+                get_string('selectall', 'moodle') . '"/>';
+    }
+
+    /**
+     * Return row as html for response table.
+     *
+     * @param $row \stdClass the response to display.
+     * @param $curentrow int the index of current editing row.
+     * @return string row html to append response table.
+     */
+    public function get_row_html_for_response_table($row, $curentrow) {
+        $columns = [];
+        $headers = [];
+        $this->currentrow = $curentrow;
+        $this->add_columns($columns, $headers);
+        $this->define_columns($columns);
+        $formattedrow = $this->format_row($row);
+
+        return $this->get_row_html($this->get_row_from_keyed($formattedrow), $this->get_row_class($row));
     }
 }

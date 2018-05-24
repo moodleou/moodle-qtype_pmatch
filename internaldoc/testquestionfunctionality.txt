@@ -90,7 +90,7 @@ Delete responses
 Responses can be deleted in the "Test this question" screen. select the
 checkbox next to each response you wish to delete or click "select all".
 
-Click "Delete selected responses" and a confirmation box will appear asking you  to
+Click "Delete" and a confirmation box will appear asking you  to
 confirm the delete request. Click yes to delete the selected responses.
 
 h1. FAQ

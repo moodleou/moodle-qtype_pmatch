@@ -31,6 +31,7 @@ define(['jquery'], function($) {
         baseUrl: '',
         sessKey: '',
         qid: '',
+        headerCheckboxChecked: true,
 
         /**
          * Initialise the updater.
@@ -40,35 +41,30 @@ define(['jquery'], function($) {
             t.baseUrl = base.replace('testquestion.php', 'api/updater.php');
             t.sessKey = $('#attemptsform input[name="sesskey"]').val();
             t.qid = $('#attemptsform input[name="id"]').val();
-            $('.updater-expectedfraction').each(function() {
-                // Expected fraction column. The header does not have an id.
-                var iden = $(this).attr('id');
-                if (iden) {
-                    // The response id is always in column 1.
-                    var x = iden.slice(0, -1) + '1';
-                    var id = $(this).prevAll('#' + x).text();
-                    var val = $(this).text();
-                    if (val === '') {
-                        val = '&nbsp;&nbsp;'; // Two spaces looks better than one.
-                    }
-                    // Make the Human marks column items clickable (updateable).
-                    $(this).html('<a href="#" title="Change score" id="updater-ef_' + id + '">' +
-                            val + '</a>');
-                    $('#updater-ef_' + id).click(function() {
-                        t.update(id);
-                        return false;
-                    });
+            $(document).on('click', '.updater-ef', function() {
+                var id = $(this).data('id');
+                t.update(id);
+                return false;
+            });
+            // Prevent the form submit when user press enter on checkbox.
+            $(document).on('keypress', '#tablecontainer :checkbox', function(e) {
+                if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                    e.preventDefault();
+                    $(this).trigger('click');
                 }
             });
-            $('#select-all').click(function() {
+            $('#tqheadercheckbox').click(function() {
+                if (t.headerCheckboxChecked) {
+                    $(this).attr('title', M.util.get_string('deselectall', 'moodle'));
+                    t.headerCheckboxChecked = false;
+                } else {
+                    $(this).attr('title', M.util.get_string('selectall', 'moodle'));
+                    t.headerCheckboxChecked = true;
+                }
                 $('#tablecontainer :checkbox').each(function() {
-                    this.checked = true;
+                    this.checked = !t.headerCheckboxChecked;
                 });
-            });
-            $('#de-select-all').click(function() {
-                $('#tablecontainer :checkbox').each(function() {
-                    this.checked = false;
-                });
+                $(this).prop('checked', false);
             });
         },
         update: function(id) {

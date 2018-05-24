@@ -25,8 +25,8 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
     And I should see "1" in the "testing one two three four" "table_row"
     # Now mark responses in order to test their backup.
-    When I click on "Select all" "link"
-    And I press "Test the question using these responses"
+    When I set the field "tqheadercheckbox" to "1"
+    And I press "Test selected responses"
     And I press "Continue"
     # Make a backup and restore to new course.
     Given I am on homepage

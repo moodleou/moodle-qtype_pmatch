@@ -29,7 +29,7 @@ Feature: Grade a test response for a pattern match question
     Given I am on the pattern match test responses page for question "My first pattern match question"
     Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I set the field with xpath "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c0']//input" to "1"
-    And I press "Test the question using these responses"
+    And I press "Test selected responses"
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Processing response 1 of 1: testing one two three four."
 

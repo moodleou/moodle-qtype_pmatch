@@ -29,7 +29,7 @@ Feature: Delete a test response for a pattern match question
     # Check responses are listed correctly
     Given I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I set the field with xpath "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c0']//input" to "1"
-    And I press "Delete selected responses"
+    And I press "Delete"
     #The step When I click on "Yes" "button" confirming the dialogue doesn't find a dialogue so we use the following step instead.
     When  I click on "//div[contains(@class, 'moodle-dialogue-confirm')]//div[contains(@class, 'confirmation-dialogue')]//div[contains(@class, 'confirmation-buttons')]//input[contains(@value, 'Yes')]" "xpath_element"
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"

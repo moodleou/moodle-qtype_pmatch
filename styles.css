@@ -125,3 +125,48 @@ body#page-question-type-pmatch-testquestion .progress .bar-success {
 body#page-question-type-pmatch-testquestion .resettable {
     text-align: left;
 }
+
+#page-question-type-pmatch-testquestion #attemptsform .error {
+    display: block;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table input,
+#page-question-type-pmatch-testquestion #attemptsform #commands input[type=submit] {
+    margin-bottom: 3px;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .section-input {
+    margin-top: 7px;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .section-checkbox {
+    margin-top: 13px;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .section-checkbox input[type=checkbox] {
+    margin-top: 1px;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .section-input .new-response {
+    width: 300px;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .section-input,
+#page-question-type-pmatch-testquestion #attemptsform table .section-button {
+    display: inline-block;
+}
+
+#page-question-type-pmatch-testquestion #attemptsform table .generaterow td {
+    vertical-align: top;
+}
+
+@media screen and (max-width: 768px) {
+    #page-question-type-pmatch-testquestion #attemptsform table .section-input,
+    #page-question-type-pmatch-testquestion #attemptsform table .section-button {
+        display: block;
+    }
+
+    #page-question-type-pmatch-testquestion #attemptsform table input[type=text] {
+        width: 100%;
+    }
+}

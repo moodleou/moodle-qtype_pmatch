@@ -38,8 +38,8 @@ Feature: Test answer accuracy and response coverage
     # Confirm the responses have no computed marks yet.
     And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
     # Now grade the responses (add computer marks).
-    When I click on "Select all" "link"
-    And I press "Test the question using these responses"
+    When I set the field "tqheadercheckbox" to "1"
+    And I press "Test selected responses"
     Then I should see "Processing response 13 of 13: ."
     And I press "Continue"
     Then I should see "Pos=1/6 Neg=6/6 Unm=1 Acc=58%"

@@ -27,8 +27,8 @@ Feature: Test the try rule feature
     And I click on "Preview" "link" in the "My first pattern match question" "table_row"
     And I switch to "questionpreview" window
     And I click on "Test this question" "link"
-    And I click on "Select all" "link"
-    And I press "Test the question using these responses"
+    And I set the field "tqheadercheckbox" to "1"
+    And I press "Test selected responses"
     And I press "Continue"
 
   @javascript
