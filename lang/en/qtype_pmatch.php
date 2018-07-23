@@ -79,6 +79,7 @@ $string['pluginname_link'] = 'question/type/pmatch';
 $string['pluginnameadding'] = 'Adding a Pattern match question';
 $string['pluginnameediting'] = 'Editing a Pattern match question';
 $string['pluginnamesummary'] = 'Allows a short response of one or a few sentences that is graded by comparing against various model answers, which are described using the OU\'s pattern match syntax.';
+$string['privacy:metadata:preference:pagesize'] = 'Number of pattern match question attempts to show per page.';
 $string['processingxofy'] = 'Processing response {$a->row} of {$a->total}: {$a->response}.';
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
 $string['ruleaccuracylabel'] = 'Accuracy';
