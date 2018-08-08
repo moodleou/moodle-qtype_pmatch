@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Restore code for the pattern-match questoin type.
+ *
  * @package    qtype_pmatch
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,8 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Restore plugin class that provides the necessary information
- * needed to restore one pmatch qtype plugin.
+ * Restore code for the pattern-match questoin type.
  *
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -65,6 +66,8 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/pmatch element.
+     *
+     * @param array $data the data from the backup file.
      */
     public function process_pmatch($data) {
         global $DB;
@@ -87,8 +90,11 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
             $this->set_mapping('qtype_pmatch', $oldid, $newitemid);
         }
     }
+
     /**
      * Process the qtype/synonyms/synonym element.
+     *
+     * @param array $data the data from the backup file.
      */
     public function process_synonym($data) {
         global $DB;
@@ -113,6 +119,8 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/test_responses/test_response element.
+     *
+     * @param array $data the data from the backup file.
      */
     public function process_test_response($data) {
         global $DB;
@@ -134,6 +142,8 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/rule_matches/rule_match element.
+     *
+     * @param array $data the data from the backup file.
      */
     public function process_rule_match($data) {
         global $DB;

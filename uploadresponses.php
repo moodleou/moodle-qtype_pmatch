@@ -63,7 +63,7 @@ class upload_form extends moodleform {
      * @return array
      * @throws coding_exception
      */
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $USER;
 
         // Initialize.

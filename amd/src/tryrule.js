@@ -56,7 +56,7 @@ define(['jquery'], function($) {
             $('input[name="tryrule"]').on('click', function(e) {
                 e.preventDefault();
                 var id = $(this).attr('id').replace('id_tryrule_', '');
-                    t.tryrule(id);
+                t.tryrule(id);
             });
         },
 
@@ -64,11 +64,11 @@ define(['jquery'], function($) {
             M.util.js_pending(t.pendingid);
             var rule = $('#id_answer_' + id).val();
             if (rule === undefined || rule === null || rule === '') {
-                return false;
+                return;
             }
             rule = rule.trim();
             if (rule === '') {
-                return false;
+                return;
             }
             var display = $('#id_tryrule_' + id).next();
             var fraction = $('#id_fraction_' + id).val();

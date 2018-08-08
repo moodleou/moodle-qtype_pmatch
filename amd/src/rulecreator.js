@@ -296,7 +296,7 @@ define(['jquery'], function($) {
 
         removeFromPrecedes: function(id, terms) {
             var i;
-            for (i=0; i<2; i++) {
+            for (i = 0; i < 2; i++) {
                 $('#rc_precedes1_' + id + ' option[value="' + terms[i] + '"]').remove();
                 $('#rc_precedes2_' + id + ' option[value="' + terms[i] + '"]').remove();
                 $('#rc_cprecedes1_' + id + ' option[value="' + terms[i] + '"]').remove();
@@ -307,7 +307,7 @@ define(['jquery'], function($) {
         addToStore: function(id, term, op, type) {
             var ref = 'id_' + id;
             var termid = this.store[ref].length + 1;
-            this.store[ref].push({termid:termid, term:term, op:op, type:type});
+            this.store[ref].push({termid: termid, term: term, op: op, type: type});
             return termid;
         },
 

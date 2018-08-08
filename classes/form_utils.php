@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Pattern match form utils.
+ *
  * @package qtype_pmatch
  * @copyright 2017 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Pattern match form utils.
  *
- * @package qtype_pmatch
  * @copyright 2017 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -96,7 +97,6 @@ class form_utils {
      * @param string $elementname Element name.
      * @param int $repeatwhenempty Number of synonyms field will be shown when no synonyms inserted.
      * @param int $repeatwhenexist Number of synonyms field will be shown when synonyms existed.
-     * @internal param \moodleform $mformasdad
      */
     public static function add_synonyms($editform, $mform, $question, $showheader, $elementname, $repeatwhenempty,
                                         $repeatwhenexist) {

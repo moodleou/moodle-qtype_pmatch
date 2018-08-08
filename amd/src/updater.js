@@ -60,12 +60,6 @@ define(['jquery'], function($) {
                     });
                 }
             });
-            $(document).ajaxError(function() {
-                // Network problem or similar.
-                window.alert('Sorry there appears to be an error connecting to the server.\n' +
-                        'Please try again later. (Sometimes refreshing the page can ' +
-                        'avoid a session timeout issue.)');
-            });
             $('#select-all').click(function() {
                 $('#tablecontainer :checkbox').each(function() {
                     this.checked = true;
