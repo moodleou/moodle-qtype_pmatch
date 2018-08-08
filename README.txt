@@ -2,14 +2,14 @@ Pattern match question type
 https://moodle.org/plugins/qtype_pmatch
 
 This question type was created by Jamie Pratt, working for the Open University
-(http://www.open.ac.uk/).
+(http://www.open.ac.uk/) and has since had many enhancements by OU staff.
 
 Students can enter a response of up to 20 words, which is then graded by matching
 it against vaious model answers expressed using a sophisticated patten
 matching algorithm. See http://docs.moodle.org/dev/The_OU_PMatch_algorithm
 
 This question type is has been available since Moodle 2.1+. This version is
-compatible with Moodle 3.2+.
+compatible with Moodle 3.4+.
 
 You will want to install superscript/subscript editor plugin
 (see https://github.com/moodleou/moodle-editor_ousupsub). This makes the superscript
@@ -19,7 +19,7 @@ available.
 
 
 This question type should be installed like any other Moodle add-on. See
-http://docs.moodle.org/25/en/Installing_add-ons.
+http://docs.moodle.org/en/Installing_add-ons.
 
 To install the question type using git, type this command in the root of your
 Moodle install
