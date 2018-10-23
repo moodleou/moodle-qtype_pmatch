@@ -299,4 +299,15 @@ class testquestion_table extends \table_sql {
 
         return $this->get_row_html($this->get_row_from_keyed($formattedrow), $this->get_row_class($row));
     }
+
+    /**
+     * This function is not part of the public api.
+     */
+    function finish_html() {
+        if (!$this->started_output) {
+            // No data has been added to the table.
+            $this->start_output();
+        }
+        parent::finish_html();
+    }
 }

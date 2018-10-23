@@ -46,7 +46,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
             t.questionId = $('#attemptsform input[name="id"]').val();
             t.table = $('#responses');
             t.idxLastRow = t.table.find('tbody tr').length - 1;
-
+            t.disableControlButtonAndSelectionBox();
             $('#newresponsebutton').click(function(e) {
                 e.preventDefault();
                 t.idxLastRow++;
@@ -131,6 +131,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
                     .fail(function(response) {
                         t.handleSaveNewResponseButton(false, response.message);
                     });
+                t.disableControlButtonAndSelectionBox();
                 t.resetFormState();
             }
         },
@@ -141,6 +142,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
         cancelNewResponse: function() {
             $('#' + t.newRowId).remove();
             t.disableControlButtons(false);
+            t.disableControlButtonAndSelectionBox();
             t.resetFormState();
             t.idxLastRow--;
         },
@@ -210,6 +212,25 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
         resetFormState: function() {
             if (M.core_formchangechecker.get_form_dirty_state()) {
                 M.core_formchangechecker.reset_form_dirty_state();
+            }
+        },
+
+        /**
+         * Function disable or enable selection box,delete response button,test response button.
+         *
+         * @method disableControlButtons
+         */
+        disableControlButtonAndSelectionBox: function() {
+            var checkbox = $('#tqheadercheckbox');
+            var table = $('#responses');
+            if (table.find('tbody tr:not(.emptyrow)').length <= 0) {
+                checkbox.attr('disabled', true);
+                $('#deleteresponsesbutton').attr('disabled', 'true');
+                $('#testresponsesbutton').attr('disabled', 'true');
+            } else {
+                checkbox.removeAttr('disabled');
+                $('#deleteresponsesbutton').removeAttr('disabled');
+                $('#testresponsesbutton').removeAttr('disabled');
             }
         }
     };

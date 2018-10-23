@@ -30,4 +30,33 @@ Feature: Test no test responses existing for this question
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And I should see "Pos=0/0 Neg=0/0 Unm=0 Acc=0%"
-    And I should see "Nothing to display"
+    And I should not see "Nothing to display"
+    And I wait until the page is ready
+    And I should see "Add new response"
+    And I should see "Rules" in the ".generaltable" "css_element"
+    And I should see "Computed" in the ".generaltable" "css_element"
+    And I should see "Human mark" in the ".generaltable" "css_element"
+    And I should see "Response" in the ".generaltable" "css_element"
+    And the "#tqheadercheckbox" "css_element" should be disabled
+    And the "Test selected responses" "button" should be disabled
+    And the "Delete" "button" should be disabled
+    And I click on "Add new response" "button"
+    And I set the field "new-response" to "New test response"
+    When I click on "Cancel" "button" in the ".generaltable" "css_element"
+    And the "Test selected responses" "button" should be disabled
+    And the "Delete" "button" should be disabled
+    And I should not see "Cancel" in the ".generaltable" "css_element"
+    And the "Add new response" "button" should be enabled
+    And I click on "Add new response" "button"
+    And I set the field "new-response" to "New test response"
+    When I click on "Save" "button"
+    Then I should see "Pos=0/0 Neg=1/1 Unm=0 Acc=100%"
+    When I click on "#tqheadercheckbox" "css_element"
+    And I press "Delete"
+    And I click on "Yes" "button" in the "Confirmation" "dialogue"
+    Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
+    And I should see "The responses were successfully deleted."
+    And I press "Continue"
+    And the "Test selected responses" "button" should be disabled
+    And the "Delete" "button" should be disabled
+    And the "#tqheadercheckbox" "css_element" should be disabled
