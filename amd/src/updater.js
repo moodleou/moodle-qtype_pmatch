@@ -22,8 +22,7 @@
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery'], function($) {
-
+define(['jquery', 'core/notification'], function($, Notification) {
     /**
      * @alias qtype_pmatch/updater
      */
@@ -32,12 +31,16 @@ define(['jquery'], function($) {
         sessKey: '',
         qid: '',
         headerCheckboxChecked: true,
-
+        /**
+         *  The string need to be replaced to get correct row.
+         */
+        REPLACESTRING: /qtype-pmatch-testquestion_r/g,
         /**
          * Initialise the updater.
          */
         init: function() {
             var base = $('#attemptsform').attr('action');
+            var body = $('body');
             t.baseUrl = base.replace('testquestion.php', 'api/updater.php');
             t.sessKey = $('#attemptsform input[name="sesskey"]').val();
             t.qid = $('#attemptsform input[name="id"]').val();
@@ -66,6 +69,41 @@ define(['jquery'], function($) {
                 });
                 $(this).prop('checked', false);
             });
+
+            body.on('updatefailed', '[data-inplaceeditable]', function(e) {
+                var exception = e.exception;
+                e.preventDefault();
+                Notification.alert(M.util.get_string('error:title', 'qtype_pmatch'),
+                    exception.message, M.util.get_string('ok', 'moodle'));
+            });
+            body.on('updated', '[data-inplaceeditable]', function(e) {
+                t.handleUpdated(e, this);
+            });
+            t.bindInplaceEditEvent();
+        },
+        /**
+         * If there is no row in table, bind core/inplace_editable to the page.
+         */
+        bindInplaceEditEvent: function() {
+            if ($('#qtype-pmatch-testquestion_r0').hasClass('emptyrow')) {
+                require(['core/inplace_editable']);
+            }
+        },
+        /**
+         * Handle updated inplace-editable data returned.
+         * @param {object} e the event handlers.
+         * @param {object} target the DOM element.
+         */
+        handleUpdated: function(e, target) {
+            var ajaxReturn = e.ajaxreturn;
+            if (ajaxReturn.value !== e.oldvalue) {
+                var jsonDecode = $.parseJSON(ajaxReturn.value);
+                var row = $(target).parent().parent();
+                var currentRow = row.attr('id');
+                var html = jsonDecode.html;
+                $(row).replaceWith(html.replace(t.REPLACESTRING, currentRow));
+                $('#testquestion_gradesummary').html(jsonDecode.summary);
+            }
         },
         update: function(id) {
             var val = $('#updater-ef_' + id).text();
