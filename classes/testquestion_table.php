@@ -186,6 +186,25 @@ class testquestion_table extends \table_sql {
     }
 
     /**
+     * Format the response column.
+     *
+     * @param object $response the response data.
+     * @return string format new column response.
+     */
+    public function col_response($response) {
+        global $OUTPUT;
+        if ($this->is_downloading()) {
+            return $response->response;
+        }
+        $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
+        $tmpl = new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
+                true, $response->response, $response->response, $editresponse, $editresponse);
+        $out = $OUTPUT->render($tmpl);
+
+        return $out;
+    }
+
+    /**
      * Format the data into test responses classes.
      */
     protected function format_data() {

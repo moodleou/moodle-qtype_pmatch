@@ -120,13 +120,15 @@ class qtype_pmatch_external extends external_api {
      * @return array The status and data after created the response. If not success return the error message.
      */
     public static function create_response($questionid, $expectedfraction, $response, $curentrow) {
-        global $DB;
+        global $DB, $PAGE;
         $params = self::validate_parameters(self::create_response_parameters(), [
                 'questionid' => $questionid,
                 'expectedfraction' => $expectedfraction,
                 'response' => $response,
                 'curentrow' => $curentrow]);
         $question = question_bank::load_question($params['questionid']);
+        // To prevent notice message when calling web service.
+        $PAGE->set_context($question->get_context());
         try {
             $response = new stdClass();
             $response->expectedfraction = $params['expectedfraction'];
@@ -147,6 +149,20 @@ class qtype_pmatch_external extends external_api {
             $result['html'] = '';
             return $result;
         }
+        $result = self::update_computed_mark_and_get_row_response($rid, $question, $curentrow);
+        return $result;
+    }
+
+    /**
+     * Update the computed mark and get row pattern match test response
+     *
+     * @param int $rid The response id.
+     * @param question_definition $question loaded from the database.
+     * @param int $curentrow The index of curent row editing.
+     *
+     * @return array The status and row data response.
+     */
+    public static function update_computed_mark_and_get_row_response($rid, $question, $curentrow) {
         // Now update the computed mark (though this will never change), as it allows us
         // to get the correct row class. It also means that if you change the human mark
         // of a response that has not been computer marked yet, the computed mark will be inserted.

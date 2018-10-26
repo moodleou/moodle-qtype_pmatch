@@ -178,3 +178,21 @@ body#page-question-type-pmatch-testquestion .resettable {
 #page-question-type-pmatch-testquestion .no-overflow > .generaltable {
     min-height: 40px;
 }
+
+/* Help responsive error pop up in the Examplar table */
+@media (min-device-width: 1023px) {
+    #page-question-type-pmatch-testquestion .moodle-dialogue {
+        left: calc(50% - 200px) !important;
+        top: auto;
+        max-width: unset;
+    }
+    @media (max-width: 767px) {
+        #page-question-type-pmatch-testquestion .moodle-dialogue {
+            top: 50% !important;
+        }
+    }
+    #page-question-type-pmatch-testquestion .moodle-dialogue-fullscreen {
+        left: 0 !important;
+        top: 0 !important;
+    }
+}

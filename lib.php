@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/externallib.php');
 
 /**
  * Checks file access for pattern-match questions.
@@ -68,4 +70,53 @@ function qtype_pmatch_setup_question_test_page($question) {
     }
 
     return array($context, $urlparams);
+}
+
+/**
+ * Renders element for inline editing.
+ *
+ * @param string $itemtype type of response item.
+ * @param int $itemid an item id.
+ * @param mixed $newvalue new given response.
+ * @return string the inplace editable response.
+ */
+function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue) {
+    if ($itemtype === 'responsetable') {
+        global $DB;
+
+        $responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids([$itemid]);
+        $response = $responses[$itemid];
+        $question = \question_bank::load_question($response->questionid);
+        $context = $question->get_context();
+        \external_api::validate_context($context);
+        require_capability('moodle/question:editall', $context);
+        // Clean input and update the record.
+        $newvalue = clean_param($newvalue, PARAM_NOTAGS);
+        $newvalue = trim($newvalue);
+
+        if ($newvalue != $response->response) {
+            if (!strlen($newvalue) > 0) {
+                throw new moodle_exception('error:blank', 'qtype_pmatch');
+            } else {
+                $duplicated = \qtype_pmatch\testquestion_responses::check_duplicate_response($response->questionid,
+                        $newvalue, $itemid);
+                if ($duplicated) {
+                    throw new moodle_exception('testquestionformduplicateresponse', 'qtype_pmatch');
+                }
+            }
+            $response->response = $newvalue;
+            $DB->update_record('qtype_pmatch_test_responses', ['id' => $itemid, 'response' => $newvalue]);
+            $result = qtype_pmatch_external::update_computed_mark_and_get_row_response($response->id, $question, null);
+            // An json string pass value to updater.js file.
+            $responsevalue = json_encode(['html' => $result['html'],
+                    'summary' => get_string('testquestionresultssummary', 'qtype_pmatch', $result['counts'])]);
+        } else {
+            $responsevalue = $response->response;
+        }
+
+        // Prepare the element for the output.
+        $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
+        return new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
+                true, $response->response, $responsevalue, $editresponse, $editresponse);
+    }
 }

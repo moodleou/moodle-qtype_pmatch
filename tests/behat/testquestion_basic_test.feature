@@ -35,3 +35,28 @@ Feature: Test all the basic functionality of testquestion question type
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
+
+  @javascript
+  Scenario: Test edit response.
+    # Confirm can edit inplace the response.
+    Given I am on the pattern match test responses page for question "My first pattern match question"
+    Then I should see "testing one two three four"
+    When I follow "Edit response"
+    Then I should see "Escape to cancel, Enter when finished"
+    When I set the field "Edit response" to ""
+    And I press key "13" in the field "Edit response"
+    Then I should see "The response cannot be blank"
+    And I click on "OK" "button"
+    When I follow "Edit response"
+    And I set the field "Edit response" to "testing"
+    And I press key "13" in the field "Edit response"
+    Then I should see "Duplicate responses are not allowed"
+    And I click on "OK" "button"
+    When I follow "Edit response"
+    And I set the field "Edit response" to "New improved response"
+    And I press key "13" in the field "Edit response"
+    Then I should not see "testing one two three four"
+    And I should see "New improved response"
+    And I reload the page
+    And I should not see "testing one two three four"
+    And I should see "New improved response"
