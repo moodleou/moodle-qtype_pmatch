@@ -45,8 +45,8 @@ class testquestion_controller {
     /** @var object The options form. */
     protected $optionsform;
 
-    /** @var object The responses table form. */
-    protected $responsestableform;
+    /** @var object The responses table. */
+    protected $responsestable;
 
     /** @var object The options. */
     protected $options;
@@ -59,8 +59,10 @@ class testquestion_controller {
         $page = optional_param('page', 0, PARAM_INT);
         $this->options = new \qtype_pmatch\testquestion_options($question);
         $this->optionsform = new \qtype_pmatch\testquestion_options_form($this->get_base_url());
-        $this->responsestableform = new \qtype_pmatch\testquestion_table($question,
+        $this->responsestable = new \qtype_pmatch\testquestion_table($question,
                 $this->testresponses, $this->options);
+        // Initiate download dropdown list.
+        $this->responsestable->is_downloading('');
     }
 
     public function handle_display_options_form () {
@@ -79,7 +81,7 @@ class testquestion_controller {
         // Handle any attempts form submission.
         $this->process_response_table_actions($this->options->get_url());
         // Note the attempts form is wrapped around this responses table - see wrap_html_start().
-        $this->responsestableform->out(0, false);
+        $this->responsestable->out(0, false);
     }
 
     /**
@@ -134,5 +136,16 @@ class testquestion_controller {
             $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
                     array('row' => $row, 'total' => $rowcount, 'response' => $response->response)));
         }
+    }
+
+    /**
+     * Download the table data with given format.
+     *
+     * @param string $download Format of download file.
+     * @param string $name Name of the download file.
+     */
+    public function download_data($download, $name) {
+        $this->responsestable->is_downloading($download, $name, $name);
+        echo $this->handle_responses_table_form();
     }
 }
