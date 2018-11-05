@@ -70,6 +70,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/lib.php');
 require_once($CFG->dirroot . '/question/type/pmatch/classes/output/testquestion_renderer.php');
 
 $questionid = required_param('id', PARAM_INT);
+$download = optional_param('download', '', PARAM_RAW);
 $questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUST_EXIST);
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
@@ -103,6 +104,11 @@ $PAGE->set_heading(get_string('testquestionformtitle', 'qtype_pmatch'));
 
 $output = $PAGE->get_renderer('qtype_pmatch', 'testquestion');
 $controller = new \qtype_pmatch\testquestion_controller($question, $context);
+
+if ($download) {
+    $controller->download_data($download, format_string($questiondata->name));
+    die();
+}
 
 echo $output->header();
 echo $output->heading(get_string('testquestionformtitle', 'qtype_pmatch') . ': ' .

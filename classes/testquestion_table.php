@@ -76,6 +76,9 @@ class testquestion_table extends \table_sql {
      */
     public function col_expectedfraction($response) {
         if (!is_null($response->expectedfraction )) {
+            if ($this->is_downloading()) {
+                return $response->expectedfraction;
+            }
             return \html_writer::tag('a',
                     $response->expectedfraction,
                     ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
@@ -229,6 +232,7 @@ class testquestion_table extends \table_sql {
      */
     protected function add_columns(&$columns, &$headers) {
         if (!$this->is_downloading()) {
+            // Only export Human mark and Response columns for download file.
             if ($this->options->checkboxcolumn) {
                 $columns[] = 'checkbox';
                 $headers[] = $this->get_checkbox_header();
@@ -240,11 +244,11 @@ class testquestion_table extends \table_sql {
             $headers[] = get_string('testquestionruleslabel', 'qtype_pmatch');
             $columns[] = 'gradedfraction';
             $headers[] = get_string('testquestionactualmark', 'qtype_pmatch');
-            $columns[] = 'expectedfraction';
-            $headers[] = get_string('testquestionexpectedfraction', 'qtype_pmatch');
-            $columns[] = 'response';
-            $headers[] = get_string('testquestionresponse', 'qtype_pmatch');
         }
+        $columns[] = 'expectedfraction';
+        $headers[] = get_string('testquestionexpectedfraction', 'qtype_pmatch');
+        $columns[] = 'response';
+        $headers[] = get_string('testquestionresponse', 'qtype_pmatch');
     }
 
     /**
