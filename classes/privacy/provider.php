@@ -37,7 +37,7 @@ use core_privacy\local\request\transform;
  */
 class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\user_preference_provider {
 
-    public static function get_metadata(collection $collection): collection {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_user_preference('qtype_pmatch_testquestion_pagesize', 'privacy:metadata:preference:pagesize');
         return $collection;
     }

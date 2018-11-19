@@ -303,7 +303,7 @@ class testquestion_table extends \table_sql {
     /**
      * This function is not part of the public api.
      */
-    function finish_html() {
+    public function finish_html() {
         if (!$this->started_output) {
             // No data has been added to the table.
             $this->start_output();

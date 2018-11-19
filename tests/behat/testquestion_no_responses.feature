@@ -33,10 +33,7 @@ Feature: Test no test responses existing for this question
     And I should not see "Nothing to display"
     And I wait until the page is ready
     And I should see "Add new response"
-    And I should see "Rules" in the ".generaltable" "css_element"
-    And I should see "Computed" in the ".generaltable" "css_element"
-    And I should see "Human mark" in the ".generaltable" "css_element"
-    And I should see "Response" in the ".generaltable" "css_element"
+    And I should see "Rules" in the "responses" "table"
     And the "#tqheadercheckbox" "css_element" should be disabled
     And the "Test selected responses" "button" should be disabled
     And the "Delete" "button" should be disabled

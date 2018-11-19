@@ -4,7 +4,8 @@
 ## Changes in 2.4
 
 * New button on the question testing screen to add a new sample response.
-
+* Fix Behat tests to pass in Moodle 3.6.
+* Some coding style fixes.
 
 ## Changes in 2.3
 

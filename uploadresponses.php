@@ -30,6 +30,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Login is checked in qtype_pmatch_setup_question_test_page but CodeChecker can't see that.
+// @codingStandardsIgnoreLine
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->libdir . '/formslib.php');

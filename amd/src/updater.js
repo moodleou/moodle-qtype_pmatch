@@ -69,7 +69,6 @@ define(['jquery'], function($) {
         },
         update: function(id) {
             var val = $('#updater-ef_' + id).text();
-            // If a spinner is required add it here $('#updater-ef_' + id).text(val + ' <img src="spinner.gif" alt="wait"/>');
             var ef = 0;
             if (val === '1') {
                 ef = 0;

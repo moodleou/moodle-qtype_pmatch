@@ -62,6 +62,8 @@
  */
 define('NO_OUTPUT_BUFFERING', true);
 
+// Login is checked in qtype_pmatch_setup_question_test_page but CodeChecker can't see that.
+// @codingStandardsIgnoreLine
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/type/pmatch/lib.php');
