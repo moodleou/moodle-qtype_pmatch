@@ -23,7 +23,7 @@ Feature: Test the try rule feature
     And the default question test responses exist for question "My first pattern match question"
     And I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
     And I click on "Preview" "link" in the "My first pattern match question" "table_row"
     And I switch to "questionpreview" window
     And I click on "Test this question" "link"
@@ -38,7 +38,8 @@ Feature: Test the try rule feature
     And I should see "(Pos=1/6 Neg=6/6 Unm=1 Acc=58%)"
     And I switch to the main window
     # The page needs refreshing now.
-    And I navigate to "Question bank" node in "Course administration"
+    And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
     And I click on "Edit" "link" in the "My first pattern match question" "table_row"
     # The waiting is required probably because the editor takes a long time to load.
     # Without waiting I get an unexpected 'alert open' exception on my PC.

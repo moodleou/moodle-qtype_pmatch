@@ -23,7 +23,7 @@ Feature: Test answer accuracy and response coverage
     And the default question test responses exist for question "My first pattern match question"
     And I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Get standard responses graded against current answer rules.
@@ -47,7 +47,7 @@ Feature: Test answer accuracy and response coverage
     When I switch to the main window
     And I am on homepage
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
     And I click on "Edit" "link" in the "My first pattern match question" "table_row"
     Then I should see "Editing a Pattern match question"
     And I should see "Pos = 1 Neg = 0" in the "//div[@id='fitem_accuracy_0']" "xpath_element"

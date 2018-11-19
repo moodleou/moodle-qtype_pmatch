@@ -20,7 +20,7 @@ Feature: Import and export pattern match questions
   @javascript
   Scenario: Import and export pattern match questions
     # Import sample file.
-    When I navigate to "Import" node in "Course administration > Question bank"
+    When I navigate to "Question bank > Import" in current page administration
     And I set the field "id_format_xml" to "1"
     And I upload "question/type/pmatch/tests/fixtures/testquestion.moodle.xml" file to "Import" filemanager
     And I press "id_submitbutton"
@@ -31,7 +31,8 @@ Feature: Import and export pattern match questions
     And I should see "Imported pattern match question"
 
     # Now export again.
-    When I navigate to "Export" node in "Course administration > Question bank"
+    When I am on "Course 1" course homepage
+    And I navigate to "Question bank > Export" in current page administration
     And I set the field "id_format_xml" to "1"
     And I set the field "category" to "Imported questions (1)"
     And I press "Export questions to file"

@@ -16,7 +16,7 @@ Feature: Test the rule creation assistant
       | teacher | C1     | editingteacher |
     And I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Using the rule creation assistant.

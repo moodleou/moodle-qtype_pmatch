@@ -36,11 +36,12 @@ Feature: Test backup and restore of a pmatch question with responses and matches
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
     # Check the new course's testquestion data.
-    When I navigate to "Question bank" node in "Course administration"
+    When I navigate to "Question bank" in current page administration
     Then I should see "My first pattern match question"
     When I follow "Edit"
     Then I should see "Editing a Pattern match question"
-    When I navigate to "Question bank" node in "Course administration"
+    When I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
     And I follow "Preview"
     And I switch to "questionpreview" window
     And I follow "Test this question"
