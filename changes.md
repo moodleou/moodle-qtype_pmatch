@@ -1,6 +1,11 @@
 # Change log for the pattern-match question type
 
 
+## Changes in 2.4
+
+* New button on the question testing screen to add a new sample response.
+
+
 ## Changes in 2.3
 
 * Privacy API implementation.
