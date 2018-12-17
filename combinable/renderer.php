@@ -29,4 +29,18 @@ defined('MOODLE_INTERNAL') || die();
 
 class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_base {
 
+    /**
+     * @param question_attempt $qa
+     * @param question_display_options $options
+     * @param qtype_combined_combinable_text_entry $subq
+     * @param integer $placeno
+     * @return string
+     */
+    public function subquestion(question_attempt $qa, question_display_options $options, qtype_combined_combinable_base $subq,
+            $placeno) {
+
+        $result = parent::subquestion($qa, $options, $subq, $placeno);
+        $pmatchoutput = $this->page->get_renderer('qtype_pmatch');
+        return html_writer::div($result . $pmatchoutput->question_tests_link($subq->question, $options));
+    }
 }

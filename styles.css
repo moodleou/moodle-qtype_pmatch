@@ -95,14 +95,16 @@ body#page-question-type-pmatch #fitem_id_addanswers {
     color: #00f;
 }
 
-body.pagelayout-embedded .que.pmatch .formulation .questiontestslink {
+body.pagelayout-embedded .que.pmatch .formulation .questiontestslink,
+body.pagelayout-embedded .que.combined .formulation .questiontestslink {
     display: none;
 }
-
-.que.pmatch .formulation .questiontestslink {
+.que.pmatch .formulation .questiontestslink,
+.que.combined .formulation .questiontestslink {
     float: right;
     font-size: 0.7em;
 }
+
 #page-question-type-pmatch .rcw input[type=submit] {
     margin: 0 0 10px 5px;
 }

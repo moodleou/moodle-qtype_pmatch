@@ -171,7 +171,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
      * @param question_display_options $options
      * @return string HTML fragment.
      */
-    protected function question_tests_link(qtype_pmatch_question $question, question_display_options $options) {
+    public function question_tests_link(qtype_pmatch_question $question, question_display_options $options) {
         if (!empty($options->suppressruntestslink)) {
             return '';
         }
