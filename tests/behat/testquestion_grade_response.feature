@@ -34,7 +34,10 @@ Feature: Grade a test response for a pattern match question
     And I should see "Processing response 1 of 1: testing one two three four."
 
     When I press "Continue"
-    Then I should see "Pos=1/1 Neg=0/0 Unm=12 Acc=100%"
+    Then I should see "Sample responses: 13"
+    And I should see "Marked correctly: 1 (8%)"
+    And I should see "Computed mark greater than human mark: 0 (missed positive)"
+    And I should see "Computed mark less than human mark: 0 (missed negative)"
     # Confirm the computer mark
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c3" "css_element"
     # Confirm the response

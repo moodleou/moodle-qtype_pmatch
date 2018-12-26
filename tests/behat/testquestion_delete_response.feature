@@ -37,7 +37,10 @@ Feature: Delete a test response for a pattern match question
 
     # Confirm the response has been deleted
     When I press "Continue"
-    Then I should see "Pos=0/0 Neg=0/0 Unm=12 Acc=0%"
+    Then I should see "Sample responses: 12"
+    And I should see "Marked correctly: 0 (0%)"
+    And I should see "Computed mark greater than human mark: 0 (missed positive)"
+    And I should see "Computed mark less than human mark: 0 (missed negative)"
     # Confirm the computer mark
     And I should see "0" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     # Confirm the response

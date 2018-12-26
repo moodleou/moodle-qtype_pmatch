@@ -33,7 +33,10 @@ Feature: Create new a response for a pattern match question
     When I click on "Correct" "checkbox"
     And I set the field "new-response" to "New test response"
     And I click on "Save" "button"
-    Then I should see "(Pos=0/1 Neg=0/0 Unm=13 Acc=0%)"
+    And I should see "Sample responses: 14"
+    And I should see "Marked correctly: 0 (0%)"
+    And I should see "Computed mark greater than human mark: 0 (missed positive)"
+    And I should see "Computed mark less than human mark: 1 (missed negative)"
     And I should see "New test response" in the "#qtype-pmatch-testquestion_r50_c5" "css_element"
     # Check duplicate response.
     When I click on "Add new response" "button"

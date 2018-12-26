@@ -27,32 +27,6 @@
  * The human mark is the bench mark by which the computer is judged and we assume
  * that the human mark is the correct mark to give.
  *
- * Authors are interested in how many times the computer mark matches the human mark.
- * Of the two values for pos and neg (e.g. Pos=0/21 Neg=49/51) the sum of the computer
- * marks is always on the left and the sum of the human marks is always on the right.
- *
- * The statistics (Pos=0/21 Neg=49/51 Unm=0 Acc=68%) therefore mean:
- * Pos  = Positive matches. The number of times the computer gave a positive grade (1) to
- *        match the human markers positive grade. e.g. The computer gave a positive grade
- *        to 0 of the 21 positive grades given by the human marker.
- * Neg =  Negative matches. The number of times the computer gave a negative grade (0) to
- *        match the human markers negative grade. e.g. the computer gave a negative grade
- *        (0) to 49 of the 51 negative grades given by the human marker.
- * Unm =  Unmarked responses. Responses that have not yet been graded by computer and are
- *        not yet part of the accuracy statistics.
- * Acc =  A percentage indicating the ability of the computer to accurately mark the
- *        responses compared to a human marker expressed as a percentage. It is a ratio
- *        of the number of times the computer gave the same mark as a human against the
- *        total number of marks the human gave.
- *        Which in this case is calculated as:
- *        * The number of times the computer grade matches the human grade:
- *          0 matched pos + 49 matched neg = 49 correct
- *        * The total number of possible grades: pos 21 + new 51 = 72
- *        * The computer question grading accuracy:
- *          The number of times the computer grade matches the human grade / The total
- *          number of possible grades
- *          49/72 as a percentage gives 68%
- *
  * The table of responses can be sorted, paged, and manipulated with the options in the top
  * section of the page.
  *
@@ -116,7 +90,6 @@ echo $output->heading(get_string('testquestionformtitle', 'qtype_pmatch') . ': '
 
 echo $output->get_display_options_form($controller);
 
-echo $output->get_uploadresponses_link($question);
 echo $output->get_responses_heading($question);
 echo $output->get_grade_summary($question);
 

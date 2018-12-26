@@ -42,7 +42,7 @@ $string['casesensitive'] = 'Case sensitivity';
 $string['caseyes'] = 'Yes, case must match';
 $string['combinedcontrolnamepmatch'] = 'text input';
 $string['converttospace'] = 'Convert the following characters to a space';
-$string['correctanswers'] = 'Correct answers';
+$string['correctanswers'] = 'Answer matching';
 $string['errors'] = 'Please fix the following problems : {$a}';
 $string['error:title'] = 'Error';
 $string['error:blank'] = 'The response cannot be blank';
@@ -57,7 +57,7 @@ $string['environmentcheck'] = 'Environment checks for the pmatch question type';
 $string['err_ousupsubnotsupportedonmobile'] = 'This question requires superscripts or subscripts and so does not yet work in this app. Please answer this question in the web browser.';
 $string['err_providepmatchexpression'] = 'You must provide a pmatch expression here.';
 $string['extenddictionary'] = 'Add these words to dictionary';
-$string['filloutoneanswer'] = 'Use Pattern match syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';
+$string['filloutoneanswer'] = 'Use pattern match to syntax to describe possible answers. The student\'s response will be compared to these in order, and the first matching pattern will determine the score and the feedback. You must give at least one pattern. <br> Overall grading accuracy:';
 $string['forcelength'] = 'If answer is more than 20 words';
 $string['forcelengthno'] = 'do not issue warning';
 $string['forcelengthyes'] = 'warn that answer is too long and invite respondee to shorten it';
@@ -85,8 +85,8 @@ $string['pluginnamesummary'] = 'Allows a short response of one or a few sentence
 $string['privacy:metadata:preference:pagesize'] = 'Number of pattern match question attempts to show per page.';
 $string['processingxofy'] = 'Processing response {$a->row} of {$a->total}: {$a->response}.';
 $string['repeatedword'] = 'This word appears more than once in synonym list.';
-$string['ruleaccuracylabel'] = 'Accuracy';
-$string['ruleaccuracy'] = 'Pos = {$a->positive} Neg = {$a->negative}';
+$string['ruleaccuracylabel'] = 'Effect on sample responses';
+$string['ruleaccuracy'] = 'Responses not matched above: {$a->responseneedmatch} <br> Correctly matched by this rule: {$a->correctlymatched}, <span class="{$a->class}">Incorrectly matched: {$a->incorrectlymatched}</span> <br> Responses still to be processed below: {$a->responsestillprocess}';
 $string['rulecreationasst'] = 'Show/hide rule creation assistant';
 $string['rulecreationtoomanyors'] = 'Sorry too many or\'s.';
 $string['rulecreationtoomanyterms'] = 'Sorry too many terms.';
@@ -144,10 +144,14 @@ $string['testthisquestionnorulesreturned'] = 'No rules were suggested.';
 $string['testquestionresponse'] = 'Response';
 $string['testquestionresponsesthatare'] = 'Responses that are';
 $string['testquestionresultsheader'] = 'Test results: {$a}';
-$string['testquestionresultssummary'] = '(Pos=<b>{$a->correctlymarkedright}</b>/<b>{$a->humanmarkedright}</b> Neg=<b>{$a->correctlymarkedwrong}</b>/<b>{$a->humanmarkedwrong}</b> Unm=<b>{$a->ungraded}</b> Acc=<b>{$a->accuracy}</b>%)';
+$string['testquestionresultssummary'] = 'Sample responses: {$a->total} <br>
+     Marked correctly: {$a->correct} ({$a->accuracy}%)<br>
+     <span>Computed mark greater than human mark: {$a->misspositive} (missed positive)</span><br>
+     <span>Computed mark less than human mark: {$a->missnegative} (missed negative)</span>';
 $string['testquestionruleslabel'] = 'Rules';
 $string['testquestionungraded'] = 'ungraded';
-$string['testquestionuploadresponses'] = 'Upload these responses';
+$string['testquestionuploadtheseresponses'] = 'Upload these responses';
+$string['testquestionuploadresponses'] = 'Upload responses';
 $string['testquestionuploadanother'] = 'Upload another file';
 $string['testquestionuploadrowhastwoitems'] = 'Each row should contain exactly two items, a numerical mark and a response. Row <b>{$a->row}</b> contains <b>{$a->items}</b> item(s).';
 $string['testquestionuploadrownotvalidutf8'] = 'The response in row <b>{$a}</b> contains unrecognised special characters. The input must be valid UTF-8.';

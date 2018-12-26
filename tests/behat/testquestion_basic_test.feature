@@ -34,7 +34,10 @@ Feature: Test all the basic functionality of testquestion question type
     And I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"
-    And I should see "Pos=0/0 Neg=0/0 Unm=13 Acc=0%"
+    And I should see "Sample responses: 13"
+    And I should see "Marked correctly: 0 (0%)"
+    And I should see "Computed mark greater than human mark: 0 (missed positive)"
+    And I should see "Computed mark less than human mark: 0 (missed negative)"
 
   @javascript
   Scenario: Test edit response.

@@ -90,7 +90,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->question);
-            $results = html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts));
+            $results = html_writer::tag('p',
+                    get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
+                    ["id" => 'testquestion_gradesummary']);
         }
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
                                                 get_string('correctanswers', 'qtype_pmatch'),
@@ -132,6 +134,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
             return;
         }
         $count = 0;
+        $responsestmp = $responses;
         foreach ($rules as $aid => $rule) {
             // Avoid adding anything to the 'Any other answer' section.
             if (!$mform->elementExists('fraction[' . $count . ']')) {
@@ -139,15 +142,17 @@ class qtype_pmatch_edit_form extends question_edit_form {
             }
 
             // Add the Rule accuracy section.
-            $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
-            $labelhtml = html_writer::div(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitemtitle');
+            $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responsestmp, $rule, $matches);
+            $labelhtml = html_writer::div(
+                    html_writer::label(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitem_accuracy_' . $count),
+                    'fitemtitle');
             $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
                     'felement fselect', array('id' => 'fitem_accuracy_' . $count));
             $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
             $answersaccuracy = $mform->createElement('html', $html);
             $cloneanswersaccuracy = clone $answersaccuracy;
-            $mform->insertElementBefore($cloneanswersaccuracy, 'answer[' . $count . ']');
-
+            $mform->insertElementBefore($cloneanswersaccuracy, 'accuracyborder[' . $count . ']');
+            unset($cloneanswersaccuracy);
             // Add the Show coverage section - for rules that have been marked.
             if (array_key_exists($rule->id, $matches['ruleidstoresponseids'])) {
                 $items = array();
@@ -271,11 +276,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
         // It would be nice to add a class to this element for styling, but it does not work.
         $repeated[] = $mform->createElement('static', 'topborder', '', ' ');
         $repeated[] = $mform->createElement('textarea', 'answer', $label,
-                            array('rows' => '8', 'cols' => '60', 'class' => 'textareamonospace'));
+                ['rows' => '8', 'cols' => '60', 'class' => 'answer-rule textareamonospace']);
         if ($this->question->qtype == 'pmatch') {
             $title = $this->get_rc_title();
             $content = $this->get_rc_content();
             $repeated[] = $mform->createElement('static', 'rule-creator-wrapper', $title, $content);
+            $repeated[] = $mform->createElement('static', 'accuracyborder', '', ' ');
             if ($html = $this->get_try_button()) {
                 $repeated[] = $mform->createElement('html', $html);
             }

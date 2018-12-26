@@ -232,36 +232,25 @@ class testquestion_responses {
         $sqlgraded = "SELECT COUNT(1) FROM {qtype_pmatch_test_responses}
                 WHERE questionid = ? " . self::SQLGRADED;
         $params = array('questionid' => $question->id);
-        $counts->graded = $DB->count_records_sql($sqlgraded, $params);
 
         // Get total responses.
         $counts->total = $DB->count_records('qtype_pmatch_test_responses', $params);
-        $counts->ungraded = $counts->total - $counts->graded;
+        // Get correct responses.
+        $counts->correct = $DB->count_records_sql($sqlgraded . " AND expectedfraction = gradedfraction", $params);
 
-        $params['expectedfraction'] = 1;
-        $params['gradedfraction'] = 1;
-        $counts->correctlymarkedright = $DB->count_records('qtype_pmatch_test_responses', $params);
-
+        // Get Miss Positive.
         $params['expectedfraction'] = 0;
+        $params['gradedfraction'] = 1;
+        $counts->misspositive = $DB->count_records('qtype_pmatch_test_responses', $params);
+
+        // Get Miss Negative.
+        $params['expectedfraction'] = 1;
         $params['gradedfraction'] = 0;
-        $counts->correctlymarkedwrong = $DB->count_records('qtype_pmatch_test_responses', $params);
-
-        $counts->correct = $counts->correctlymarkedright + $counts->correctlymarkedwrong;
-
-        // Get human marks v computer marks.
-        // Remove expectedfraction and gradedfraction as we are using count_records_sql and excluding
-        // null values.
-        unset($params['expectedfraction']);
-        unset($params['gradedfraction']);
-        $sqlhumanmarkedwrong = $sqlgraded . " AND expectedfraction = 0 AND gradedfraction IS NOT NULL";
-        $counts->humanmarkedwrong = $DB->count_records_sql($sqlhumanmarkedwrong, $params);
-
-        $sqlhumanmarkedright = $sqlgraded . " AND expectedfraction = 1 AND gradedfraction IS NOT NULL";
-        $counts->humanmarkedright = $DB->count_records_sql($sqlhumanmarkedright, $params);
+        $counts->missnegative = $DB->count_records('qtype_pmatch_test_responses', $params);
 
         $counts->accuracy = 0;
-        if ($counts->correct && $counts->graded) {
-            $counts->accuracy = round($counts->correct / $counts->graded * 100);
+        if ($counts->total) {
+            $counts->accuracy = round($counts->correct / $counts->total * 100);
         }
         return $counts;
     }
@@ -323,10 +312,17 @@ class testquestion_responses {
      * amati doesn't like rules matching incorrect answers. So the statistics for the rule
      * reflect this.
      *
-     * For rule pos and neg mean:
-     * Pos: how many correct matches the rule makes
-     * Neg: how many incorrect matches the rule makes
-     * e.g. Pos = 15 Neg = 2
+     * For rule mean:
+     * Responses not matched above: the number of responses that does not match with any of the answer rules before
+     * the current answer rule.
+     * Correctly matched this rule: the number of responses that has Computed mark = Human mark.
+     * Incorrectly matched: the number of responses that has Computed mark != Human mark.
+     * Responses still to be processed below: the number of responses that still need to be checked with below answer
+     * rules if there is any.
+     * e.g.
+     * Responses not matched above: 13
+     * Correctly matched by this rule: 0, Incorrectly matched: 1
+     * Responses still to be processed below: 12
      *
      * The rule statistics are displayed on the question edit form along with a show
      * coverage tool. The show coverage tool lets the author see the responses the
@@ -335,34 +331,53 @@ class testquestion_responses {
      * THese statistics show the author exactly how accurate each rule is so they can
      * determine how it impacts the overall question accuracy.
      * @param \test_response[]  $responses response objects to grade
-     * @param int $ruleid Id of rule
+     * @param \question_answer $rule Answer object containing the rule to grade with
      * @param array $matches lookup array matching ruleids to response ids from
      *            self::get_rule_matches_for_responses
+     * @return array $counts
      */
-    public static function get_rule_accuracy_counts($responses, $ruleid, $matches) {
-        $accuracy = array('positive' => 0, 'negative' => 0);
+    public static function get_rule_accuracy_counts(&$responses, $rule, $matches) {
 
+        $accuracy = [
+                'class' => 'qtype_pmatch-selftest',
+                'responseneedmatch' => count($responses),
+                'responsestillprocess' => 0,
+                'correctlymatched' => 0,
+                'incorrectlymatched' => 0,
+        ];
         $responseids = array();
         // The matches array lists the responseids that match each rule.
         // This is how we quickly determine which responses to use for
         // the calculation.
-        if (array_key_exists($ruleid, $matches['ruleidstoresponseids'])) {
-            $responseids = $matches['ruleidstoresponseids'][$ruleid];
+        if (array_key_exists($rule->id, $matches['ruleidstoresponseids'])) {
+            $responseids = $matches['ruleidstoresponseids'][$rule->id];
         }
+
         foreach ($responseids as $responseid) {
             if (!array_key_exists($responseid, $responses)) {
                 continue;
             }
 
             $response = $responses[$responseid];
-            if ($response->expectedfraction) {
-                // Matches human expectation.
-                $accuracy['positive']++;
+
+            if ($response->expectedfraction === $response->gradedfraction) {
+                $accuracy['correctlymatched']++;
             } else {
-                // Does not match human expectation.
-                $accuracy['negative']++;
+                $accuracy['incorrectlymatched']++;
+            }
+            unset($responses[$responseid]);
+        }
+
+        if ($accuracy['incorrectlymatched'] > 0) {
+
+            if (round($rule->fraction) == 1) {
+                $accuracy['class'] .= '-missed-positive';
+            } else {
+                $accuracy['class'] .= '-missed-negative';
             }
         }
+
+        $accuracy['responsestillprocess'] = count($responses);
 
         return $accuracy;
     }
@@ -394,11 +409,7 @@ class testquestion_responses {
                 if ($rule->answer == '*') {
                     continue;
                 }
-                // Prevent rule matches being saved if the rule grade is 0. Amati has no
-                // equivalent to a grade of 0, and saving these makes the show coverage confusing.
-                if ($rule->fraction == 0) {
-                    continue;
-                }
+
                 $match = false;
                 $match = $question->compare_response_with_answer(
                                                     array('answer' => $response->response), $rule);
@@ -448,21 +459,27 @@ class testquestion_responses {
         if (empty($responses)) {
             return \html_writer::div(get_string('tryrulenogradedresponses', 'qtype_pmatch'));
         }
-        $accuracy = array('positive' => 0, 'negative' => 0);
+        $accuracy = [
+                'class' => 'qtype_pmatch-selftest',
+                'responseneedmatch' => count($responses),
+                'responsestillprocess' => 0,
+                'correctlymatched' => 0,
+                'incorrectlymatched' => 0,
+        ];
+
         $responsematches = array();
-        foreach ($responses as $response) {
+        foreach ($responses as $key => $response) {
             if (!$question->compare_response_with_answer(array('answer' => $response->response), $answer)) {
                 // Only responses that are matched by the rule need be considered further.
                 continue;
             }
-            // Do not grade using $question->grade_response() as this returns the grade from the
-            // database. Rather use the fact that we have a match and rely on the grade from the
-            // form - that is how grade_response works anyway, but without a db hit.
-            if ($response->expectedfraction) {
-                $accuracy['positive']++;
+
+            if ($response->expectedfraction === $response->gradedfraction) {
+                $accuracy['correctlymatched']++;
             } else {
-                $accuracy['negative']++;
+                $accuracy['incorrectlymatched']++;
             }
+
             if ($response->expectedfraction == $fraction) {
                 if ($response->expectedfraction) {
                     $responsematches[] = '<span>' .
@@ -484,7 +501,18 @@ class testquestion_responses {
                             '</span>';
                 }
             }
+            unset($responses[$key]);
         }
+
+        if ($accuracy['incorrectlymatched'] > 0) {
+            if (round($fraction) == 1) {
+                $accuracy['class'] .= '-missed-positive';
+            } else {
+                $accuracy['class'] .= '-missed-negative';
+            }
+        }
+
+        $accuracy['responsestillprocess'] = count($responses);
         // Prepare output.
         if (empty($responsematches)) {
             return \html_writer::div(get_string('tryrulenomatch', 'qtype_pmatch'));

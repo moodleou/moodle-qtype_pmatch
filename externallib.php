@@ -98,12 +98,10 @@ class qtype_pmatch_external extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'The error message', VALUE_OPTIONAL),
                 'html' => new external_value(PARAM_RAW, 'A row html for append to response table'),
                 'counts' => new external_single_structure([
-                        'graded' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                        'correctlymarkedright' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                        'correctlymarkedwrong' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                        'humanmarkedwrong' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                        'humanmarkedright' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                        'ungraded' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                        'correct' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                        'total' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                        'misspositive' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
+                        'missnegative' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                         'accuracy' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                 ])
         ]);

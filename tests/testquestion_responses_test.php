@@ -247,12 +247,8 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedcounts = $counts = new \stdClass();
         $expectedcounts->correct = 0;
         $expectedcounts->total = 18;
-        $expectedcounts->correctlymarkedright = 0;
-        $expectedcounts->correctlymarkedwrong = 0;
-        $expectedcounts->humanmarkedright = 0;
-        $expectedcounts->humanmarkedwrong = 0;
-        $expectedcounts->ungraded = 18;
-        $expectedcounts->graded = 0;
+        $expectedcounts->misspositive = 0;
+        $expectedcounts->missnegative = 0;
         $expectedcounts->accuracy = 0;
 
         // Get current grade counts.
@@ -271,13 +267,9 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedcounts = $counts = new \stdClass();
         $expectedcounts->correct = 8;
         $expectedcounts->total = 18;
-        $expectedcounts->correctlymarkedright = 4;
-        $expectedcounts->correctlymarkedwrong = 4;
-        $expectedcounts->humanmarkedright = 7;
-        $expectedcounts->humanmarkedwrong = 6;
-        $expectedcounts->ungraded = 5;
-        $expectedcounts->graded = 13;
-        $expectedcounts->accuracy = 62.0;
+        $expectedcounts->misspositive = 2;
+        $expectedcounts->missnegative = 3;
+        $expectedcounts->accuracy = 44.0;
 
         // Get current grade counts.
         $actualcounts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->currentquestion);
@@ -391,12 +383,18 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $ruletxt = 'match_w(Tom)';
         $try = \qtype_pmatch\testquestion_responses::try_rule($this->currentquestion, $ruletxt, $grade);
         // Note at this point try will contain ids that could change, and will look something like:
-        // '<div>Accuracy</div><div>Pos = 2 Neg = 1</div><div>Coverage</div><div><ul><li>' .
+        // '<div><div>Effect on sample responses</div><div>Responses not matched above: 5 <br> Correctly matched by this rule: 1,
+        // <span class="qtype_pmatch-selftest-missed-positive">Incorrectly matched: 0</span> <br>
+        // Responses still to be processed below: 4</div><div>Coverage</div><div><ul><li>' .
+        //
         // '<span>133000: Tom Dick or Harry</span></li><li>' .
         // '<span class="qtype_pmatch-selftest-missed-positive">133001: Tom</span></li><li>' .
         // '<span>133004: Tom was janes companion</span></li></ul></div>'.
         // So lets just look for some elements of text.
-        $this->assertTrue(strpos($try, 'Pos = 2 Neg = 1') !== false);
+        $effectresponses = 'Responses not matched above: 15 <br> Correctly matched by this rule: 2, ' .
+                '<span class="qtype_pmatch-selftest-missed-positive">Incorrectly matched: 1</span> ' .
+                '<br> Responses still to be processed below: 12';
+        $this->assertTrue(strpos($try, $effectresponses) !== false);
         $this->assertTrue(strpos($try, 'Tom Dick or Harry') !== false);
         $this->assertTrue(strpos($try, 'Tom was janes companion') !== false);
         $this->assertTrue(strpos($try, 'qtype_pmatch-selftest-missed-positive') !== false);
@@ -482,11 +480,23 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $responseids = array_keys($responses);
         $matches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids, $this->currentquestion->id);
 
-        $compareaccuracy = array('positive' => 3, 'negative' => 1);
-
+        $compareaccuracy = [
+                'class' => 'qtype_pmatch-selftest-missed-positive',
+                'responseneedmatch' => 18,
+                'responsestillprocess' => 14,
+                'correctlymatched' => 0,
+                'incorrectlymatched' => 4,
+        ];
+        $responsesnegative = $responses;
+        $responsespostive = $responses;
         // Test grading for a correct response.
-        $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responses, $rule->id, $matches);
+        $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responsespostive, $rule, $matches);
 
+        $this->assertEquals($compareaccuracy, $accuracy);
+        $rule->fraction = 0;
+        $compareaccuracy['class'] = 'qtype_pmatch-selftest-missed-negative';
+        // Test grading for a correct response.
+        $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responsesnegative, $rule, $matches);
         $this->assertEquals($compareaccuracy, $accuracy);
     }
 
@@ -573,8 +583,6 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->update_response_grades_from_file($responses, 'fixtures/testresponsesgraded.csv');
 
         $rules = $this->currentquestion->get_answers();
-        // Remove last rule.
-        $ignorerule = array_pop($rules);
         // Update the question rules.
         $this->currentquestion->answers = $rules;
 
@@ -585,12 +593,14 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
                     'Tom' => array(0 => 'match_w(Tom|Harry)'),
                     'Dick' => array(0 => 'match_w(Dick)'),
                     'Harry' => array(0 => 'match_w(Tom|Harry)'),
-                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)')
+                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
+                    'Felicity' => array(0 => 'match_w(Felicity)')
                 ),
             'ruleidstoresponseids' => array(
                     'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
                                     3 => 'Tom was janes companion'),
-                    'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick')
+                    'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick'),
+                    'match_w(Felicity)' => array(0 => "Felicity")
                 )
         );
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
@@ -613,14 +623,16 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         // Set new expectations.
         $deletedrulecomparerulematches = array (
             'responseidstoruleids' => array(
-                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)'),
+                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
                     'Tom' => array(0 => 'match_w(Tom|Harry)'),
+                    'Dick' => array(0 => 'match_w(Dick)'),
                     'Harry' => array(0 => 'match_w(Tom|Harry)'),
                     'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)')
                 ),
             'ruleidstoresponseids' => array(
                     'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
-                                    3 => 'Tom was janes companion')
+                                    3 => 'Tom was janes companion'),
+                    'match_w(Dick)' => array(0 => "Tom Dick or Harry", 1 => "Dick")
                 )
         );
 

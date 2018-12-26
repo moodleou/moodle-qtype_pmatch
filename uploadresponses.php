@@ -53,7 +53,7 @@ class upload_form extends moodleform {
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
         $this->_form->addElement('submit', 'submitbutton',
-                get_string('testquestionuploadresponses', 'qtype_pmatch'));
+                get_string('testquestionuploadtheseresponses', 'qtype_pmatch'));
     }
 
     /**

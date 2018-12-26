@@ -1,3 +1,6 @@
+[id^='fitem_id_accuracyborder_'] {
+    border: none !important;
+}
 .que.pmatch .answer {
     padding: 0.3em;
     width: auto;
@@ -9,7 +12,7 @@
 }
 
 /* Editing form. Style repeated elements*/
-#page-question-type-pmatch .mform .textareamonospace {
+#page-question-type-pmatch .mform textarea.textareamonospace {
     white-space: pre;
     font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
 }
@@ -80,6 +83,7 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 }
 
 /* Styles for the question-testing interface. */
+#testquestion_gradesummary span:last-child,
 .qtype_pmatch-selftest-missed-negative {
     font-weight: bold;
     color: #f00;
@@ -90,6 +94,7 @@ body#page-question-type-pmatch #fitem_id_addanswers {
     color: #b38686;
 }
 
+#testquestion_gradesummary span:nth-child(3),
 .qtype_pmatch-selftest-missed-positive {
     font-weight: bold;
     color: #00f;
@@ -172,10 +177,13 @@ body#page-question-type-pmatch-testquestion .resettable {
     }
 }
 
-#page-question-type-pmatch-testquestion #newresponsebutton {
+#page-question-type-pmatch-testquestion #wrapperactionresponse {
     margin-top: 20px;
 }
 
+#page-question-type-pmatch-testquestion #newresponsebutton {
+    margin-top: -2px;
+}
 /* Fix for The Exemplar table is broken when table is empty because min-height is set to 10em by MDL-62884 */
 #page-question-type-pmatch-testquestion .no-overflow > .generaltable {
     min-height: 40px;
