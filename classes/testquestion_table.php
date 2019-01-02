@@ -198,7 +198,6 @@ class testquestion_table extends \table_sql {
      */
     public function get_sort_columns() {
         $sortcolumns = parent::get_sort_columns();
-        $sortcolumns['id'] = SORT_ASC;
         return $sortcolumns;
     }
 
@@ -269,7 +268,7 @@ class testquestion_table extends \table_sql {
         $this->define_headers($headers);
         // Set up other table parameters.
         $this->define_baseurl($this->options->get_url());
-        $this->sortable(true, 'uniqueid');
+        $this->sortable(true, 'id');
         $this->no_sorting('rules');
         $this->collapsible(false);
         $this->set_attribute('class', 'generaltable generalbox grades');
