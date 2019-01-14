@@ -40,7 +40,7 @@ Feature: Test uploading test responses in the pattern match test this question f
     # Case 1: The file must be in .csv format.
     When I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "The file must be in .csv format."
+    Then I should see "The file must be in .csv/.xlsx/.html/.json/.ods format."
     # Case 2: The file requires at least two rows (the first row is the header row, the second row onwards for responses).
     When I upload "question/type/pmatch/tests/fixtures/testerrorcase2.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
@@ -58,3 +58,13 @@ Feature: Test uploading test responses in the pattern match test this question f
     And I press "Upload these responses"
     Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
     And I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+
+  @javascript
+  Scenario: Test upload XLSX file type.
+    Given I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_error_1.xlsx" file to "Marked responses" filemanager
+    When I press "Upload these responses"
+    Then I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+
+    When I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_normal.xlsx" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    Then I should see "Saved 4 responses"
