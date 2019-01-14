@@ -705,23 +705,22 @@ class testquestion_responses {
      * @return \qtype_pmatch\testquestion_response[] string[]
      */
     public static function load_responses_from_file($filepath, $question, $count=0) {
-        if (!$contents = file_get_contents($filepath)) {
-            throw new coding_exception('Could not open testquestionresponses CSV file.');
-        }
-        $lines = str_getcsv($contents, "\n");
-        $responses = array();
-        $problems = array();
-        $row = 0;
-        foreach ($lines as $line) {
+        $responses = [];
+        $problems = [];
+        $row = 1;
+        $datas = [];
+
+        $testquestion_import_helper = new testquestion_import_helper($filepath);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($filepath);
+        $datas = $importer->get_responses();
+
+        foreach ($datas as $data) {
             $row += 1;
             $problem = false;
-            if ($row == 1) {
-                continue; // Skipping header row or comment.
-            }
-            if (empty($line)) {
+            if (empty($data)) {
                 continue;
             }
-            $data = str_getcsv($line, ',');
 
             if (!is_numeric($data[0])) {
                 // The first column of the uploaded file should contain a human mark
@@ -784,5 +783,25 @@ class testquestion_responses {
 
         return $DB->record_exists_select('qtype_pmatch_test_responses', 'response = ? AND questionid = ?',
                 ['response' => $response, 'questionid' => $questionid]);
+    }
+
+    /**
+     * Validate uploaded file.
+     *
+     * @param string $filepath Path to the uploaded file.
+     * @return array $error List of error if any.
+     */
+    public static function validate_upload_file($filepath) {
+        $error = [];
+        $testquestion_import_helper = new testquestion_import_helper($filepath);
+        if (!in_array($testquestion_import_helper->importtype, testquestion_import_helper::ACCEPTED_TYPES)) {
+            $error['format'] = true;
+            return $error;
+        }
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($filepath);
+        $error = $importer->validate();
+
+        return $error;
     }
 }

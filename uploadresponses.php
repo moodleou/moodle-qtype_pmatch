@@ -48,7 +48,7 @@ class upload_form extends moodleform {
                 get_string('testquestionforminfo', 'qtype_pmatch'));
         $this->_form->addElement('filepicker', 'responsesfile',
                 get_string('testquestionformuploadlabel', 'qtype_pmatch'), null,
-                ['accepted_types' => 'csv']);
+                ['accepted_types' => \qtype_pmatch\testquestion_import_helper::ACCEPTED_TYPES]);
         $this->_form->addRule('responsesfile', null, 'required', null, 'client');
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
@@ -71,7 +71,6 @@ class upload_form extends moodleform {
         // Initialize.
         $errors = parent::validation($data, $files);
         $errcase = [];
-        $fileoption = ['mimetype' => ['text/csv'], 'mincell' => 2, 'column' => 2];
         $context = context_user::instance($USER->id);
         $fs = get_file_storage();
         $draftid = file_get_submitted_draft_itemid('responsesfile');
@@ -80,43 +79,27 @@ class upload_form extends moodleform {
         // Handle.
         foreach ($attachfiles as $file) {
             if (!in_array($file->get_filename(), ['.', '..'])) {
-                if (!in_array($file->get_mimetype(), $fileoption['mimetype'])) {
-                    array_push($errcase, 'format');
-                } else {
-                    $contents = str_getcsv($file->get_content(), "\n");
-                    if (count($contents) < $fileoption['mincell']) {
-                        array_push($errcase, 'cell');
-                    }
-                    foreach ($contents as $content) {
-                        $columns = explode(',', $content);
-                        $counter = count($columns);
-                        if ($counter === $fileoption['column']) {
-                            continue;
-                        }
-                        if ($counter > $fileoption['column']) {
-                            array_push($errcase, 'columnbigger');
-                            break;
-                        } else {
-                            array_push($errcase, 'columnless');
-                            break;
-                        }
-                    }
-                }
+                // We can't get a file path, so have to copy the file to temp.
+                $tmproot = make_temp_directory('questionimport');
+                $tmpfilepath = $tmproot . '/' . $file->get_filename();
+                $file->copy_content_to($tmpfilepath);
+
+                $errcase = \qtype_pmatch\testquestion_responses::validate_upload_file($tmpfilepath);
             }
         }
 
         // Get error case and return.
-        if (in_array('format', $errcase)) {
+        if (array_key_exists('format', $errcase) && $errcase['format']) {
             $errortext = get_string('errorfileformat', 'qtype_pmatch');
         } else {
             $errortextarr = [];
-            if (in_array('cell', $errcase)) {
+            if (array_key_exists('row', $errcase) && $errcase['row']) {
                 $errortextarr[] = get_string('errorfilecell', 'qtype_pmatch');
             }
-            if (in_array('columnbigger', $errcase)) {
+            if (array_key_exists('columnbigger', $errcase) && $errcase['columnbigger']) {
                 $errortextarr[] = get_string('errorfilecolumnbigger', 'qtype_pmatch');
             }
-            if (in_array('columnless', $errcase)) {
+            if (array_key_exists('columnless', $errcase) && $errcase['columnless']) {
                 $errortextarr[] = get_string('errorfilecolumnless', 'qtype_pmatch');
             }
             $errortext = implode('<br>', $errortextarr);

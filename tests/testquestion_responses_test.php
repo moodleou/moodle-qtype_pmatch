@@ -660,4 +660,316 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         $this->assertEquals($comparerulematches, $responseandrulematches);
     }
+
+    /**
+     * Test validate function with json file type.
+     */
+    public function test_validate_json_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_1.json';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnless', $errcase));
+        $this->assertTrue($errcase['columnless']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_2.json';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('row', $errcase));
+        $this->assertTrue($errcase['row']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_3.json';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnbigger', $errcase));
+        $this->assertTrue($errcase['columnbigger']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertEquals([], $errcase);
+    }
+
+    /**
+     * Test validate_html_file_type function.
+     */
+    public function test_validate_html_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_1.html';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnless', $errcase));
+        $this->assertTrue($errcase['columnless']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_2.html';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('row', $errcase));
+        $this->assertTrue($errcase['row']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_3.html';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnbigger', $errcase));
+        $this->assertTrue($errcase['columnbigger']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertEquals([], $errcase);
+    }
+
+    /**
+     * Test validate_csv_file_type function.
+     */
+    public function test_validate_csv_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_1.csv';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnless', $errcase));
+        $this->assertTrue($errcase['columnless']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_2.csv';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('row', $errcase));
+        $this->assertTrue($errcase['row']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_3.csv';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnbigger', $errcase));
+        $this->assertTrue($errcase['columnbigger']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertEquals([
+                'row' => false,
+                'columnbigger' => false,
+                'columnless' => false,
+        ], $errcase);
+    }
+
+    /**
+     * Test validate_xlsx_file_type function.
+     */
+    public function test_validate_xlsx_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_1.xlsx';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnless', $errcase));
+        $this->assertTrue($errcase['columnless']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_2.xlsx';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('row', $errcase));
+        $this->assertTrue($errcase['row']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_3.xlsx';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnbigger', $errcase));
+        $this->assertTrue($errcase['columnbigger']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertEquals([
+                'row' => false,
+                'columnbigger' => false,
+                'columnless' => false,
+        ], $errcase);
+    }
+
+    /**
+     * Test validate_ods_file_type function.
+     */
+    public function test_validate_ods_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_1.ods';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnless', $errcase));
+        $this->assertTrue($errcase['columnless']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_2.ods';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('row', $errcase));
+        $this->assertTrue($errcase['row']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_3.ods';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertTrue(array_key_exists('columnbigger', $errcase));
+        $this->assertTrue($errcase['columnbigger']);
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $errcase = $importer->validate();
+        $this->assertEquals([
+                'row' => false,
+                'columnbigger' => false,
+                'columnless' => false,
+        ], $errcase);
+    }
+
+    /**
+     * Test get_responses_json_file_type function.
+     */
+    public function test_get_responses_json_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $content = $importer->get_responses();
+        $this->assertCount(4, $content);
+        $this->assertEquals(0, $content[0][0]);
+        $this->assertEquals('Response 1', $content[0][1]);
+        $this->assertEquals(1, $content[1][0]);
+        $this->assertEquals('Response 2', $content[1][1]);
+        $this->assertEquals(0, $content[2][0]);
+        $this->assertEquals('Response 3', $content[2][1]);
+        $this->assertEquals(1, $content[3][0]);
+        $this->assertEquals('Response 4', $content[3][1]);
+    }
+
+    /**
+     * Test get_responses_html_file_type function.
+     */
+    public function test_get_responses_html_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $content = $importer->get_responses();
+        $this->assertCount(4, $content);
+        $this->assertEquals(0, $content[0][0]);
+        $this->assertEquals('Response 1', $content[0][1]);
+        $this->assertEquals(1, $content[1][0]);
+        $this->assertEquals('Response 2', $content[1][1]);
+        $this->assertEquals(0, $content[2][0]);
+        $this->assertEquals('Response 3', $content[2][1]);
+        $this->assertEquals(1, $content[3][0]);
+        $this->assertEquals('Response 4', $content[3][1]);
+    }
+
+    /**
+     * Test get_responses_csv_file_type function.
+     */
+    public function test_get_responses_csv_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $content = $importer->get_responses();
+        $this->assertCount(4, $content);
+        $this->assertEquals(0, $content[0][0]);
+        $this->assertEquals('Response 1', $content[0][1]);
+        $this->assertEquals(1, $content[1][0]);
+        $this->assertEquals('Response 2', $content[1][1]);
+        $this->assertEquals(0, $content[2][0]);
+        $this->assertEquals('Response 3', $content[2][1]);
+        $this->assertEquals(1, $content[3][0]);
+        $this->assertEquals('Response 4', $content[3][1]);
+    }
+
+    /**
+     * Test get_responses_xlsx_file_type function.
+     */
+    public function test_get_responses_xlsx_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $content = $importer->get_responses();
+        $this->assertCount(4, $content);
+        $this->assertEquals(0, $content[0][0]);
+        $this->assertEquals('Response 1', $content[0][1]);
+        $this->assertEquals(1, $content[1][0]);
+        $this->assertEquals('Response 2', $content[1][1]);
+        $this->assertEquals(0, $content[2][0]);
+        $this->assertEquals('Response 3', $content[2][1]);
+        $this->assertEquals(1, $content[3][0]);
+        $this->assertEquals('Response 4', $content[3][1]);
+    }
+
+    /**
+     * Test get_responses_ods_file_type function.
+     */
+    public function test_get_responses_ods_file_type() {
+        $this->resetAfterTest();
+
+        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods';
+        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestion_import_helper->import_factory();
+        $importer->open($responsesfile);
+        $content = $importer->get_responses();
+        $this->assertCount(4, $content);
+        $this->assertEquals(0, $content[0][0]);
+        $this->assertEquals('Response 1', $content[0][1]);
+        $this->assertEquals(1, $content[1][0]);
+        $this->assertEquals('Response 2', $content[1][1]);
+        $this->assertEquals(0, $content[2][0]);
+        $this->assertEquals('Response 3', $content[2][1]);
+        $this->assertEquals(1, $content[3][0]);
+        $this->assertEquals('Response 4', $content[3][1]);
+    }
 }
