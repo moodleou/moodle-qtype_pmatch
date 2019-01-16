@@ -103,15 +103,20 @@ define(['jquery'], function($) {
                     return false;
                 });
             });
-            $('.rule-creator-btn').click(function(e) {
-                $(e.target).parent().parent().parent().find('div.rule-creator').slideToggle();
-                var src = $(e.target).find('img.icon').attr('src');
+            $('.rule-creator-btn').click(function (e) {
+                var wrapper = $(e.target).closest('.fitem.rcw'),
+                    icon = $(e.target).closest('.rule-creator-btn').find('img.icon'),
+                    src = icon.attr('src');
+                wrapper.find('.rule-creator').slideToggle();
+                if (src === undefined) {
+                    return false;
+                }
                 if (src.indexOf('collapsed') > 0) {
                     src = src.slice(0, -9) + 'expanded';
                 } else {
                     src = src.slice(0, -8) + 'collapsed';
                 }
-                $(e.target).find('img.icon').attr('src', src);
+                icon.attr('src', src);
                 return false;
             });
         },
