@@ -38,7 +38,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     qtype_pmatch
  */
-class qtype_pmatch_testquestion_testcase extends advanced_testcase {
+class qtype_pmatch_testquestion_testcase extends question_testcase {
 
     /**
      * File path to default responses csv file.
@@ -227,4 +227,14 @@ class qtype_pmatch_testquestion_testcase extends advanced_testcase {
         return $responseandrulematches['ruleidstoresponseids'];
     }
 
+    /**
+     * Replace all \r\n to \n and compare the xml
+     *
+     * @param string $expectedxml Expected xml content
+     * @param string $xml Actual xml content
+     */
+    public function assert_same_xml($expectedxml, $xml) {
+        $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
+                str_replace("\r\n", "\n", $xml));
+    }
 }

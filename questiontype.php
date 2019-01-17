@@ -112,6 +112,15 @@ class qtype_pmatch extends question_type {
 
         $savedanswersresult = $this->save_answers($questionform);
 
+        // If the data include exemplar test cases then add them to database.
+        if (isset($questionform->responsesdata)) {
+            $responses = $questionform->responsesdata;
+            foreach ($responses as $response) {
+                $response->questionid = $questionform->id;
+            }
+            \qtype_pmatch\testquestion_responses::add_responses($responses);
+        }
+
         $this->save_rule_matches($questionform);
 
         return $savedanswersresult;
@@ -220,9 +229,50 @@ class qtype_pmatch extends question_type {
         } else {
             $question->synonymsdata = array();
         }
+
+        $testquestionresponses = $format->getpath($data, array('#', 'testquestionresponse'), false);
+        if ($testquestionresponses) {
+            $this->import_responses($format, $question, $testquestionresponses);
+        } else {
+            $question->responsesdata = [];
+        }
+
         $format->import_hints($question, $data, true, false,
                 $format->get_format($question->questiontextformat));
         return $question;
+    }
+
+    /**
+     * Helper method used by {@link import_from_xml()}. Handle the data for test question responses text.
+     *
+     * @param qformat_xml $format the importer/exporter object.
+     * @param object $question the question.
+     * @param array $testquestionresponses the bit of the XML representing test question responses data.
+     */
+    public function import_responses($format, &$question, $testquestionresponses) {
+        $responses = [];
+        foreach ($testquestionresponses as $testquestionresponse) {
+            $response = $this->get_response_data($format, $testquestionresponse);
+            $responses[] = $response;
+        }
+        $question->responsesdata = $responses;
+    }
+
+    /**
+     * Get response data.
+     *
+     * @param qformat_xml $format the importer/exporter object.
+     * @param array $testquestionresponse the bit of the XML representing one test question response.
+     * @return testquestion_response $response A simple object representing one test response.
+     */
+    public function get_response_data($format, $testquestionresponse) {
+        $response = new \qtype_pmatch\testquestion_response();
+        $response->response = $format->import_text($format->getpath($testquestionresponse, ['#', 'response', 0, '#', 'text'], ''));
+        $response->expectedfraction = $format->import_text($format->getpath($testquestionresponse,
+                ['#', 'expectedfraction', 0, '#', 'text'], ''));
+        $response->gradedfraction = $format->import_text($format->getpath($testquestionresponse,
+                ['#', 'gradedfraction', 0, '#', 'text'], ''));
+        return $response;
     }
 
     public function import_synonyms($format, &$question, $synonyms) {
@@ -249,8 +299,51 @@ class qtype_pmatch extends question_type {
 
         $output .= $this->write_synonyms($question->options->synonyms, $format);
 
+        $output .= $this->write_testquestion_responses($question, $format);
         return $output;
     }
+
+    /**
+     * Helper method used by {@link export_to_xml()}.
+     *
+     * @param object $question the question.
+     * @param qformat_xml $format the importer/exporter object.
+     * @return string $output XML fragment.
+     */
+    protected function write_testquestion_responses($question, $format) {
+        $responses = \qtype_pmatch\testquestion_responses::get_responses_by_questionid($question->id);
+        if (empty($responses)) {
+            return '';
+        }
+        $output = '';
+        foreach ($responses as $response) {
+            $output .= $this->write_testquestion_response($response, $format);
+        }
+        return $output;
+    }
+
+    /**
+     * Write XML fragment for one test question response.
+     * @param object $response The test question response.
+     * @param qformat_xml $format the importer/exporter object.
+     * @return string $output XML fragment.
+     */
+    protected function write_testquestion_response($response, $format) {
+        $output = '';
+        $output .= "    <testquestionresponse>\n";
+        $output .= "      <response>\n";
+        $output .= $format->writetext($response->response, 4);
+        $output .= "      </response>\n";
+        $output .= "      <expectedfraction>\n";
+        $output .= $format->writetext($response->expectedfraction, 4);
+        $output .= "      </expectedfraction>\n";
+        $output .= "      <gradedfraction>\n";
+        $output .= $format->writetext($response->gradedfraction, 4);
+        $output .= "      </gradedfraction>\n";
+        $output .= "    </testquestionresponse>\n";
+        return $output;
+    }
+
     protected function write_synonyms($synonyms, $format) {
         if (empty($synonyms)) {
             return '';

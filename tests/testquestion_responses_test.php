@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+require_once($CFG->dirroot . '/question/format/xml/format.php');
 
 /**
  * Test the responses used in the test this question function.
@@ -971,5 +973,217 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->assertEquals('Response 3', $content[2][1]);
         $this->assertEquals(1, $content[3][0]);
         $this->assertEquals('Response 4', $content[3][1]);
+    }
+
+    /**
+     * Test export function for qtype_pmatch
+     */
+    public function test_xml_export() {
+        $this->resetAfterTest();
+        $qdata = test_question_maker::get_question_data('pmatch', 'test0');
+
+        $testresponse = [];
+        $data = new stdClass();
+        $data->id = 1000;
+        $data->questionid = $qdata->id;
+        $data->expectedfraction = '0';
+        $data->gradedfraction = '0';
+        $data->response = 'one two';
+        $testresponse[] = \qtype_pmatch\testquestion_response::create($data);
+        $data = new stdClass();
+        $data->id = 1001;
+        $data->questionid = $qdata->id;
+        $data->expectedfraction = '1';
+        $data->gradedfraction = '1';
+        $data->response = 'one two three';
+        $testresponse[] = \qtype_pmatch\testquestion_response::create($data);
+        \qtype_pmatch\testquestion_responses::add_responses($testresponse);
+
+        $exporter = new qformat_xml();
+        $xml = $exporter->writequestion($qdata);
+
+        $expectedxml = '<!-- question: 1  -->
+  <question type="pmatch">
+    <name>
+      <text>test-0</text>
+    </name>
+    <questiontext format="html">
+      <text>Listen, translate and write</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <usecase>0</usecase>
+    <allowsubscript>0</allowsubscript>
+    <allowsuperscript>0</allowsuperscript>
+    <forcelength>1</forcelength>
+    <applydictionarycheck>1</applydictionarycheck>
+    <extenddictionary></extenddictionary>
+    <converttospace>,;:</converttospace>
+    <answer fraction="100" format="plain_text">
+      <text>match (testing one two three four)</text>
+      <feedback format="moodle_auto_format">
+        <text>Well done!</text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>*</text>
+      <feedback format="moodle_auto_format">
+        <text>Sorry, no.</text>
+      </feedback>
+    </answer>
+    <synonym>
+      <word>
+        <text>any</text>
+      </word>
+      <synonyms>
+        <text>testing|one|two|three|four</text>
+      </synonyms>
+    </synonym>
+    <testquestionresponse>
+      <response>
+        <text>one two</text>
+      </response>
+      <expectedfraction>
+        <text>0</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>0</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <testquestionresponse>
+      <response>
+        <text>one two three</text>
+      </response>
+      <expectedfraction>
+        <text>1</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>1</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <hint format="html">
+      <text>Hint 1</text>
+    </hint>
+    <hint format="html">
+      <text>Hint 2</text>
+    </hint>
+  </question>
+';
+        $this->assert_same_xml($expectedxml, $xml);
+    }
+
+    /**
+     * Test import function for qtype_pmatch
+     */
+    public function test_xml_import() {
+        $this->resetAfterTest();
+        $xml = '<!-- question: 0  -->
+  <question type="pmatch">
+    <name>
+      <text>test-0</text>
+    </name>
+    <questiontext format="html">
+      <text>Listen, translate and write</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+    <usecase>0</usecase>
+    <allowsubscript>0</allowsubscript>
+    <allowsuperscript>0</allowsuperscript>
+    <forcelength>1</forcelength>
+    <applydictionarycheck>1</applydictionarycheck>
+    <extenddictionary></extenddictionary>
+    <converttospace>,;:</converttospace>
+    <answer fraction="100" format="plain_text">
+      <text>match (testing one two three four)</text>
+      <feedback format="moodle_auto_format">
+        <text>Well done!</text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>*</text>
+      <feedback format="moodle_auto_format">
+        <text>Sorry, no.</text>
+      </feedback>
+    </answer>
+    <synonym>
+      <word>
+        <text>any</text>
+      </word>
+      <synonyms>
+        <text>testing|one|two|three|four</text>
+      </synonyms>
+    </synonym>
+    <testquestionresponse>
+      <response>
+        <text>one two</text>
+      </response>
+      <expectedfraction>
+        <text>0</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>0</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <testquestionresponse>
+      <response>
+        <text>one two three</text>
+      </response>
+      <expectedfraction>
+        <text>1</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>1</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <hint format="html">
+      <text>Hint 1</text>
+    </hint>
+    <hint format="html">
+      <text>Hint 2</text>
+    </hint>
+  </question>
+';
+        $xmldata = xmlize($xml);
+
+        $importer = new qformat_xml();
+        $q = $importer->try_importing_using_qtypes($xmldata['question'], null, null, 'pmatch');
+
+        $expectedq = new stdClass();
+        $expectedq->qtype = 'pmatch';
+        $expectedq->name = 'test-0';
+        $expectedq->idnumber = '';
+        $expectedq->tags = [];
+        $expectedq->questiontext = 'Listen, translate and write';
+        $expectedq->questiontextformat = FORMAT_HTML;
+        $expectedq->generalfeedback = '';
+        $expectedq->generalfeedbackformat = FORMAT_HTML;
+
+        $response = new \qtype_pmatch\testquestion_response();
+        $response->response = 'one two';
+        $response->expectedfraction = '0';
+        $response->gradedfraction = '0';
+
+        $expectedq->responsesdata[] = $response;
+
+        $response = new \qtype_pmatch\testquestion_response();
+        $response->response = 'one two three';
+        $response->expectedfraction = '1';
+        $response->gradedfraction = '1';
+
+        $expectedq->responsesdata[] = $response;
+
+        $this->assertEquals($expectedq->responsesdata, $q->responsesdata);
+        $this->assert(new question_check_specified_fields_expectation($expectedq), $q);
     }
 }
