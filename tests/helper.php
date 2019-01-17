@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_pmatch_test_helper extends question_test_helper {
 
     public function get_test_questions() {
-        return array('listen');
+        return array('listen', 'test0');
     }
 
     /**
@@ -121,5 +121,50 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->hintoptions = array(0, 1);
 
         return $fromform;
+    }
+
+    /**
+     * Get test data for test question 0
+     *
+     * @return qtype_pmatch_question the question data.
+     */
+    public static function get_pmatch_question_data_test0() {
+        question_bank::load_question_definition_classes('pmatch');
+        $qdata = new stdClass();
+        test_question_maker::initialise_question_data($qdata);
+        $qdata->id = 1;
+        $qdata->qtype = 'pmatch';
+        $qdata->name = 'test-0';
+        $qdata->questiontext = 'Listen, translate and write';
+        $qdata->generalfeedback = '';
+
+        $qdata->options = new stdClass();
+        $qdata->options->usecase = 0;
+        $qdata->options->allowsubscript = 0;
+        $qdata->options->allowsuperscript = 0;
+        $qdata->options->forcelength = 1;
+        $qdata->options->applydictionarycheck = 1;
+        $qdata->options->extenddictionary = '';
+        $qdata->options->converttospace = ',;:';
+
+        $qdata->options->answers = [
+                13 => new question_answer(13, 'match (testing one two three four)', 1.0,
+                        'Well done!', FORMAT_MOODLE),
+                14 => new question_answer(14,
+                        '*', 0.0, 'Sorry, no.', FORMAT_MOODLE)
+        ];
+
+        $synonyms = [];
+        $synonym = new stdClass();
+        $synonym->word = 'any';
+        $synonym->synonyms = 'testing|one|two|three|four';
+        $synonyms[] = $synonym;
+        $qdata->options->synonyms = $synonyms;
+
+        $qdata->hints = [
+                1 => new question_hint(1, 'Hint 1', FORMAT_HTML),
+                2 => new question_hint(2, 'Hint 2', FORMAT_HTML),
+        ];
+        return $qdata;
     }
 }
