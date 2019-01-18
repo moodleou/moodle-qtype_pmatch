@@ -95,9 +95,8 @@ body#page-question-type-pmatch #fitem_id_addanswers {
     color: #00f;
 }
 
-.que.pmatch .formulation .questiontestslink {
-    float: right;
-    font-size: 0.7em;
+body.pagelayout-embedded .que.pmatch .formulation .questiontestslink {
+    display: none;
 }
 
 .que.pmatch .formulation .questiontestslink {
