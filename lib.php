@@ -94,7 +94,7 @@ function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue) {
         $newvalue = clean_param($newvalue, PARAM_NOTAGS);
         $newvalue = trim($newvalue);
 
-        if ($newvalue != $response->response) {
+        if ($newvalue !== $response->response) {
             if (!strlen($newvalue) > 0) {
                 throw new moodle_exception('error:blank', 'qtype_pmatch');
             } else {
