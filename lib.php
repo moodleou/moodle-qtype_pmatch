@@ -42,6 +42,8 @@ function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forc
 /**
  * Used by the testquestion.php and uploadresponse.php scripts to do some initialisation
  * that is needed on all of them.
+ *
+ * @param qtype_pmatch_question $question the question.
  * @return array page context, and URL parameters.
  */
 function qtype_pmatch_setup_question_test_page($question) {
@@ -51,6 +53,7 @@ function qtype_pmatch_setup_question_test_page($question) {
 
     // Were we given a particular context to run the question in?
     // This affects things like filter settings, or forced theme or language.
+    $qcontext = $question->get_context();
     if ($cmid = optional_param('cmid', 0, PARAM_INT)) {
         $cm = get_coursemodule_from_id(false, $cmid);
         require_login($cm->course, false, $cm);
@@ -60,6 +63,17 @@ function qtype_pmatch_setup_question_test_page($question) {
     } else if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
         require_login($courseid);
         $context = context_course::instance($courseid);
+        $urlparams['courseid'] = $courseid;
+
+    } else if ($qcontext->contextlevel == CONTEXT_MODULE) {
+        $cm = get_coursemodule_from_id(false, $qcontext->instanceid);
+        require_login($cm->course, false, $cm);
+        $context = $qcontext;
+        $urlparams['cmid'] = $cm->id;
+
+    } else if ($qcontext->contextlevel == CONTEXT_COURSE) {
+        require_login($qcontext->instanceid);
+        $context = $qcontext;
         $urlparams['courseid'] = $courseid;
 
     } else {
