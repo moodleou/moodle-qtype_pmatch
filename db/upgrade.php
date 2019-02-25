@@ -122,5 +122,43 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016020500, 'qtype', 'pmatch');
     }
 
+    if ($oldversion < 2019021800) {
+        $table = new xmldb_table('qtype_pmatch');
+        if ($dbman->table_exists($table)) {
+            $field = new xmldb_field('applydictionarycheck', XMLDB_TYPE_CHAR, '2', null, null, null,
+                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_type($table, $field);
+                $DB->set_field('qtype_pmatch', 'applydictionarycheck', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION,
+                        ['applydictionarycheck' => 0]);
+                $DB->set_field('qtype_pmatch', 'applydictionarycheck', get_string('iso6391', 'langconfig'), ['applydictionarycheck' => 1]);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2019021800, 'qtype', 'pmatch');
+    }
+
+    if ($oldversion < 2019031800) {
+        $table = new xmldb_table('qtype_pmatch');
+        if ($dbman->table_exists($table)) {
+            $field = new xmldb_field('applydictionarycheck', XMLDB_TYPE_CHAR, '5', null, null, null,
+                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_type($table, $field);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2019031800, 'qtype', 'pmatch');
+    }
+
+    if ($oldversion < 2019032700) {
+        $table = new xmldb_table('qtype_pmatch');
+        if ($dbman->table_exists($table)) {
+            $defaultlanguage = get_string('iso6391', 'langconfig');
+            $availablelangs = qtype_pmatch_spell_checker::get_available_languages();
+            $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($defaultlanguage, $availablelangs);
+            $DB->set_field('qtype_pmatch', 'applydictionarycheck', $matched, ['applydictionarycheck' => $defaultlanguage]);
+        }
+        upgrade_plugin_savepoint(true, 2019032700, 'qtype', 'pmatch');
+    }
+
     return true;
 }

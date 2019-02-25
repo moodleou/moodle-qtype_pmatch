@@ -22,6 +22,9 @@
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
@@ -117,5 +120,73 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
 
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queenking.', $options);
         $this->assertFalse($parsedstring->is_spelt_correctly());
+    }
+
+    /**
+     * Test get_display_name_for_language_code
+     *
+     * @dataProvider get_display_name_for_language_code_provider
+     *
+     * @param string $langcode Language code
+     * @param string $expectedlangname Expected language name
+     * @param string $expecteddisplayname Expected language display name
+     */
+    public function test_get_display_name_for_language_code($langcode, $expectedlangname, $expecteddisplayname) {
+        $language = new stdClass();
+        $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($langcode);
+        $language->code = $langcode;
+        $displayname = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);
+
+        $this->assertEquals($expectedlangname, $language->name);
+        $this->assertEquals($expecteddisplayname, $displayname);
+    }
+
+    /**
+     * Test case for test_get_display_name_for_language_code
+     *
+     * @return array Dataset
+     */
+    public function get_display_name_for_language_code_provider(): array {
+        return [
+                ['en_US', 'English', 'English (en_US)'],
+                ['en_GB', 'English', 'English (en_GB)'],
+                ['en_AG', 'English', 'English (en_AG)'],
+                ['es', 'Spanish; Castilian', 'Spanish; Castilian (es)'],
+                ['es_AR', 'Spanish; Castilian', 'Spanish; Castilian (es_AR)'],
+                ['es_BO', 'Spanish; Castilian', 'Spanish; Castilian (es_BO)'],
+                ['fr_BE', 'French', 'French (fr_BE)'],
+                ['fr_CA', 'French', 'French (fr_CA)'],
+                ['fr_CH', 'French', 'French (fr_CH)']
+        ];
+    }
+
+    /**
+     * Test get_default_spell_check_dictionary
+     *
+     * @dataProvider get_default_spell_check_dictionary_provider
+     *
+     * @param string $checklanguage Language code need to check
+     * @param array $availablelangs List of available languages
+     * @param string $expectedmatch Expected language match
+     */
+    public function test_get_default_spell_check_dictionary($checklanguage, $availablelangs, $expectedmatch) {
+        $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($checklanguage, $availablelangs);
+        $this->assertEquals($expectedmatch, $matched);
+    }
+
+    /**
+     * Test case for test_get_default_spell_check_dictionary
+     *
+     * @return array Dataset
+     */
+    public function get_default_spell_check_dictionary_provider(): array {
+        return [
+            ['en', ['en', 'en_US', 'en_GB'], 'en'],
+            ['en', ['en_US', 'en_GB'], 'en_GB'],
+            ['fr', ['fr', 'fr_FR'], 'fr'],
+            ['fr', ['fr_FR'], 'fr_FR'],
+            ['fr', ['fr_FR'], 'fr_FR'],
+            ['de', ['de_AT', 'de_CH'], 'de_AT']
+        ];
     }
 }

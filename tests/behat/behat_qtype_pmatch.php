@@ -28,6 +28,7 @@
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 
 use Behat\Mink\Exception\ExpectationException as ExpectationException;
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 /**
  * Steps definitions related with the pattern match question type.
@@ -100,6 +101,38 @@ class behat_qtype_pmatch extends behat_base {
 
         // Add responses.
         \qtype_pmatch\testquestion_responses::add_responses($responses);
+    }
+
+    /**
+     * Check that the given Spell checking library already installed.
+     *
+     * @Given /^I check the "(?P<spell_check_engine_string>(?:[^"]|\\")*)" spell checking library already installed$/
+     */
+    public function is_spell_checking_library_install($enginename) {
+        if ($enginename == 'pspell') {
+            if (!function_exists('pspell_new')) {
+                throw new \Moodle\BehatExtension\Exception\SkippedException();
+            }
+        } else if ($enginename == 'enchant') {
+            if (!function_exists('enchant_broker_init')) {
+                throw new \Moodle\BehatExtension\Exception\SkippedException();
+            }
+        } else {
+            // Not supported checking library.
+            throw new \Moodle\BehatExtension\Exception\SkippedException();
+        }
+    }
+
+    /**
+     * Check that dictionary already installed and set the default dictionary.
+     *
+     * @Given /^I setup the available dictionaries for the pattern-match question type$/
+     */
+    public function set_default_spell_check_dictionary() {
+        $defaultlanguage = get_string('iso6391', 'langconfig');
+        $availablelangs = qtype_pmatch_spell_checker::get_available_languages();
+        $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($defaultlanguage, $availablelangs);
+        set_config('spellcheck_languages', $matched, 'qtype_pmatch');
     }
 
 }

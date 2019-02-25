@@ -44,6 +44,15 @@ abstract class qtype_pmatch_spell_checker {
      */
     protected static $checkers = array();
 
+    /** @var string Value in the database define that do not check the spelling. */
+    public const DO_NOT_CHECK_OPTION = '-';
+
+    /** @var string Value in the database define that the server do not use any spell check library. */
+    public const NULL_SPELL_CHECK = 'null';
+
+    /** @var string Regex string to get only needed dictionaries with format: xx or xx_YY Example: en or en_US. */
+    public const LANGUAGE_FILTER_REGEX = '`^([a-z]+)(_[A-Z]+)?`';
+
     /**
      * Spell-check a word.
      * @param string $word the word to check.
@@ -125,6 +134,20 @@ abstract class qtype_pmatch_spell_checker {
     }
 
     /**
+     * Return the available language for spell check.
+     *
+     * @return array List of available languages.
+     */
+    public static function get_available_languages(): array {
+        $spellchecker = get_config('qtype_pmatch', 'spellchecker');
+        $backends = self::get_known_backends();
+        $classname = $backends[$spellchecker];
+        $availablelanguages = $classname::available_languages();
+
+        return $availablelanguages;
+    }
+
+    /**
      * Just to document the expected constructor API.
      * @param string $lang the language code.
      */
@@ -154,6 +177,64 @@ abstract class qtype_pmatch_spell_checker {
      */
     public static function is_available() {
         return false;
+    }
+
+    /**
+     * Subclasses must implement this.
+     *
+     * @return array List of available languages.
+     */
+    public static function available_languages(): array {
+        return [];
+    }
+
+    /**
+     * Return the display name for language code
+     *
+     * @param string $langcode Language code
+     * @return string Display name for given language code
+     */
+    public static function get_display_name_for_language_code($langcode): string {
+        $langname = '';
+        $languagenames = get_string_manager()->get_list_of_languages();
+
+        if (preg_match(self::LANGUAGE_FILTER_REGEX, $langcode, $m)) {
+            $langname = $languagenames[$m[1]];
+        }
+
+        return $langname;
+    }
+
+    /**
+     * Check and return the suitable dictionary code
+     *
+     * @param string $checklanguage Language code need to check
+     * @param array $availablelangs List of available languages
+     * @return string Language code that can be set be default
+     */
+    public static function get_default_spell_check_dictionary($checklanguage, $availablelangs): string {
+        $matchedlang = $checklanguage;
+        if (!in_array($checklanguage, $availablelangs)) {
+            $matchedlang = '';
+            // Default language is not available.
+            // We need to looking for xx_XX format. This will work for languages like fr and de.
+            $alternatelanguage = $checklanguage . '_' . strtoupper($checklanguage);
+            if (in_array($alternatelanguage, $availablelangs)) {
+                // xx_XX format avalable.
+                $matchedlang = $alternatelanguage;
+            } else if ($checklanguage == 'en') {
+                // Default language is en. Set to en_GB.
+                $matchedlang = 'en_GB';
+            } else {
+                // Take the first xx_YY found.
+                $matches = preg_grep('/^' . $checklanguage . '(\w+)/i', $availablelangs);
+                if (!empty($matches)) {
+                    $matchedlang = $matches[0];
+                }
+            }
+        }
+
+        return $matchedlang;
     }
 
 }

@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -98,7 +99,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
             $a = $parsestring->unparseable();
             $responsevalidationerrors[] = get_string('unparseable', 'qtype_pmatch', $a);
         }
-        if ($this->applydictionarycheck && !$parsestring->is_spelt_correctly()) {
+        if ($this->applydictionarycheck != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION && !$parsestring->is_spelt_correctly()) {
             $misspelledwords = $parsestring->get_spelling_errors();
             $a = join(' ', $misspelledwords);
             $responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
@@ -162,7 +163,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     public function start_attempt(question_attempt_step $step, $variant) {
-        $this->pmatchoptions->lang = get_string('iso6391', 'langconfig');
+        $this->pmatchoptions->lang = $this->applydictionarycheck;
         $step->set_qt_var('_responselang', $this->pmatchoptions->lang);
     }
 
@@ -183,5 +184,31 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
     public function user_can_view() {
         return $this->has_question_capability('view');
+    }
+
+    /**
+     * Check that current user can see the missing dictionary warning message.
+     *
+     * @return bool True ìf user has the require capability, otherwise False
+     */
+    public function user_can_see_missing_dict_warning() {
+        return $this->has_question_capability('edit');
+    }
+
+    /**
+     * Checks whether the spell-check language for this question is available on the server.
+     *
+     * @return bool returns false if the question is set to use spell-checking, and the required
+     *      language dictionaries are not available.
+     */
+    public function is_spell_check_laguage_available() {
+        $spellchecklanguagesdata = get_config('qtype_pmatch', 'spellcheck_languages');
+        if (!$spellchecklanguagesdata) {
+            return false;
+        }
+        $availablelangs = explode(',', $spellchecklanguagesdata);
+
+        return !in_array($this->applydictionarycheck, $availablelangs) &&
+                $this->applydictionarycheck !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
     }
 }
