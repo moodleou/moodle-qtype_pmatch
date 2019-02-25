@@ -44,6 +44,12 @@ abstract class qtype_pmatch_spell_checker {
      */
     protected static $checkers = array();
 
+    /** @var string Value in the database define that do not check the spelling. */
+    public const DO_NOT_CHECK_OPTION = '-';
+
+    /** @var string Value in the database define that the server do not use any spell check library. */
+    public const NULL_SPELL_CHECK = 'null';
+
     /**
      * Spell-check a word.
      * @param string $word the word to check.
@@ -125,6 +131,20 @@ abstract class qtype_pmatch_spell_checker {
     }
 
     /**
+     * Return the available language for spell check.
+     *
+     * @return array List of available languages.
+     */
+    public static function get_available_languages(): array {
+        $spellchecker = get_config('qtype_pmatch', 'spellchecker');
+        $backends = self::get_known_backends();
+        $classname = $backends[$spellchecker];
+        $availablelanguages = $classname::available_languages();
+
+        return $availablelanguages;
+    }
+
+    /**
      * Just to document the expected constructor API.
      * @param string $lang the language code.
      */
@@ -154,6 +174,15 @@ abstract class qtype_pmatch_spell_checker {
      */
     public static function is_available() {
         return false;
+    }
+
+    /**
+     * Subclasses must implement this.
+     *
+     * @return array List of available languages.
+     */
+    public static function available_languages(): array {
+        return [];
     }
 
 }

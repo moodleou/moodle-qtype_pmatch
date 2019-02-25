@@ -102,4 +102,24 @@ class behat_qtype_pmatch extends behat_base {
         \qtype_pmatch\testquestion_responses::add_responses($responses);
     }
 
+    /**
+     * Check that the given Spell checking library already installed.
+     *
+     * @Given /^I check the "(?P<spell_check_engine_string>(?:[^"]|\\")*)" spell checking library already installed$/
+     */
+    public function is_spell_checking_library_install($enginename) {
+        if ($enginename == 'pspell') {
+            if (!function_exists('pspell_new')) {
+                throw new \Moodle\BehatExtension\Exception\SkippedException();
+            }
+        } else if ($enginename == 'enchant') {
+            if (!function_exists('enchant_broker_init')) {
+                throw new \Moodle\BehatExtension\Exception\SkippedException();
+            }
+        } else {
+            // Not supported checking library.
+            throw new \Moodle\BehatExtension\Exception\SkippedException();
+        }
+    }
+
 }

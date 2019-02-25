@@ -83,4 +83,21 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         return self::$broker;
     }
 
+    /**
+     * Get the available languages on server.
+     *
+     * @return array List of available languages.
+     */
+    public static function available_languages(): array {
+        $broker = self::get_broker();
+        $dicts = enchant_broker_list_dicts($broker);
+        $availablelanguages = [];
+        foreach ($dicts as $dict) {
+            if (preg_match('`^([a-z]+)$`', $dict['lang_tag'], $m)) {
+                $availablelanguages[] = $dict['lang_tag'];
+            }
+        }
+        return $availablelanguages;
+    }
+
 }

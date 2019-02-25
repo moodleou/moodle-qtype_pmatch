@@ -13,7 +13,7 @@
         <FIELD NAME="forcelength" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Remind the user that length should be less than 20 chars."/>
         <FIELD NAME="usecase" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether answers are matched case-sensitively."/>
         <FIELD NAME="converttospace" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Student answer characters that are converted to a space."/>
-        <FIELD NAME="applydictionarycheck" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to check student answers for spelling mistakes."/>
+        <FIELD NAME="applydictionarycheck" TYPE="char" LENGTH="2" NOTNULL="true" DEFAULT="-" SEQUENCE="false" COMMENT="Whether to check student answers for spelling mistakes."/>
         <FIELD NAME="extenddictionary" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Extra words for dictionary."/>
       </FIELDS>
       <KEYS>

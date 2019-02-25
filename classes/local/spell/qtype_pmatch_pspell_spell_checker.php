@@ -53,4 +53,20 @@ class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
         return function_exists('pspell_new');
     }
 
+    /**
+     * Get the available languages on server.
+     *
+     * @return array List of available languages.
+     */
+    public static function available_languages(): array {
+        $installeddicts = explode(PHP_EOL, rtrim(`aspell dicts`));
+        $availablelanguages = [];
+        foreach ($installeddicts as $dict) {
+            if (preg_match('`^([a-z]+)$`', $dict, $m)) {
+                $availablelanguages[$dict] = $dict;
+            }
+        }
+        return $availablelanguages;
+    }
+
 }

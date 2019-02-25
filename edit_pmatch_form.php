@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 /**
  * Short answer question editing form definition.
  *
@@ -231,13 +233,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->addElement('select', 'forcelength',
                                                 get_string('forcelength', 'qtype_pmatch'), $menu);
         $mform->setDefault('forcelength', 1);
-        $mform->addElement('selectyesno', 'applydictionarycheck',
-                                            get_string('applydictionarycheck', 'qtype_pmatch'));
-        $mform->setDefault('applydictionarycheck', 1);
+        $this->generate_spell_checker_language_field($mform);
         $mform->addElement('textarea', 'extenddictionary',
                         get_string('extenddictionary', 'qtype_pmatch'),
                         array('rows' => '5', 'cols' => '80'));
-        $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', 0);
+        $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
         $mform->addElement('text', 'converttospace',
                         get_string('converttospace', 'qtype_pmatch'),
                         array('size' => 60));
@@ -406,6 +406,59 @@ EOT;
                     $this->_form->setElementError('answersuggesttext', $e->getMessage());
             }
         }
+    }
+
+    /**
+     * Generate Spell checker language select box.
+     *
+     * @param MoodleQuickForm $mform Moodle quickform object definition
+     */
+    protected function generate_spell_checker_language_field($mform) {
+        list ($options, $disable) = $this->get_spell_checker_language_options();
+        if ($disable) {
+            $mform->addElement('select', 'applydictionarycheck',
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
+        } else {
+            $mform->addElement('select', 'applydictionarycheck',
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options);
+            $mform->setDefault('applydictionarycheck', get_string('iso6391', 'langconfig'));
+        }
+    }
+
+    /**
+     * Get the installed spell check language on the server.
+     *
+     * @return array with two elements:
+     *      array List of available language
+     *      bool Disable the select box or not
+     */
+    protected function get_spell_checker_language_options(): array {
+        $disable = false;
+        $options = [];
+        $options[qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
+
+        $availablelangs = qtype_pmatch_spell_checker::get_available_languages();
+        $languages = get_string_manager()->get_list_of_languages();
+        if (get_config('qtype_pmatch', 'spellchecker') == qtype_pmatch_spell_checker::NULL_SPELL_CHECK) {
+            $disable = true;
+            return [$options, $disable];
+        }
+
+        foreach ($availablelangs as $availablelang) {
+            $language = new stdClass();
+            $language->name = $languages[$availablelang];
+            $language->code = $availablelang;
+            $options[$availablelang] = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);
+        }
+        if (isset($this->question->options)) {
+            $originallanguage = $this->question->options->applydictionarycheck;
+            if ($originallanguage != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION && !in_array($originallanguage, $availablelangs)) {
+                $options[$originallanguage] = get_string('apply_spellchecker_missing_language_select', 'qtype_pmatch',
+                        $languages[$originallanguage]);
+            }
+        }
+
+        return [$options, $disable];
     }
 
     protected function data_preprocessing_other_answer($question) {

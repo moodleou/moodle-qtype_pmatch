@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 
 /**
  * Generates the output for pattern-match questions.
@@ -144,6 +146,13 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $result .= html_writer::nonempty_tag('div',
                     $question->get_validation_error(array('answer' => $currentanswer)),
                     array('class' => 'validationerror'));
+        }
+
+        // Show the error if the question is using a language that does not available on the server.
+        if ($question->user_can_see_missing_dict_warning() && $question->is_spell_check_laguage_available()) {
+            $languages = get_string_manager()->get_list_of_languages();
+            $result .= html_writer::nonempty_tag('div', get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch',
+                    $languages[$question->applydictionarycheck]), ['class' => 'validationerror']);
         }
 
         return $result;
