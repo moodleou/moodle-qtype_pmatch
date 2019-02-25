@@ -15,21 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Pattern-match question type installation code.
+ * Null spell checker class.
  *
- * @package   qtype_pmatch
- * @copyright 2013 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package qtype_pmatch
+ * @copyright 2019 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace qtype_pmatch\local\spell;
 
-use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+/**
+ * Implements the {@core_spell_checker} by saying that that any string is a
+ * correctly spelled word. This can be used when there is no back-end installed.
+ */
+class qtype_pmatch_null_spell_checker extends qtype_pmatch_spell_checker {
 
-function xmldb_qtype_pmatch_install() {
-    global $CFG;
+    public function is_in_dictionary($word) {
+        return true;
+    }
 
-    $backends = qtype_pmatch_spell_checker::get_installed_backends();
-    end($backends);
-    set_config('spellchecker', key($backends), 'qtype_pmatch');
+    public static function get_name() {
+        return get_string('spellcheckernull', 'qtype_pmatch');
+    }
+
+    public static function is_available() {
+        return true;
+    }
+
 }

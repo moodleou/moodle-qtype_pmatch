@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 /**
  * Upgrade code for the Pattern-match question type.
  * @param int $oldversion the version we are upgrading from.
@@ -35,7 +37,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
 
     if ($oldversion < 2013021201) {
 
-        require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
         $backends = qtype_pmatch_spell_checker::get_installed_backends();
         end($backends);
         set_config('spellchecker', key($backends), 'qtype_pmatch');

@@ -26,7 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
-require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
+
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 // The following is required because the xdebug library defaults to throwing a fatal error if
 // there is more than 100 nested function calls.
