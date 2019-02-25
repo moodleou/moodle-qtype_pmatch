@@ -25,13 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/pmatch/spellinglib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/classes/admin/admin_setting_spell_checker.php');
+require_once($CFG->dirroot . '/question/type/pmatch/classes/admin/admin_setting_environment_check.php');
 
-$settings->add(new qtype_pmatch_admin_setting_spell_checker('qtype_pmatch/spellchecker',
+$settings->add(new \qtype_pmatch\admin\qtype_pmatch_admin_setting_spell_checker('qtype_pmatch/spellchecker',
         get_string('spellcheckertype', 'qtype_pmatch'),
         get_string('spellcheckertype_desc', 'qtype_pmatch'), 'null', null));
 
-$settings->add(new qtype_pmatch_admin_setting_environment_check('qtype_pmatch_environment_check',
+$settings->add(new \qtype_pmatch\admin\qtype_pmatch_admin_setting_environment_check('qtype_pmatch_environment_check',
         get_string('environmentcheck', 'qtype_pmatch'), null));
 
 $settings->add(new admin_setting_configtext('qtype_pmatch/amatiwsurl',
