@@ -54,6 +54,7 @@ $string['env_peclnormalisationok'] = 'PECL Package for Unicode Normalizer appear
 $string['env_pspellmissing'] = 'Pspell library appears not to be correctly installed';
 $string['env_pspellok'] = 'Pspell library appears to be correctly installed';
 $string['environmentcheck'] = 'Environment checks for the pmatch question type';
+$string['err_ousupsubnotsupportedonmobile'] = 'This question requires superscripts or subscripts and so does not yet work in this app. Please answer this question in the web browser.';
 $string['err_providepmatchexpression'] = 'You must provide a pmatch expression here.';
 $string['extenddictionary'] = 'Add these words to dictionary';
 $string['filloutoneanswer'] = 'Use Pattern match syntax to describe correct answers. You must provide at least one possible answer. Answers left blank will not be used. The first matching answer will be used to determine the score and feedback.';

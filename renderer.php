@@ -72,6 +72,12 @@ class qtype_pmatch_renderer extends qtype_renderer {
                 $htmlresponse = false;
             }
         }
+
+        // Distinguish between answer input with or without supsub editor (used for mobileApp).
+        if ($htmlresponse) {
+            $attributes['class'] .= " answer-supsub";
+        }
+
         $questiontext = $question->format_questiontext($qa);
         $rows = 2;
         $cols = 50;
@@ -155,7 +161,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
                     get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch', $missinglangname),
                     ['class' => 'validationerror']);
         }
-
         return $result;
     }
 
