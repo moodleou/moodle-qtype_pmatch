@@ -639,7 +639,8 @@ class pmatch_matcher_number extends pmatch_matcher_item
         } else {
             $studentinput = $this->cleanup_number($word);
             $teacherinput = $this->cleanup_number($this->interpreter->get_code_fragment());
-            return abs($teacherinput - $studentinput) <= abs(1e-6 * $teacherinput);
+            // Allow for floating-point errors.
+            return abs($teacherinput - $studentinput) <= abs(1e-14 * $teacherinput);
         }
     }
 
