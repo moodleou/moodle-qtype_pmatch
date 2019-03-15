@@ -540,75 +540,101 @@ EOF;
                 'match(Pb<sup>2+</sup>\(aq\) + 2Cl<sup>-</sup>\(aq\) = PbCl<sub>2</sub>\(s\))'));
     }
 
-    public function test_pmatch_number_matching() {
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '1.981'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '-1.981'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>3</sup>'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101x10<sup>-3</sup>'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x10<sup>-3</sup>'));
-        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11<sup>-3</sup>'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101e3'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101e-3'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11e-3'));
-        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '101.11x3'));
+    public function pmatch_number_regex_testcases() {
+        return [
+            ['1.981', 1],
+            ['-1.981', 1],
+            ['101', 1],
+            ['101x10<sup>3</sup>', 1],
+            ['101x10<sup>-3</sup>', 1],
+            ['101.11x10<sup>-3</sup>', 1],
+            ['101.11<sup>-3</sup>', 0],
+            ['101e3', 1],
+            ['101e-3', 1],
+            ['101.11e-3', 1],
+            ['101.11x3', 0],
+            ['-5*10<sup>-1</sup>', 1],
 
-        $this->assertTrue($this->match('2', 'match(2)'));
-        $this->assertTrue($this->match('1', 'match(1)'));
-        $this->assertTrue($this->match('0', 'match(0)'));
-        $this->assertTrue($this->match('-1', 'match(-1)'));
-        $this->assertTrue($this->match('-2', 'match(-2)'));
+            // Spaces after unary plus/minus are not allowed.
+            ['- 1.985', 0],
+            ['- 5x10<sup>-1</sup>', 0],
+            ['- 5X10<sup>-1</sup>', 0],
+        ];
+    }
 
-        $this->assertTrue($this->match('1.981', 'match(1.981)'));
-        $this->assertTrue($this->match('1.98', 'match(+1.98)'));
-        $this->assertTrue($this->match('+1.98', 'match(+1.98)'));
-        $this->assertTrue($this->match('+101', 'match(101)'));
-        $this->assertTrue($this->match('- 50', 'match(- 50)'));
-        $this->assertFalse($this->match('- 50.333', 'match(- 50)'));
+    /**
+     * @dataProvider pmatch_number_regex_testcases
+     */
+    public function test_pmatch_number_regex($string, $expectedmatches) {
+        $this->assertSame($expectedmatches, preg_match('!'.PMATCH_NUMBER.'$!A', $string));
+    }
 
-        $this->assertTrue($this->match('- 50', 'match(- 50e0)'));
-        $this->assertTrue($this->match('- 50', 'match(- 5e1)'));
-        $this->assertTrue($this->match('- 50', 'match(- 5e+1)'));
-        $this->assertTrue(1 === preg_match('!'.PMATCH_NUMBER.'$!A', '-5*10<sup>-1</sup>'));
-        $this->assertTrue($this->match('-0.5', 'match(-5*10<sup>-1</sup>)'));
+    public function pmatch_number_matching_cases() {
+        return [
+            ['2', 'match(2)', true],
+            ['1', 'match(1)', true],
+            ['0', 'match(0)', true],
+            ['-1', 'match(-1)', true],
+            ['-2', 'match(-2)', true],
 
-        $this->assertTrue($this->match('100.11', 'match(1.001099e2)'));
-        $this->assertTrue($this->match('1.234561x10<sup>3</sup>', 'match(1234.56)'));
+            ['1.981', 'match(1.981)', true],
+            ['1.98', 'match(+1.98)', true],
+            ['+1.98', 'match(+1.98)', true],
+            ['+101', 'match(101)', true],
+            ['- 50', 'match(- 50)', true],
+            ['- 50.333', 'match(- 50)', false],
 
-        // Spaces after unary plus/minus are not allowed.
-        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 1.985'));
-        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 5x10<sup>-1</sup>'));
-        $this->assertTrue(0 === preg_match('!'.PMATCH_NUMBER.'$!A', '- 5X10<sup>-1</sup>'));
-        $this->assertFalse($this->match('-1.985', 'match(- 1.985)'));
-        $this->assertFalse($this->match('- 50', 'match(-50e0)'));
-        $this->assertFalse($this->match('-0.5', 'match(- 5e-1)'));
-        $this->assertFalse($this->match('-0.5', 'match(- 5x10<sup>-1</sup>)'));
-        $this->assertFalse($this->match('-0.5', 'match(- 5X10<sup>-1</sup>)'));
+            ['- 50', 'match(- 50e0)', true],
+            ['- 50', 'match(- 5e1)', true],
+            ['- 50', 'match(- 5e+1)', true],
+            ['-0.5', 'match(-5*10<sup>-1</sup>)', true],
 
-        // Numbers run into the surrounding 'unit'.
-        $this->assertTrue($this->match('2ml', 'match(2ml)'));
-        $this->assertTrue($this->match('0.21e1 ml', 'match(2.1 ml)'));
-        $this->assertTrue($this->match('2.5ml', 'match(2.5ml)'));
-        $this->assertFalse($this->match('2.6mm', 'match(2.6ml)'));
-        $this->assertTrue($this->match('2', 'match(2)'));
-        $this->assertTrue($this->match('a2', 'match(a2)'));
-        $this->assertTrue($this->match('a2b', 'match(a2b)'));
-        $this->assertFalse($this->match('c2d', 'match(a2b)'));
-        $this->assertTrue($this->match('2b', 'match(2b)'));
-        $this->assertTrue($this->match('2.4', 'match(2.4)'));
-        $this->assertTrue($this->match('a2.4', 'match(a2.4)'));
-        $this->assertTrue($this->match('a2.4b', 'match(a2.4b)'));
-        $this->assertTrue($this->match('2.4b', 'match(2.4b)'));
-        $this->assertFalse($this->match('0.24e1b', 'match(2.4b)'));
-        $this->assertTrue($this->match('0.24e1 b', 'match(2.4 b)'));
-        $this->assertTrue($this->match('2.6 ml', 'match(2.6|2.7 ml)'));
-        $this->assertTrue($this->match('2.7ml', 'match(2.6ml|2.7ml)'));
-        $this->assertFalse($this->match('2.8ml', 'match(2.6ml|2.7ml)'));
-        $this->assertTrue($this->match('$2.9million', 'match($2.9million)'));
-        $this->assertTrue($this->match('£2.9million', 'match(£2.9mill*)'));
-        $this->assertFalse($this->match('$2.9millian', 'match($2.9million)'));
-        $this->assertTrue($this->match('a1b2.3c4.5e6d7', 'match(a1b2.3c4.5e6d7)'));
-        $this->assertFalse($this->match('a1b2.3c4.8e6d7', 'match(a1b2.3c4.5e6d7)'));
+            ['100.11', 'match(1.001099e2)', true],
+            ['1.234561x10<sup>3</sup>', 'match(1234.56)', true],
+
+            // Spaces after unary plus/minus are not allowed.
+            ['-1.985', 'match(- 1.985)', false],
+            ['- 50', 'match(-50e0)', false],
+            ['-0.5', 'match(- 5e-1)', false],
+            ['-0.5', 'match(- 5x10<sup>-1</sup>)', false],
+            ['-0.5', 'match(- 5X10<sup>-1</sup>)', false],
+
+            // Numbers run into the surrounding 'unit'.
+            ['2ml', 'match(2ml)', true],
+            ['0.21e1 ml', 'match(2.1 ml)', true],
+            ['2.5ml', 'match(2.5ml)', true],
+            ['2.6mm', 'match(2.6ml)', false],
+            ['2', 'match(2)', true],
+            ['a2', 'match(a2)', true],
+            ['a2b', 'match(a2b)', true],
+            ['c2d', 'match(a2b)', false],
+            ['2b', 'match(2b)', true],
+            ['2.4', 'match(2.4)', true],
+            ['a2.4', 'match(a2.4)', true],
+            ['a2.4b', 'match(a2.4b)', true],
+            ['2.4b', 'match(2.4b)', true],
+            ['0.24e1b', 'match(2.4b)', false],
+            ['0.24e1 b', 'match(2.4 b)', true],
+            ['2.6 ml', 'match(2.6|2.7 ml)', true],
+            ['2.7ml', 'match(2.6ml|2.7ml)', true],
+            ['2.8ml', 'match(2.6ml|2.7ml)', false],
+            ['$2.9million', 'match($2.9million)', true],
+            ['£2.9million', 'match(£2.9mill*)', true],
+            ['$2.9millian', 'match($2.9million)', false],
+            ['a1b2.3c4.5e6d7', 'match(a1b2.3c4.5e6d7)', true],
+            ['a1b2.3c4.8e6d7', 'match(a1b2.3c4.5e6d7)', false],
+        ];
+    }
+
+    /**
+     * @dataProvider pmatch_number_matching_cases
+     */
+    public function test_pmatch_number_matching($string, $expression, $shouldmatch) {
+        if ($shouldmatch) {
+            $this->assertTrue($this->match($string, $expression));
+        } else {
+            $this->assertFalse($this->match($string, $expression));
+        }
     }
 
     public function test_pmatch_unicode_matching() {
