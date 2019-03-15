@@ -589,8 +589,9 @@ EOF;
             ['- 50', 'match(- 5e+1)', true],
             ['-0.5', 'match(-5*10<sup>-1</sup>)', true],
 
-            ['100.11', 'match(1.001099e2)', true],
-            ['1.234561x10<sup>3</sup>', 'match(1234.56)', true],
+            // Test matching around the limits of float accuracy.
+            ['100.11', 'match(1.00109999999999e2)', true],
+            ['1.23456000000001x10<sup>3</sup>', 'match(1234.56)', true],
 
             // Spaces after unary plus/minus are not allowed.
             ['-1.985', 'match(- 1.985)', false],
