@@ -62,8 +62,8 @@ class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
         $installeddicts = explode(PHP_EOL, rtrim(`aspell dicts`));
         $availablelanguages = [];
         foreach ($installeddicts as $dict) {
-            if (preg_match('`^([a-z]+)$`', $dict, $m)) {
-                $availablelanguages[$dict] = $dict;
+            if (preg_match(qtype_pmatch_spell_checker::LANGUAGE_FILTER_REGEX, $dict, $m)) {
+                $availablelanguages[] = $dict;
             }
         }
         return $availablelanguages;

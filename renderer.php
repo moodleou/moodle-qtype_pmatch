@@ -150,9 +150,10 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         // Show the error if the question is using a language that does not available on the server.
         if ($question->user_can_see_missing_dict_warning() && $question->is_spell_check_laguage_available()) {
-            $languages = get_string_manager()->get_list_of_languages();
-            $result .= html_writer::nonempty_tag('div', get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch',
-                    $languages[$question->applydictionarycheck]), ['class' => 'validationerror']);
+            $missinglangname = qtype_pmatch_spell_checker::get_display_name_for_language_code($question->applydictionarycheck);
+            $result .= html_writer::nonempty_tag('div',
+                    get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch', $missinglangname),
+                    ['class' => 'validationerror']);
         }
 
         return $result;

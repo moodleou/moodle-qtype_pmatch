@@ -137,5 +137,17 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019021800, 'qtype', 'pmatch');
     }
 
+    if ($oldversion < 2019031800) {
+        $table = new xmldb_table('qtype_pmatch');
+        if ($dbman->table_exists($table)) {
+            $field = new xmldb_field('applydictionarycheck', XMLDB_TYPE_CHAR, '5', null, null, null,
+                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_type($table, $field);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2019031800, 'qtype', 'pmatch');
+    }
+
     return true;
 }

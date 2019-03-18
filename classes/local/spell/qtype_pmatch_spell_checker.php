@@ -50,6 +50,9 @@ abstract class qtype_pmatch_spell_checker {
     /** @var string Value in the database define that the server do not use any spell check library. */
     public const NULL_SPELL_CHECK = 'null';
 
+    /** @var string Regex string to get only needed dictionaries with format: xx or xx_YY Example: en or en_US. */
+    public const LANGUAGE_FILTER_REGEX = '`^([a-z]+)(_[A-Z]+)?`';
+
     /**
      * Spell-check a word.
      * @param string $word the word to check.
@@ -183,6 +186,23 @@ abstract class qtype_pmatch_spell_checker {
      */
     public static function available_languages(): array {
         return [];
+    }
+
+    /**
+     * Return the display name for language code
+     *
+     * @param string $langcode Language code
+     * @return string Display name for given language code
+     */
+    public static function get_display_name_for_language_code($langcode): string {
+        $langname = '';
+        $languagenames = get_string_manager()->get_list_of_languages();
+
+        if (preg_match(self::LANGUAGE_FILTER_REGEX, $langcode, $m)) {
+            $langname = $languagenames[$m[1]];
+        }
+
+        return $langname;
     }
 
 }

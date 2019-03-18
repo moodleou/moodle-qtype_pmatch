@@ -93,7 +93,7 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         $dicts = enchant_broker_list_dicts($broker);
         $availablelanguages = [];
         foreach ($dicts as $dict) {
-            if (preg_match('`^([a-z]+)$`', $dict['lang_tag'], $m)) {
+            if (preg_match(qtype_pmatch_spell_checker::LANGUAGE_FILTER_REGEX, $dict['lang_tag'], $m)) {
                 $availablelanguages[] = $dict['lang_tag'];
             }
         }
