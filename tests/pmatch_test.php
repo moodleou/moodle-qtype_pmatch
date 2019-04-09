@@ -77,6 +77,12 @@ class qtype_pmatch_test extends basic_testcase {
                 ['match(2.)', $expectederror],
                 ['match(.2)', $expectederror],
                 ['match(3.141)', ''],
+                // Character punctuation.
+                ['match (¡¿Y tú quién te crees?!)', ''],
+                ['match (« Attends, je dois te dire quelque chose d\'important »)', ''],
+                ['match («Das Mädchen ist sehr schön»)', ''],
+                ['match (»Ich weiß nicht was ich sagen soll «)', ''],
+                ['match („Kommst du mit?”)', ''],
         ];
     }
 
@@ -512,6 +518,12 @@ EOF;
                 // Problem from Redmine issue #8948.
                 ['Pb<sup>2+</sup>(aq) + 2Cl<sup>-</sup>(aq) = PbCl<sub>2</sub>(s)',
                         'match(Pb<sup>2+</sup>\(aq\) + 2Cl<sup>-</sup>\(aq\) = PbCl<sub>2</sub>\(s\))', true],
+                // Character punctuation.
+                ['¡¿Y tú quién te crees', 'match(¡¿Y tú quién te crees)', true],
+                ['«Das Mädchen ist sehr schön»', 'match(«Das Mädchen ist sehr schön»)', true],
+                ['»Ich weiß nicht was ich sagen soll «', 'match(»Ich weiß nicht was ich sagen soll «)', true],
+                ['„Kommst du mit”', 'match(„Kommst du mit”)', true],
+                ['« Attends, je d\'important »', 'match(« Attends, je d\'important »)', true],
         ];
     }
 

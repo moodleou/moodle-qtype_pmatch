@@ -87,7 +87,7 @@ class pmatch_options {
             $toreplaceitem = preg_replace('~\\\\\*~u',
                         '('.$this->character_in_word_pattern().')*', $toreplaceitem);
             // The ?<= and ?= ensures that the adjacent characters are not replaced also.
-            $toreplaceitem = '~(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)~';
+            $toreplaceitem = '~(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)~u';
             if ($this->ignorecase) {
                 $toreplaceitem .= 'i';
             }
@@ -251,7 +251,7 @@ class pmatch_parsed_string {
                 }
             }
             if (!count($matches)) {
-                if (!preg_match("~(.+?)$endofword~A$po", $toprocess, $matches)) {
+                if (!preg_match("~(.+?)$endofword~Au$po", $toprocess, $matches)) {
                     // Ignore the rest of the string.
                     break;
                 }
@@ -299,7 +299,7 @@ class pmatch_parsed_string {
 
         $spellchecker = qtype_pmatch_spell_checker::make($this->options->lang);
 
-        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$~A';
+        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$~Au';
         if ($this->options->ignorecase) {
             $endofpattern .= 'i';
         }

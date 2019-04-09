@@ -60,7 +60,7 @@ class form_utils {
 
             $wordinterpreter = new \pmatch_interpreter_word();
             list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
-            if ((!$wordmatched) || !($endofmatch == (strlen($trimmedword)))) {
+            if ((!$wordmatched) || !($endofmatch == (\core_text::strlen($trimmedword)))) {
                 $errors[$fieldname . '[' . $key . ']'] = get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
             } else if ($wordinterpreter->get_error_message()) {
@@ -70,7 +70,7 @@ class form_utils {
 
             $synonyminterpreter = new \pmatch_interpreter_synonym();
             list($synonymmatched, $endofmatch) = $synonyminterpreter->interpret($trimmedsynonyms);
-            if ((!$synonymmatched) || !($endofmatch == (strlen($trimmedsynonyms)))) {
+            if ((!$synonymmatched) || !($endofmatch == (\core_text::strlen($trimmedsynonyms)))) {
                 $errors[$fieldname . '[' . $key . ']'] = get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
             } else if ($synonyminterpreter->get_error_message()) {
