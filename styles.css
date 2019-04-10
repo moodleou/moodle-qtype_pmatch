@@ -101,13 +101,36 @@ body#page-question-type-pmatch #fitem_id_addanswers {
 }
 
 body.pagelayout-embedded .que.pmatch .formulation .questiontestslink,
-body.pagelayout-embedded .que.combined .formulation .questiontestslink {
+body.pagelayout-embedded .que.combined .combined-pmatch-input > a {
     display: none;
 }
 .que.pmatch .formulation .questiontestslink,
 .que.combined .formulation .questiontestslink {
     float: right;
     font-size: 0.7em;
+}
+
+/* Test this question link within combined questions. */
+.combined-pmatch-input {
+    position: relative;
+    white-space: nowrap;
+    display: inline-block;
+}
+.combined-pmatch-input > a {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: .85714em;
+    background: #fff;
+    padding: 1px;
+    line-height: 1;
+}
+.combined-pmatch-input > .answerwrap + a {
+    top: 5px;
+    right: 5px;
+    padding: 2px 4px;
+    border: 1px solid #bbb;
+
 }
 
 #page-question-type-pmatch .rcw input[type=submit] {

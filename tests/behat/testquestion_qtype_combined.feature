@@ -49,9 +49,9 @@ Feature: Test the basic functionality of Test Question Link when preview combine
 
   @javascript
   Scenario: Should see the test question link on preview page Combined Pattern Match question type.
-    Given I should see "Test this question" in the "//div[@class='qtext']//div[position()=1]//div[@class='questiontestslink']" "xpath_element"
-    And I should see "Test this question" in the "//div[@class='qtext']//div[position()=2]//div[@class='questiontestslink']" "xpath_element"
-    When I click on "Test this question" "link" in the "//div[@class='qtext']//div[position()=1]//div[@class='questiontestslink']" "xpath_element"
+    Then "Test sub question 1" "link" should be visible
+    And "Test sub question 2" "link" should be visible
+    When I click on "Test sub question 1" "link"
     Then I should see "Pattern-match question testing tool: Testing question: 1"
     And I should see "Showing the responses for the selected question: 1"
     When I click on "Add new response" "button"
