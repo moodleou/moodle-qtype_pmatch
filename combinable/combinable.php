@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
@@ -75,11 +77,17 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $casedictels = array();
         $casedictels[] = $mform->createElement('select', $this->form_field_name('usecase'),
                                                get_string('casesensitive', 'qtype_pmatch'), $menu);
-        $casedictels[] = $mform->createElement('selectyesno', $this->form_field_name('applydictionarycheck'),
-                                                                            get_string('applydictionarycheck', 'qtype_pmatch'));
+        list ($options, $disable) = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
+        if ($disable) {
+            $casedictels[] = $mform->createElement('select', $this->form_field_name('applydictionarycheck'),
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
+        } else {
+            $casedictels[] = $mform->createElement('select', $this->form_field_name('applydictionarycheck'),
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options);
+            $mform->setDefault('applydictionarycheck', get_string('iso6391', 'langconfig'));
+        }
         $mform->addGroup($casedictels, $this->form_field_name('casedictels'),
                                                                         get_string('casesensitive', 'qtype_pmatch'), '', false);
-        $mform->setDefault($this->form_field_name('applydictionarycheck'), 1);
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
             array('rows' => '3', 'cols' => '57'));

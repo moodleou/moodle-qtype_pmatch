@@ -24,6 +24,9 @@
 
 namespace qtype_pmatch\local\spell;
 
+use MoodleQuickForm;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -235,6 +238,50 @@ abstract class qtype_pmatch_spell_checker {
         }
 
         return $matchedlang;
+    }
+
+    /**
+     * Get the installed spell check language on the server.
+     *
+     * @param object $question Question object
+     * @return array with two elements:
+     *      array List of available language
+     *      bool Disable the select box or not
+     */
+    public static function get_spell_checker_language_options($question): array {
+        $disable = false;
+        $options = [];
+        $availablelangs = [];
+
+        $options[qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
+
+        $spellchecklanguagesdata = get_config('qtype_pmatch', 'spellcheck_languages');
+        if (!$spellchecklanguagesdata ||
+                get_config('qtype_pmatch', 'spellchecker') == qtype_pmatch_spell_checker::NULL_SPELL_CHECK) {
+            $disable = true;
+            return [$options, $disable];
+        }
+        $availablelangs = explode(',', $spellchecklanguagesdata);
+
+        foreach ($availablelangs as $availablelang) {
+            $language = new stdClass();
+            $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($availablelang);
+            $language->code = $availablelang;
+            $options[$availablelang] = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);
+        }
+
+        if (isset($question->options)) {
+            $originallanguage = $question->options->applydictionarycheck;
+            if ($originallanguage != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION &&
+                    !in_array($originallanguage, $availablelangs)) {
+                $missinglangname = qtype_pmatch_spell_checker::get_display_name_for_language_code($originallanguage);
+                $options[$originallanguage] =
+                        get_string('apply_spellchecker_missing_language_select', 'qtype_pmatch', $missinglangname);
+            }
+        }
+        ksort($options);
+
+        return [$options, $disable];
     }
 
 }

@@ -27,13 +27,13 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     Then I follow "'pmatch' input '1'"
     And I set the following fields to these values:
       | id_subqpmatch1defaultmark     | 50%                                |
-      | Spell checking                | No                                 |
+      | Spell checking                | Do not check spelling of student   |
       | id_subqpmatch1answer_0        | match_mw (ethanoic acid)           |
       | id_subqpmatch1generalfeedback | You have the incorrect IUPAC name. |
     Then I follow "'pmatch' input '2'"
     And I set the following fields to these values:
       | id_subqpmatch2defaultmark     | 25%                                |
-      | Spell checking                | No                                 |
+      | Spell checking                | Do not check spelling of student   |
       | id_subqpmatch2answer_0        | match_m (10)                       |
       | id_subqpmatch2generalfeedback | You have the incorrect IUPAC name. |
     Then I follow "'numeric' input '3'"
