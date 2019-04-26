@@ -40,10 +40,13 @@ class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_
             $placeno) {
 
         $result = parent::subquestion($qa, $options, $subq, $placeno);
-        $link = html_writer::link(new moodle_url(
-                '/question/type/pmatch/testquestion.php', ['id' => $subq->question->id]),
-                get_string('test', 'qtype_pmatch'), ['title' => get_string('testsubquestionx', 'qtype_pmatch',
-                        $subq->get_identifier())]);
+        $link = '';
+        if ($subq->question->user_can_view()) {
+            $link = html_writer::link(new moodle_url(
+                    '/question/type/pmatch/testquestion.php', ['id' => $subq->question->id]),
+                    get_string('test', 'qtype_pmatch'), ['title' => get_string('testsubquestionx', 'qtype_pmatch',
+                            $subq->get_identifier())]);
+        }
         return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input']);
     }
 }
