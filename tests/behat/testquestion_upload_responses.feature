@@ -22,7 +22,7 @@ Feature: Test uploading test responses in the pattern match test this question f
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And I log in as "teacher"
     Given I am on the pattern match test responses page for question "My first pattern match question"
-    And I click on "Upload responses" "link"
+    And I click on "Upload responses" "button"
 
   @javascript
   Scenario: Upload responses to test with.
