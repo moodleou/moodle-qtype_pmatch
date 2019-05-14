@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * This file contains of the pmatch library using files of examples.
  *
@@ -135,7 +134,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Create responses.
         $responses = array();
-        for ($x = 0; $x < 10; $x ++) {
+        for ($x = 0; $x < 10; $x++) {
             $response = $generator->create_test_response();
             $responses[$response->id] = $response;
         }
@@ -331,21 +330,21 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Create expected responses.
         $data = array(
-                    array(1, "testing one two three four"),
-                    array(0, "testing"),
-                    array(1, "one"),
-                    array(1, "two"),
-                    array(1, "three"),
-                    array(1, "four"),
-                    array(0, "for"),
-                    array(0, "free"),
-                    array(0, "€£¥©®™±≠≤≥÷×∞µαβπΩ∑"),
-                    array(0, "one not two but three and four."),
-                    array(1, "another test"),
-                    array(null, 'testing anything.'),
-                    array(null, '')
+                array(1, "testing one two three four"),
+                array(0, "testing"),
+                array(1, "one"),
+                array(1, "two"),
+                array(1, "three"),
+                array(1, "four"),
+                array(0, "for"),
+                array(0, "free"),
+                array(0, "€£¥©®™±≠≤≥÷×∞µαβπΩ∑"),
+                array(0, "one not two but three and four."),
+                array(1, "another test"),
+                array(null, 'testing anything.'),
+                array(null, '')
         );
-        $expectedresponses  = array();
+        $expectedresponses = array();
         foreach ($data as $datarow) {
             $response = new \qtype_pmatch\testquestion_response();
             $response->questionid = $question->id;
@@ -357,8 +356,8 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         // Test problems.
         $expectedproblems = array(
                 'Each row should contain exactly two items, a numerical mark and a response.' .
-                    ' Row <b>11</b> contains <b>3</b> item(s).'
-                    );
+                ' Row <b>11</b> contains <b>3</b> item(s).'
+        );
 
         $this->assertEquals($expectedproblems, $problems);
 
@@ -444,11 +443,11 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $responseids = array_keys($responses);
         $compareresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids($responseids);
         $responsestoruleids = array(
-                                'Tom Dick or Harry' => array(13),
-                                'Tom' => array(13),
-                                'Harry' => array(13),
-                                'Tom was janes companion' => array(13)
-                            );
+                'Tom Dick or Harry' => array(13),
+                'Tom' => array(13),
+                'Harry' => array(13),
+                'Tom was janes companion' => array(13)
+        );
 
         foreach ($compareresponses as $compareresponse) {
             if (array_key_exists($compareresponse->response, $responsestoruleids)) {
@@ -587,20 +586,20 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->currentquestion->answers = $rules;
 
         $responseids = array_keys($responses);
-        $comparerulematches = array (
-            'responseidstoruleids' => array(
-                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
-                    'Tom' => array(0 => 'match_w(Tom|Harry)'),
-                    'Dick' => array(0 => 'match_w(Dick)'),
-                    'Harry' => array(0 => 'match_w(Tom|Harry)'),
-                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
-                    'Felicity' => array(0 => 'match_w(Felicity)')
+        $comparerulematches = array(
+                'responseidstoruleids' => array(
+                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
+                        'Tom' => array(0 => 'match_w(Tom|Harry)'),
+                        'Dick' => array(0 => 'match_w(Dick)'),
+                        'Harry' => array(0 => 'match_w(Tom|Harry)'),
+                        'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
+                        'Felicity' => array(0 => 'match_w(Felicity)'),
                 ),
-            'ruleidstoresponseids' => array(
-                    'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
-                                    3 => 'Tom was janes companion'),
-                    'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick'),
-                    'match_w(Felicity)' => array(0 => "Felicity")
+                'ruleidstoresponseids' => array(
+                        'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                3 => 'Tom was janes companion'),
+                        'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick'),
+                        'match_w(Felicity)' => array(0 => "Felicity"),
                 )
         );
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
@@ -608,11 +607,11 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
         $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
-                                                                            $this->currentquestion->id);
+                $this->currentquestion->id);
 
         // Translate the rule and response ids into responses and rules to test.
         $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches,
-                                                                            $rules, $responses);
+                $rules, $responses);
 
         $this->assertEquals($comparerulematches, $responseandrulematches);
 
@@ -621,19 +620,19 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         \qtype_pmatch\testquestion_responses::delete_rule_matches($this->currentquestion);
 
         // Set new expectations.
-        $deletedrulecomparerulematches = array (
-            'responseidstoruleids' => array(
-                    'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
-                    'Tom' => array(0 => 'match_w(Tom|Harry)'),
-                    'Dick' => array(0 => 'match_w(Dick)'),
-                    'Harry' => array(0 => 'match_w(Tom|Harry)'),
-                    'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)')
+        $deletedrulecomparerulematches = array(
+                'responseidstoruleids' => array(
+                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)'),
+                        'Tom' => array(0 => 'match_w(Tom|Harry)'),
+                        'Dick' => array(0 => 'match_w(Dick)'),
+                        'Harry' => array(0 => 'match_w(Tom|Harry)'),
+                        'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
                 ),
-            'ruleidstoresponseids' => array(
-                    'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
-                                    3 => 'Tom was janes companion'),
-                    'match_w(Dick)' => array(0 => "Tom Dick or Harry", 1 => "Dick")
-                )
+                'ruleidstoresponseids' => array(
+                        'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                3 => 'Tom was janes companion'),
+                        'match_w(Dick)' => array(0 => "Tom Dick or Harry", 1 => "Dick"),
+                ),
         );
 
         $deletedrule = array_pop($rules);
@@ -645,7 +644,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
         $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
-                                                                            $this->currentquestion->id);
+                $this->currentquestion->id);
 
         // Translate the rule and response ids into responses and rules to test.
         $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
@@ -667,7 +666,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
         $rulematches = \qtype_pmatch\testquestion_responses::get_rule_matches_for_responses($responseids,
-                                                                            $this->currentquestion->id);
+                $this->currentquestion->id);
 
         // Translate the rule and response ids into responses and rules to test.
         $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
@@ -682,32 +681,32 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_1.json';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnless', $errcase));
         $this->assertTrue($errcase['columnless']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_2.json';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('row', $errcase));
         $this->assertTrue($errcase['row']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_3.json';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnbigger', $errcase));
         $this->assertTrue($errcase['columnbigger']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertEquals([], $errcase);
@@ -720,32 +719,32 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_1.html';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnless', $errcase));
         $this->assertTrue($errcase['columnless']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_2.html';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('row', $errcase));
         $this->assertTrue($errcase['row']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_3.html';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnbigger', $errcase));
         $this->assertTrue($errcase['columnbigger']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertEquals([], $errcase);
@@ -758,32 +757,32 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_1.csv';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnless', $errcase));
         $this->assertTrue($errcase['columnless']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_2.csv';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('row', $errcase));
         $this->assertTrue($errcase['row']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_3.csv';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnbigger', $errcase));
         $this->assertTrue($errcase['columnbigger']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertEquals([
@@ -800,32 +799,32 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_1.xlsx';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnless', $errcase));
         $this->assertTrue($errcase['columnless']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_2.xlsx';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('row', $errcase));
         $this->assertTrue($errcase['row']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_3.xlsx';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnbigger', $errcase));
         $this->assertTrue($errcase['columnbigger']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertEquals([
@@ -842,32 +841,32 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_1.ods';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnless', $errcase));
         $this->assertTrue($errcase['columnless']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_2.ods';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('row', $errcase));
         $this->assertTrue($errcase['row']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_3.ods';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertTrue(array_key_exists('columnbigger', $errcase));
         $this->assertTrue($errcase['columnbigger']);
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $errcase = $importer->validate();
         $this->assertEquals([
@@ -878,120 +877,90 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     }
 
     /**
-     * Test get_responses_json_file_type function.
+     * Test get responses function
+     *
+     * @dataProvider get_responses_cases
+     *
+     * @param string $responsesfile Response file path
+     * @param int $expectedtotalrows Expected total rows
+     * @param array $expectedrows List of expected rows
      */
-    public function test_get_responses_json_file_type() {
+    public function test_get_responses($responsesfile, $expectedtotalrows, $expectedrows) {
         $this->resetAfterTest();
-
-        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($responsesfile);
         $content = $importer->get_responses();
-        $this->assertCount(4, $content);
-        $this->assertEquals(0, $content[0][0]);
-        $this->assertEquals('Response 1', $content[0][1]);
-        $this->assertEquals(1, $content[1][0]);
-        $this->assertEquals('Response 2', $content[1][1]);
-        $this->assertEquals(0, $content[2][0]);
-        $this->assertEquals('Response 3', $content[2][1]);
-        $this->assertEquals(1, $content[3][0]);
-        $this->assertEquals('Response 4', $content[3][1]);
+
+        $this->assertCount($expectedtotalrows, $content);
+        foreach ($expectedrows as $key => $expectedrow) {
+            $this->assertEquals($expectedrow[0], $content[$key][0]);
+            $this->assertEquals($expectedrow[1], $content[$key][1]);
+        }
     }
 
-    /**
-     * Test get_responses_html_file_type function.
-     */
-    public function test_get_responses_html_file_type() {
-        $this->resetAfterTest();
-
-        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
-        $importer->open($responsesfile);
-        $content = $importer->get_responses();
-        $this->assertCount(4, $content);
-        $this->assertEquals(0, $content[0][0]);
-        $this->assertEquals('Response 1', $content[0][1]);
-        $this->assertEquals(1, $content[1][0]);
-        $this->assertEquals('Response 2', $content[1][1]);
-        $this->assertEquals(0, $content[2][0]);
-        $this->assertEquals('Response 3', $content[2][1]);
-        $this->assertEquals(1, $content[3][0]);
-        $this->assertEquals('Response 4', $content[3][1]);
-    }
-
-    /**
-     * Test get_responses_csv_file_type function.
-     */
-    public function test_get_responses_csv_file_type() {
-        $this->resetAfterTest();
-
-        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
-        $importer->open($responsesfile);
-        $content = $importer->get_responses();
-        $this->assertCount(4, $content);
-        $this->assertEquals(0, $content[0][0]);
-        $this->assertEquals('Response 1', $content[0][1]);
-        $this->assertEquals(1, $content[1][0]);
-        $this->assertEquals('Response 2', $content[1][1]);
-        $this->assertEquals(0, $content[2][0]);
-        $this->assertEquals('Response 3', $content[2][1]);
-        $this->assertEquals(1, $content[3][0]);
-        $this->assertEquals('Response 4', $content[3][1]);
-    }
-
-    /**
-     * Test get_responses_xlsx_file_type function.
-     */
-    public function test_get_responses_xlsx_file_type() {
-        $this->resetAfterTest();
-
-        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
-        $importer->open($responsesfile);
-        $content = $importer->get_responses();
-        $this->assertCount(4, $content);
-        $this->assertEquals(0, $content[0][0]);
-        $this->assertEquals('Response 1', $content[0][1]);
-        $this->assertEquals(1, $content[1][0]);
-        $this->assertEquals('Response 2', $content[1][1]);
-        $this->assertEquals(0, $content[2][0]);
-        $this->assertEquals('Response 3', $content[2][1]);
-        $this->assertEquals(1, $content[3][0]);
-        $this->assertEquals('Response 4', $content[3][1]);
-    }
-
-    /**
-     * Test get_responses_ods_file_type function.
-     */
-    public function test_get_responses_ods_file_type() {
-        $this->resetAfterTest();
-
-        $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods';
-        $testquestion_import_helper = new \qtype_pmatch\testquestion_import_helper($responsesfile);
-        $importer = $testquestion_import_helper->import_factory();
-        $importer->open($responsesfile);
-        $content = $importer->get_responses();
-        $this->assertCount(4, $content);
-        $this->assertEquals(0, $content[0][0]);
-        $this->assertEquals('Response 1', $content[0][1]);
-        $this->assertEquals(1, $content[1][0]);
-        $this->assertEquals('Response 2', $content[1][1]);
-        $this->assertEquals(0, $content[2][0]);
-        $this->assertEquals('Response 3', $content[2][1]);
-        $this->assertEquals(1, $content[3][0]);
-        $this->assertEquals('Response 4', $content[3][1]);
+    public function get_responses_cases() {
+        return [
+                [
+                        dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json',
+                        4,
+                        [
+                                [0, 'Response 1'],
+                                [1, 'Response 2'],
+                                [0, 'Response 3'],
+                                [1, 'Response 4']
+                        ]
+                ],
+                [
+                        dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html',
+                        4,
+                        [
+                                [0, 'Response 1'],
+                                [1, 'Response 2'],
+                                [0, 'Response 3'],
+                                [1, 'Response 4']
+                        ]
+                ],
+                [
+                        dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv',
+                        4,
+                        [
+                                [0, 'Response 1'],
+                                [1, 'Response 2'],
+                                [0, 'Response 3'],
+                                [1, 'Response 4']
+                        ]
+                ],
+                [
+                        dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx',
+                        4,
+                        [
+                                [0, 'Response 1'],
+                                [1, 'Response 2'],
+                                [0, 'Response 3'],
+                                [1, 'Response 4']
+                        ]
+                ],
+                [
+                        dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods',
+                        4,
+                        [
+                                [0, 'Response 1'],
+                                [1, 'Response 2'],
+                                [0, 'Response 3'],
+                                [1, 'Response 4']
+                        ]
+                ]
+        ];
     }
 
     /**
      * Test export function for qtype_pmatch
      */
     public function test_xml_export() {
+        global $CFG;
         $this->resetAfterTest();
+
         $qdata = test_question_maker::get_question_data('pmatch', 'test0');
 
         $testresponse = [];
@@ -1013,8 +982,8 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         $exporter = new qformat_xml();
         $xml = $exporter->writequestion($qdata);
-
-        $expectedxml = '<!-- question: 1  -->
+        if ($CFG->branch > 35) {
+            $expectedxml = '<!-- question: 1  -->
   <question type="pmatch">
     <name>
       <text>test-0</text>
@@ -1086,6 +1055,79 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     </hint>
   </question>
 ';
+        } else {
+            $expectedxml = '<!-- question: 1  -->
+  <question type="pmatch">
+    <name>
+      <text>test-0</text>
+    </name>
+    <questiontext format="html">
+      <text>Listen, translate and write</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <usecase>0</usecase>
+    <allowsubscript>0</allowsubscript>
+    <allowsuperscript>0</allowsuperscript>
+    <forcelength>1</forcelength>
+    <applydictionarycheck>1</applydictionarycheck>
+    <extenddictionary></extenddictionary>
+    <converttospace>,;:</converttospace>
+    <answer fraction="100" format="plain_text">
+      <text>match (testing one two three four)</text>
+      <feedback format="moodle_auto_format">
+        <text>Well done!</text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="plain_text">
+      <text>*</text>
+      <feedback format="moodle_auto_format">
+        <text>Sorry, no.</text>
+      </feedback>
+    </answer>
+    <synonym>
+      <word>
+        <text>any</text>
+      </word>
+      <synonyms>
+        <text>testing|one|two|three|four</text>
+      </synonyms>
+    </synonym>
+    <testquestionresponse>
+      <response>
+        <text>one two</text>
+      </response>
+      <expectedfraction>
+        <text>0</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>0</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <testquestionresponse>
+      <response>
+        <text>one two three</text>
+      </response>
+      <expectedfraction>
+        <text>1</text>
+      </expectedfraction>
+      <gradedfraction>
+        <text>1</text>
+      </gradedfraction>
+    </testquestionresponse>
+    <hint format="html">
+      <text>Hint 1</text>
+    </hint>
+    <hint format="html">
+      <text>Hint 2</text>
+    </hint>
+  </question>
+';
+        }
         $this->assert_same_xml($expectedxml, $xml);
     }
 
@@ -1093,6 +1135,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
      * Test import function for qtype_pmatch
      */
     public function test_xml_import() {
+        global $CFG;
         $this->resetAfterTest();
         $xml = '<!-- question: 0  -->
   <question type="pmatch">
@@ -1174,8 +1217,14 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedq = new stdClass();
         $expectedq->qtype = 'pmatch';
         $expectedq->name = 'test-0';
-        $expectedq->idnumber = '';
-        $expectedq->tags = [];
+        if ($CFG->branch > 35) {
+            // Question idnumber only available since Moodle 3.6.
+            $expectedq->idnumber = '';
+        }
+        if ($CFG->branch > 34) {
+            // Question tags only available since Moodle 3.5.
+            $expectedq->tags = [];
+        }
         $expectedq->questiontext = 'Listen, translate and write';
         $expectedq->questiontextformat = FORMAT_HTML;
         $expectedq->generalfeedback = '';

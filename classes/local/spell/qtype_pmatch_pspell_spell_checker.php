@@ -24,6 +24,8 @@
 
 namespace qtype_pmatch\local\spell;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Implements the {@core_spell_checker} API using pspell.
  */
@@ -59,7 +61,7 @@ class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
      * @return array List of available languages.
      */
     public static function available_languages(): array {
-        $installeddicts = explode(PHP_EOL, rtrim(`aspell dicts`));
+        $installeddicts = explode(PHP_EOL, rtrim(shell_exec('aspell dicts')));
         $availablelanguages = [];
         foreach ($installeddicts as $dict) {
             if (preg_match(qtype_pmatch_spell_checker::LANGUAGE_FILTER_REGEX, $dict, $m)) {

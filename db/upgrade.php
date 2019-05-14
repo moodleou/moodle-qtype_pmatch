@@ -131,7 +131,8 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
                 $dbman->change_field_type($table, $field);
                 $DB->set_field('qtype_pmatch', 'applydictionarycheck', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION,
                         ['applydictionarycheck' => 0]);
-                $DB->set_field('qtype_pmatch', 'applydictionarycheck', get_string('iso6391', 'langconfig'), ['applydictionarycheck' => 1]);
+                $DB->set_field('qtype_pmatch', 'applydictionarycheck', get_string('iso6391', 'langconfig'),
+                        ['applydictionarycheck' => 1]);
             }
         }
         upgrade_plugin_savepoint(true, 2019021800, 'qtype', 'pmatch');

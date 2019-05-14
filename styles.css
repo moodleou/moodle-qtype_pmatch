@@ -215,17 +215,17 @@ body#page-question-type-pmatch-testquestion .resettable {
 /* Help responsive error pop up in the Examplar table */
 @media (min-device-width: 1023px) {
     #page-question-type-pmatch-testquestion .moodle-dialogue {
-        left: calc(50% - 200px) !important;
+        left: calc(50% - 200px) !important; /* stylelint-disable-line declaration-no-important */
         top: auto;
         max-width: unset;
     }
     @media (max-width: 767px) {
         #page-question-type-pmatch-testquestion .moodle-dialogue {
-            top: 50% !important;
+            top: 50% !important; /* stylelint-disable-line declaration-no-important */
         }
     }
     #page-question-type-pmatch-testquestion .moodle-dialogue-fullscreen {
-        left: 0 !important;
-        top: 0 !important;
+        left: 0 !important; /* stylelint-disable-line declaration-no-important */
+        top: 0 !important; /* stylelint-disable-line declaration-no-important */
     }
 }

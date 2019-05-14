@@ -116,14 +116,14 @@ abstract class qtype_pmatch_importer {
      *
      * @return array List of responses
      */
-    abstract function get_responses();
+    public abstract function get_responses();
 
     /**
      * Validate the file
      *
      * @return array List of error if any.
      */
-    abstract function validate();
+    public abstract function validate();
 
 }
 
@@ -303,7 +303,7 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
      *
      * @return array List of responses
      */
-    function get_responses() {
+    public function get_responses() {
         $data = json_decode($this->contents);
         // We only need the first sheet of the file.
         // Any more sheets in this file are note wanted.
@@ -317,7 +317,7 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
      *
      * @return array List of error if any.
      */
-    function validate() {
+    public function validate() {
         $errcase = [];
 
         if (empty(json_decode($this->contents))) {
@@ -368,7 +368,7 @@ class qtype_pmatch_html_importer extends qtype_pmatch_importer {
      *
      * @return array List of responses
      */
-    function get_responses() {
+    public function get_responses() {
         $responses = [];
 
         $xml = new \DOMDocument();
@@ -404,7 +404,7 @@ class qtype_pmatch_html_importer extends qtype_pmatch_importer {
      *
      * @return array List of error if any.
      */
-    function validate() {
+    public function validate() {
         $errcase = [];
 
         $xml = new \DOMDocument();
