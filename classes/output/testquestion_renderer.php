@@ -83,7 +83,8 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
             $this->page->requires->js_call_amd('qtype_pmatch/creator', 'init');
 
             $this->page->requires->strings_for_js(['ok', 'selectall', 'deselectall'], 'moodle');
-            $this->page->requires->strings_for_js(['error:title', 'testquestionresultssummary', 'testquestionformsaveresponsebutton',
+            $this->page->requires->strings_for_js(['error:title', 'testquestionresultssummary',
+                    'testquestionformsaveresponsebutton',
                     'testquestionformcancelresponsebutton'], 'qtype_pmatch');
         }
         return $html;

@@ -24,6 +24,8 @@
 
 namespace qtype_pmatch\local\spell;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Implements the {@core_spell_checker} by saying that that any string is a
  * correctly spelled word. This can be used when there is no back-end installed.

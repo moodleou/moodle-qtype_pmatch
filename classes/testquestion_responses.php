@@ -710,8 +710,8 @@ class testquestion_responses {
         $row = 1;
         $datas = [];
 
-        $testquestion_import_helper = new testquestion_import_helper($filepath);
-        $importer = $testquestion_import_helper->import_factory();
+        $testquestionimporthelper = new testquestion_import_helper($filepath);
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($filepath);
         $datas = $importer->get_responses();
 
@@ -793,12 +793,12 @@ class testquestion_responses {
      */
     public static function validate_upload_file($filepath) {
         $error = [];
-        $testquestion_import_helper = new testquestion_import_helper($filepath);
-        if (!in_array($testquestion_import_helper->importtype, testquestion_import_helper::ACCEPTED_TYPES)) {
+        $testquestionimporthelper = new testquestion_import_helper($filepath);
+        if (!in_array($testquestionimporthelper->importtype, testquestion_import_helper::ACCEPTED_TYPES)) {
             $error['format'] = true;
             return $error;
         }
-        $importer = $testquestion_import_helper->import_factory();
+        $importer = $testquestionimporthelper->import_factory();
         $importer->open($filepath);
         $error = $importer->validate();
 

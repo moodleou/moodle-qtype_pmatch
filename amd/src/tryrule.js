@@ -36,6 +36,7 @@ define(['jquery'], function($) {
         sessKey: '',
         qid: '',
         pendingid: '',
+        baseForm: null,
 
         /**
          * Initialise the try rule button.
@@ -46,8 +47,14 @@ define(['jquery'], function($) {
             var base = window.location;
             t.baseUrl = base.protocol + '//' + base.host +
                     base.pathname.replace('question.php', 'type/pmatch/api/api.php');
-            t.sessKey = $('#mform1 input[name="sesskey"]').val();
-            t.qid = $('#mform1 input[name="id"]').val();
+            if ($('#mform1').length) {
+                t.baseForm = $('#mform1');
+            } else {
+                // Get the first form in the page.
+                t.baseForm = $('form.mform').first();
+            }
+            t.sessKey = t.baseForm.find('input[name="sesskey"]').val();
+            t.qid = t.baseForm.find('input[name="id"]').val();
             // Add ids to try rule buttons.
             $('textarea[name^="answer"]').each(function() {
                 var id = $(this).attr('id').replace('id_answer_', '');

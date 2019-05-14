@@ -24,6 +24,8 @@
 
 namespace qtype_pmatch\local\spell;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Implements the {@core_spell_checker} API using enchant.
  */
