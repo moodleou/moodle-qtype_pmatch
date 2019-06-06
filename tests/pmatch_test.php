@@ -47,6 +47,16 @@ class qtype_pmatch_test extends basic_testcase {
         return $expression->get_parse_error();
     }
 
+    public function test_strip_sentence_divider() {
+        $options = new pmatch_options();
+
+        $this->assertEquals('Cat', $options->strip_sentence_divider('Cat'));
+        $this->assertEquals('Cat', $options->strip_sentence_divider('Cat.'));
+
+        $options->sentencedividers = '';
+        $this->assertEquals('Cat', $options->strip_sentence_divider('Cat'));
+        $this->assertEquals('Cat.', $options->strip_sentence_divider('Cat.'));
+    }
 
     /**
      * Data provider function for test_pmatch_error
@@ -434,6 +444,14 @@ EOF;
                 ['»Ich weiß nicht was ich sagen soll «', 'match(»Ich weiß nicht was ich sagen soll «)', true],
                 ['„Kommst du mit”', 'match(„Kommst du mit”)', true],
                 ['« Attends, je d\'important »', 'match(« Attends, je d\'important »)', true],
+                ['Test?', 'match(Test\?)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Test', 'match(Test\?)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Test.', 'match(Test\?)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Testa', 'match(Test\?)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Test?', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Test', 'match(Test?)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Test.', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Testa', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
         ];
     }
 

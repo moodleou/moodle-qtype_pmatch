@@ -167,7 +167,8 @@ class pmatch_options {
     }
 
     /**
-     * @return string fragment of preg_match pattern to match sentence separator.
+     * @param string $word fragment of preg_match pattern to match sentence separator.
+     * @return bool wether $words ends in one of the sentence divider characters.
      */
     public function word_has_sentence_divider_suffix($word) {
         $sd = $this->sentence_divider_pattern();
@@ -181,7 +182,6 @@ class pmatch_options {
      * @return string with sentence divider stripped off.
      */
     public function strip_sentence_divider($string) {
-        $sd = $this->sentence_divider_pattern();
         if ($this->word_has_sentence_divider_suffix($string)) {
             $string = core_text::substr($string, 0, -1);
         }
@@ -216,6 +216,11 @@ class pmatch_options {
                 // Full stop should only match if it is not a decimal point (followed by a digit).
                 $pattern .= '(?![0-9])';
             }
+        }
+        // If there is no pattern, then we should never match anything.
+        // Make a pattern that does that, to avoid bugs.
+        if ($pattern === '') {
+            $pattern = '(?!X)X';
         }
         return $pattern;
     }

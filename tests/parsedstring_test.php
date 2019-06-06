@@ -77,7 +77,11 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
 
         $parsedstring = new pmatch_parsed_string('cat? dog', $options);
         $this->assertEquals($parsedstring->get_words(), array('cat?', 'dog'));
+
+        $parsedstring = new pmatch_parsed_string('Test?', $options);
+        $this->assertEquals(['Test?'], $parsedstring->get_words());
     }
+
     public function test_pmatch_spelling() {
 
         if (!function_exists('pspell_new')) {
