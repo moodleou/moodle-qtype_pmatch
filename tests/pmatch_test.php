@@ -316,21 +316,10 @@ EOF;
                 ['gabbcdffff', 'match_m2(abcdffff)', true],
                 ['abbcdgffff', 'match_m2(abcdffff)', true],
                 ['', 'match(*)', true],
-                ['ABCD', 'match(abcd)', true, call_user_func(function() {
-                    $options = new pmatch_options();
-                    $options->ignorecase = true;
-                    return $options;
-                })],
-                ['Mary had a little LamB', 'match(mary had a little lamb)', true, call_user_func(function() {
-                    $options = (new pmatch_options());
-                    $options->ignorecase = true;
-                    return $options;
-                })],
-                ['ABCD', 'match(abcd)', false, call_user_func(function() {
-                    $options = new pmatch_options();
-                    $options->ignorecase = false;
-                    return $options;
-                })],
+                ['ABCD', 'match(abcd)', true, pmatch_options::make(['ignorecase' => true])],
+                ['Mary had a little LamB', 'match(mary had a little lamb)', true,
+                        pmatch_options::make(['ignorecase' => true])],
+                ['ABCD', 'match(abcd)', false, pmatch_options::make(['ignorecase' => false])],
                 ['efgh', 'not ( match_c(c) )', true],
                 ['abc', 'not ( match_c(c) )', false],
                 ['lock', 'not ( match_c(c) )', false],
@@ -389,90 +378,14 @@ EOF;
                 ['one two two three four five six.', 'match_wp4(one_six)', false],
                 // The sentence divider can be any characters (although they should not be characters that
                 // might appear in a word).
-                ['one four| two|', 'match_w(one_two)', false, call_user_func(function() {
-                    $options = new pmatch_options();
-                    $options->sentencedividers = '|';
-                    return $options;
-                })],
-                ['one four two|', 'match_w(one_two)', true, call_user_func(function() {
-                    $options = new pmatch_options();
-                    $options->sentencedividers = '|';
-                    return $options;
-                })],
+                ['one four| two|', 'match_w(one_two)', false,
+                        pmatch_options::make(['sentencedividers' => '|'])],
+                ['one four two|', 'match_w(one_two)', true,
+                        pmatch_options::make(['sentencedividers' => '|'])],
                 ['one four| two|', 'match_w(one_two)', false, $options],
                 ['one four two|', 'match_w(one_two)', true, $options],
                 ['one four$ two$', 'match_w(one_two)', false, $options],
                 ['one four two$', 'match_w(one_two)', true, $options],
-                [call_user_func(function() {
-                    return <<<EOF
-match_all (
-    match_any (
-        not (
-            match_cow (one_two)
-        )
-        match_mfw (three|[four five])
-    )
-    match_any (
-        match_mrw (six|nine nine)
-        match_m2w (seven|[eight ten])
-    )
-)
-
-EOF;
-                }), call_user_func(function() {
-                    return new pmatch_expression('match_all(match_any(not(match_cow(one_two))' .
-                            'match_mfw(three|[four five]))' .
-                            'match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))');
-                })],
-                ["match_m (three|[four five])\n", new pmatch_expression('match_mfmtxr(three|[four five])')],
-                ["match_mow (three|[four five])\n", new pmatch_expression('match_mfmtxrow(three|[four five])')],
-                ["match_m2 (three|[four five])\n", new pmatch_expression('match_mfmtxr2(three|[four five])')],
-                ["match_mrtxow (three|[four five])\n", new pmatch_expression('match_mtxrow(three|[four five])')],
-                [call_user_func(function() {
-                    return <<<EOF
-match_all (
-    match_any (
-        not (
-            match_c (a)
-        )
-        match_c (b)
-    )
-    match_all (
-        match_all (
-            match_any (
-                match_c (c)
-                match_c (d)
-            )
-            match_any (
-                match_c (e)
-                match_c (f)
-            )
-            match_all (
-                match_c (g)
-                match_c (h)
-            )
-        )
-        not (
-            match_any (
-                match_any (
-                    match_c (i)
-                    match_c (j)
-                )
-                match_any (
-                    match_c (k)
-                    match_c (l)
-                )
-                match_all (
-                    match_c (m)
-                    match_c (n)
-                )
-            )
-        )
-    )
-)
-
-EOF;
-                }), new pmatch_expression($expressionstr)],
                 // Notice match_c (m) will match any one word string with an 'm' in it.
                 ['cegh', $expressionstr, true],
                 ['acegh', $expressionstr, false],
@@ -480,12 +393,9 @@ EOF;
                 ['abceghi', $expressionstr, false],
                 ['abceghm', $expressionstr, true],
                 ['abceghmn', $expressionstr, false],
-                ['fghij', 'match(abcde)', false, new pmatch_options()],
-                ['fghij', 'match(abcde)', true, call_user_func(function() {
-                    $options = new pmatch_options();
-                    $options->set_synonyms([(object) ['word' => 'abcde', 'synonyms' => 'xyz|fghij']]);
-                    return $options;
-                })],
+                ['fghij', 'match(abcde)', false],
+                ['fghij', 'match(abcde)', true,
+                        pmatch_options::make(['synonyms' => ['abcde' => 'xyz|fghij']])],
                 // Further tests to check that phrase is matching the right no of words.
                 ['it does not really contain an object which is a verb',
                         'match_mw([not contain]_verb)', false],
@@ -536,17 +446,98 @@ EOF;
      * @param bool|null $shouldmatch is method assert.
      * @param pmatch_options|null $option is optionfor method assert.
      */
-    public function test_pmatch_matching($string, $expression, $shouldmatch = null, $option = null) {
-
-        if (!is_null($shouldmatch)) {
-            if ($shouldmatch) {
-                $this->assertTrue($this->match($string, $expression, $option));
-            } else {
-                $this->assertFalse($this->match($string, $expression, $option));
-            }
+    public function test_pmatch_matching($string, $expression, $shouldmatch, $options = null) {
+        if ($shouldmatch) {
+            $this->assertTrue($this->match($string, $expression, $options));
         } else {
-            $this->assertEquals($expression->get_formatted_expression_string(), $string);
+            $this->assertFalse($this->match($string, $expression, $options));
         }
+    }
+
+    /**
+     * Data provider function for test_pmatch_formatting
+     *
+     * @return array
+     */
+    public function pmatch_formatting_provider() {
+        return [
+['match_all (
+    match_any (
+        not (
+            match_cow (one_two)
+        )
+        match_mfw (three|[four five])
+    )
+    match_any (
+        match_mrw (six|nine nine)
+        match_m2w (seven|[eight ten])
+    )
+)
+', 'match_all(match_any(not(match_cow(one_two))' .
+                            'match_mfw(three|[four five]))' .
+                            'match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))'],
+                ["match_m (three|[four five])\n", 'match_mfmtxr(three|[four five])'],
+                ["match_mow (three|[four five])\n", 'match_mfmtxrow(three|[four five])'],
+                ["match_m2 (three|[four five])\n", 'match_mfmtxr2(three|[four five])'],
+                ["match_mrtxow (three|[four five])\n", 'match_mtxrow(three|[four five])'],
+['match_all (
+    match_any (
+        not (
+            match_c (a)
+        )
+        match_c (b)
+    )
+    match_all (
+        match_all (
+            match_any (
+                match_c (c)
+                match_c (d)
+            )
+            match_any (
+                match_c (e)
+                match_c (f)
+            )
+            match_all (
+                match_c (g)
+                match_c (h)
+            )
+        )
+        not (
+            match_any (
+                match_any (
+                    match_c (i)
+                    match_c (j)
+                )
+                match_any (
+                    match_c (k)
+                    match_c (l)
+                )
+                match_all (
+                    match_c (m)
+                    match_c (n)
+                )
+            )
+        )
+    )
+)
+', 'match_all(match_any(not(match_c(a))match_c(b))' .
+            'match_all(match_all(match_any(match_c(c)match_c(d))' .
+            'match_any(match_c(e)match_c(f))match_all(match_c(g)match_c(h)))' .
+            'not(match_any(match_any(match_c(i)match_c(j))' .
+            'match_any(match_c(k)match_c(l))match_all(match_c(m)match_c(n))))))'],
+        ];
+    }
+
+    /**
+     * For Test pmatch formatting
+     *
+     * @dataProvider pmatch_formatting_provider
+     * @param string $expected
+     * @param $string $unformattedexpression
+     */
+    public function test_pmatch_formatting($expected, $unformattedexpression) {
+        $expression = new pmatch_expression($unformattedexpression);
+        $this->assertEquals($expected, $expression->get_formatted_expression_string());
     }
 
     public function pmatch_number_regex_testcases() {

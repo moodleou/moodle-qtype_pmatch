@@ -77,6 +77,28 @@ class pmatch_options {
     /** @var array of words from synonyms that are exempt from spell check. */
     public $nospellcheckwords = array();
 
+    /**
+     * Static factory to make an options object with various values set.
+     *
+     * @param array $settings field name => value to set.
+     * @return pmatch_options new options object.
+     */
+    public static function make(array $settings): pmatch_options {
+        $options = new pmatch_options();
+        foreach ($settings as $name => $value) {
+            if ($name === 'synonyms') {
+                foreach ($value as $word => $synonyms) {
+                    $options->set_synonyms([(object) ['word' => $word, 'synonyms' => $synonyms]]);
+                }
+            } else if (!property_exists($options, $name)) {
+                throw new coding_exception("pmatch_options does not have a $name field");
+            } else {
+                $options->$name = $value;
+            }
+        }
+        return $options;
+    }
+
     public function set_synonyms($synonyms) {
         $toreplace = array();
         $replacewith = array();
