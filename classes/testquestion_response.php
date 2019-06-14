@@ -44,28 +44,28 @@ class testquestion_response {
     /** @var string to identify the ungraded state. */
     const UNGRADED   = 'ungraded';
 
-    /** @var id. */
+    /** @var int id. */
     public $id = null;
 
-    /** @var questionid. */
+    /** @var int questionid. */
     public $questionid = null;
 
-    /** @var response. */
+    /** @var string response. */
     public $response = null;
 
-    /** @var expectedfraction. */
+    /** @var float expectedfraction. */
     public $expectedfraction = null;
 
-    /** @var gradedfraction. */
+    /** @var float gradedfraction. */
     public $gradedfraction = null;
 
-    /** @var ruleids. */
+    /** @var array ruleids. */
     public $ruleids = array();
 
     /**
      * Create an instance of this class representing an empty test response.
-     * @param $response stdClass data object to translate into a test_response class
-     * @return test_response
+     * @param $response \stdClass data object to translate into a test_response class
+     * @return testquestion_response
      */
     public static function create($response = null) {
         $testresponse = new self();

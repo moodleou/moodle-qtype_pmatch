@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the \qtype_pmatch\test responses class.
+ * Defines the testquestion_responses class.
  *
  * @package   qtype_pmatch
  * @copyright 2016 The Open University
@@ -38,11 +38,11 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  */
 class testquestion_responses {
 
-    /** @var \question the question the test responses relate to. */
+    /** @var \qtype_pmatch_question the question the test responses relate to. */
     protected $questionobj = null;
 
     /**
-     * @var \testquestion_response[] placeholder for the test responses associated with the
+     * @var testquestion_response[] placeholder for the test responses associated with the
      * give question when \testquestion_controller stores an instance of \testquestion_responses
      * a handler for the question it is working wth.
      * @see testquestion_controller::__construct()
@@ -58,7 +58,7 @@ class testquestion_responses {
 
     /**
      * Create an instance of this class representing a question with no saved test responses.
-     * @return \testquestion_responses
+     * @return testquestion_responses
      */
     public static function create() {
         return new self();
@@ -66,10 +66,9 @@ class testquestion_responses {
 
     /**
      * Create an instance of this class representing the saved test responses of a given question.
-     * @param \question $questionobj the quiz.
-     * @see testquestion_controller::__construct()
-     * @param \question the question to prepare test responses for.
-     * @return \testquestion_responses
+     *
+     * @param \qtype_pmatch_question $questionobj the quiz.
+     * @return testquestion_responses newly creted instance.
      */
     public static function create_for_question($questionobj) {
         $handler = self::create();
@@ -82,8 +81,9 @@ class testquestion_responses {
 
     /**
      * Get all saved test responses for a question.
+     *
      * @param int $questionid id of the question to get responses for.
-     * @return \testquestion_response[]
+     * @return testquestion_response[]
      */
     public static function get_responses_by_questionid($questionid) {
         global $DB;
@@ -93,8 +93,9 @@ class testquestion_responses {
 
     /**
      * Get only the graded test responses for a question.
+     *
      * @param int $questionid id of the question to get responses for.
-     * @return \testquestion_response[]
+     * @return testquestion_response[]
      */
     public static function get_graded_responses_by_questionid($questionid) {
         global $DB;
@@ -107,7 +108,7 @@ class testquestion_responses {
     /**
      * Get the test responses matching the given response ids from the DB.
      * @param int[] $responseids ids of the \test_response items.
-     * @return \testquestion_response[]
+     * @return testquestion_response[]
      */
     public static function get_responses_by_ids($responseids) {
         global $DB;
@@ -118,12 +119,12 @@ class testquestion_responses {
     /**
      * Convert the passed data to test responses.
      * @param array $data data records to convert
-     * @return test_response[] array of convert records as test_response objects
+     * @return testquestion_response[] array of convert records as test_response objects
      */
     public static function data_to_responses($data) {
         $responses = array();
         foreach ($data as $datarow) {
-            $response = \qtype_pmatch\testquestion_response::create($datarow);
+            $response = testquestion_response::create($datarow);
             $responses[$response->id] = $response;
         }
         return $responses;
@@ -178,7 +179,7 @@ class testquestion_responses {
 
     /**
      * Helper method to update the database with the given test_response data
-     * @param \test_response $response updated response object
+     * @param testquestion_response $response updated response object
      * @return bool
      */
     public static function update_response($response) {
@@ -222,7 +223,9 @@ class testquestion_responses {
      * current feature requirements this was acceptable.
      *
      * We use the constant self::SQLGRADED to keep this check in one place and easy to manage.
-     * @return $counts \stdClass
+     *
+     * @param \qtype_pmatch_question $question the question.
+     * @return \stdClass $counts as above.
      */
     public static function get_question_grade_summary_counts($question) {
         global $DB;
@@ -258,10 +261,10 @@ class testquestion_responses {
     /**
      * Does the given question have linked test responses?
      *
-     * This method is called several times. I understand that
-     * moodle db handling will cache the result and not query the
-     * db excessively.
-     * @return bool
+     * This method is called several times, which is not good for performance :-(
+     *
+     * @param \qtype_pmatch_question $question the question.
+     * @return bool true if it does.
      */
     public static function has_responses($question) {
         global $DB;
@@ -269,29 +272,28 @@ class testquestion_responses {
             return false;
         }
 
-        // Get correct count.
-        $params = array('questionid' => $question->id);
-
         // Get total responses.
-        return $DB->record_exists('qtype_pmatch_test_responses', $params);
+        return $DB->record_exists('qtype_pmatch_test_responses', ['questionid' => $question->id]);
     }
 
     /**
      * Grade the given response with the given question.
-     * @param test_response $response response object to grade
-     * @param qtype_pmatch_question question to do the grading
+     *
+     * @param testquestion_response $response response object to grade
+     * @param \qtype_pmatch_question $question to do the grading
      */
     public static function grade_response($response, $question) {
-        list($actualmark, $notused) = $question->grade_response(array('answer' => $response->response));
+        list($actualmark) = $question->grade_response(array('answer' => $response->response));
         $response->set_gradedfraction($actualmark);
         self::update_response($response);
     }
 
     /**
      * Grade the responses with the given rule and question.
-     * @param \testquestion_response[] $responses response objects to grade
+     *
+     * @param testquestion_response[] $responses response objects to grade
      * @param \question_answer $rule Answer object containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
+     * @param \qtype_pmatch_question $question to do the grading
      */
     public static function grade_responses_by_rule($responses, $rule, $question) {
         foreach ($responses as $response) {
@@ -330,7 +332,7 @@ class testquestion_responses {
      *
      * THese statistics show the author exactly how accurate each rule is so they can
      * determine how it impacts the overall question accuracy.
-     * @param \test_response[]  $responses response objects to grade
+     * @param testquestion_response[]  $responses response objects to grade
      * @param \question_answer $rule Answer object containing the rule to grade with
      * @param array $matches lookup array matching ruleids to response ids from
      *            self::get_rule_matches_for_responses
@@ -384,7 +386,8 @@ class testquestion_responses {
 
     /**
      * Save a record of of each match between a rule and a graded test response.
-     * @param qtype_pmatch_question question to do the grading
+     *
+     * @param \qtype_pmatch_question $question to do the grading
      * @param array $responseids an array of response ids that need rule matching.
      */
     public static function save_rule_matches($question, $responseids=array()) {
@@ -410,7 +413,6 @@ class testquestion_responses {
                     continue;
                 }
 
-                $match = false;
                 $match = $question->compare_response_with_answer(
                                                     array('answer' => $response->response), $rule);
                 if ($match) {
@@ -426,7 +428,8 @@ class testquestion_responses {
 
     /**
      * Grade all responses and save rule matches for a question.
-     * @param qtype_pmatch_question $question
+     *
+     * @param \qtype_pmatch_question $question
      */
     public static function grade_responses_and_save_matches($question) {
         $responses = self::get_responses_by_questionid($question->id);
@@ -439,15 +442,13 @@ class testquestion_responses {
     /**
      * Method providing results for trying a rule on a response set for a question,
      * without storing anything back into the database.
-     * @param qtype_pmatch_question $question
+     * @param \qtype_pmatch_question $question
      * @param string $ruletxt
      * @param number $fraction 1 or 0.
      * @return string
      */
     public static function try_rule($question, $ruletxt, $fraction) {
         $id = 0;
-        $feedback = '';
-        $feedbackformat = 1;
         $answer = new \question_answer($id, $ruletxt, $fraction, '', 1);
         $expression = new \pmatch_expression($answer->answer);
         if ($expression->is_valid()) {
@@ -529,7 +530,7 @@ class testquestion_responses {
 
     /**
      * Delete the record of each match between a rule and test response for a given question.s
-     * @param qtype_pmatch_question question
+     * @param \qtype_pmatch_question $question
      * @param array $responseids Optional array of response ids
      */
     public static function delete_rule_matches($question, $responseids=array()) {
@@ -548,9 +549,8 @@ class testquestion_responses {
      * Return a look up array linking the id of each response with the ids of the rules
      * that match it, and an opposite version linking each rule with the response it matches.
      *
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer object containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
+     * @param array $responseids array of response ids.
+     * @param int $questionid the id of the question of interest.
      * @return array lookup array linking responses to rules that match them
      */
     public static function get_rule_matches_for_responses($responseids, $questionid) {
@@ -607,12 +607,10 @@ class testquestion_responses {
      * Return a look up array linking the id of each response with the ids of the rules
      * that match it, and an opposite version linking each rule with the response it matches.
      *
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer object containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
+     * @param testquestion_response[] $responses response objects to grade
+     * @return array
      */
     public static function get_rule_matches_from_responses($responses) {
-        global $DB;
         $matchresponseidstoruleids = array();
         $matchruleidstoresponseids = array();
         $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
@@ -664,8 +662,8 @@ class testquestion_responses {
     /**
      * Do any rules match a given response. Use the lookup array to find out.
      *
-     * @param $rulematches array[] lookup array of response ids to rule ids.
-     * @param $responseid id of the response to find matching rules for.
+     * @param array $rulematches lookup array of response ids to rule ids.
+     * @param int $responseid id of the response to find matching rules for.
      * @return bool
      */
     public static function has_rule_match_for_response($rulematches, $responseid) {
@@ -675,9 +673,9 @@ class testquestion_responses {
     /**
      * Link each rule that matches the given response to it's order in its related question.
      *
-     * @param \qtype_pmatch\testquestion_responses $testresponsehandler object the testresponses handler
+     * @param testquestion_responses $testresponsehandler object the testresponses handler
      * @param int $responseid id of the test response the rules much match
-     * @retun array
+     * @return array
      */
     public static function get_matching_rule_indexes_for_response($testresponsehandler, $responseid) {
         $ruleids = array_keys($testresponsehandler->questionobj->get_answers());
@@ -700,9 +698,8 @@ class testquestion_responses {
      * Update the ruleids field of the given responses using the matches look up
      * array
      *
-     * @param array[] test_response $responses response objects to grade
-     * @param \question_answer $rule Answer object containing the rule to grade with
-     * @param qtype_pmatch_question question to do the grading
+     * @param testquestion_response[] $responses response objects to grade
+     * @param array $matches
      */
     public static function update_responses_with_ruleids($responses, $matches) {
         $matchresponseidstoruleids = $matches['responseidstoruleids'];
@@ -729,14 +726,12 @@ class testquestion_responses {
      * @param string $filepath path to the file
      * @param object $question question object
      * @param int $count the number of responses to load (optional)
-     * @throws coding_exception
-     * @return \qtype_pmatch\testquestion_response[] string[]
+     * @return testquestion_response[] string[]
      */
     public static function load_responses_from_file($filepath, $question, $count=0) {
         $responses = [];
         $problems = [];
         $row = 1;
-        $datas = [];
 
         $testquestion_import_helper = new testquestion_import_helper($filepath);
         $importer = $testquestion_import_helper->import_factory();
@@ -783,7 +778,7 @@ class testquestion_responses {
                     // Convert to utf8.
                     $data[1] = \core_text::convert($data[1], mb_detect_encoding($data[1]));
                 }
-                $response = new \qtype_pmatch\testquestion_response();
+                $response = new testquestion_response();
                 $response->questionid = $question->id;
                 $response->response = trim($data[1]);
                 $response->expectedfraction = $score;

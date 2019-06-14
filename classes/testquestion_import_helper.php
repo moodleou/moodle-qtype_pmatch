@@ -48,7 +48,7 @@ class testquestion_import_helper {
     /**
      * testquestion_import_helper constructor.
      *
-     * @param $filepath Path to the file.
+     * @param string $filepath Path to the file.
      */
     public function __construct($filepath) {
         $fileinfo = pathinfo($filepath);
@@ -103,7 +103,7 @@ abstract class qtype_pmatch_importer {
      * Prepares the reader to read the given file. It also makes sure
      * that the file exists and is readable.
      *
-     * @param $filepath Path to the file.
+     * @param string $filepath Path to the file.
      */
     public function open($filepath) {
         if (!$this->contents = file_get_contents($filepath)) {
@@ -145,7 +145,7 @@ abstract class qtype_pmatch_spout_importer {
      * Prepares the reader to read the given file. It also makes sure
      * that the file exists and is readable.
      *
-     * @param $filepath Path to the file.
+     * @param string $filepath Path to the file.
      */
     public function open($filepath) {
         $this->reader->open($filepath);
@@ -187,12 +187,10 @@ abstract class qtype_pmatch_spout_importer {
      * @return array List of error if any.
      */
     public function validate() {
-        $errcase = [];
-
         $errcase = [
-                'row' => true,
-                'columnbigger' => false,
-                'columnless' => false
+            'row' => true,
+            'columnbigger' => false,
+            'columnless' => false
         ];
 
         $row = 0;
@@ -306,12 +304,10 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
      * @return array List of responses
      */
     function get_responses() {
-        $responses = [];
-
-        $datas = json_decode($this->contents);
+        $data = json_decode($this->contents);
         // We only need the first sheet of the file.
         // Any more sheets in this file are note wanted.
-        $responses = $datas[0];
+        $responses = $data[0];
 
         return $responses;
     }
