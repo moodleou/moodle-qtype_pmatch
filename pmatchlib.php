@@ -63,7 +63,7 @@ class pmatch_options {
      * @var string language of string -
      *             current language of respondee or saved for this attempt step.
      */
-    public $lang = 'en';
+    public $lang;
 
     /**
      * @var array of strings with preg expressions to match words that can be replaced.
@@ -319,33 +319,80 @@ class pmatch_parsed_string {
     }
 
     protected function spell_check() {
-        global $COURSE;
-
-        $spellchecker = qtype_pmatch_spell_checker::make($this->options->lang);
-
-        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$~Au';
-        if ($this->options->ignorecase) {
-            $endofpattern .= 'i';
-        }
-        $words = array_unique($this->words);
-        foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
-            $words = (preg_grep('~'.$wordstoignorepattern.$endofpattern, $words, PREG_GREP_INVERT));
-        }
-        $misspelledwords = array();
-        foreach ($words as $word) {
-            $originalword = $word;
+        $misspelledwords = [];
+        foreach (array_unique($this->words) as $word) {
             $word = core_text::strtolower($word);
-            $word = $this->options->strip_sentence_divider($word);
-
-            if (!$spellchecker->is_in_dictionary($word)) {
-                $misspelledwords[] = $originalword;
+            $wrongword = $this->is_word_misspelled($word);
+            if ($wrongword !== null) {
+                $misspelledwords[] = $wrongword;
             }
         }
         return $misspelledwords;
     }
 
     /**
-     * @return array all the distinct misspelt words.
+     * Test a 'word' to see if it is in the dictonary. If not, return
+     *
+     * The reason we need this is that 'words' in a parsed string contain
+     * any surrounding punctuation. For example in '"Hello!" shouted Fred.'
+     * the first word is "Hello!", and if that was not in the dictionary,
+     * then eventually 'Hello' would be returned, however, in this case,
+     * it is correct, so null will be returned.
+     *
+     * This may seem a bit complicated, but you need to remember that
+     * 'e.g.', 'co-operate', and 'AC/DC' are all words found in dictionaries.
+     *
+     * @param qtype_pmatch_spell_checker $spellchecker
+     * @param string $word
+     * @return string|null
+     */
+    protected function is_word_misspelled(string $word): ?string {
+        if (trim($word) === '') {
+            return null;
+        }
+        $endofpattern = '(' . $this->options->sentence_divider_pattern() . ')?$~Au';
+        if ($this->options->ignorecase) {
+            $endofpattern .= 'i';
+        }
+        foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
+            if (preg_match('~'.$wordstoignorepattern.$endofpattern, $word)) {
+                // Is a number, extra dictionary word or synonym.
+                return null;
+            }
+        }
+
+        $spellchecker = qtype_pmatch_spell_checker::make($this->options->lang);
+        if ($spellchecker->is_in_dictionary($word)) {
+            return null;
+        }
+
+        // Try trimming one non-letter character from the end or start, if present.
+        if (preg_match('~[^\pL]$~u', $word)) {
+            return $this->is_word_misspelled(core_text::substr($word, 0, -1));
+        } else if (preg_match('~^[^\pL]~u', $word)) {
+            return $this->is_word_misspelled(core_text::substr($word, 1));
+        }
+
+        // Finally, if what is left after all puncution is removed contains -s,
+        // then the word is spelled right if all the bits are, so test that.
+        if (core_text::strpos($word, '-') === false) {
+            // No hyphens, so Word is misspelled.
+            return $word;
+        }
+
+        foreach (explode('-', $word) as $fragment) {
+            if (!$spellchecker->is_in_dictionary($fragment)) {
+                // A fragment is misspelled, so reject the whole thing.
+                return $word;
+            }
+        }
+
+        // All fragments are OK, so fine.
+        return null;
+    }
+
+    /**
+     * @return array all the distinct misspelled words.
      */
     public function get_spelling_errors() {
         return $this->misspelledwords;

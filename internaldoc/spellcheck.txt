@@ -29,9 +29,8 @@ https://www.kildclient.org/forum/viewtopic.php?t=5411
    downloaded, there might be other files (such as hyphenation support files) with
    similar names. Those are not used by enchant.
 
-4. Copy the .aff and .dic files to the %USERPROFILE%\enchant\myspell folder. If this is
-   the first dictionary you are installing, you will need to create the two folders.
-   %USERPROFILE% is C:\Users\<username>.
+4. Copy the .aff and .dic files to the[... path to your PHP install ...]\share\myspell\dicts folder.
+   If this is the first dictionary you are installing, you will need to create the folders.
 
 A good one-liner to test it is working from the command-line is:
 

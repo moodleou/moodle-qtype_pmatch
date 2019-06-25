@@ -70,7 +70,7 @@ abstract class qtype_pmatch_spell_checker {
         $spellchecker = get_config('qtype_pmatch', 'spellchecker');
 
         if ($lang === null) {
-            $lang = get_string('iso6391', 'langconfig');
+            $lang = 'en_GB';
         }
 
         if (isset(self::$checkers[$lang])) {

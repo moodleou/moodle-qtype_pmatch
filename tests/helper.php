@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use qtype_pmatch\local\spell\qtype_pmatch_null_spell_checker;
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,13 +42,14 @@ class qtype_pmatch_test_helper extends question_test_helper {
     /**
      * Makes a pmatch question with correct answer 'Tom' or 'Harry', partially
      * correct answer 'Dick' and defaultmark 1.
-     * @param bool $applydictionarycheck false not to check. basic_testcase ($this in the test code) to check.
+     *
+     * @param bool|PHPUnit\Framework\TestCase $applydictionarycheck false not to check.
+     *      basic_testcase ($this in the test code) to check.
      * @return qtype_pmatch_question
      */
     public static function make_a_pmatch_question($applydictionarycheck = false) {
-        if ($applydictionarycheck && !function_exists('pspell_new')) {
-            $applydictionarycheck->markTestSkipped(
-                'pspell not installed on your server. Spell checking will not work.');
+        if ($applydictionarycheck) {
+            self::skip_test_if_no_spellcheck($applydictionarycheck, 'en');
         }
         question_bank::load_question_definition_classes('pmatch');
         $pm = new qtype_pmatch_question();
@@ -64,7 +67,8 @@ class qtype_pmatch_test_helper extends question_test_helper {
                                       'match_w(Felicity)', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
         );
         $pm->qtype = question_bank::get_qtype('pmatch');
-        $pm->applydictionarycheck = $applydictionarycheck;
+        $pm->applydictionarycheck = $applydictionarycheck ? 'en_GB' :
+                qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
         if ($pm->applydictionarycheck) {
             // These tests are in English,
             // no matter what the current language of the user running the tests.
@@ -143,7 +147,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $qdata->options->allowsubscript = 0;
         $qdata->options->allowsuperscript = 0;
         $qdata->options->forcelength = 1;
-        $qdata->options->applydictionarycheck = 1;
+        $qdata->options->applydictionarycheck = 'en_GB';
         $qdata->options->extenddictionary = '';
         $qdata->options->converttospace = ',;:';
 
@@ -166,5 +170,19 @@ class qtype_pmatch_test_helper extends question_test_helper {
                 2 => new question_hint(2, 'Hint 2', FORMAT_HTML),
         ];
         return $qdata;
+    }
+
+    /**
+     * Cause a test to be skipped if we cannot spell-check in the given language.
+     *
+     * @param PHPUnit\Framework\TestCase $testcase the test to skip if necessary.
+     * @param string $lang the language required.
+     */
+    public static function skip_test_if_no_spellcheck(PHPUnit\Framework\TestCase $testcase, string $lang) {
+        $spellchecker = qtype_pmatch_spell_checker::make($lang);
+        if ($spellchecker instanceof qtype_pmatch_null_spell_checker) {
+            $testcase->markTestSkipped(
+                    'Spell-checking not installed on your server. Skipping test.');
+        }
     }
 }

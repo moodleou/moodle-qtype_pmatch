@@ -17,7 +17,9 @@ Feature: Test spelling check of a pmatch question
     And I setup the available dictionaries for the pattern-match question type
 
   Scenario: Spell checking with Spell checking library is set to No spell checking available
-    Given I log in as "admin"
+    Given the following config values are set as admin:
+      | spellchecker | null | qtype_pmatch |
+    And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
     And I click on "Edit" "link" in the "My first pattern match question" "table_row"
@@ -97,7 +99,7 @@ Feature: Test spelling check of a pmatch question
     Given I check the "enchant" spell checking library already installed
     And the following "questions" exist:
       | questioncategory | qtype  | name                                       | template | applydictionarycheck |
-      | Test questions   | pmatch | English Spell Check pattern match question | listen   | en                   |
+      | Test questions   | pmatch | English Spell Check pattern match question | listen   | en_GB                |
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
@@ -108,4 +110,4 @@ Feature: Test spelling check of a pmatch question
     And I switch to "questionpreview" window
     And I set the field "Answer" to "Bonjour"
     When I click on "Save" "button"
-    Then I should see "The following words are not in our dictionary : Bonjour. Please correct your spelling."
+    Then I should see "The following words are not in our dictionary: bonjour. Please correct your spelling."

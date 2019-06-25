@@ -27,6 +27,8 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+require_once($CFG->dirroot . '/question/type/pmatch/tests/helper.php');
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
 /**
@@ -82,48 +84,55 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
         $this->assertEquals(['Test?'], $parsedstring->get_words());
     }
 
-    public function test_pmatch_spelling() {
+    public function pmatch_spelling_testcases() {
+        return [
+            [[], 'e.g. tool'],                         // Default extra dictionary word & normal word.
+            [[], 'e.g.. tool.'],                       // Trailing punctuation is skipped.
+            [[], 'e.g., tool!!'],
+            [['queenking'], 'queenking'],              // Not a word.
+            [['awerawefaw'], 'awerawefaw awerawefaw'], // Wrong words only reported once.
+            [['awerawefaw'], 'awerawefaw, test'],      // Not a word. Punctuation stripped.
+            [[], 'e.g. tool. queek queek abcde fghij', // Synonyms automatically OK.
+                    pmatch_options::make(['synonyms' => ['queek' => 'abcde|fghij']])],
+            [[], 'queeking',                           // Synonyms may include * wild card.
+                    pmatch_options::make(['synonyms' => ['queek*' => 'abcde|fghij']])],
+            [['queenking'], 'queenking',
+                    pmatch_options::make(['synonyms' => ['queek*' => 'abcde|fghij']])],
+            [[], 'Frog-toad'],                         // Any hyphenated group of real words is fine.
+            [[], '"Frog-toad"'],                       // Even if surrounded.
+            [['frog"-"toad'], '"Frog"-"toad"'],        // But not if the bits have extra punctuation.
+            [[], 'Why, e.g. "Frog" or \'A toad,\' would co-operate?'], // Final combined example.
+        ];
+    }
 
-        if (!function_exists('pspell_new')) {
-            $this->markTestSkipped(
-                    'pspell not installed on your server. Spell checking will not work.');
+    /**
+     * @dataProvider pmatch_spelling_testcases
+     *
+     * @param array $misspelledwords
+     * @param $string
+     * @param null $options
+     */
+    public function test_pmatch_spelling(array $misspelledwords, $string, $options = null) {
+        if ($options === null) {
+            $options = new pmatch_options();
         }
 
-        $options = new pmatch_options();
-        $options->lang = 'en';
-        $options->set_synonyms(array((object)array('word' => 'queek', 'synonyms' => 'abcde|fghij')));
+        if (empty($options->lang)) {
+            $options->lang = 'en_GB';
+        }
 
-        // For example passes as it is an extra dictionary word
-        // tool passes as it is correctly spelled.
-        $parsedstring = new pmatch_parsed_string('e.g. tool', $options);
-        $this->assertTrue($parsedstring->is_spelled_correctly());
+        qtype_pmatch_test_helper::skip_test_if_no_spellcheck($this, $options->lang);
 
-        // Full stop (sentence divider) should pass test.
-        $parsedstring = new pmatch_parsed_string('e.g.. tool.', $options);
-        $this->assertTrue($parsedstring->is_spelled_correctly());
+        $parsedstring = new pmatch_parsed_string($string, $options);
+        $ok = $parsedstring->is_spelled_correctly();
 
-        // Only allow one full stop (sentence divider).
-        $parsedstring = new pmatch_parsed_string('e.g... tool.', $options);
-        $this->assertFalse($parsedstring->is_parseable());
+        $this->assertEquals($misspelledwords, $parsedstring->get_spelling_errors());
 
-        // Anything in synonyms automatically passes.
-        $parsedstring = new pmatch_parsed_string('e.g.. tool. queek queek', $options);
-        $this->assertTrue($parsedstring->is_spelled_correctly());
-
-        // Anything in synonyms automatically passes.
-        $parsedstring = new pmatch_parsed_string('e.g.. tool. abcde fghij.', $options);
-        $this->assertTrue($parsedstring->is_spelled_correctly());
-
-        // Synonyms may include * wild card.
-        $options = new pmatch_options();
-        $options->lang = 'en';
-        $options->set_synonyms(
-                    array((object)array('word' => 'queek*', 'synonyms' => 'abcde|fghij')));
-        $parsedstring = new pmatch_parsed_string('e.g.. tool. queeking.', $options);
-        $this->assertTrue($parsedstring->is_spelled_correctly());
-
-        $parsedstring = new pmatch_parsed_string('e.g.. tool. queenking.', $options);
-        $this->assertFalse($parsedstring->is_spelled_correctly());
+        if (empty($misspelledwords)) {
+            $this->assertTrue($ok);
+        } else {
+            $this->assertFalse($ok);
+        }
     }
 
     /**

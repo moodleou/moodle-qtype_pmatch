@@ -1033,7 +1033,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <allowsubscript>0</allowsubscript>
     <allowsuperscript>0</allowsuperscript>
     <forcelength>1</forcelength>
-    <applydictionarycheck>1</applydictionarycheck>
+    <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">
@@ -1113,7 +1113,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <allowsubscript>0</allowsubscript>
     <allowsuperscript>0</allowsuperscript>
     <forcelength>1</forcelength>
-    <applydictionarycheck>1</applydictionarycheck>
+    <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">
@@ -1180,6 +1180,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedq->questiontextformat = FORMAT_HTML;
         $expectedq->generalfeedback = '';
         $expectedq->generalfeedbackformat = FORMAT_HTML;
+        $expectedq->applydictionarycheck = 'en_GB';
 
         $response = new \qtype_pmatch\testquestion_response();
         $response->response = 'one two';

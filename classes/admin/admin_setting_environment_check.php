@@ -61,15 +61,19 @@ class qtype_pmatch_admin_setting_environment_check extends \admin_setting_headin
 
         if (!$spellchecker instanceof qtype_pmatch_null_spell_checker) {
             $stringmanager = get_string_manager();
+            $availablelangs = qtype_pmatch_spell_checker::get_available_languages();
             foreach (get_string_manager()->get_list_of_translations() as $lang => $humanfriendlylang) {
                 $a = new stdClass();
                 $a->lang = $lang;
                 $a->humanfriendlylang = $humanfriendlylang;
-                $a->langforspellchecker = $stringmanager->get_string('iso6391', 'langconfig', null, $lang);
-                if (qtype_pmatch_spell_checker::make($a->langforspellchecker) instanceof qtype_pmatch_null_spell_checker) {
-                    $results[] = get_string('env_dictmissing', 'qtype_pmatch', $a);
-                } else {
+                $langcode = $stringmanager->get_string('iso6391', 'langconfig', null, $lang);
+                $a->langforspellchecker = qtype_pmatch_spell_checker::get_default_spell_check_dictionary(
+                        $langcode, $availablelangs);
+                if ($a->langforspellchecker &&
+                        !(qtype_pmatch_spell_checker::make($a->langforspellchecker) instanceof qtype_pmatch_null_spell_checker)) {
                     $results[] = get_string('env_dictok', 'qtype_pmatch', $a);
+                } else {
+                    $results[] = get_string('env_dictmissing', 'qtype_pmatch', $a);
                 }
             }
         }
