@@ -91,6 +91,9 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
     public static function available_languages(): array {
         $broker = self::get_broker();
         $dicts = enchant_broker_list_dicts($broker);
+        if (empty($dicts)) {
+            return [];
+        }
         $availablelanguages = [];
         foreach ($dicts as $dict) {
             if (preg_match(qtype_pmatch_spell_checker::LANGUAGE_FILTER_REGEX, $dict['lang_tag'], $m)) {
@@ -99,5 +102,4 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         }
         return $availablelanguages;
     }
-
 }

@@ -63,7 +63,7 @@ class pmatch_options {
      * @var string language of string -
      *             current language of respondee or saved for this attempt step.
      */
-    public $lang;
+    public $lang = 'en';
 
     /**
      * @var array of strings with preg expressions to match words that can be replaced.

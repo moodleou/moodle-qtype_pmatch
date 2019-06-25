@@ -1,0 +1,38 @@
+Installing spell-checking
+=========================
+
+Linux and Mac
+-------------
+
+I think this just works becasue these OSes come with the enchant library for PHP.
+
+If it is not working, chech that the enchant extension is listed in php.ini, and
+check you can use aspell from teh command-line.
+
+Windows
+-------
+
+You definitely need to add extension=php_enchant.dll in your php.ini.
+
+Then, you need to install some dictionaries, as described here:
+https://www.kildclient.org/forum/viewtopic.php?t=5411
+
+1. Download the LibreOffice extension containing the dictionary for the language you want
+   from the extensions repository: https://extensions.libreoffice.org/extensions?getCategories=Dictionary&getCompatibility=any
+   The direct link for English is https://extensions.libreoffice.org/extensions/english-dictionaries.
+
+2. The downloaded file is a Zip archive, just with a different extension. Rename the
+   downloaded file changing the .oxt extension to .zip, and open it.
+
+3. Inside, locate two files with .aff and .dic extensions. There should be two files
+   with the same name and these two extensions. Depending on the package you have
+   downloaded, there might be other files (such as hyphenation support files) with
+   similar names. Those are not used by enchant.
+
+4. Copy the .aff and .dic files to the %USERPROFILE%\enchant\myspell folder. If this is
+   the first dictionary you are installing, you will need to create the two folders.
+   %USERPROFILE% is C:\Users\<username>.
+
+A good one-liner to test it is working from the command-line is:
+
+   php -r '$broker = enchant_broker_init(); var_dump($broker); var_dump(enchant_broker_list_dicts($broker));'
