@@ -129,7 +129,6 @@ class pmatch_options {
     }
 
     public function unicode_normalisation($unicodestring) {
-        global $COURSE;
         static $errorlogged = false;
         if (class_exists('Normalizer')) {
             return Normalizer::normalize($unicodestring);
@@ -257,7 +256,6 @@ class pmatch_parsed_string {
         }
 
         $this->words = array();
-        $wordno = 0;
         $cursor = 0;
         $string = trim($string); // Trim off any extra whitespace.
         $string = $this->options->unicode_normalisation($string);
@@ -287,8 +285,7 @@ class pmatch_parsed_string {
             if (isset($matches['sd'])) {
                 $word .= $matches['sd'];
             }
-            $this->words[$wordno] = $word;
-            $wordno++;
+            $this->words[] = $word;
             $cursor = $cursor + core_text::strlen($matches[0]);
 
             if ('' === $this->options->strip_sentence_divider($word)) {
@@ -302,10 +299,10 @@ class pmatch_parsed_string {
     }
 
     /**
-     * @return boolean returns false if any word is misspelt.
+     * @return boolean returns false if any word is misspelled.
      */
-    public function is_spelt_correctly() {
-        $this->misspelledwords = $this->spell_check($this->words);
+    public function is_spelled_correctly() {
+        $this->misspelledwords = $this->spell_check();
         return (count($this->misspelledwords) == 0);
     }
 

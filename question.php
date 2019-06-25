@@ -99,7 +99,8 @@ class qtype_pmatch_question extends question_graded_by_strategy
             $a = $parsestring->unparseable();
             $responsevalidationerrors[] = get_string('unparseable', 'qtype_pmatch', $a);
         }
-        if ($this->applydictionarycheck != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION && !$parsestring->is_spelt_correctly()) {
+        if ($this->applydictionarycheck != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION &&
+                !$parsestring->is_spelled_correctly()) {
             $misspelledwords = $parsestring->get_spelling_errors();
             $a = join(' ', $misspelledwords);
             $responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);

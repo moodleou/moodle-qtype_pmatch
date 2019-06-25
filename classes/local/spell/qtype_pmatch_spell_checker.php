@@ -24,9 +24,6 @@
 
 namespace qtype_pmatch\local\spell;
 
-use MoodleQuickForm;
-use stdClass;
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -65,10 +62,11 @@ abstract class qtype_pmatch_spell_checker {
 
     /**
      * Factory method create a new spell-checker object for a given language.
+     *
      * @param string $lang the language code. If null, defaults to get_string('iso6391', 'langconfig').
      * @return qtype_pmatch_spell_checker the requested object.
      */
-    public static function make($lang = null) {
+    public static function make($lang = null): qtype_pmatch_spell_checker {
         $spellchecker = get_config('qtype_pmatch', 'spellchecker');
 
         if ($lang === null) {
@@ -264,7 +262,7 @@ abstract class qtype_pmatch_spell_checker {
         $availablelangs = explode(',', $spellchecklanguagesdata);
 
         foreach ($availablelangs as $availablelang) {
-            $language = new stdClass();
+            $language = new \stdClass();
             $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($availablelang);
             $language->code = $availablelang;
             $options[$availablelang] = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);

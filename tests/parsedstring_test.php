@@ -94,13 +94,13 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
         $options->set_synonyms(array((object)array('word' => 'queek', 'synonyms' => 'abcde|fghij')));
 
         // For example passes as it is an extra dictionary word
-        // tool passes as it is correctly spelt.
+        // tool passes as it is correctly spelled.
         $parsedstring = new pmatch_parsed_string('e.g. tool', $options);
-        $this->assertTrue($parsedstring->is_spelt_correctly());
+        $this->assertTrue($parsedstring->is_spelled_correctly());
 
         // Full stop (sentence divider) should pass test.
         $parsedstring = new pmatch_parsed_string('e.g.. tool.', $options);
-        $this->assertTrue($parsedstring->is_spelt_correctly());
+        $this->assertTrue($parsedstring->is_spelled_correctly());
 
         // Only allow one full stop (sentence divider).
         $parsedstring = new pmatch_parsed_string('e.g... tool.', $options);
@@ -108,11 +108,11 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
 
         // Anything in synonyms automatically passes.
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queek queek', $options);
-        $this->assertTrue($parsedstring->is_spelt_correctly());
+        $this->assertTrue($parsedstring->is_spelled_correctly());
 
         // Anything in synonyms automatically passes.
         $parsedstring = new pmatch_parsed_string('e.g.. tool. abcde fghij.', $options);
-        $this->assertTrue($parsedstring->is_spelt_correctly());
+        $this->assertTrue($parsedstring->is_spelled_correctly());
 
         // Synonyms may include * wild card.
         $options = new pmatch_options();
@@ -120,10 +120,10 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
         $options->set_synonyms(
                     array((object)array('word' => 'queek*', 'synonyms' => 'abcde|fghij')));
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queeking.', $options);
-        $this->assertTrue($parsedstring->is_spelt_correctly());
+        $this->assertTrue($parsedstring->is_spelled_correctly());
 
         $parsedstring = new pmatch_parsed_string('e.g.. tool. queenking.', $options);
-        $this->assertFalse($parsedstring->is_spelt_correctly());
+        $this->assertFalse($parsedstring->is_spelled_correctly());
     }
 
     /**
