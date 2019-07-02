@@ -91,6 +91,9 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
             array('rows' => '3', 'cols' => '57'));
+        $mform->disabledIf($this->form_field_name('extenddictionary'),
+                $this->form_field_name('applydictionarycheck'),
+                'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
 
         $mform->addElement('text', $this->form_field_name('converttospace'), get_string('converttospace', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('converttospace'), ',;:');

@@ -249,7 +249,6 @@ abstract class qtype_pmatch_spell_checker {
     public static function get_spell_checker_language_options($question): array {
         $disable = false;
         $options = [];
-        $availablelangs = [];
 
         $options[qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
 
