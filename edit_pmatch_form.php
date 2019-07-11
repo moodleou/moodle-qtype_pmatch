@@ -249,9 +249,15 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         get_string('extenddictionary', 'qtype_pmatch'),
                         array('rows' => '5', 'cols' => '80'));
         $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+        $mform->addElement('text', 'sentencedividers',
+            get_string('sentencedividers', 'qtype_pmatch'), array('size' => 20));
+        $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');
+        $mform->setDefault('sentencedividers', '.?!');
+        $mform->setType('sentencedividers', PARAM_RAW_TRIMMED);
         $mform->addElement('text', 'converttospace',
                         get_string('converttospace', 'qtype_pmatch'),
                         array('size' => 60));
+        $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
         $mform->setDefault('converttospace', ',;:');
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
 
@@ -455,6 +461,7 @@ EOT;
             $question->forcelength = $question->options->forcelength;
             $question->applydictionarycheck = $question->options->applydictionarycheck;
             $question->extenddictionary = $question->options->extenddictionary;
+            $question->sentencedividers = $question->options->sentencedividers;
             $question->converttospace = $question->options->converttospace;
         }
         if (isset($question->options->synonyms)) {

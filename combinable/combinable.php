@@ -47,6 +47,7 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
                      'usecase' => null,
                      'applydictionarycheck' => null,
                      'extenddictionary' => '',
+                     'sentencedividers' => '.?!',
                      'converttospace' => ',;:',
                      'synonymsdata' => array());
     }
@@ -95,6 +96,8 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 $this->form_field_name('applydictionarycheck'),
                 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
 
+        $mform->addElement('text', $this->form_field_name('sentencedividers'), get_string('sentencedividers', 'qtype_pmatch'));
+        $mform->setDefault($this->form_field_name('sentencedividers'), '.?!');
         $mform->addElement('text', $this->form_field_name('converttospace'), get_string('converttospace', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('converttospace'), ',;:');
         \qtype_pmatch\form_utils::add_synonyms($combinedform, $mform, $this->questionrec, false,
@@ -103,6 +106,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answer', 'question'),
                                                              array('rows' => '6', 'cols' => '57', 'class' => 'textareamonospace'));
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
+        $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
     }

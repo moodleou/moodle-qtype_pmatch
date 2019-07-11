@@ -13,7 +13,7 @@
 * When matching number, very small numbers (less than 1.e-6) are now matched better.
 * The spell-check language can now be set for each question.
 * Spell checking now works in the presence of punctuation. Previously you would get messages like "Hello," is not in the dictionary.
-* Some work improving the ability to match the punctuation characters, which is useful if you want to assess grammar. However, this work is not complete, and more fixes will follow.
+* Improvements to the ability to match punctuation characters. Useful for assessing grammar. This is quite new. There may be more issues to fix in this area.
 * A few other bug fixes or code improvements.
 
 

@@ -64,7 +64,6 @@ class qtype_pmatch_test extends basic_testcase {
      * @return array
      */
     public function pmatch_error_provider() {
-        $expectederror = get_string('ie_nofullstop', 'qtype_pmatch');
         return [
                 // No closing bracket.
                 ['match_mow([tom maud]|[sid jane]', get_string('ie_missingclosingbracket',
@@ -82,11 +81,15 @@ class qtype_pmatch_test extends basic_testcase {
                 ['match_mow([tom maud]_)', get_string('ie_lastsubcontenttypeworddelimiter',
                         'qtype_pmatch', 'match_mow([tom maud]_)')],
                 // A full stop is only allowed in match expressions if surrounded on both sides by digits.
-                ['match(abc.)', $expectederror],
-                ['match(abc.def)', $expectederror],
-                ['match(2.)', $expectederror],
-                ['match(.2)', $expectederror],
+                ['match(abc.)', ''],
+                ['match(abc.def)', ''],
+                ['match(2.)', ''],
+                ['match(.2)', ''],
                 ['match(3.141)', ''],
+                // Sentence dividers.
+                ['match(Is this an statement.)', ''],
+                ['match(Is this an statement?)', ''],
+                ['match(This is an statement!)', ''],
                 // Character punctuation.
                 ['match (¡¿Y tú quién te crees?!)', ''],
                 ['match (« Attends, je dois te dire quelque chose d\'important »)', ''],
@@ -452,6 +455,12 @@ EOF;
                 ['Test', 'match(Test?)', false, pmatch_options::make(['sentencedividers' => ''])],
                 ['Test.', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
                 ['Testa', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important.', 'match(Punctuation is important.)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important', 'match(Punctuation is important.)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Is punctuation important?', 'match(Is punctuation important?)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Is punctuation important?', 'match(Is punctuation important)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important!', 'match(Punctuation is important!)', true, pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important!', 'match(Punctuation is important)', false, pmatch_options::make(['sentencedividers' => ''])],
         ];
     }
 

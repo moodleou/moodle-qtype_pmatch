@@ -28,6 +28,7 @@
     <forcelength>1</forcelength>
     <applydictionarycheck>1</applydictionarycheck>
     <extenddictionary></extenddictionary>
+    <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="moodle_auto_format">
       <text>match (testing one two three four)</text>

@@ -54,7 +54,7 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
 
         // Now create the qtype own structures.
         $pmatchoptions = new backup_nested_element('pmatch', array('id'), array('forcelength',
-            'usecase', 'converttospace', 'applydictionarycheck', 'extenddictionary',
+            'usecase', 'sentencedividers', 'converttospace', 'applydictionarycheck', 'extenddictionary',
             'allowsubscript', 'allowsuperscript'));
 
         $synonyms = new backup_nested_element('synonyms');

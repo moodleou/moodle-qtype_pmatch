@@ -345,10 +345,6 @@ class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_s
     protected $limitsubcontents = 1;
 
     public function interpret($string, $start = 0) {
-        if (preg_match('/[^0-9]\.|\.[^0-9]/', $string)) {
-            $this->set_error_message('nofullstop', null);
-            return array('', 0);
-        }
         return parent::interpret($string, $start);
     }
 

@@ -99,6 +99,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         );
 
         $fromform->extenddictionary = '';
+        $fromform->sentencedividers = '.?!';
         $fromform->converttospace = ',;:';
         $fromform->answer = array('match (testing one two three four)');
         $fromform->fraction = array('1');
@@ -149,6 +150,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $qdata->options->forcelength = 1;
         $qdata->options->applydictionarycheck = 'en_GB';
         $qdata->options->extenddictionary = '';
+        $qdata->options->sentencedividers = '.?!';
         $qdata->options->converttospace = ',;:';
 
         $qdata->options->answers = [

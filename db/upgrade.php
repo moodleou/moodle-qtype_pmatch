@@ -161,5 +161,20 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019032700, 'qtype', 'pmatch');
     }
 
+    if ($oldversion < 2019071200) {
+
+        // Define field sentencedividers to be added to qtype_pmatch.
+        $table = new xmldb_table('qtype_pmatch');
+        $field = new xmldb_field('sentencedividers', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, '.?!', 'usecase');
+
+        // Conditionally launch add field sentenceedividers.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Pmatch savepoint reached.
+        upgrade_plugin_savepoint(true, 2019071200, 'qtype', 'pmatch');
+    }
+
     return true;
 }

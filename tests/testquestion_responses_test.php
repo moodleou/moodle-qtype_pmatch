@@ -1003,6 +1003,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <forcelength>1</forcelength>
     <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
+    <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
@@ -1075,6 +1076,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <forcelength>1</forcelength>
     <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
+    <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
@@ -1157,6 +1159,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <forcelength>1</forcelength>
     <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
+    <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>

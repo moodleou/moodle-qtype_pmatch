@@ -49,7 +49,7 @@ class qtype_pmatch extends question_type {
 
     public function extra_question_fields() {
         return array('qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
-                'forcelength', 'applydictionarycheck', 'extenddictionary', 'converttospace');
+                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace');
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -375,6 +375,7 @@ class qtype_pmatch extends question_type {
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
         $question->pmatchoptions->set_extra_dictionary_words(
                                                         $questiondata->options->extenddictionary);
+        $question->pmatchoptions->sentencedividers = $questiondata->options->sentencedividers;
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
         $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
 
