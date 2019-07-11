@@ -184,9 +184,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $reponseslist .= html_writer::alist($items);
                 $reponseslist .= print_collapsible_region_end(true);
                 $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
-                $matchedresponses = $mform->createElement('html', $html);
-                $clonematchedresponses = clone ($matchedresponses);
-                $mform->insertElementBefore($clonematchedresponses, 'fraction[' . $count . ']');
+                $mform->insertElementBefore($mform->createElement('html', $html), 'fraction[' . $count . ']');
             }
             $count++;
         }
