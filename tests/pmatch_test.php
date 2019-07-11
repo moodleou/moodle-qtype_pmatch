@@ -479,7 +479,7 @@ EOF;
      */
     public function pmatch_formatting_provider() {
         return [
-['match_all (
+                ['match_all (
     match_any (
         not (
             match_cow (one_two)
@@ -492,13 +492,13 @@ EOF;
     )
 )
 ', 'match_all(match_any(not(match_cow(one_two))' .
-                            'match_mfw(three|[four five]))' .
-                            'match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))'],
+                        'match_mfw(three|[four five]))' .
+                        'match_any(match_mrw(six|nine nine)match_m2w(seven|[eight ten])))'],
                 ["match_m (three|[four five])\n", 'match_mfmtxr(three|[four five])'],
                 ["match_mow (three|[four five])\n", 'match_mfmtxrow(three|[four five])'],
                 ["match_m2 (three|[four five])\n", 'match_mfmtxr2(three|[four five])'],
                 ["match_mrtxow (three|[four five])\n", 'match_mtxrow(three|[four five])'],
-['match_all (
+                ['match_all (
     match_any (
         not (
             match_c (a)
@@ -539,11 +539,11 @@ EOF;
     )
 )
 ', 'match_all(match_any(not(match_c(a))match_c(b))' .
-            'match_all(match_all(match_any(match_c(c)match_c(d))' .
-            'match_any(match_c(e)match_c(f))match_all(match_c(g)match_c(h)))' .
-            'not(match_any(match_any(match_c(i)match_c(j))' .
-            'match_any(match_c(k)match_c(l))match_all(match_c(m)match_c(n))))))'],
-        ];
+                            'match_all(match_all(match_any(match_c(c)match_c(d))' .
+                            'match_any(match_c(e)match_c(f))match_all(match_c(g)match_c(h)))' .
+                            'not(match_any(match_any(match_c(i)match_c(j))' .
+                            'match_any(match_c(k)match_c(l))match_all(match_c(m)match_c(n))))))'],
+                        ];
     }
 
     /**

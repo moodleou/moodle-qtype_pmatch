@@ -1,6 +1,3 @@
-[id^='fitem_id_accuracyborder_'] {
-    border: none !important;
-}
 .que.pmatch .answer {
     padding: 0.3em;
     width: auto;
@@ -47,6 +44,9 @@ body#page-question-type-pmatch #region-main div.fitem.femptylabel .fstatic {
 body#page-question-type-pmatch #region-main #fgroup_id_updatebuttonar {
     background: none;
     border: none;
+}
+[id^='fitem_id_accuracyborder_'] {
+    border: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
 /* Middle */

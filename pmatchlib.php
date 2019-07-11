@@ -346,7 +346,7 @@ class pmatch_parsed_string {
      * @param string $word
      * @return string|null
      */
-    protected function is_word_misspelled(string $word): ?string {
+    protected function is_word_misspelled(string $word): ? string {
         if (trim($word) === '') {
             return null;
         }

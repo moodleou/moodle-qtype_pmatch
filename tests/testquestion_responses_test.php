@@ -574,7 +574,6 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
      * Test the rule matching table
      */
     public function test_save_rule_matches() {
-        global $DB;
         $this->resetAfterTest();
 
         $responses = $this->load_default_responses();
@@ -622,7 +621,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         // Set new expectations.
         $deletedrulecomparerulematches = array(
                 'responseidstoruleids' => array(
-                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)'),
+                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
                         'Tom' => array(0 => 'match_w(Tom|Harry)'),
                         'Dick' => array(0 => 'match_w(Dick)'),
                         'Harry' => array(0 => 'match_w(Tom|Harry)'),
@@ -1074,7 +1073,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <allowsubscript>0</allowsubscript>
     <allowsuperscript>0</allowsuperscript>
     <forcelength>1</forcelength>
-    <applydictionarycheck>1</applydictionarycheck>
+    <applydictionarycheck>en_GB</applydictionarycheck>
     <extenddictionary></extenddictionary>
     <converttospace>,;:</converttospace>
     <answer fraction="100" format="plain_text">

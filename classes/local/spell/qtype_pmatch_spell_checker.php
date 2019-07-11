@@ -51,7 +51,7 @@ abstract class qtype_pmatch_spell_checker {
     public const NULL_SPELL_CHECK = 'null';
 
     /** @var string Regex string to get only needed dictionaries with format: xx or xx_YY Example: en or en_US. */
-    public const LANGUAGE_FILTER_REGEX = '`^([a-z]+)(_[A-Z]+)?`';
+    public const LANGUAGE_FILTER_REGEX = '~^([a-z]+)(_[A-Z]+)?~';
 
     /**
      * Spell-check a word.
@@ -221,7 +221,7 @@ abstract class qtype_pmatch_spell_checker {
             // We need to looking for xx_XX format. This will work for languages like fr and de.
             $alternatelanguage = $checklanguage . '_' . strtoupper($checklanguage);
             if (in_array($alternatelanguage, $availablelangs)) {
-                // xx_XX format avalable.
+                // The xx_XX format is available.
                 $matchedlang = $alternatelanguage;
             } else if ($checklanguage == 'en') {
                 // Default language is en. Set to en_GB.
@@ -250,11 +250,11 @@ abstract class qtype_pmatch_spell_checker {
         $disable = false;
         $options = [];
 
-        $options[qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
+        $options[self::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
 
         $spellchecklanguagesdata = get_config('qtype_pmatch', 'spellcheck_languages');
         if (!$spellchecklanguagesdata ||
-                get_config('qtype_pmatch', 'spellchecker') == qtype_pmatch_spell_checker::NULL_SPELL_CHECK) {
+                get_config('qtype_pmatch', 'spellchecker') == self::NULL_SPELL_CHECK) {
             $disable = true;
             return [$options, $disable];
         }
@@ -262,16 +262,16 @@ abstract class qtype_pmatch_spell_checker {
 
         foreach ($availablelangs as $availablelang) {
             $language = new \stdClass();
-            $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($availablelang);
+            $language->name = self::get_display_name_for_language_code($availablelang);
             $language->code = $availablelang;
             $options[$availablelang] = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);
         }
 
         if (isset($question->options)) {
             $originallanguage = $question->options->applydictionarycheck;
-            if ($originallanguage != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION &&
+            if ($originallanguage != self::DO_NOT_CHECK_OPTION &&
                     !in_array($originallanguage, $availablelangs)) {
-                $missinglangname = qtype_pmatch_spell_checker::get_display_name_for_language_code($originallanguage);
+                $missinglangname = self::get_display_name_for_language_code($originallanguage);
                 $options[$originallanguage] =
                         get_string('apply_spellchecker_missing_language_select', 'qtype_pmatch', $missinglangname);
             }
