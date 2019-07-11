@@ -1,11 +1,28 @@
 # Change log for the pattern-match question type
 
 
+## Changes in 2.5
+
+* Partial support for this question type in the Moodle mobile app. (Questions work if they don't use the superscript/subscript editor.)
+* Many enhancements to adding / editing / removing sample responses, including improved validation.
+* Sample responses can now be exported and imported in a range of formats, not just CSV.
+* Sample responses are now exported and imported when the question is.
+* The sample responses tool can now be used for pattern-match questions used within [https://moodle.org/plugins/qtype_combined](combined questions).
+* The sample responses tool now works when questions are being created in a [https://moodle.org/plugins/mod_studentquiz](StudentQuiz) activity.
+* The display of information about how well each matching rule is performing is now much clearer.
+* When matching number, very small numbers (less than 1.e-6) are now matched better.
+* The spell-check language can now be set for each question.
+* Spell checking now works in the presence of punctuation. Previously you would get messages like "Hello," is not in the dictionary.
+* Some work improving the ability to match the punctuation characters, which is useful if you want to assess grammar. However, this work is not complete, and more fixes will follow.
+* A few other bug fixes or code improvements.
+
+
 ## Changes in 2.4
 
 * New button on the question testing screen to add a new sample response.
 * Fix Behat tests to pass in Moodle 3.6.
 * Some coding style fixes.
+
 
 ## Changes in 2.3
 
