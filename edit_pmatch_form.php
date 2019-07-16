@@ -250,13 +250,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         array('rows' => '5', 'cols' => '80'));
         $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
         $mform->addElement('text', 'sentencedividers',
-            get_string('sentencedividers', 'qtype_pmatch'), array('size' => 20));
+                get_string('sentencedividers', 'qtype_pmatch'), array('size' => 50));
         $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');
         $mform->setDefault('sentencedividers', '.?!');
         $mform->setType('sentencedividers', PARAM_RAW_TRIMMED);
         $mform->addElement('text', 'converttospace',
-                        get_string('converttospace', 'qtype_pmatch'),
-                        array('size' => 60));
+                get_string('converttospace', 'qtype_pmatch'), array('size' => 50));
         $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
         $mform->setDefault('converttospace', ',;:');
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
@@ -484,6 +483,17 @@ EOT;
         $answers = $data['answer'];
         $answercount = 0;
         $maxgrade = false;
+
+        // Check whether any chars of sentencedividers field exists in converttospace field.
+        if (!empty($data['sentencedividers'])) {
+            $sd_chars = str_split($data['sentencedividers']);
+            $cts_chars = str_split($data['converttospace']);
+            foreach ($sd_chars as $sd_char) {
+                if (in_array($sd_char, $cts_chars)) {
+                    $errors['converttospace'] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $sd_char);
+                }
+            }
+        }
         foreach ($answers as $key => $answer) {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
