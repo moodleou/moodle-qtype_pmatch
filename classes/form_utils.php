@@ -88,6 +88,27 @@ class form_utils {
     }
 
     /**
+     * Check whether any char of the first string appear in the second string.
+     *
+     * @param string $fiststring
+     * @param string $secondstring
+     * @return string
+     */
+    public static function find_char_in_both_strings($firststring, $secondstring) {
+        if (empty($firststring)) {
+            return null;
+        }
+        $firstchars = str_split($firststring);
+        $secondchars = str_split($secondstring);
+        foreach ($firstchars as $char) {
+            if (in_array($char, $secondchars)) {
+                return $char;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Add synonyms field to form.
      *
      * @param \moodleform $editform

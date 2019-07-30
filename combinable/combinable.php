@@ -134,6 +134,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
     public function validate() {
         $errors = array();
+
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
             $expression = new pmatch_expression($trimmedanswer);
@@ -142,6 +143,11 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
             }
         } else {
             $errors[$this->form_field_name('answer[0]')] = get_string('err_providepmatchexpression', 'qtype_pmatch');
+        }
+
+        // Check whether any chars of sentencedividers field exists in converttospace field.
+        if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($this->formdata->sentencedividers, $this->formdata->converttospace)) {
+            $errors[$this->form_field_name('converttospace')] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
         }
 
         $errors += \qtype_pmatch\form_utils::validate_synonyms((array)$this->formdata, $this->form_field_name('synonymsdata'));

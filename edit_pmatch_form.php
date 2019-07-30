@@ -485,14 +485,8 @@ EOT;
         $maxgrade = false;
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
-        if (!empty($data['sentencedividers'])) {
-            $sd_chars = str_split($data['sentencedividers']);
-            $cts_chars = str_split($data['converttospace']);
-            foreach ($sd_chars as $sd_char) {
-                if (in_array($sd_char, $cts_chars)) {
-                    $errors['converttospace'] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $sd_char);
-                }
-            }
+        if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($data['sentencedividers'], $data['converttospace'])) {
+            $errors['converttospace'] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
         }
         foreach ($answers as $key => $answer) {
             $trimmedanswer = trim($answer);
