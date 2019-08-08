@@ -146,8 +146,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         }
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
-        if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($this->formdata->sentencedividers, $this->formdata->converttospace)) {
-            $errors[$this->form_field_name('converttospace')] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
+        if (!empty($this->formdata->sentencedividers)) {
+            if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($this->formdata->sentencedividers, $this->formdata->converttospace)) {
+                $errors[$this->form_field_name('converttospace')] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
+            }
         }
 
         $errors += \qtype_pmatch\form_utils::validate_synonyms((array)$this->formdata, $this->form_field_name('synonymsdata'));
