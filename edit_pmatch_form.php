@@ -260,15 +260,19 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->setDefault('converttospace', ',;:');
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
 
+        $mform->addElement('text', 'modelanswer',
+                get_string('modelanswer', 'qtype_pmatch'), array('size' => 50));
+        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
+        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
     }
 
     /**
      * Get the list of form elements to repeat, one for each answer.
      * @param object $mform the form being built.
-     * @param $label the label to use for each option.
-     * @param $gradeoptions the possible grades for each answer.
-     * @param $repeatedoptions reference to array of repeated options to fill
-     * @param $answersoption reference to return the name of $question->options
+     * @param string $label the label to use for each option.
+     * @param array $gradeoptions the possible grades for each answer.
+     * @param array $repeatedoptions reference to array of repeated options to fill
+     * @param string $answersoption reference to return the name of $question->options
      *                       field holding an array of answers
      * @return array of form fields.
      */
@@ -462,6 +466,7 @@ EOT;
             $question->extenddictionary = $question->options->extenddictionary;
             $question->sentencedividers = $question->options->sentencedividers;
             $question->converttospace = $question->options->converttospace;
+            $question->modelanswer = $question->options->modelanswer;
         }
         if (isset($question->options->synonyms)) {
             $synonyms = $question->options->synonyms;
@@ -485,17 +490,20 @@ EOT;
         $maxgrade = false;
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
-        if (!empty($data['sentencedividers'])) {
+        if (isset($data['sentencedividers'])) {
             if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($data['sentencedividers'], $data['converttospace'])) {
                 $errors['converttospace'] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
             }
         }
+
+        $allanswersok = true;
         foreach ($answers as $key => $answer) {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
                 $expression = new pmatch_expression($trimmedanswer);
                 if (!$expression->is_valid()) {
                     $errors["answer[$key]"] = $expression->get_parse_error();
+                    $allanswersok = false;
                 }
                 $answercount++;
                 if ($data['fraction'][$key] == 1) {
@@ -504,6 +512,7 @@ EOT;
             } else if ($data['fraction'][$key] != 0 ||
                                             !html_is_blank($data['feedback'][$key]['text'])) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_pmatch');
+                $allanswersok = false;
                 $answercount++;
             }
         }
@@ -512,6 +521,13 @@ EOT;
         }
         if ($maxgrade == false) {
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
+        }
+
+        if (isset($data['modelanswer'])) {
+            $modelanswer = trim($data['modelanswer']);
+            if ($allanswersok && !\qtype_pmatch\form_utils::validate_modelanswer($answers, $data['fraction'], $modelanswer)) {
+                $errors['modelanswer'] = get_string('modelanswererror', 'qtype_pmatch', $modelanswer);
+            }
         }
 
         $errors += \qtype_pmatch\form_utils::validate_synonyms($data);

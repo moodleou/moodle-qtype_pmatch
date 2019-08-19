@@ -14,6 +14,7 @@
         <FIELD NAME="usecase" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether answers are matched case-sensitively."/>
         <FIELD NAME="sentencedividers" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT=".?!" SEQUENCE="false" COMMENT="Treat given characters as sentence dividers"/>
         <FIELD NAME="converttospace" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Student answer characters that are converted to a space."/>
+        <FIELD NAME="modelanswer" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Is used for 'Preview question' and 'Answer sheet'."/>
         <FIELD NAME="applydictionarycheck" TYPE="char" LENGTH="5" NOTNULL="true" DEFAULT="-" SEQUENCE="false" COMMENT="Whether to check student answers for spelling mistakes."/>
         <FIELD NAME="extenddictionary" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Extra words for dictionary."/>
       </FIELDS>

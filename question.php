@@ -49,6 +49,9 @@ class qtype_pmatch_question extends question_graded_by_strategy
     /** @var boolean whether to spell check students response. */
     public $applydictionarycheck;
 
+    /** @var string to be used for 'Preview question' and 'Answer sheet' in print. */
+    public $modelanswer;
+
     /** @var pmatch_options options for pmatch expression matching. */
     public $pmatchoptions;
 
@@ -145,6 +148,14 @@ class qtype_pmatch_question extends question_graded_by_strategy
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
         return $expression->matches($string);
+    }
+
+    public function get_correct_response() {
+        if ($this->modelanswer === '' || $this->modelanswer === null) {
+            // We don't have a correct answer.
+            return null;
+        }
+        return ['answer' => $this->modelanswer];
     }
 
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {

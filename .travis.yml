@@ -21,12 +21,7 @@ cache:
 
 matrix:
   include:
-    - php: 7.2
-      env:
-      - MOODLE_BRANCH=master
-      - DB=pgsql
-
-    - php: 7.1
+    - php: 7.3
       env:
       - MOODLE_BRANCH=MOODLE_37_STABLE
       - DB=mysqli
@@ -40,11 +35,6 @@ matrix:
       env:
       - MOODLE_BRANCH=MOODLE_35_STABLE
       - DB=mysqli
-
-    - php: 7.1
-      env:
-      - MOODLE_BRANCH=MOODLE_34_STABLE
-      - DB=pgsql
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -60,7 +50,7 @@ install:
 script:
   - moodle-plugin-ci phplint
   - moodle-plugin-ci phpcpd
-  # - moodle-plugin-ci phpmd
+  - moodle-plugin-ci phpmd || true # report issues, but don't fail the build.
   - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints

@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_pmatch_test_helper extends question_test_helper {
 
     public function get_test_questions() {
-        return array('listen', 'test0');
+        return ['listen', 'test0', 'frogtoad', 'test1'];
     }
 
     /**
@@ -58,9 +58,10 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $pm->questiontext = 'Who was Jane\'s companion : __________';
         $pm->generalfeedback = 'Generalfeedback: Tom, Dick or Harry are all possible answers.';
         $pm->pmatchoptions = new pmatch_options();
+        $pm->modelanswer = 'Tom';
         $pm->answers = array(
             13 => new question_answer(13, 'match_w(Tom|Harry)', 1.0,
-                                      'Either Tom or Harry is a very good answer.', FORMAT_HTML),
+                'Either Tom or Harry is a very good answer.', FORMAT_HTML),
             14 => new question_answer(14,
                                       'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
             15 => new question_answer(15,
@@ -101,6 +102,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->extenddictionary = '';
         $fromform->sentencedividers = '.?!';
         $fromform->converttospace = ',;:';
+        $fromform->modelanswer = 'testing one two three four';
         $fromform->answer = array('match (testing one two three four)');
         $fromform->fraction = array('1');
         $fromform->feedback = array(
@@ -129,9 +131,63 @@ class qtype_pmatch_test_helper extends question_test_helper {
     }
 
     /**
+     * @return stdClass data to create a pattern match question.
+     */
+    public function get_pmatch_question_form_data_frogtoad() {
+        global $CFG, $USER;
+
+        $fromform = new stdClass();
+
+        $fromform->name = 'Frog but not toad';
+        $fromform->questiontext = ['text' => 'Type a sentence with the word frog but not toad.', 'format' => FORMAT_HTML];
+        $fromform->defaultmark = 1.0;
+        $fromform->generalfeedback = ['text' => 'The word frog can appear within the sentence but not the word toad.',
+                'format' => FORMAT_HTML];
+        $fromform->allowsubscript = 0;
+        $fromform->allowsuperscript = 0;
+        $fromform->synonymsdata = [
+            [
+                'word' => '',
+                'synonyms' => '',
+            ]
+        ];
+        $fromform->extenddictionary = '';
+        $fromform->sentencedividers = '.?!';
+        $fromform->converttospace = ',;:';
+        $fromform->modelanswer = 'I saw a tiny yellow frog in the amazon forest';
+        $fromform->answer = ['match_w (toad)', 'match_w (frog)'];
+        $fromform->fraction = ['0', '1'];
+        $fromform->feedback =
+            [
+                ['text' => 'The word toad should not apear in your response.', 'format' => FORMAT_HTML],
+                ['text' => 'Well done! The word frog apears in your response.', 'format' => FORMAT_HTML],
+            ];
+        $fromform->otherfeedback = ['text' => 'Sorry, no.', 'format' => FORMAT_HTML];
+        $fromform->penalty = 0.3333333;
+
+        $fromform->hint = [
+            [
+                'text' => 'Please try again.',
+                'format' => FORMAT_HTML,
+            ],
+            [
+                'text' => 'Use the word frog with any other words but not the word toad.',
+                'format' => FORMAT_HTML,
+            ]
+        ];
+
+        $fromform->hintshownumcorrect = [1, 1];
+        $fromform->hintclearwrong = [0, 1];
+        $fromform->hintoptions = [0, 1];
+
+        return $fromform;
+    }
+
+
+    /**
      * Get test data for test question 0
      *
-     * @return qtype_pmatch_question the question data.
+     * @return stdClass the question data.
      */
     public static function get_pmatch_question_data_test0() {
         question_bank::load_question_definition_classes('pmatch');
@@ -152,6 +208,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $qdata->options->extenddictionary = '';
         $qdata->options->sentencedividers = '.?!';
         $qdata->options->converttospace = ',;:';
+        $qdata->options->modelanswer = 'testing one two three four';
 
         $qdata->options->answers = [
                 13 => new question_answer(13, 'match (testing one two three four)', 1.0,

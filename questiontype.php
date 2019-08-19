@@ -49,7 +49,7 @@ class qtype_pmatch extends question_type {
 
     public function extra_question_fields() {
         return array('qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
-                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace');
+                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace', 'modelanswer');
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -383,6 +383,7 @@ class qtype_pmatch extends question_type {
         $question->allowsuperscript = $questiondata->options->allowsuperscript;
         $question->forcelength = $questiondata->options->forcelength;
         $question->applydictionarycheck = $questiondata->options->applydictionarycheck;
+        $question->modelanswer = $questiondata->options->modelanswer;
         $this->initialise_question_answers($question, $questiondata);
     }
 

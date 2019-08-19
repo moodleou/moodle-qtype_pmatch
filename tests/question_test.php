@@ -41,9 +41,8 @@ class qtype_pmatch_question_test extends basic_testcase {
     public function test_compare_string_with_wildcard() {
         // Test case sensitive literal matches.
         $options = new pmatch_options();
-        $this->assertTrue(
-            qtype_pmatch_question::compare_string_with_pmatch_expression('mop',
-                                                                        'match_c(m)', $options));
+        $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('mop',
+                                                                    'match_c(m)', $options));
         $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('bomb',
                                                                     'match_c(m)', $options));
         $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
@@ -67,7 +66,6 @@ class qtype_pmatch_question_test extends basic_testcase {
                                                                     'match_c(c)', $options));
         $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('car',
                                                                     'match_c(C)', $options));
-
     }
 
     public function test_is_complete_response() {
@@ -119,9 +117,13 @@ class qtype_pmatch_question_test extends basic_testcase {
 
     public function test_get_correct_response() {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
+        $this->assertEquals(array('answer' => 'Tom'), $question->get_correct_response());
 
-        $this->assertEquals(array('answer' => 'match_w(Tom|Harry)'),
-                $question->get_correct_response());
+        $question->modelanswer = '';
+        $this->assertNull($question->get_correct_response());
+
+        $question->modelanswer = '0';
+        $this->assertEquals(array('answer' => '0'), $question->get_correct_response());
     }
 
     public function test_get_question_summary() {

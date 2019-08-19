@@ -49,6 +49,7 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
                      'extenddictionary' => '',
                      'sentencedividers' => '.?!',
                      'converttospace' => ',;:',
+                     'modelanswer' => '',
                      'synonymsdata' => array());
     }
 }
@@ -100,6 +101,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->setDefault($this->form_field_name('sentencedividers'), '.?!');
         $mform->addElement('text', $this->form_field_name('converttospace'), get_string('converttospace', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('converttospace'), ',;:');
+        $mform->addElement('text', $this->form_field_name('modelanswer'), get_string('modelanswer', 'qtype_pmatch'));
         \qtype_pmatch\form_utils::add_synonyms($combinedform, $mform, $this->questionrec, false,
                 $this->form_field_name('synonymsdata'), 1, 0);
 
@@ -108,6 +110,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
+        $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
     }
 
@@ -136,13 +139,16 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $errors = array();
 
         $trimmedanswer = $this->formdata->answer[0];
+        $answerok = true;
         if ('' !== $trimmedanswer) {
             $expression = new pmatch_expression($trimmedanswer);
             if (!$expression->is_valid()) {
                 $errors[$this->form_field_name('answer[0]')] = $expression->get_parse_error();
+                $answerok = false;
             }
         } else {
             $errors[$this->form_field_name('answer[0]')] = get_string('err_providepmatchexpression', 'qtype_pmatch');
+            $answerok = false;
         }
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
@@ -150,6 +156,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
             if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($this->formdata->sentencedividers, $this->formdata->converttospace)) {
                 $errors[$this->form_field_name('converttospace')] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
             }
+        }
+        // Check whether the modelanswer is a correct match (For pmatch as subquestion of a combined question, we pass ['0' => 1.0] as $grades).
+        if ($answerok && !\qtype_pmatch\form_utils::validate_modelanswer($this->formdata->answer, ['0' => 1.0], $this->formdata->modelanswer)) {
+            $errors[$this->form_field_name('modelanswer')] = get_string('modelanswererror', 'qtype_pmatch', $this->formdata->modelanswer);
         }
 
         $errors += \qtype_pmatch\form_utils::validate_synonyms((array)$this->formdata, $this->form_field_name('synonymsdata'));

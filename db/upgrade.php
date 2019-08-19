@@ -176,5 +176,20 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019071200, 'qtype', 'pmatch');
     }
 
+    if ($oldversion < 2019091000) {
+
+        // Define field modelanswer to be added to qtype_pmatch.
+        $table = new xmldb_table('qtype_pmatch');
+        $field = new xmldb_field('modelanswer', XMLDB_TYPE_TEXT, null, null, null, null, null, 'converttospace');
+
+        // Conditionally launch add field modelanswer.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Pmatch savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091000, 'qtype', 'pmatch');
+    }
+
     return true;
 }

@@ -1005,6 +1005,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <extenddictionary></extenddictionary>
     <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
+    <modelanswer>testing one two three four</modelanswer>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">
@@ -1078,6 +1079,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <extenddictionary></extenddictionary>
     <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
+    <modelanswer>testing one two three four</modelanswer>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">
@@ -1161,6 +1163,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     <extenddictionary></extenddictionary>
     <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
+    <modelanswer></modelanswer>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">

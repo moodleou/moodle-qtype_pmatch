@@ -21,16 +21,17 @@ Feature: Test all the basic functionality of pmatch question type
   Scenario: Create, edit then preview a pattern match question.
     # Create a new question.
     And I add a "Pattern match" question filling the form with:
-      | Question name                 | My first pattern match question           |
-      | Question text                 | Listen, translate and write               |
-      | id_synonymsdata_0_word        | any                                       |
-      | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"          |
-      | Answer 1                      | match (testing one two three four)        |
-      | id_fraction_0                 | 100%                                      |
-      | id_feedback_0                 | Well done!                                |
-      | id_otherfeedback              | Sorry, no.                                |
-      | Hint 1                        | Please try again.                         |
-      | Hint 2                        | Use a calculator if necessary.            |
+      | Question name                 | My first pattern match question    |
+      | Question text                 | Listen, translate and write        |
+      | Spell checking                | Do not check spelling of student   |
+      | id_synonymsdata_0_word        | any                                |
+      | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"   |
+      | Answer 1                      | match (testing one two three four) |
+      | id_fraction_0                 | 100%                               |
+      | id_feedback_0                 | Well done!                         |
+      | id_otherfeedback              | Sorry, no.                         |
+      | Hint 1                        | Please try again.                  |
+      | Hint 2                        | Use a calculator if necessary.     |
     Then I should see "My first pattern match question"
 
     # Preview it. Test correct and incorrect answers.
