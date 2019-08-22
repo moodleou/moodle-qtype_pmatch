@@ -1,6 +1,10 @@
 language: php
 
+dist: bionic
 sudo: required
+
+services:
+  mysql
 
 addons:
   firefox: "47.0.1"
@@ -63,4 +67,4 @@ script:
   - moodle-plugin-ci mustache || true # report issues, but don't fail the build.
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
-  - moodle-plugin-ci behat --profile chrome
+  - moodle-plugin-ci behat
