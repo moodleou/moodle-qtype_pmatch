@@ -64,6 +64,10 @@ class qtype_pmatch_admin_setting_spell_check_languages extends \admin_setting_co
         }
         ksort($this->choices);
 
+        if (empty($this->choices)) {
+            $this->choices[''] = get_string('nolanguagesfound', 'qtype_pmatch');
+        }
+
         return true;
     }
 

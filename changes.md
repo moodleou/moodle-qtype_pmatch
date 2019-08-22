@@ -3,6 +3,11 @@
 
 ## Changes in 2.5
 
+* Fix a bug where upgrading from the previous version got stuck on the upgradesettings.php screen.
+
+
+## Changes in 2.5
+
 * Partial support for this question type in the Moodle mobile app. (Questions work if they don't use the superscript/subscript editor.)
 * Many enhancements to adding / editing / removing sample responses, including improved validation.
 * Sample responses can now be exported and imported in a range of formats, not just CSV.
