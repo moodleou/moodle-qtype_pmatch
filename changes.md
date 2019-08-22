@@ -1,7 +1,7 @@
 # Change log for the pattern-match question type
 
 
-## Changes in 2.5
+## Changes in 2.6
 
 * Fix a bug where upgrading from the previous version got stuck on the upgradesettings.php screen.
 
