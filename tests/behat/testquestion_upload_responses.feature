@@ -1,4 +1,4 @@
-@ou @ou_vle @qtype @qtype_pmatch
+@ou @ou_vle @qtype @qtype_pmatch @_file_upload
 Feature: Test uploading test responses in the pattern match test this question feature
   In order to test pattern match question accuracy
   As a teacher
