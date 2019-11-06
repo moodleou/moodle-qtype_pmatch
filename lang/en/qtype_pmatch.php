@@ -151,6 +151,7 @@ $string['testquestionincorrectlymarkedrights'] = 'missed negative';
 $string['testthisquestionnoresponsesfound'] = 'No responses were found.';
 $string['testthisquestionnoresmoreponsesrequired'] = 'More responses are required for auto-suggestion to work. There are {$a->existing} responses and you need {$a->required}';
 $string['testthisquestionnorulesreturned'] = 'No rules were suggested.';
+$string['testquestiontool'] = 'Pattern-match testing tool';
 $string['testquestionresponse'] = 'Response';
 $string['testquestionresponsesthatare'] = 'Responses that are';
 $string['testquestionresultsheader'] = 'Test results: {$a}';

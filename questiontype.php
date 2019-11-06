@@ -38,6 +38,19 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  */
 class qtype_pmatch extends question_type {
 
+    public function get_extra_question_bank_actions(stdClass $question): array {
+        $actions = parent::get_extra_question_bank_actions($question);
+
+        if (question_has_capability_on($question, 'view')) {
+            $actions[] = new \action_menu_link_secondary(
+                    new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $question->id]),
+                    new \pix_icon('t/approve', ''),
+                    get_string('testquestiontool', 'qtype_pmatch'));
+        }
+
+        return $actions;
+    }
+
     public function get_question_options($question) {
         global $DB;
         parent::get_question_options($question);
