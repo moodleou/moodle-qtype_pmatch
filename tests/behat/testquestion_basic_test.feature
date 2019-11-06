@@ -24,7 +24,7 @@ Feature: Test all the basic functionality of testquestion question type
     And I log in as "teacher"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    When I click on "Preview" "link" in the "My first pattern match question" "table_row"
+    When I choose "Preview" action for "My first pattern match question" in the question bank
     And I switch to "questionpreview" window
     And I click on "Test this question" "link"
 

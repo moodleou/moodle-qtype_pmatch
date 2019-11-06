@@ -24,7 +24,7 @@ Feature: Test the try rule feature
     And I log in as "teacher"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Preview" "link" in the "My first pattern match question" "table_row"
+    And I choose "Preview" action for "My first pattern match question" in the question bank
     And I switch to "questionpreview" window
     And I click on "Test this question" "link"
     And I set the field "tqheadercheckbox" to "1"
@@ -43,7 +43,7 @@ Feature: Test the try rule feature
     # The page needs refreshing now.
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    And I choose "Edit question" action for "My first pattern match question" in the question bank
     # The waiting is required probably because the editor takes a long time to load.
     # Without waiting I get an unexpected 'alert open' exception on my PC.
     # The try rule button click is an ajax call, and is wrapped in js_pending js_complete,
@@ -80,17 +80,17 @@ Feature: Test the try rule feature
     And I navigate to "Question bank" in current page administration
     When I add a "Pattern match" question filling the form with:
       | Question name      | My first pattern match editor question |
-      | Question text      | Draw ethanol                       |
-      | Answer 1           | match (CCOO)                       |
-      | id_fraction_0      | 100%                               |
-      | id_feedback_0      | Well done!                         |
-      | Answer 2           | match (CCO)                        |
-      | id_fraction_1      | 60%                                |
-      | Answer 3           | match (CO)                         |
-      | id_fraction_2      | None                               |
-      | id_otherfeedback   | Sorry, no.                         |
+      | Question text      | Draw ethanol                           |
+      | Answer 1           | match (CCOO)                           |
+      | id_fraction_0      | 100%                                   |
+      | id_feedback_0      | Well done!                             |
+      | Answer 2           | match (CCO)                            |
+      | id_fraction_1      | 60%                                    |
+      | Answer 3           | match (CO)                             |
+      | id_fraction_2      | None                                   |
+      | id_otherfeedback   | Sorry, no.                             |
     Then I should see "My first pattern match editor question"
-    When I click on "Preview" "link" in the "My first pattern match editor question" "table_row"
+    When I choose "Preview" action for "My first pattern match editor question" in the question bank
     And I switch to "questionpreview" window
     And I click on "Test this question" "link"
     And I click on "Add new response" "button"

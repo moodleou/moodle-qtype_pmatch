@@ -27,7 +27,7 @@ Feature: Test answer accuracy and response coverage
 
   @javascript
   Scenario: Get standard responses graded against current answer rules.
-    When I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    When I choose "Edit question" action for "My first pattern match question" in the question bank
     # First check of question editing page.
     Then I should see "Editing a Pattern match question"
     Then I should see "Responses not matched above: 0" in the "#fitem_accuracy_0" "css_element"
@@ -57,7 +57,7 @@ Feature: Test answer accuracy and response coverage
     And I am on homepage
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    And I choose "Edit question" action for "My first pattern match question" in the question bank
     Then I should see "Editing a Pattern match question"
     And I should see "Responses not matched above: 12" in the "#fitem_accuracy_0" "css_element"
     And I should see "Correctly matched by this rule: 1" in the "#fitem_accuracy_0" "css_element"

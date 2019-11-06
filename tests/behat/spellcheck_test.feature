@@ -22,7 +22,7 @@ Feature: Test spelling check of a pmatch question
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    When I choose "Edit question" action for "My first pattern match question" in the question bank
     When I expand all fieldsets
     Then I should see "Spell checking"
     And I should see "Do not check spelling of student"
@@ -37,7 +37,7 @@ Feature: Test spelling check of a pmatch question
     And the following config values are set as admin:
       | config       | value  | plugin       |
       | spellchecker | pspell | qtype_pmatch |
-    And I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    And I choose "Edit question" action for "My first pattern match question" in the question bank
     When I expand all fieldsets
     Then I should see "Spell checking"
     And I click on "Spell checking" "select"
@@ -54,7 +54,7 @@ Feature: Test spelling check of a pmatch question
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
-    And I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    And I choose "Edit question" action for "My first pattern match question" in the question bank
     When I expand all fieldsets
     Then I should see "Spell checking"
     And I should not see "No dictionaries available"
@@ -75,7 +75,7 @@ Feature: Test spelling check of a pmatch question
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Edit" "link" in the "Missing dictionary pattern match question" "table_row"
+    And I choose "Edit question" action for "Missing dictionary pattern match question" in the question bank
     When I expand all fieldsets
     Then I should see "Spell checking"
     And I should see "Vietnamese (Warning! Dictionary not installed on this server)"
@@ -91,7 +91,7 @@ Feature: Test spelling check of a pmatch question
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Preview" "link" in the "Missing dictionary pattern match question" "table_row"
+    When I choose "Preview" action for "Missing dictionary pattern match question" in the question bank
     When I switch to "questionpreview" window
     Then I should see "This question is set to use Vietnamese spell-check, but that language is not available on this server."
 
@@ -106,7 +106,7 @@ Feature: Test spelling check of a pmatch question
     And I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I click on "Preview" "link" in the "English Spell Check pattern match question" "table_row"
+    When I choose "Preview" action for "English Spell Check pattern match question" in the question bank
     And I switch to "questionpreview" window
     And I set the field "Answer" to "Bonjour"
     When I click on "Save" "button"

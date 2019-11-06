@@ -27,7 +27,7 @@ Feature: Test the model answer functionality of pmatch question type
     And I navigate to "Question bank" in current page administration
 
   Scenario: Preview a pattern match and test 'Fill with correct'.
-    When I click on "Preview" "link" in the "My first pattern match question" "table_row"
+    When I choose "Preview" action for "My first pattern match question" in the question bank
     And I switch to "questionpreview" window
     And I should see "Listen, translate and write"
     And I press "Fill in correct responses"
@@ -35,7 +35,7 @@ Feature: Test the model answer functionality of pmatch question type
     And I switch to the main window
 
   Scenario: Edit a pattern match question for testing the modelanswer field with extra words.
-    When I click on "Edit" "link" in the "Frog but not toad" "table_row"
+    When I choose "Edit question" action for "Frog but not toad" in the question bank
     And I should see "Editing a Pattern match question"
     And I click on "Expand all" "link"
     And I set the following fields to these values:
@@ -49,7 +49,7 @@ Feature: Test the model answer functionality of pmatch question type
     And I press "id_submitbutton"
     Then "Frog but not toad" "table_row" in the "categoryquestions" "table" should be visible
 
-    When I click on "Edit" "link" in the "Frog but not toad" "table_row"
+    When I choose "Edit question" action for "Frog but not toad" in the question bank
     And I set the following fields to these values:
       | id_modelanswer | frog |
     And I press "id_submitbutton"

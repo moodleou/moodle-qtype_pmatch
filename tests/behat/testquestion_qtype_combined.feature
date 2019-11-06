@@ -45,7 +45,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqnumeric3generalfeedback | You have the incorrect value for the pH |
     And I press "id_submitbutton"
     Then I should see "Combined 001"
-    When I click on "Preview" "link" in the "Combined 001" "table_row"
+    When I choose "Preview" action for "Combined 001" in the question bank
     And I switch to "questionpreview" window
 
   @javascript

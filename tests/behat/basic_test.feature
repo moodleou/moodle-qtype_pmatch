@@ -35,7 +35,7 @@ Feature: Test all the basic functionality of pmatch question type
     Then I should see "My first pattern match question"
 
     # Preview it. Test correct and incorrect answers.
-    When I click on "Preview" "link" in the "My first pattern match question" "table_row"
+    When I choose "Preview" action for "My first pattern match question" in the question bank
     And I switch to "questionpreview" window
 
     And I set the following fields to these values:
@@ -69,7 +69,7 @@ Feature: Test all the basic functionality of pmatch question type
     Then I should see "My first pattern match question"
 
     # Edit the copy and verify the form field contents.
-    When I click on "Edit" "link" in the "My first pattern match question" "table_row"
+    When I choose "Edit question" action for "My first pattern match question" in the question bank
     Then the following fields match these values:
       | Question name                 | My first pattern match question           |
       | Question text                 | Listen, translate and write               |

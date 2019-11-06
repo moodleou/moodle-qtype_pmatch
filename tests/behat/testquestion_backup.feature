@@ -40,12 +40,11 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     Then I should see "Course 2"
     # Check the new course's testquestion data.
     When I navigate to "Question bank" in current page administration
-    Then I should see "My first pattern match question"
-    When I follow "Edit"
+    And I choose "Edit question" action for "My first pattern match question" in the question bank
     Then I should see "Editing a Pattern match question"
     When I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
-    And I follow "Preview"
+    When I choose "Preview" action for "My first pattern match question" in the question bank
     And I switch to "questionpreview" window
     And I follow "Test this question"
     # Final check that the marked responses have been restored properly.
