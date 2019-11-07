@@ -148,7 +148,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                     'fitemtitle');
             $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
                     'felement fselect', array('id' => 'fitem_accuracy_' . $count));
-            $html = html_writer::div($labelhtml. $elementhtml, 'fitem fitem_accuracy');
+            $html = html_writer::div(html_writer::div($labelhtml. $elementhtml, 'col-md-12'), 'fitem fitem_accuracy form-group row');
             $answersaccuracy = $mform->createElement('html', $html);
             $cloneanswersaccuracy = clone $answersaccuracy;
             $mform->insertElementBefore($cloneanswersaccuracy, 'accuracyborder[' . $count . ']');
@@ -310,9 +310,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
             return $html;
         }
         $button = '<input type="button" name="tryrule" value="' .
-                get_string('tryrule', 'qtype_pmatch') . '">';
+                get_string('tryrule', 'qtype_pmatch') . '" class="btn btn-secondary">';
         $result = html_writer::div('', 'try-rule-result');
-        $html .= html_writer::div($button . $result, 'fitem try-rule');
+        $html .= html_writer::div(html_writer::div($button . $result, 'col-md-12'), 'fitem try-rule form-group row');
         return $html;
     }
 
@@ -351,22 +351,22 @@ class qtype_pmatch_edit_form extends question_edit_form {
 <div>
     <label for="term">$term</label>
     <input type="text" name="term" value="">
-    <input type="submit" name="termadd" value="$add">
-    <input type="submit" name="termexclude" value="$exclude">
-    <input type="submit" name="termor" value="$or">
+    <input type="submit" name="termadd" class="btn btn-secondary m-b-0" value="$add">
+    <input type="submit" name="termexclude" class="btn btn-secondary m-b-0" value="$exclude">
+    <input type="submit" name="termor" class="btn btn-secondary m-b-0" value="$or">
 </div>
 <div>
     <label for="template">$template</label>
-    <input type="text" name="template" value="">
-    <input type="submit" name="templateadd" value="$add">
-    <input type="submit" name="templateexclude" value="$exclude">
+    <input type="text" name="template" class="form-control" value="">
+    <input type="submit" name="templateadd" class="btn btn-secondary m-b-0" value="$add">
+    <input type="submit" name="templateexclude" class="btn btn-secondary m-b-0" value="$exclude">
 </div>
 <div>
     <label for="precedesadd">$precedes</label>
-    <select name="precedes1">
+    <select name="precedes1" class="custom-select m-l-0">
         <option value="0">$choosetoken</option>
     </select>
-    <select name="precedes2">
+    <select name="precedes2" class="custom-select">
         <option value="0">$choosetoken</option>
     </select>
     <input type="submit" name="precedesadd" value="$add">
@@ -379,13 +379,13 @@ class qtype_pmatch_edit_form extends question_edit_form {
     <select name="cprecedes2">
         <option value="0">$choosetoken</option>
     </select>
-    <input type="submit" name="cprecedesadd" value="$add">
+    <input type="submit" name="cprecedesadd" class="btn btn-secondary m-b-0" value="$add">
 </div>
 <div>
     <div>$rule</div>
     <div class="rc-result"></div>
-    <input type="submit" name="add" value="$addtoanswer">
-    <input type="submit" name="clear" value="$resetrule">
+    <input type="submit" name="add" class="btn btn-secondary m-l-0" value="$addtoanswer">
+    <input type="submit" name="clear" class="btn btn-secondary" value="$resetrule">
 </div>
 EOT;
         $html .= html_writer::end_div();

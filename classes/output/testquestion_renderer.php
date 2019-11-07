@@ -37,9 +37,8 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     public function get_uploadresponses_link($question) {
         $link = new moodle_url('/question/type/pmatch/uploadresponses.php', ['id' => $question->id]);
 
-        return html_writer::tag('button',
-                get_string('testquestionuploadresponses', 'qtype_pmatch'),
-                ['type' => 'button', "onclick" => "window.location.href = '" . $link->out(false) . "'"]);
+        return html_writer::tag('input', '', array('value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
+            'type' => 'button', "onclick" => "window.location.href = '" . $link->out(false) . "'", 'class' => 'btn btn-secondary'));
     }
 
     public function get_responses_heading($question) {
@@ -68,10 +67,10 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
         if (question_has_capability_on($question, 'edit')) {
             $html .= html_writer::start_div('', array('id' => 'commands'));
             $html = \html_writer::start_tag('p', ['id' => 'wrapperactionresponse']);
-            $html .= html_writer::tag('button',
-                    get_string('testquestionformnewresponsebutton', 'qtype_pmatch'),
-                    ['id' => 'newresponsebutton', 'class' => 'btn btn-secondary']);
-            $html .= $this->get_uploadresponses_link($question);
+            $html .= html_writer::tag('input', '', array('type' => 'button',
+                    'value' => get_string('testquestionformnewresponsebutton', 'qtype_pmatch'),
+                    'id' => 'newresponsebutton', 'class' => 'btn btn-secondary m-t-0'));
+            $html .= ' ' . $this->get_uploadresponses_link($question);
             $html .= \html_writer::end_tag('p');
             $html .= html_writer::tag('strong', get_string('withselected', 'question') . ':');
             $html .= html_writer::empty_tag('br');
