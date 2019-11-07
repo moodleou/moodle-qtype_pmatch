@@ -35,7 +35,7 @@ Feature: Test no test responses existing for this question
     And I should see "Computed mark less than human mark: 0 (missed negative)"
     And I should not see "Nothing to display"
     And I wait until the page is ready
-    And I should see "Add new response"
+    And "Add new response" "button" should be visible
     And I should see "Rules" in the "responses" "table"
     And the "#tqheadercheckbox" "css_element" should be disabled
     And the "Test selected responses" "button" should be disabled
