@@ -1,5 +1,12 @@
 # Change log for the pattern-match question type
 
+## Changes in 2.8
+
+* In Moodle 3.8, there is now a link stright to the Test question tool from the question bank.
+* Fix compatibility with PHP 7.0, which Moodle 3.5 still supports.
+* Fix Behat tests to pass with Moodle 3.8.
+
+
 ## Changes in 2.7
 
 * Ability for the question author to input a 'Model answer' for the question.

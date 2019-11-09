@@ -24,7 +24,7 @@ Feature: Test uploading test responses in the pattern match test this question f
     Given I am on the pattern match test responses page for question "My first pattern match question"
     And I click on "Upload responses" "button"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Upload responses to test with.
     # Confirm list responses is correct.
     And I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
@@ -35,7 +35,7 @@ Feature: Test uploading test responses in the pattern match test this question f
     Then I should see "Saved 8 responses"
     And I should see "Upload another file"
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Test error message if the file doesn't meet the condition.
     # Case 1: The file must be in .csv format.
     When I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
@@ -59,7 +59,7 @@ Feature: Test uploading test responses in the pattern match test this question f
     Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
     And I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Test upload XLSX file type.
     Given I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_error_1.xlsx" file to "Marked responses" filemanager
     When I press "Upload these responses"

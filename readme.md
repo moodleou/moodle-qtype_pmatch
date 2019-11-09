@@ -13,11 +13,10 @@ This question type was created by Jamie Pratt, working for the Open University
 
 ## Installation and set-up
 
-This plugin should be compatible with Moodle 3.5+. It is best if you also install
-the associated superscript/subscript editor plugin. This makes the superscript
-and subscript options in the question editing form.  If the editor is not
-installed the question type can still be used but these options will not be
-available.
+You may also wish to install the associated superscript/subscript editor
+plugin. This makes the superscript and subscript options in the question
+editing form.  If the editor is not installed the question type can still
+be used but these options will not be available.
 
 ### Install from the plugins database
 
