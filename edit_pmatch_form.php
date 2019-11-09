@@ -309,7 +309,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if (!\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             return $html;
         }
-        $button = '<input type="button" name="tryrule" value="Try rule">';
+        $button = '<input type="button" name="tryrule" value="' .
+                get_string('tryrule', 'qtype_pmatch') . '">';
         $result = html_writer::div('', 'try-rule-result');
         $html .= html_writer::div($button . $result, 'fitem try-rule');
         return $html;
@@ -332,48 +333,59 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected function get_rc_content() {
         $html = html_writer::start_div('rule-creator rc-hidden');
+        $add = get_string('add', 'qtype_pmatch');
+        $addtoanswer = get_string('addtoanswer', 'qtype_pmatch');
+        $choosetoken = get_string('choosetoken', 'qtype_pmatch');
+        $exclude = get_string('exclude', 'qtype_pmatch');
+        $or = get_string('or', 'qtype_pmatch');
+        $precedes = get_string('precedes', 'qtype_pmatch');
+        $precedesclosely = get_string('precedesclosely', 'qtype_pmatch');
+        $resetrule = get_string('resetrule', 'qtype_pmatch');
+        $rule = get_string('rule', 'qtype_pmatch');
+        $template = get_string('template', 'qtype_pmatch');
+        $term = get_string('term', 'qtype_pmatch');
         $html .= <<<EOT
 <div>
     <div class="rc-notice"></div>
 </div>
 <div>
-    <label for="term">Term</label>
+    <label for="term">$term</label>
     <input type="text" name="term" value="">
-    <input type="submit" name="termadd" value="Add">
-    <input type="submit" name="termexclude" value="Exclude">
-    <input type="submit" name="termor" value="Or">
+    <input type="submit" name="termadd" value="$add">
+    <input type="submit" name="termexclude" value="$exclude">
+    <input type="submit" name="termor" value="$or">
 </div>
 <div>
-    <label for="template">Template</label>
+    <label for="template">$template</label>
     <input type="text" name="template" value="">
-    <input type="submit" name="templateadd" value="Add">
-    <input type="submit" name="templateexclude" value="Exclude">
+    <input type="submit" name="templateadd" value="$add">
+    <input type="submit" name="templateexclude" value="$exclude">
 </div>
 <div>
-    <label for="precedesadd">Precedes</label>
+    <label for="precedesadd">$precedes</label>
     <select name="precedes1">
-        <option value="0">Choose token</option>
+        <option value="0">$choosetoken</option>
     </select>
     <select name="precedes2">
-        <option value="0">Choose token</option>
+        <option value="0">$choosetoken</option>
     </select>
-    <input type="submit" name="precedesadd" value="Add">
+    <input type="submit" name="precedesadd" value="$add">
 </div>
 <div>
-    <label for="cprecedesadd">Closely precedes</label>
+    <label for="cprecedesadd">$precedesclosely</label>
     <select name="cprecedes1">
-        <option value="0">Choose token</option>
+        <option value="0">$choosetoken</option>
     </select>
     <select name="cprecedes2">
-        <option value="0">Choose token</option>
+        <option value="0">$choosetoken</option>
     </select>
-    <input type="submit" name="cprecedesadd" value="Add">
+    <input type="submit" name="cprecedesadd" value="$add">
 </div>
 <div>
-    <div>Rule</div>
+    <div>$rule</div>
     <div class="rc-result"></div>
-    <input type="submit" name="add" value="Add to answer">
-    <input type="submit" name="clear" value="Reset rule">
+    <input type="submit" name="add" value="$addtoanswer">
+    <input type="submit" name="clear" value="$resetrule">
 </div>
 EOT;
         $html .= html_writer::end_div();

@@ -3,6 +3,7 @@
 ## Changes in 2.8
 
 * In Moodle 3.8, there is now a link stright to the Test question tool from the question bank.
+* Change hard-coded strings on the editing for to language strings, so they can be translated.
 * Fix compatibility with PHP 7.0, which Moodle 3.5 still supports.
 * Fix Behat tests to pass with Moodle 3.8.
 
