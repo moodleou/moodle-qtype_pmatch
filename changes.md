@@ -1,5 +1,10 @@
 # Change log for the pattern-match question type
 
+## Changes in 2.9
+
+* Improved styling in Bootstrap-based themes.
+
+
 ## Changes in 2.8
 
 * In Moodle 3.8, there is now a link stright to the Test question tool from the question bank.
