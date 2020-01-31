@@ -64,9 +64,10 @@ abstract class qtype_pmatch_spell_checker {
      * Factory method create a new spell-checker object for a given language.
      *
      * @param string $lang the language code. If null, defaults to get_string('iso6391', 'langconfig').
+     * @param bool $showwarnings whether to display warnings it the checker can't be initialised.
      * @return qtype_pmatch_spell_checker the requested object.
      */
-    public static function make($lang = null): qtype_pmatch_spell_checker {
+    public static function make($lang = null, $showwarnings = true): qtype_pmatch_spell_checker {
         $spellchecker = get_config('qtype_pmatch', 'spellchecker');
 
         if ($lang === null) {
@@ -79,19 +80,26 @@ abstract class qtype_pmatch_spell_checker {
 
         $backends = self::get_known_backends();
         if (!array_key_exists($spellchecker, $backends)) {
-            debugging('Unknown spell checker back end ' . $spellchecker);
+            if ($showwarnings) {
+                debugging('Unknown spell checker back end ' . $spellchecker);
+            }
             return self::make_null_checker($lang);
         }
         $classname = $backends[$spellchecker];
         if (!$classname::is_available()) {
-            debugging('Selected spell checker back end ' . $spellchecker . ' is not available.');
+            if ($showwarnings) {
+                debugging('Selected spell checker back end ' . $spellchecker . ' is not available.');
+            }
             return self::make_null_checker($lang);
         }
 
+        /** @var qtype_pmatch_spell_checker $checker */
         $checker = new $classname($lang);
         if (!$checker->is_initialised()) {
-            debugging('Spell checker back end ' . $spellchecker .
-                    ' could not be initialised for language ' . $lang);
+            if ($showwarnings) {
+                debugging('Spell checker back end ' . $spellchecker .
+                        ' could not be initialised for language ' . $lang);
+            }
             return self::make_null_checker($lang);
         }
 

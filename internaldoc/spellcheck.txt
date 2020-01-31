@@ -35,3 +35,9 @@ https://www.kildclient.org/forum/viewtopic.php?t=5411
 A good one-liner to test it is working from the command-line is:
 
    php -r '$broker = enchant_broker_init(); var_dump($broker); var_dump(enchant_broker_list_dicts($broker));'
+
+
+Note: French (https://extensions.libreoffice.org/extensions/dictionnaires-francais) seems to
+be tricky. There are various .aff and .dic, and the names do not match what enhant expects.
+I think what you need to do is to take the two fr-toutesvariantes.[aff|dic] files, and rename
+them to fr_FR.[aff|dic] after copying into \share\myspell\dicts.

@@ -42,7 +42,7 @@ if (extension_loaded('xdebug')) {
 class pmatch_options {
 
     /** @var boolean */
-    public $ignorecase;
+    public $ignorecase = false;
 
     /** @var string of sentence divider characters. */
     public $sentencedividers = '.?!';
@@ -100,8 +100,6 @@ class pmatch_options {
     }
 
     public function set_synonyms($synonyms) {
-        $toreplace = array();
-        $replacewith = array();
         foreach ($synonyms as $synonym) {
             $synonym->word = $this->unicode_normalisation($synonym->word);
             $synonym->synonyms = $this->unicode_normalisation($synonym->synonyms);
@@ -321,8 +319,15 @@ class pmatch_parsed_string {
     protected function spell_check() {
         $misspelledwords = [];
         foreach (array_unique($this->words) as $word) {
-            $word = core_text::strtolower($word);
             $wrongword = $this->is_word_misspelled($word);
+            if ($wrongword) {
+                // If the word with original capitalisation is wrong,
+                // try checking the lower-case version, but leave the
+                // wrong word report as the original.
+                if ($this->is_word_misspelled(core_text::strtolower($word)) === null) {
+                    $wrongword = null;
+                }
+            }
             if ($wrongword !== null) {
                 $misspelledwords[] = $wrongword;
             }
@@ -342,9 +347,8 @@ class pmatch_parsed_string {
      * This may seem a bit complicated, but you need to remember that
      * 'e.g.', 'co-operate', and 'AC/DC' are all words found in dictionaries.
      *
-     * @param qtype_pmatch_spell_checker $spellchecker
-     * @param string $word
-     * @return string|null
+     * @param string $word the word to check.
+     * @return string|null the word actually checked if it is wrong, null if the word is OK.
      */
     protected function is_word_misspelled(string $word) {
         if (trim($word) === '') {
@@ -373,7 +377,7 @@ class pmatch_parsed_string {
             return $this->is_word_misspelled(core_text::substr($word, 1));
         }
 
-        // Finally, if what is left after all puncution is removed contains -s,
+        // Finally, if what is left after all punctuation is removed contains hyphens,
         // then the word is spelled right if all the bits are, so test that.
         if (core_text::strpos($word, '-') === false) {
             // No hyphens, so Word is misspelled.
@@ -438,8 +442,11 @@ class pmatch_expression {
     /** @var boolean */
     protected $valid;
 
+    /** @var pmatch_options the options to use when matching this expression. */
+    protected $options;
+
     /**
-     * @param string $string the string to match against.
+     * @param string $expression the expression being matched.
      * @param pmatch_options $options the options to use.
      */
     public function __construct($expression, $options = null) {
@@ -473,7 +480,6 @@ class pmatch_expression {
             throw new coding_exception('Oops. You called matches for an expression that is not '.
                                 'valid. You should call is_valid first. Interpreter error :'.
                                 $this->get_parse_error());
-            return false;
         }
         $matcher = $this->interpreter->get_matcher($this->options);
         return $matcher->match_whole_expression($parsedstring->get_words());
@@ -516,7 +522,6 @@ class pmatch_expression {
         if (!$this->is_valid()) {
             throw new coding_exception('Oops. You called get_formatted_expression_string for an '.
                                 'expression that is not valid. You should call is_valid first.');
-            return false;
         }
         return $this->interpreter->get_formatted_expression_string();
     }

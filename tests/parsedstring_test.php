@@ -92,6 +92,7 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
             [['queenking'], 'queenking'],              // Not a word.
             [['awerawefaw'], 'awerawefaw awerawefaw'], // Wrong words only reported once.
             [['awerawefaw'], 'awerawefaw, test'],      // Not a word. Punctuation stripped.
+            [['AweRaweFaw'], 'AweRaweFaw, Test'],      // Original capitalisation kept.
             [[], 'e.g. tool. queek queek abcde fghij', // Synonyms automatically OK.
                     pmatch_options::make(['synonyms' => ['queek' => 'abcde|fghij']])],
             [[], 'queeking',                           // Synonyms may include * wild card.
@@ -100,8 +101,16 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
                     pmatch_options::make(['synonyms' => ['queek*' => 'abcde|fghij']])],
             [[], 'Frog-toad'],                         // Any hyphenated group of real words is fine.
             [[], '"Frog-toad"'],                       // Even if surrounded.
-            [['frog"-"toad'], '"Frog"-"toad"'],        // But not if the bits have extra punctuation.
-            [[], 'Why, e.g. "Frog" or \'A toad,\' would co-operate?'], // Final combined example.
+            [['Frog"-"toad'], '"Frog"-"toad"'],        // But not if the bits have extra punctuation.
+            [[], 'Why, e.g. "Frog" or \'A toad,\' would co-operate?'], // Combined example.
+            [[], 'Milton Keynes'],                     // Proper nouns are OK.
+            [['keynes'], 'keynes'],                    // But only if capitalised correctly.
+            [[], "J'aime visiter Nice",                // French example.
+                    pmatch_options::make(['lang' => 'fr'])],
+            [['nice'], "J'aime visiter nice",          // But only if capitalised correctly.
+                    pmatch_options::make(['lang' => 'fr'])],
+            [[], 'FBI'],                               // Acronym.
+            [['fbi'], 'fbi'],                          // That must be upper-case.
         ];
     }
 

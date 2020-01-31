@@ -238,7 +238,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
      * @param string $lang the language required.
      */
     public static function skip_test_if_no_spellcheck(PHPUnit\Framework\TestCase $testcase, string $lang) {
-        $spellchecker = qtype_pmatch_spell_checker::make($lang);
+        $spellchecker = qtype_pmatch_spell_checker::make($lang, false);
         if ($spellchecker instanceof qtype_pmatch_null_spell_checker) {
             $testcase->markTestSkipped(
                     'Spell-checking not installed on your server. Skipping test.');
