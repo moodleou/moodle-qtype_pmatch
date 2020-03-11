@@ -23,8 +23,6 @@
 
 namespace qtype_pmatch;
 
-use Box\Spout\Common\Helper\GlobalFunctionsHelper;
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -137,7 +135,7 @@ abstract class qtype_pmatch_importer {
 abstract class qtype_pmatch_spout_importer {
 
     /**
-     * @var \Box\Spout\Reader\AbstractReader $reader Spout Reader.
+     * @var \Box\Spout\Reader\ReaderInterface $reader Spout Reader.
      */
     public $reader;
 
@@ -169,7 +167,7 @@ abstract class qtype_pmatch_spout_importer {
                     if ($row == 1) {
                         continue; // Skipping header row or comment.
                     }
-                    $responses[] = $data;
+                    $responses[] = $data->toArray();
                 }
             }
             // Do not need to read more sheets.
@@ -190,7 +188,7 @@ abstract class qtype_pmatch_spout_importer {
         $errcase = [
             'row' => true,
             'columnbigger' => false,
-            'columnless' => false
+            'columnless' => false,
         ];
 
         $row = 0;
@@ -198,13 +196,15 @@ abstract class qtype_pmatch_spout_importer {
             // We only need the first sheet of the file.
             // Any more sheets in this file are not wanted.
             if ($sheet->getIndex() == 0) {
-                foreach ($sheet->getRowIterator() as $data) {
+                foreach ($sheet->getRowIterator() as $rowdata) {
+                    $data = $rowdata->toArray();
                     $row++;
                     $columnno = count($data);
                     if ($columnno > testquestion_import_helper::UPLOAD_FILE_MIN_COL) {
                         $errcase['columnbigger'] = true;
                     } else if ($columnno < testquestion_import_helper::UPLOAD_FILE_MIN_COL) {
                         $errcase['columnless'] = true;
+                        continue;
                     }
                     if (!is_numeric($data[0])) {
                         $score = null;
@@ -245,8 +245,7 @@ class qtype_pmatch_csv_importer extends qtype_pmatch_spout_importer {
      *
      */
     public function __construct() {
-        $this->reader = new \Box\Spout\Reader\CSV\Reader();
-        $this->reader->setGlobalFunctionsHelper(new GlobalFunctionsHelper());
+        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createCSVReader();
         $this->reader->setShouldPreserveEmptyRows(true);
     }
 }
@@ -264,8 +263,7 @@ class qtype_pmatch_xlsx_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = new \Box\Spout\Reader\XLSX\Reader();
-        $this->reader->setGlobalFunctionsHelper(new GlobalFunctionsHelper());
+        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createXLSXReader();
         $this->reader->setShouldPreserveEmptyRows(true);
     }
 }
@@ -283,8 +281,7 @@ class qtype_pmatch_ods_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = new \Box\Spout\Reader\ODS\Reader();
-        $this->reader->setGlobalFunctionsHelper(new GlobalFunctionsHelper());
+        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createODSReader();
         $this->reader->setShouldPreserveEmptyRows(true);
     }
 }
@@ -307,9 +304,7 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
         $data = json_decode($this->contents);
         // We only need the first sheet of the file.
         // Any more sheets in this file are note wanted.
-        $responses = $data[0];
-
-        return $responses;
+        return $data[0];
     }
 
     /**
