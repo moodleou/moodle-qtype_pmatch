@@ -1,4 +1,4 @@
-# Pattern match question type [![Build Status](https://travis-ci.org/moodleou/moodle-qtype_pmatch.svg?branch=master)](https://travis-ci.org/moodleou/moodle-qtype_pmatch)
+# Pattern match question type [![Build Status](https://travis-ci.com/moodleou/moodle-qtype_pmatch.svg?branch=master)](https://travis-ci.com/moodleou/moodle-qtype_pmatch)
 
 Students can enter a response of up to 20 words, which is then graded by matching
 it against various model answers expressed using a sophisticated patten

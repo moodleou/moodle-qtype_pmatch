@@ -1,5 +1,10 @@
 # Change log for the pattern-match question type
 
+## Changes in 3.0
+
+* Fix spell-checking of proper nouns.
+* Updated so that the question testing tool works with Moodle 3.8.
+
 ## Changes in 2.9
 
 * Improved styling in Bootstrap-based themes.
@@ -7,7 +12,7 @@
 
 ## Changes in 2.8
 
-* In Moodle 3.8, there is now a link stright to the Test question tool from the question bank.
+* In Moodle 3.8, there is now a link straight to the Test question tool from the question bank.
 * Change hard-coded strings on the editing for to language strings, so they can be translated.
 * Fix compatibility with PHP 7.0, which Moodle 3.5 still supports.
 * Fix Behat tests to pass with Moodle 3.8.
