@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2020061000;
-$plugin->requires  = 2018051700;
+$plugin->requires  = 2019111800;
 $plugin->component = 'qtype_pmatch';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '3.0 for Moodle 3.8+';
