@@ -139,6 +139,11 @@ class qtype_pmatch_question extends question_graded_by_strategy
         if ($answer->answer == '*') {
             return true;
         }
+        // Normally this test won't be called if answer is not set.
+        // However, it can be called like that from combined, so this test is necessary.
+        if (!isset($response['answer'])) {
+            return false;
+        }
         return self::compare_string_with_pmatch_expression($response['answer'],
                                                             $answer->answer,
                                                             $this->pmatchoptions);
