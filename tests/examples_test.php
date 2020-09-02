@@ -95,7 +95,7 @@ class qtype_pmatch_examples_test extends basic_testcase {
         $row = -1;
         while (($data = fgetcsv($handle)) !== false) {
             $row++;
-            if ($row == 0 || $data[0]{0} === '#') {
+            if ($row == 0 || $data[0][0] === '#') {
                 continue; // Skipping header row or comment.
             }
 
