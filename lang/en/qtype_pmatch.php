@@ -186,6 +186,7 @@ $string['tryrulenogradedresponses'] = 'There are no graded responses, please gra
 $string['tryrulenomatch'] = 'This rule does not match any graded responses.';
 $string['tryrulenovalidrule'] = 'This rule is not a valid pmatch expression.';
 $string['tryrulegradeerror'] = 'Sorry, try rule only works if the grade is set to 100% or None.';
+$string['unknownlanguagex'] = 'Unknown language ({$a})';
 $string['unparseable'] = 'We do not understand the characters or punctuation here "{$a}"';
 $string['wordwithsynonym'] = 'Word';
 $string['wordcontainsillegalcharacters'] = 'Word contains illegal characters.';

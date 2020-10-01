@@ -204,14 +204,15 @@ abstract class qtype_pmatch_spell_checker {
      * @return string Display name for given language code
      */
     public static function get_display_name_for_language_code($langcode): string {
-        $langname = '';
-        $languagenames = get_string_manager()->get_list_of_languages();
 
+        $languagenames = get_string_manager()->get_list_of_languages();
         if (preg_match(self::LANGUAGE_FILTER_REGEX, $langcode, $m)) {
-            $langname = $languagenames[$m[1]];
+            if (isset($languagenames[$m[1]])) {
+                return $languagenames[$m[1]];
+            }
         }
 
-        return $langname;
+        return get_string('unknownlanguagex', 'qtype_pmatch', $langcode);
     }
 
     /**
