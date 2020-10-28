@@ -110,4 +110,4 @@ Feature: Test spelling check of a pmatch question
     And I switch to "questionpreview" window
     And I set the field "Answer" to "Bonjour"
     When I click on "Save" "button"
-    Then I should see "The following words are not in our dictionary: bonjour. Please correct your spelling."
+    Then I should see "The following words are not in our dictionary: Bonjour. Please correct your spelling."

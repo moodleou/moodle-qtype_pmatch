@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+use qtype_pmatch\form_utils;
 
 /**
  * Short answer question editing form definition.
@@ -66,7 +67,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected function definition_inner($mform) {
         $this->general_answer_fields($mform);
-        \qtype_pmatch\form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
+        form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
 
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 question_bank::fraction_options());
@@ -497,25 +498,22 @@ EOT;
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        $answers = $data['answer'];
-        $answercount = 0;
-        $maxgrade = false;
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
         if (isset($data['sentencedividers'])) {
-            if ($charfound = \qtype_pmatch\form_utils::find_char_in_both_strings($data['sentencedividers'], $data['converttospace'])) {
+            if ($charfound = form_utils::find_char_in_both_strings($data['sentencedividers'], $data['converttospace'])) {
                 $errors['converttospace'] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
             }
         }
 
-        $allanswersok = true;
-        foreach ($answers as $key => $answer) {
+        $answercount = 0;
+        $maxgrade = false;
+        foreach ($data['answer'] as $key => $answer) {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
                 $expression = new pmatch_expression($trimmedanswer);
                 if (!$expression->is_valid()) {
                     $errors["answer[$key]"] = $expression->get_parse_error();
-                    $allanswersok = false;
                 }
                 $answercount++;
                 if ($data['fraction'][$key] == 1) {
@@ -524,7 +522,6 @@ EOT;
             } else if ($data['fraction'][$key] != 0 ||
                                             !html_is_blank($data['feedback'][$key]['text'])) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_pmatch');
-                $allanswersok = false;
                 $answercount++;
             }
         }
@@ -535,14 +532,16 @@ EOT;
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
         }
 
-        if (isset($data['modelanswer'])) {
+        $errors += form_utils::validate_synonyms($data);
+
+        // Can only validate the model answer if there is one, and if the rest of the question is valid.
+        if (empty($errors) && isset($data['modelanswer'])) {
             $modelanswer = trim($data['modelanswer']);
-            if ($allanswersok && !\qtype_pmatch\form_utils::validate_modelanswer($answers, $data['fraction'], $modelanswer)) {
+            $pmatchoptions = form_utils::options_from_form_data($data);
+            if (!form_utils::validate_modelanswer($data['answer'], $data['fraction'], $modelanswer, $pmatchoptions)) {
                 $errors['modelanswer'] = get_string('modelanswererror', 'qtype_pmatch', $modelanswer);
             }
         }
-
-        $errors += \qtype_pmatch\form_utils::validate_synonyms($data);
 
         $errors += $this->place_holder_errors($data['questiontext']['text'],
                                               $data['allowsubscript'] || $data['allowsuperscript']);

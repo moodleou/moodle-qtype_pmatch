@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_pmatch_test_helper extends question_test_helper {
 
     public function get_test_questions() {
-        return ['listen', 'test0', 'frogtoad', 'test1'];
+        return ['listen', 'test0', 'frogtoad', 'test1', 'spanish'];
     }
 
     /**
@@ -82,8 +82,6 @@ class qtype_pmatch_test_helper extends question_test_helper {
      * @return stdClass data to create a pattern match question.
      */
     public function get_pmatch_question_form_data_listen() {
-        global $CFG, $USER;
-
         $fromform = new stdClass();
 
         $fromform->name = 'My first pattern match question';
@@ -123,10 +121,6 @@ class qtype_pmatch_test_helper extends question_test_helper {
             ),
         );
 
-        $fromform->hintshownumcorrect = array(1, 1);
-        $fromform->hintclearwrong = array(0, 1);
-        $fromform->hintoptions = array(0, 1);
-
         return $fromform;
     }
 
@@ -134,8 +128,6 @@ class qtype_pmatch_test_helper extends question_test_helper {
      * @return stdClass data to create a pattern match question.
      */
     public function get_pmatch_question_form_data_frogtoad() {
-        global $CFG, $USER;
-
         $fromform = new stdClass();
 
         $fromform->name = 'Frog but not toad';
@@ -176,13 +168,56 @@ class qtype_pmatch_test_helper extends question_test_helper {
             ]
         ];
 
-        $fromform->hintshownumcorrect = [1, 1];
-        $fromform->hintclearwrong = [0, 1];
-        $fromform->hintoptions = [0, 1];
-
         return $fromform;
     }
 
+    /**
+     * Get the form data for a pmatch question with non-standard options.
+     *
+     * Specifically, no ? in sentencedividers, and some synonyms.
+     *
+     * @return stdClass data to create a pattern match question.
+     */
+    public function get_pmatch_question_form_data_spanish() {
+        $fromform = new stdClass();
+
+        $fromform->name = 'Spanish question';
+        $fromform->questiontext = ['text' => 'What is the Spanish for "How do you feel?" __15x1__', 'format' => FORMAT_HTML];
+        $fromform->defaultmark = 1.0;
+        $fromform->generalfeedback = ['text' => 'The answer is ¿Cómo te sientes?', 'format' => FORMAT_HTML];
+        $fromform->allowsubscript = 0;
+        $fromform->allowsuperscript = 0;
+        $fromform->synonymsdata = [
+            [
+                'word' => '¿Cómo',
+                'synonyms' => '¿Como',
+            ]
+        ];
+        $fromform->extenddictionary = '';
+        $fromform->sentencedividers = '.!';
+        $fromform->converttospace = ',;:';
+        $fromform->modelanswer = '¿Como te sientes?';
+        $fromform->answer = ['match(¿Cómo te sientes\?)'];
+        $fromform->fraction = ['1'];
+        $fromform->feedback = [
+            ['text' => 'Well done!', 'format' => FORMAT_HTML],
+        ];
+        $fromform->otherfeedback = ['text' => 'Sorry, no.', 'format' => FORMAT_HTML];
+        $fromform->penalty = 0.3333333;
+
+        $fromform->hint = [
+            [
+                'text' => 'Please try again.',
+                'format' => FORMAT_HTML,
+            ],
+            [
+                'text' => 'This is an idiomatic expression, so either you know it or you don\'t.',
+                'format' => FORMAT_HTML,
+            ]
+        ];
+
+        return $fromform;
+    }
 
     /**
      * Get test data for test question 0
