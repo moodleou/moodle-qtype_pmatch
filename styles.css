@@ -119,7 +119,7 @@ body.pagelayout-embedded .que.combined .combined-pmatch-input > a {
 .combined-pmatch-input > a {
     position: absolute;
     top: -4px;
-    right: -4px;
+    right: -18px;
     font-size: .85714em;
     background: #fff;
     padding: 1px;
