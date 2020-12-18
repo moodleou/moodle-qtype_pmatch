@@ -1,5 +1,12 @@
 # Change log for the pattern-match question type
 
+## Changes in 3.1
+
+* Tweak layout in Moodle 3.9+
+* Correct validation of the model answer.
+* Fix for a bug that only happens with the quiz_answersheets plugin.
+
+
 ## Changes in 3.0
 
 * Fix spell-checking of proper nouns.
