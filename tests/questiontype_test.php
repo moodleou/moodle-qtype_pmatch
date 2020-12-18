@@ -41,12 +41,8 @@ class qtype_pmatch_questiontype_test extends basic_testcase {
                                         'question/type/pmatch/questiontype.php');
     protected $qtype;
 
-    protected function setUp() {
+    protected function setUp(): void {
         $this->qtype = new qtype_pmatch();
-    }
-
-    protected function tearDown() {
-        $this->qtype = null;
     }
 
     protected function get_test_question_data() {
