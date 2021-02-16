@@ -350,34 +350,34 @@ class qtype_pmatch_edit_form extends question_edit_form {
     <div class="rc-notice"></div>
 </div>
 <div>
-    <label for="term">$term</label>
+    <label for="term" class="justify-content-start">$term</label>
     <input type="text" name="term" value="">
     <input type="submit" name="termadd" class="btn btn-secondary m-b-0" value="$add">
     <input type="submit" name="termexclude" class="btn btn-secondary m-b-0" value="$exclude">
     <input type="submit" name="termor" class="btn btn-secondary m-b-0" value="$or">
 </div>
 <div>
-    <label for="template">$template</label>
+    <label for="template" class="justify-content-start">$template</label>
     <input type="text" name="template" class="form-control" value="">
     <input type="submit" name="templateadd" class="btn btn-secondary m-b-0" value="$add">
     <input type="submit" name="templateexclude" class="btn btn-secondary m-b-0" value="$exclude">
 </div>
 <div>
-    <label for="precedesadd">$precedes</label>
+    <label for="precedesadd" class="justify-content-start">$precedes</label>
     <select name="precedes1" class="custom-select m-l-0">
         <option value="0">$choosetoken</option>
     </select>
     <select name="precedes2" class="custom-select">
         <option value="0">$choosetoken</option>
     </select>
-    <input type="submit" name="precedesadd" value="$add">
+    <input type="submit" name="precedesadd" class="btn btn-secondary m-b-0" value="$add">
 </div>
 <div>
-    <label for="cprecedesadd">$precedesclosely</label>
-    <select name="cprecedes1">
+    <label for="cprecedesadd" class="justify-content-start">$precedesclosely</label>
+    <select name="cprecedes1" class="custom-select m-l-0">
         <option value="0">$choosetoken</option>
     </select>
-    <select name="cprecedes2">
+    <select name="cprecedes2" class="custom-select">
         <option value="0">$choosetoken</option>
     </select>
     <input type="submit" name="cprecedesadd" class="btn btn-secondary m-b-0" value="$add">
@@ -582,3 +582,4 @@ EOT;
         $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
     }
 }
+
