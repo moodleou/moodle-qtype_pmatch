@@ -48,11 +48,11 @@ Feature: Create new a response for a pattern match question
     And the "Add new response" "button" should be enabled
     # Check key press enter and esc.
     When I click on "Add new response" "button"
-    And I press key "27" in the field "Correct"
+    And I press the escape key
     Then I should not see "Save"
     When I click on "Add new response" "button"
-    And I press key "13" in the field "Correct"
+    And I press the enter key
     And I set the field "new-response" to "New test response 1"
-    And I press key "13" in the field "new-response"
+    And I press the enter key
     Then I should see "New test response 1" in the "#qtype-pmatch-testquestion_r51_c5" "css_element"
     And I should see "1" in the "#qtype-pmatch-testquestion_r51_c4" "css_element"
