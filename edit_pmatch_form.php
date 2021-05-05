@@ -226,17 +226,20 @@ class qtype_pmatch_edit_form extends question_edit_form {
             get_string('caseyes', 'qtype_pmatch')
         );
         $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), $menu);
+        $mform->setDefault('usecase', $this->get_default_value('usecase', 0));
         $mform->addElement('selectyesno', 'allowsubscript',
                                                     get_string('allowsubscript', 'qtype_pmatch'));
+        $mform->setDefault('allowsubscript', $this->get_default_value('allowsubscript', 0));
         $mform->addElement('selectyesno', 'allowsuperscript',
                                                     get_string('allowsuperscript', 'qtype_pmatch'));
+        $mform->setDefault('allowsuperscript', $this->get_default_value('allowsuperscript', 0));
         $menu = array(
             get_string('forcelengthno', 'qtype_pmatch'),
             get_string('forcelengthyes', 'qtype_pmatch')
         );
         $mform->addElement('select', 'forcelength',
                                                 get_string('forcelength', 'qtype_pmatch'), $menu);
-        $mform->setDefault('forcelength', 1);
+        $mform->setDefault('forcelength', $this->get_default_value('forcelength', 1));
         list ($options, $disable) = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->question);
         if ($disable) {
             $mform->addElement('select', 'applydictionarycheck',
@@ -244,7 +247,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
         } else {
             $mform->addElement('select', 'applydictionarycheck',
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
-            $mform->setDefault('applydictionarycheck', get_string('iso6391', 'langconfig'));
+            $mform->setDefault('applydictionarycheck', $this->get_default_value('applydictionarycheck',
+                    get_string('iso6391', 'langconfig')));
         }
         $mform->addElement('textarea', 'extenddictionary',
                         get_string('extenddictionary', 'qtype_pmatch'),
@@ -253,12 +257,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->addElement('text', 'sentencedividers',
                 get_string('sentencedividers', 'qtype_pmatch'), array('size' => 50));
         $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');
-        $mform->setDefault('sentencedividers', '.?!');
+        $mform->setDefault('sentencedividers', $this->get_default_value('sentencedividers', '.?!'));
         $mform->setType('sentencedividers', PARAM_RAW_TRIMMED);
         $mform->addElement('text', 'converttospace',
                 get_string('converttospace', 'qtype_pmatch'), array('size' => 50));
         $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
-        $mform->setDefault('converttospace', ',;:');
+        $mform->setDefault('converttospace', $this->get_default_value('converttospace', ',;:'));
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
 
         $mform->addElement('text', 'modelanswer',

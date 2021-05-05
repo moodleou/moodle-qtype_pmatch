@@ -77,6 +77,19 @@ class qtype_pmatch extends question_type {
         $this->delete_files_in_hints($questionid, $contextid);
     }
 
+    public function save_defaults_for_new_questions(stdClass $fromform): void {
+        parent::save_defaults_for_new_questions($fromform);
+        $this->set_default_value('usecase', $fromform->usecase);
+        $this->set_default_value('allowsubscript', $fromform->allowsubscript);
+        $this->set_default_value('allowsuperscript', $fromform->allowsuperscript);
+        $this->set_default_value('forcelength', $fromform->forcelength);
+        if (isset($fromform->applydictionarycheck)) {
+            $this->set_default_value('applydictionarycheck', $fromform->applydictionarycheck);
+        }
+        $this->set_default_value('sentencedividers', $fromform->sentencedividers);
+        $this->set_default_value('converttospace', $fromform->converttospace);
+    }
+
     public function save_question_options($questionform) {
         global $DB;
 

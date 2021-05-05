@@ -23,7 +23,13 @@ Feature: Test all the basic functionality of pmatch question type
     And I add a "Pattern match" question filling the form with:
       | Question name                 | My first pattern match question    |
       | Question text                 | Listen, translate and write        |
-      | Spell checking                | Do not check spelling of student   |
+      | id_usecase                    | Yes, case must match                                            |
+      | id_allowsubscript             | Yes                                                             |
+      | id_allowsuperscript           | Yes                                                             |
+      | id_forcelength                | warn that answer is too long and invite respondee to shorten it |
+      | id_applydictionarycheck       | Do not check spelling of student                                |
+      | id_sentencedividers           | ?!                                                              |
+      | id_converttospace             | ;:                                                              |
       | id_synonymsdata_0_word        | any                                |
       | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"   |
       | Answer 1                      | match (testing one two three four) |
@@ -33,6 +39,19 @@ Feature: Test all the basic functionality of pmatch question type
       | Hint 1                        | Please try again.                  |
       | Hint 2                        | Use a calculator if necessary.     |
     Then I should see "My first pattern match question"
+    # Checking that the next new question form displays user preferences settings.
+    When I press "Create a new question ..."
+    And I set the field "item_qtype_pmatch" to "1"
+    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
+    Then the following fields match these values:
+      | id_usecase              | Yes, case must match                                            |
+      | id_allowsubscript       | Yes                                                             |
+      | id_allowsuperscript     | Yes                                                             |
+      | id_forcelength          | warn that answer is too long and invite respondee to shorten it |
+      | id_applydictionarycheck | Do not check spelling of student                                |
+      | id_sentencedividers     | ?!                                                              |
+      | id_converttospace       | ;:                                                              |
+    And I press "Cancel"
 
     # Preview it. Test correct and incorrect answers.
     When I choose "Preview" action for "My first pattern match question" in the question bank
