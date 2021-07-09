@@ -1,15 +1,17 @@
 <section ion-list *ngIf="question.text || question.text === ''" class="qtype-pmatch">
-    <ion-item text-wrap>
-        <div>
+    <ion-item text-wrap class="ion-text-wrap">
+        <ion-label>
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
-        </div>
+        </ion-label>
     </ion-item>
-    <ion-item text-wrap *ngIf="question.ablock || question.ablock === ''" class="qtype-pmatch">
-        <div>
+    <ion-item text-wrap *ngIf="question.ablock || question.ablock === ''" class="qtype-pmatch ion-text-wrap">
+        <ion-label>
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.ablock"></core-format-text>
-        </div>
+        </ion-label>
     </ion-item>
-    <ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item">
-        <p class="core-question-warning">{{ 'plugin.qtype_pmatch.err_ousupsubnotsupportedonmobile' | translate }}</p>
+    <ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item ion-text-wrap">
+        <ion-label>
+            <p class="core-question-warning">{{ 'plugin.qtype_pmatch.err_ousupsubnotsupportedonmobile' | translate }}</p>
+        </ion-label>
     </ion-item>
 </section>
