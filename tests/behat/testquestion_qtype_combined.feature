@@ -24,7 +24,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I set the field "Question name" to "Combined 001"
     And I set the field "Question text" to " What 5 + 5 ? [[1:pmatch:__10__]]. <br/>What is the IUPAC name of the molecule? [[2:pmatch:__20__]]. <br/>What is the pH of a 0.1M solution? [[3:numeric:__10__]]"
     Then I set the field "General feedback" to "The molecule is ethanoic acid which is more commonly known as acetic acid or in dilute solution as vinegar. The constituent elements are carbon (grey), hydrogen (white) and oxygen (red). A 0.1M solution has a pH of 2.88 and when a solution is combined with oil the result is a vinaigrette."
-    And I press "Verify the question text and update the form"
+    And I press "Update the form"
     Then I follow "'pmatch' input '1'"
     And I set the following fields to these values:
       | id_subqpmatch1defaultmark     | 50%                                |
