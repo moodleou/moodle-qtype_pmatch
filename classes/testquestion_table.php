@@ -198,7 +198,7 @@ class testquestion_table extends \table_sql {
         }
         $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
         $tmpl = new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
-                true, $response->response, $response->response, $editresponse, $editresponse);
+                true, s($response->response), $response->response, $editresponse, $editresponse);
         $out = $OUTPUT->render($tmpl);
 
         return $out;

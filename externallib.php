@@ -36,7 +36,7 @@ class qtype_pmatch_external extends external_api {
     public static function check_response_parameters() {
         return new external_function_parameters([
                 'questionid' => new external_value(PARAM_INT, 'The question id'),
-                'response' => new external_value(PARAM_TEXT, 'The response'),
+                'response' => new external_value(PARAM_RAW, 'The response'),
         ]);
     }
 
@@ -47,8 +47,8 @@ class qtype_pmatch_external extends external_api {
      */
     public static function check_response_returns() {
         return new external_single_structure([
-                'status' => new external_value(PARAM_TEXT, 'Status when check'),
-                'message' => new external_value(PARAM_TEXT, 'The error message', VALUE_OPTIONAL)
+                'status' => new external_value(PARAM_ALPHA, 'Status when check'),
+                'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL)
         ]);
     }
 
@@ -82,7 +82,7 @@ class qtype_pmatch_external extends external_api {
         return new external_function_parameters([
                 'questionid' => new external_value(PARAM_INT, 'The question id'),
                 'expectedfraction' => new external_value(PARAM_FLOAT, 'The expectedfraction'),
-                'response' => new external_value(PARAM_TEXT, 'The response'),
+                'response' => new external_value(PARAM_RAW, 'The response'),
                 'curentrow' => new external_value(PARAM_INT, 'The index of curent row editing'),
         ]);
     }
@@ -94,8 +94,8 @@ class qtype_pmatch_external extends external_api {
      */
     public static function create_response_returns() {
         return new external_single_structure([
-                'status' => new external_value(PARAM_TEXT, 'Status when create'),
-                'message' => new external_value(PARAM_TEXT, 'The error message', VALUE_OPTIONAL),
+                'status' => new external_value(PARAM_ALPHA, 'Status when create'),
+                'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL),
                 'html' => new external_value(PARAM_RAW, 'A row html for append to response table'),
                 'counts' => new external_single_structure([
                         'correct' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),

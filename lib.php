@@ -99,22 +99,21 @@ function qtype_pmatch_setup_question_test_page($question) {
  * @param string $itemtype type of response item.
  * @param int $itemid an item id.
  * @param mixed $newvalue new given response.
- * @return string the inplace editable response.
+ * @return \core\output\inplace_editable the in-place editable response.
  */
-function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue) {
+function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue): \core\output\inplace_editable {
     global $CFG, $DB;
     require_once($CFG->libdir . '/questionlib.php');
     require_once($CFG->dirroot . '/question/type/pmatch/externallib.php');
 
     if ($itemtype === 'responsetable') {
-        $responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids([$itemid]);
+        $responses = qtype_pmatch\testquestion_responses::get_responses_by_ids([$itemid]);
         $response = $responses[$itemid];
-        $question = \question_bank::load_question($response->questionid);
+        $question = question_bank::load_question($response->questionid);
         $context = $question->get_context();
-        \external_api::validate_context($context);
+        external_api::validate_context($context);
         require_capability('moodle/question:editall', $context);
         // Clean input and update the record.
-        $newvalue = clean_param($newvalue, PARAM_NOTAGS);
         $newvalue = trim($newvalue);
 
         if ($newvalue !== $response->response) {
@@ -141,7 +140,7 @@ function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue) {
         // Prepare the element for the output.
         $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
         return new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
-                true, $response->response, $responsevalue, $editresponse, $editresponse);
+                true, s($response->response), $responsevalue, $editresponse, $editresponse);
     }
 
     throw new coding_exception('Unexpected item type in qtype_pmatch_inplace_editable.');

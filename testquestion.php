@@ -93,6 +93,6 @@ echo $output->get_display_options_form($controller);
 echo $output->get_responses_heading($question);
 echo $output->get_grade_summary($question);
 
-echo $output->get_responses_table_form($controller);
+$output->get_responses_table_form($controller);
 
 echo $output->footer();

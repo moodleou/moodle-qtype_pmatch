@@ -65,7 +65,7 @@ class testquestion_controller {
         $this->responsestable->is_downloading('');
     }
 
-    public function handle_display_options_form () {
+    public function handle_display_options_form(): string {
         // Handle any options form submission.
         if ($fromform = $this->optionsform->get_data()) {
             $this->options->process_settings_from_form($fromform);
@@ -74,10 +74,10 @@ class testquestion_controller {
         }
         $this->optionsform->set_data($this->options->get_initial_form_data());
         // Print the options form.
-        print $this->optionsform->display();
+        return $this->optionsform->render();
     }
 
-    public function handle_responses_table_form() {
+    public function handle_responses_table_form(): void {
         // Handle any attempts form submission.
         $this->process_response_table_actions($this->options->get_url());
         // Note the attempts form is wrapped around this responses table - see wrap_html_start().
