@@ -206,7 +206,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $otheranswerhdr = $mform->addElement('static', 'otheranswerhdr',
                                                 get_string('anyotheranswer', 'qtype_pmatch'));
         $otheranswerhdr->setAttributes(array('class' => 'otheranswerhdr'));
-        $mform->addElement('static', 'otherfraction', get_string('grade'), '0%');
+        $mform->addElement('static', 'otherfraction', get_string('gradeverb'), '0%');
         $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
                                                         array('rows' => 5), $this->editoroptions);
     }
@@ -295,7 +295,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
             }
         }
         $repeated[] = $mform->createElement('select', 'fraction',
-                                                                get_string('grade'), $gradeoptions);
+                                                                get_string('gradeverb'), $gradeoptions);
         $repeated[] = $mform->createElement('editor', 'feedback',
                                 get_string('feedback', 'question'),
                                 array('rows' => 5), $this->editoroptions);
