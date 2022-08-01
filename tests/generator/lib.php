@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Pattern match question type test question test data generator class
  *
@@ -44,12 +42,12 @@ class qtype_pmatch_generator extends component_generator_base {
 
         $this->responsecount++;
 
-        $defaults = array(
+        $defaults = [
             'response' => 'Test response ' . $this->responsecount,
             'questionid' => $question ? $question->id : 0,
             'expectedfraction' => null,
             'gradedfraction' => null
-        );
+        ];
 
         $record = $this->datagenerator->combine_defaults_and_record($defaults, $record);
         $record['id'] = $DB->insert_record('qtype_pmatch_test_responses', $record);

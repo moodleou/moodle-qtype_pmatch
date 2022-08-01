@@ -87,7 +87,7 @@ class testquestion_responses {
      */
     public static function get_responses_by_questionid($questionid) {
         global $DB;
-        $responses = $DB->get_records('qtype_pmatch_test_responses', array('questionid' => $questionid), 'id ASC');
+        $responses = $DB->get_records('qtype_pmatch_test_responses', ['questionid' => $questionid], 'id ASC');
         return self::data_to_responses($responses);
     }
 
@@ -101,7 +101,7 @@ class testquestion_responses {
         global $DB;
         $sqlgraded = "SELECT * FROM {qtype_pmatch_test_responses} WHERE questionid = ? " .
                 self::SQLGRADED . " ORDER BY id ASC";
-        $responses = $DB->get_records_sql($sqlgraded, array('questionid' => $questionid));
+        $responses = $DB->get_records_sql($sqlgraded, ['questionid' => $questionid]);
         return self::data_to_responses($responses);
     }
 
@@ -122,7 +122,7 @@ class testquestion_responses {
      * @return testquestion_response[] array of convert records as test_response objects
      */
     public static function data_to_responses($data) {
-        $responses = array();
+        $responses = [];
         foreach ($data as $datarow) {
             $response = testquestion_response::create($datarow);
             $responses[$response->id] = $response;
@@ -136,9 +136,9 @@ class testquestion_responses {
      * @return array[]
      */
     public static function responses_to_data($responses) {
-        $data = array();
+        $data = [];
         foreach ($responses as $response) {
-            $datarow = array($response->id, $response->response, $response->expectedfraction);
+            $datarow = [$response->id, $response->response, $response->expectedfraction];
             $data[] = $datarow;
         }
         return $data;
@@ -153,7 +153,7 @@ class testquestion_responses {
         global $DB;
 
         $feedback = new \stdClass();
-        $feedback->duplicates = array();
+        $feedback->duplicates = [];
         $feedback->saved = 0;
         $count = 0;
         // Loop the responses.
@@ -162,7 +162,7 @@ class testquestion_responses {
             // There could be matching responses in the DB. Ugly to have a DB call in a for loop.
             // but seemed best compromise since this is a rare function.
             $id = $DB->get_field_select('qtype_pmatch_test_responses', 'id', 'response=? AND questionid=?',
-                    array($response->response, $response->questionid));
+                    [$response->response, $response->questionid]);
             // Check for duplicates.
             if ($id) {
                 // Record duplicate response against it's number in the saved array.
@@ -234,7 +234,7 @@ class testquestion_responses {
         // Get graded count.
         $sqlgraded = "SELECT COUNT(1) FROM {qtype_pmatch_test_responses}
                 WHERE questionid = ? " . self::SQLGRADED;
-        $params = array('questionid' => $question->id);
+        $params = ['questionid' => $question->id];
 
         // Get total responses.
         $counts->total = $DB->count_records('qtype_pmatch_test_responses', $params);
@@ -283,7 +283,7 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question to do the grading
      */
     public static function grade_response($response, $question) {
-        list($actualmark) = $question->grade_response(array('answer' => $response->response));
+        list($actualmark) = $question->grade_response(['answer' => $response->response]);
         $response->set_gradedfraction($actualmark);
         self::update_response($response);
     }
@@ -297,7 +297,7 @@ class testquestion_responses {
      */
     public static function grade_responses_by_rule($responses, $rule, $question) {
         foreach ($responses as $response) {
-            $match = $question->compare_response_with_answer(array('answer' => $response->response), $rule);
+            $match = $question->compare_response_with_answer(['answer' => $response->response], $rule);
             if ($match && !in_array($rule->id, $response->ruleids)) {
                 $response->ruleids[] = $rule->id;
             }
@@ -347,7 +347,7 @@ class testquestion_responses {
                 'correctlymatched' => 0,
                 'incorrectlymatched' => 0,
         ];
-        $responseids = array();
+        $responseids = [];
         // The matches array lists the responseids that match each rule.
         // This is how we quickly determine which responses to use for
         // the calculation.
@@ -390,7 +390,7 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question to do the grading
      * @param array $responseids an array of response ids that need rule matching.
      */
-    public static function save_rule_matches($question, $responseids=array()) {
+    public static function save_rule_matches($question, $responseids= []) {
         global $DB;
 
         $rules = $question->get_answers();
@@ -414,9 +414,9 @@ class testquestion_responses {
                 }
 
                 $match = $question->compare_response_with_answer(
-                                                    array('answer' => $response->response), $rule);
+                                                    ['answer' => $response->response], $rule);
                 if ($match) {
-                    $rulematch = array();
+                    $rulematch = [];
                     $rulematch['answerid'] = $rule->id;
                     $rulematch['testresponseid'] = $response->id;
                     $rulematch['questionid'] = $question->id;
@@ -468,9 +468,9 @@ class testquestion_responses {
                 'incorrectlymatched' => 0,
         ];
 
-        $responsematches = array();
+        $responsematches = [];
         foreach ($responses as $key => $response) {
-            if (!$question->compare_response_with_answer(array('answer' => $response->response), $answer)) {
+            if (!$question->compare_response_with_answer(['answer' => $response->response], $answer)) {
                 // Only responses that are matched by the rule need be considered further.
                 continue;
             }
@@ -533,10 +533,10 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question
      * @param array $responseids Optional array of response ids
      */
-    public static function delete_rule_matches($question, $responseids=array()) {
+    public static function delete_rule_matches($question, $responseids= []) {
         global $DB;
         if (empty($responseids)) {
-            $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $question->id));
+            $DB->delete_records('qtype_pmatch_rule_matches', ['questionid' => $question->id]);
         } else {
             list ($sql, $params) = $DB->get_in_or_equal($responseids);
             $params[] = $question->id;
@@ -555,10 +555,10 @@ class testquestion_responses {
      */
     public static function get_rule_matches_for_responses($responseids, $questionid) {
         global $DB;
-        $matchresponseidstoruleids = array();
-        $matchruleidstoresponseids = array();
-        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
-                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        $matchresponseidstoruleids = [];
+        $matchruleidstoresponseids = [];
+        $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids];
 
         // If there are no responses return an empty matches object.
         if (!count($responseids)) {
@@ -576,7 +576,7 @@ class testquestion_responses {
             // Match responses to rules.
             // if the matching array hasn't be created, create it.
             if (!array_key_exists($record->testresponseid, $matchresponseidstoruleids)) {
-                $matchresponseidstoruleids[$record->testresponseid] = array();
+                $matchresponseidstoruleids[$record->testresponseid] = [];
             }
             $matchresponseidtoruleid = $matchresponseidstoruleids[$record->testresponseid];
             if (!in_array($record->answerid, $matchresponseidtoruleid)) {
@@ -588,7 +588,7 @@ class testquestion_responses {
 
             // If the matching array hasn't be created, create it.
             if (!array_key_exists($record->answerid, $matchruleidstoresponseids)) {
-                $matchruleidstoresponseids[$record->answerid] = array();
+                $matchruleidstoresponseids[$record->answerid] = [];
             }
             $matchruleidtoresponseid = $matchruleidstoresponseids[$record->answerid];
             if (!in_array($record->testresponseid, $matchruleidtoresponseid)) {
@@ -598,8 +598,8 @@ class testquestion_responses {
 
         }
 
-        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
-                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids];
         return $matches;
     }
 
@@ -611,10 +611,10 @@ class testquestion_responses {
      * @return array
      */
     public static function get_rule_matches_from_responses($responses) {
-        $matchresponseidstoruleids = array();
-        $matchruleidstoresponseids = array();
-        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
-                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        $matchresponseidstoruleids = [];
+        $matchruleidstoresponseids = [];
+        $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids];
 
         // If there are no responses return an empty matches object.
         if (!count($responses)) {
@@ -629,7 +629,7 @@ class testquestion_responses {
             // Match responses to rules.
             // if the matching array hasn't be created, create it.
             if (!array_key_exists($response->id, $matchresponseidstoruleids)) {
-                $matchresponseidstoruleids[$response->id] = array();
+                $matchresponseidstoruleids[$response->id] = [];
             }
 
             foreach ($response->ruleids as $ruleid) {
@@ -643,7 +643,7 @@ class testquestion_responses {
 
                 // If the matching array hasn't be created, create it.
                 if (!array_key_exists($ruleid, $matchruleidstoresponseids)) {
-                    $matchruleidstoresponseids[$ruleid] = array();
+                    $matchruleidstoresponseids[$ruleid] = [];
                 }
                 $matchruleidtoresponseid = $matchruleidstoresponseids[$ruleid];
                 if (!in_array($response->id, $matchruleidtoresponseid)) {
@@ -654,8 +654,8 @@ class testquestion_responses {
 
         }
 
-        $matches = array('responseidstoruleids' => $matchresponseidstoruleids,
-                'ruleidstoresponseids' => $matchruleidstoresponseids);
+        $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
+                'ruleidstoresponseids' => $matchruleidstoresponseids];
         return $matches;
     }
 
@@ -681,7 +681,7 @@ class testquestion_responses {
         $ruleids = array_keys($testresponsehandler->questionobj->get_answers());
         $rulematch = $testresponsehandler->rulematches['responseidstoruleids'][$responseid];
 
-        $matches = array();
+        $matches = [];
         foreach ($rulematch as $matchid) {
             $index = array_search($matchid, $ruleids) + 1;
             if ($index != null) {
@@ -766,7 +766,7 @@ class testquestion_responses {
                 // and tutors are expected to wrap those answers within speech marks for this
                 // upload. See e.g. in fixtures/shortanswerquestion_webserviceresponses.csv.
                 $problems[] = get_string('testquestionuploadrowhastwoitems', 'qtype_pmatch',
-                                    array('row' => $row, 'items' => count($data)));
+                                    ['row' => $row, 'items' => count($data)]);
                 $problem = true;
             }
 
@@ -790,7 +790,7 @@ class testquestion_responses {
             }
         }
 
-        return array($responses, $problems);
+        return [$responses, $problems];
     }
 
     /**

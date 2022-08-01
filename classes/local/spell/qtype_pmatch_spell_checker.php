@@ -14,17 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * This file contains an API for accessing spell-checking back-ends.
- *
- * @package qtype_pmatch
- * @copyright 2019 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace qtype_pmatch\local\spell;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Object that provides spell-checking, to make it easy to support different back-ends.
@@ -33,6 +23,10 @@ defined('MOODLE_INTERNAL') || die();
  * Create an instance of this class using
  * $spellchecker = qtype_pmatch_spell_checker::make(); then test
  * words using $spellchecker->is_in_dictionary($word);
+ *
+ * @package qtype_pmatch
+ * @copyright 2019 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_pmatch_spell_checker {
 
@@ -42,7 +36,7 @@ abstract class qtype_pmatch_spell_checker {
      * repeatedly (it just died on enchant_broker_request_dict with no error message).
      * Using this cache avoids that.
      */
-    protected static $checkers = array();
+    protected static $checkers = [];
 
     /** @var string Value in the database define that do not check the spelling. */
     const DO_NOT_CHECK_OPTION = '-';
@@ -58,7 +52,7 @@ abstract class qtype_pmatch_spell_checker {
      * @param string $word the word to check.
      * @return bool whether the word is in the dictionary.
      */
-    public abstract function is_in_dictionary($word);
+    abstract public function is_in_dictionary($word);
 
     /**
      * Factory method create a new spell-checker object for a given language.
@@ -121,11 +115,11 @@ abstract class qtype_pmatch_spell_checker {
      * @return array a list of all the back-end library classes.
      */
     public static function get_known_backends() {
-        return array(
+        return [
                 'null'    => 'qtype_pmatch\local\spell\qtype_pmatch_null_spell_checker',
                 'pspell'  => 'qtype_pmatch\local\spell\qtype_pmatch_pspell_spell_checker',
                 'enchant' => 'qtype_pmatch\local\spell\qtype_pmatch_enchant_spell_checker',
-        );
+        ];
     }
 
     /**
@@ -133,7 +127,7 @@ abstract class qtype_pmatch_spell_checker {
      */
     public static function get_installed_backends() {
         $backends = self::get_known_backends();
-        $installedbackends = array();
+        $installedbackends = [];
         foreach ($backends as $key => $classname) {
             if ($classname::is_available()) {
                 $installedbackends[$key] = $classname;

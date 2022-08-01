@@ -84,7 +84,7 @@ class behat_qtype_pmatch extends behat_base {
      */
     protected function get_question_by_name($name) {
         global $DB;
-        $questionid = $DB->get_field('question', 'id', array('name' => $name));
+        $questionid = $DB->get_field('question', 'id', ['name' => $name]);
         $question = question_bank::load_question($questionid);
         return $question;
     }

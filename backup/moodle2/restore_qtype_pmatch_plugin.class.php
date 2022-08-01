@@ -21,17 +21,6 @@
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-defined('MOODLE_INTERNAL') || die();
-
-
-/**
- * Restore code for the pattern-match questoin type.
- *
- * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
 
     /**
@@ -39,7 +28,7 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
      */
     protected function define_question_plugin_structure() {
 
-        $paths = array();
+        $paths = [];
 
         // This qtype uses question_answers, add them.
         $this->add_question_question_answers($paths);

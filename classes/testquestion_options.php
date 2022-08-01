@@ -16,8 +16,6 @@
 
 namespace qtype_pmatch;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class to store options for {@link \qtype_pmatch\testquestion_controller}.
  * Design references are:
@@ -36,19 +34,19 @@ class testquestion_options {
     /**
      * @var array form field name => corresponding type_pmatch_testresponses:: state constant.
      */
-    protected static $statefields = array(
+    protected static $statefields = [
             'statematches' => \qtype_pmatch\testquestion_response::MATCHED,
             'statemissedpositive' => \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
             'statemissednegative' => \qtype_pmatch\testquestion_response::MISSED_NEGATIVE,
             'stateungraded' => \qtype_pmatch\testquestion_response::UNGRADED
-    );
+    ];
 
     /**
      * @var array|null of quiz_attempt::IN_PROGRESS, etc. constants. null means
      *      no restriction.
      */
-    public $states = array(\qtype_pmatch\testquestion_response::MATCHED, \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
-            \qtype_pmatch\testquestion_response::MISSED_NEGATIVE, \qtype_pmatch\testquestion_response::UNGRADED);
+    public $states = [\qtype_pmatch\testquestion_response::MATCHED, \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
+            \qtype_pmatch\testquestion_response::MISSED_NEGATIVE, \qtype_pmatch\testquestion_response::UNGRADED];
 
     /** @var int Number of attempts to show per page. */
     public $pagesize = \qtype_pmatch\testquestion_controller::DEFAULT_PAGE_SIZE;
@@ -69,7 +67,7 @@ class testquestion_options {
     }
 
     protected function get_url_params() {
-        $params = array();
+        $params = [];
         $params['id'] = $this->question->id;
         if ($this->states) {
             $params['states'] = implode('-', $this->states);
@@ -90,7 +88,7 @@ class testquestion_options {
 
     public function setup_from_form_data($fromform) {
         $this->pagesize   = $fromform->pagesize;
-        $this->states = array();
+        $this->states = [];
         foreach (self::$statefields as $field => $state) {
             if (!empty($fromform->$field)) {
                 $this->states[] = $state;
@@ -156,7 +154,7 @@ class testquestion_options {
      * Check the settings, and remove any 'impossible' combinations.
      */
     public function resolve_dependencies() {
-        $cleanstates = array();
+        $cleanstates = [];
         foreach (self::$statefields as $state) {
             if (in_array($state, $this->states)) {
                 $cleanstates[] = $state;

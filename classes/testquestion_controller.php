@@ -90,7 +90,7 @@ class testquestion_controller {
      */
     protected function get_base_url() {
         return new \moodle_url('/question/type/pmatch/testquestion.php',
-                array('id' => $this->question->id));
+                ['id' => $this->question->id]);
     }
 
     /**
@@ -100,7 +100,7 @@ class testquestion_controller {
     protected function process_response_table_actions($redirecturl) {
         global $OUTPUT;
         if (optional_param('test', 0, PARAM_BOOL) && confirm_sesskey()) {
-            if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
+            if ($responseids = optional_param_array('responseid', [], PARAM_INT)) {
                 $this->print_grading_responses_progressbar($responseids);
                 \qtype_pmatch\testquestion_responses::save_rule_matches($this->question, $responseids);
                 echo $OUTPUT->continue_button($redirecturl);
@@ -110,7 +110,7 @@ class testquestion_controller {
         }
 
         if (optional_param('delete', 0, PARAM_BOOL) && confirm_sesskey()) {
-            if ($responseids = optional_param_array('responseid', array(), PARAM_INT)) {
+            if ($responseids = optional_param_array('responseid', [], PARAM_INT)) {
                 question_require_capability_on($this->question, 'edit');
                 \qtype_pmatch\testquestion_responses::delete_responses_by_ids($responseids);
                 echo get_string('testquestiondeletedresponses', 'qtype_pmatch');
@@ -134,7 +134,7 @@ class testquestion_controller {
             $row++;
             \qtype_pmatch\testquestion_responses::grade_response($response, $this->question);
             $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
-                    array('row' => $row, 'total' => $rowcount, 'response' => $response->response)));
+                    ['row' => $row, 'total' => $rowcount, 'response' => $response->response]));
         }
     }
 

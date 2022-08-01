@@ -146,7 +146,7 @@ abstract class pmatch_matcher_item {
 }
 abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item {
 
-    protected $subcontents = array();
+    protected $subcontents = [];
 
     /**
      *
@@ -168,7 +168,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
         $typeobj = new stdClass();
         $typeobj->name = $this->get_type_name($this);
         $typeobj->codefragment = $this->interpreter->get_code_fragment();
-        $typeobj->subcontents = array();
+        $typeobj->subcontents = [];
         foreach ($this->subcontents as $subcontent) {
             $typeobj->subcontents[] = $subcontent->get_type();
         }
@@ -216,7 +216,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
      * @return boolean found a match?
      */
     protected function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0,
-                                                                        $wordsmatched = array()) {
+                                                                        $wordsmatched = []) {
         if ($wordtotry >= count($phrase)) {
             return false;
         }
@@ -428,7 +428,7 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
                 $min = $min + $subcontentmin;
             }
         }
-        return array($min, $max);
+        return [$min, $max];
     }
 }
 
@@ -472,7 +472,7 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
                 $min = min($min, $subcontentmin);
             }
         }
-        return array($min, $max);
+        return [$min, $max];
     }
 }
 
@@ -495,9 +495,13 @@ class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
     }
 
     public function match_word($word, $wordleveloptions) {
+        // phpcs:disable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterFirst
+        // phpcs:disable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterSecond
         for ($this->usedmisspellings = 0;
                 $this->usedmisspellings <= $wordleveloptions->get_misspellings();
                 $this->usedmisspellings++) {
+        // phpcs:enable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterFirst
+        // phpcs:enable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterSecond
             foreach ($this->subcontents as $subcontent) {
                 $nextwordleveloptions = clone($wordleveloptions);
                 $nextwordleveloptions->set_misspellings($this->usedmisspellings);
@@ -511,7 +515,7 @@ class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
     }
 
     public function can_match_len($phraseleveloptions) {
-        return array(1, 1);
+        return [1, 1];
     }
 }
 
@@ -546,9 +550,9 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
     public function can_match_len($phraseleveloptions) {
         $noofwords = (count($this->subcontents) + 1) / 2;
         if ($phraseleveloptions->get_allow_extra_words()) {
-            return array($noofwords, null);
+            return [$noofwords, null];
         } else {
-            return array($noofwords, $noofwords);
+            return [$noofwords, $noofwords];
         }
     }
 }
@@ -571,9 +575,9 @@ class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
 
     public function can_match_len($phraseleveloptions) {
         if ($phraseleveloptions->get_allow_extra_words()) {
-            return array(0, null);
+            return [0, null];
         } else {
-            return array(0, 0);
+            return [0, 0];
         }
     }
 
@@ -613,9 +617,9 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 
     public function can_match_len($phraseleveloptions) {
         if ($phraseleveloptions->get_allow_extra_words()) {
-            return array(0, $phraseleveloptions->get_allow_proximity_of());
+            return [0, $phraseleveloptions->get_allow_proximity_of()];
         } else {
-            return array(0, 0);
+            return [0, 0];
         }
     }
 
@@ -673,7 +677,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         $adjustedwordleveloptions = clone($wordleveloptions);
         foreach ($this->subcontents as $subcontent) {
             if (in_array($this->get_type_name($subcontent),
-                                array('character_in_word', 'special_character_in_word'))) {
+                                ['character_in_word', 'special_character_in_word'])) {
                 $normalcharactercount++;
             }
         }
@@ -827,7 +831,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
     }
 
     public function can_match_len($phraseleveloptions) {
-        return array(1, 1);
+        return [1, 1];
     }
 }
 

@@ -53,7 +53,7 @@ class qtype_pmatch_admin_setting_spell_checker extends \admin_setting_configsele
             return true;
         }
 
-        $this->choices = array();
+        $this->choices = [];
         $backends = qtype_pmatch_spell_checker::get_installed_backends();
         foreach ($backends as $key => $classname) {
             $this->choices[$key] = $classname::get_name();

@@ -35,15 +35,15 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
     protected $identifier = 'pmatch';
 
     protected function extra_question_properties() {
-        return array('forcelength' => '0');
+        return ['forcelength' => '0'];
     }
 
     protected function extra_answer_properties() {
-        return array('fraction' => '1', 'feedback' => array('text' => '', 'format' => FORMAT_PLAIN));
+        return ['fraction' => '1', 'feedback' => ['text' => '', 'format' => FORMAT_PLAIN]];
     }
 
     public function subq_form_fragment_question_option_fields() {
-        return array('allowsubscript' => null,
+        return ['allowsubscript' => null,
                      'allowsuperscript' => null,
                      'usecase' => null,
                      'applydictionarycheck' => null,
@@ -51,7 +51,7 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
                      'sentencedividers' => '.?!',
                      'converttospace' => ',;:',
                      'modelanswer' => '',
-                     'synonymsdata' => array());
+                     'synonymsdata' => []];
     }
 }
 
@@ -65,7 +65,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
      * @return mixed
      */
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
-        $susubels = array();
+        $susubels = [];
         $susubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsubscript'),
                                             get_string('allowsubscript', 'qtype_pmatch'));
         $susubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsuperscript'),
@@ -73,11 +73,11 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->addGroup($susubels, $this->form_field_name('susubels'), get_string('allowsubscript', 'qtype_pmatch'),
                                                                     '',
                                                                     false);
-        $menu = array(
+        $menu = [
             get_string('caseno', 'qtype_pmatch'),
             get_string('caseyes', 'qtype_pmatch')
-        );
-        $casedictels = array();
+        ];
+        $casedictels = [];
         $casedictels[] = $mform->createElement('select', $this->form_field_name('usecase'),
                                                get_string('casesensitive', 'qtype_pmatch'), $menu);
         list ($options, $disable) = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
@@ -93,7 +93,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                                                                         get_string('casesensitive', 'qtype_pmatch'), '', false);
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
-            array('rows' => '3', 'cols' => '57'));
+            ['rows' => '3', 'cols' => '57']);
         $mform->disabledIf($this->form_field_name('extenddictionary'),
                 $this->form_field_name('applydictionarycheck'),
                 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
@@ -107,7 +107,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 $this->form_field_name('synonymsdata'), 1, 0);
 
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answer', 'question'),
-                                                             array('rows' => '6', 'cols' => '57', 'class' => 'textareamonospace'));
+                                                             ['rows' => '6', 'cols' => '57', 'class' => 'textareamonospace']);
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
@@ -116,7 +116,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
     }
 
     public function data_to_form($context, $fileoptions) {
-        $answers = array('answer' => array());
+        $answers = ['answer' => []];
         if ($this->questionrec !== null) {
             $answer = array_pop($this->questionrec->options->answers);
             $answers['answer'][] = $answer->answer;
@@ -137,7 +137,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
 
     public function validate() {
-        $errors = array();
+        $errors = [];
 
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
@@ -151,8 +151,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
         if (!empty($this->formdata->sentencedividers)) {
-            if ($charfound = form_utils::find_char_in_both_strings($this->formdata->sentencedividers, $this->formdata->converttospace)) {
-                $errors[$this->form_field_name('converttospace')] = get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
+            if ($charfound = form_utils::find_char_in_both_strings(
+                    $this->formdata->sentencedividers, $this->formdata->converttospace)) {
+                $errors[$this->form_field_name('converttospace')] =
+                        get_string('sentencedividers_noconvert', 'qtype_pmatch', $charfound);
             }
         }
 

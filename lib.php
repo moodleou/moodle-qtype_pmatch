@@ -15,17 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Serve question type files
+ * Standard callbacks for qtype_pmatch.
  *
- * @since      2.0
  * @package   qtype_pmatch
- * @copyright  2012 The Open University
- * @author     Jamie Pratt <me@jamiep.org>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Checks file access for pattern-match questions.
@@ -40,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param bool $forcedownload
  * @param array $options
  */
-function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options= []) {
     global $CFG;
     require_once($CFG->libdir . '/questionlib.php');
     question_pluginfile($course, $context, 'qtype_pmatch', $filearea, $args, $forcedownload, $options);
@@ -56,7 +51,7 @@ function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forc
 function qtype_pmatch_setup_question_test_page($question) {
     global $PAGE;
 
-    $urlparams = array('questionid' => $question->id);
+    $urlparams = ['questionid' => $question->id];
 
     // Were we given a particular context to run the question in?
     // This affects things like filter settings, or forced theme or language.
@@ -90,7 +85,7 @@ function qtype_pmatch_setup_question_test_page($question) {
         // Note that in the other cases, require_login will set the correct page context.
     }
 
-    return array($context, $urlparams);
+    return [$context, $urlparams];
 }
 
 /**

@@ -44,8 +44,8 @@ class form_utils {
      * @return array
      */
     public static function validate_synonyms($data, $fieldname = 'synonymsdata') {
-        $errors = array();
-        $wordssofar = array();
+        $errors = [];
+        $wordssofar = [];
         foreach ($data['synonymsdata'] as $key => $synonym) {
             $trimmedword = trim($synonym['word']);
             $trimmedsynonyms = trim($synonym['synonyms']);
@@ -198,11 +198,11 @@ class form_utils {
         }
         $mform->addElement('static', 'synonymsdescription', '',
                 get_string('synonymsheader', 'qtype_pmatch'));
-        $textboxgroup = array();
+        $textboxgroup = [];
         $textboxgroup[] = $mform->createElement('group', $elementname,
                 get_string('synonymsno', 'qtype_pmatch', '{no}'), self::add_synonym($mform));
-        $repeatedoptions = array('synonymsdata[word]' => array('type' => PARAM_RAW),
-                'synonymsdata[synonyms]' => array('type' => PARAM_RAW));
+        $repeatedoptions = ['synonymsdata[word]' => ['type' => PARAM_RAW],
+                'synonymsdata[synonyms]' => ['type' => PARAM_RAW]];
 
         if (isset($question->options)) {
             $countsynonyms = count($question->options->synonyms);
@@ -225,11 +225,11 @@ class form_utils {
      * @return array
      */
     public static function add_synonym($mquickform) {
-        $grouparray = array();
+        $grouparray = [];
         $grouparray[] = $mquickform->createElement('text', 'word',
-                get_string('wordwithsynonym', 'qtype_pmatch'), array('size' => 15));
+                get_string('wordwithsynonym', 'qtype_pmatch'), ['size' => 15]);
         $grouparray[] = $mquickform->createElement('text', 'synonyms',
-                get_string('synonym', 'qtype_pmatch'), array('size' => 50));
+                get_string('synonym', 'qtype_pmatch'), ['size' => 50]);
         return $grouparray;
     }
 }

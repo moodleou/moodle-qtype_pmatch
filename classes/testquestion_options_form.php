@@ -31,7 +31,7 @@ class testquestion_options_form extends \moodleform {
     protected function definition() {
         $mform = $this->_form;
         $mform->addElement('header', 'preferencespage', get_string('reportwhattoinclude', 'quiz'));
-        $stategroup = array(
+        $stategroup = [
                 $mform->createElement('advcheckbox', 'statematches', '',
                         get_string('testquestionmatches', 'qtype_pmatch')),
                 $mform->createElement('advcheckbox', 'statemissedpositive', '',
@@ -40,9 +40,9 @@ class testquestion_options_form extends \moodleform {
                         get_string('testquestionincorrectlymarkedrights', 'qtype_pmatch')),
                 $mform->createElement('advcheckbox', 'stateungraded', '',
                         get_string('testquestionungraded', 'qtype_pmatch')),
-        );
+        ];
         $mform->addGroup($stategroup, 'stateoptions',
-                get_string('testquestionresponsesthatare', 'qtype_pmatch'), array(' '), false);
+                get_string('testquestionresponsesthatare', 'qtype_pmatch'), [' '], false);
         $mform->setDefault('statematches', 1);
         $mform->setDefault('statemissedpositive', 1);
         $mform->setDefault('statemissednegative', 1);

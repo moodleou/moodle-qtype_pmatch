@@ -14,28 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * This file contains of the pmatch library using files of examples.
- *
- * @package   qtype_pmatch
- * @copyright 2012 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
-
 /**
  * Test driver class that tests the pmatch library by loading examples from
  * text files in the examples folder.
  *
+ * @package   qtype_pmatch
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group     qtype_pmatch
  */
 class qtype_pmatch_examples_test extends basic_testcase {
     /** @var string where to look for examples. */
@@ -60,10 +50,10 @@ class qtype_pmatch_examples_test extends basic_testcase {
         $examplespath = dirname(__FILE__) . '/' . $this->examplesdir;
         $files = glob($examplespath . '/*.rules.txt');
         if (!$files) {
-            return array();
+            return [];
         }
 
-        $examples = array();
+        $examples = [];
         foreach ($files as $path) {
             $example = preg_replace('/\.rules\.txt$/', '', $path);
             if (is_readable($example . '.rules.txt') && is_readable($example . '.responses.csv')) {

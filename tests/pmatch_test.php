@@ -14,25 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * This file contains tests that tests the interpretation of a pmatch string.
- *
- * @package   qtype_pmatch
- * @copyright 2012 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
 /**
  * Tests of the interpretation of the pmatch pattern in the pmatch library.
  *
+ * @package   qtype_pmatch
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group     qtype_pmatch
  */
 class qtype_pmatch_test extends basic_testcase {
     protected function match($string, $expression, $options = null) {
@@ -455,12 +447,18 @@ EOF;
                 ['Test', 'match(Test?)', false, pmatch_options::make(['sentencedividers' => ''])],
                 ['Test.', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
                 ['Testa', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
-                ['Punctuation is important.', 'match(Punctuation is important.)', true, pmatch_options::make(['sentencedividers' => ''])],
-                ['Punctuation is important', 'match(Punctuation is important.)', false, pmatch_options::make(['sentencedividers' => ''])],
-                ['Is punctuation important?', 'match(Is punctuation important?)', true, pmatch_options::make(['sentencedividers' => ''])],
-                ['Is punctuation important?', 'match(Is punctuation important)', false, pmatch_options::make(['sentencedividers' => ''])],
-                ['Punctuation is important!', 'match(Punctuation is important!)', true, pmatch_options::make(['sentencedividers' => ''])],
-                ['Punctuation is important!', 'match(Punctuation is important)', false, pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important.', 'match(Punctuation is important.)', true,
+                        match_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important', 'match(Punctuation is important.)', false,
+                        pmatch_options::make(['sentencedividers' => ''])],
+                ['Is punctuation important?', 'match(Is punctuation important?)', true,
+                        pmatch_options::make(['sentencedividers' => ''])],
+                ['Is punctuation important?', 'match(Is punctuation important)', false,
+                        pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important!', 'match(Punctuation is important!)', true,
+                        pmatch_options::make(['sentencedividers' => ''])],
+                ['Punctuation is important!', 'match(Punctuation is important)', false,
+                        pmatch_options::make(['sentencedividers' => ''])],
         ];
     }
 
@@ -679,9 +677,9 @@ EOF;
         // - Removing A from both the string and the pattern.
         // - Removing B from both the string and the pattern.
         $options = new pmatch_options();
-        $options->set_synonyms(array(
-            (object) array('word' => 'B', 'synonyms' => '*B*'),
-        ));
+        $options->set_synonyms([
+            (object) ['word' => 'B', 'synonyms' => '*B*'],
+        ]);
         $this->assertTrue($this->match('A B', 'match (A B)', $options));
     }
 }

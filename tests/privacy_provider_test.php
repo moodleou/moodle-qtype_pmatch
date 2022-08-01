@@ -14,23 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Privacy API tests for qtype_pmatch
- *
- * @package qtype_pmatch
- * @copyright 2018 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace qtype_pmatch;
 
-namespace qtype_pmatch\tests;
+defined('MOODLE_INTERNAL') || die();
 
 use core_privacy\local\metadata\collection;
 use \core_privacy\local\request\user_preference_provider;
 use qtype_pmatch\privacy\provider;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\transform;
-
-defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/classes/privacy/provider.php');
@@ -42,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/classes/privacy/provider.php
  * @copyright  2021 The Open university
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_pmatch_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
+class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     // Include the privacy helper which has assertions on it.
 
     public function test_get_metadata() {

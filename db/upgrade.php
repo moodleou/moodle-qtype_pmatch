@@ -22,12 +22,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 /**
  * Upgrade code for the Pattern-match question type.
+ *
  * @param int $oldversion the version we are upgrading from.
  */
 function xmldb_qtype_pmatch_upgrade($oldversion) {
@@ -56,8 +55,8 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         $table->add_field('gradedfraction', XMLDB_TYPE_NUMBER, '12, 7', null, null, null, null);
 
         // Adding keys to table qtype_pmatch_test_responses.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('questionid', XMLDB_KEY_FOREIGN, array('questionid'), 'question', array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('questionid', XMLDB_KEY_FOREIGN, ['questionid'], 'question', ['id']);
 
         // Conditionally launch create table for qtype_pmatch_test_responses.
         if (!$dbman->table_exists($table)) {
@@ -78,9 +77,9 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         $table->add_field('testresponseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table qtype_pmatch_rule_matches.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('answerid', XMLDB_KEY_FOREIGN, array('answerid'), 'question_answers', array('id'));
-        $table->add_key('testresponseid', XMLDB_KEY_FOREIGN, array('testresponseid'), 'qtype_pmatch_test_responses', array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('answerid', XMLDB_KEY_FOREIGN, ['answerid'], 'question_answers', ['id']);
+        $table->add_key('testresponseid', XMLDB_KEY_FOREIGN, ['testresponseid'], 'qtype_pmatch_test_responses', ['id']);
 
         // Conditionally launch create table for qtype_pmatch_rule_matches.
         if (!$dbman->table_exists($table)) {
@@ -96,7 +95,7 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
             // Define field questionid to be added to qtype_pmatch_rule_matches.
         $table = new xmldb_table('qtype_pmatch_rule_matches');
         $field = new xmldb_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'testresponseid');
-        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, array('questionid'), 'question', array('id'));
+        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, ['questionid'], 'question', ['id']);
 
         // Conditionally launch add field questionid.
         if (!$dbman->field_exists($table, $field)) {

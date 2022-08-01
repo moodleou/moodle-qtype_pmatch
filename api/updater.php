@@ -35,7 +35,7 @@ $qid = optional_param('qid', 0, PARAM_INT);
 $rid = optional_param('rid', 0, PARAM_INT);
 $ef = optional_param('expectedfraction', 0, PARAM_INT);
 $question = question_bank::load_question($qid);
-$return = array();
+$return = [];
 
 header('Content-type: application/json');
 
@@ -51,7 +51,7 @@ if (!question_has_capability_on($question, 'edit')) {
     echo json_encode($return);
     die;
 }
-$response = $DB->get_record('qtype_pmatch_test_responses', array('id' => $rid), 'id, expectedfraction');
+$response = $DB->get_record('qtype_pmatch_test_responses', ['id' => $rid], 'id, expectedfraction');
 if (!$response) {
     $return['status'] = 'error';
     $return['data'] = 'The response id:' . $rid . ' does not match a record.';
@@ -71,10 +71,10 @@ try {
 // Now update the computed mark (though this will never change), as it allows us
 // to get the correct row class. It also means that if you change the human mark
 // of a response that has not been computer marked yet, the computed mark will be inserted.
-$responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($rid));
+$responses = \qtype_pmatch\testquestion_responses::get_responses_by_ids([$rid]);
 $response = $responses[$rid];
 \qtype_pmatch\testquestion_responses::grade_response($response, $question);
-\qtype_pmatch\testquestion_responses::save_rule_matches($question, array($rid));
+\qtype_pmatch\testquestion_responses::save_rule_matches($question, [$rid]);
 $options = new \qtype_pmatch\testquestion_options($question);
 $table = new \qtype_pmatch\testquestion_table($question, $responses, $options);
 // Counts could be returned as the lang string 'testquestionresultssummary', and that

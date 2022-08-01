@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * This file contains of the pmatch library using files of examples.
- *
- * @package   qtype_pmatch
- * @copyright 2016 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -32,9 +24,9 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
 /**
  * Test the responses used in the test this question function.
  *
+ * @package   qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group     qtype_pmatch
  */
 class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion_testcase {
 
@@ -85,8 +77,8 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
     public function test_data_to_responses() {
         $this->resetAfterTest();
         // Empty array.
-        $responses = \qtype_pmatch\testquestion_responses::data_to_responses(array());
-        $this->assertEquals($responses, array());
+        $responses = \qtype_pmatch\testquestion_responses::data_to_responses([]);
+        $this->assertEquals($responses, []);
 
         // One class with all fields filled out.
         $data = new stdClass();
@@ -96,7 +88,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $data->gradedfraction = 1;
         $data->response = 'one two';
 
-        $responses = \qtype_pmatch\testquestion_responses::data_to_responses(array($data));
+        $responses = \qtype_pmatch\testquestion_responses::data_to_responses([$data]);
         $testresponse = array_pop($responses);
 
         // No contents.
@@ -133,7 +125,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $generator = $this->getDataGenerator()->get_plugin_generator('qtype_pmatch');
 
         // Create responses.
-        $responses = array();
+        $responses = [];
         for ($x = 0; $x < 10; $x++) {
             $response = $generator->create_test_response();
             $responses[$response->id] = $response;
@@ -182,7 +174,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $response = $responses[0];
         $response->questionid = 2;
 
-        $feedback = \qtype_pmatch\testquestion_responses::add_responses(array($response));
+        $feedback = \qtype_pmatch\testquestion_responses::add_responses([$response]);
         $dbresponses = $DB->get_records('qtype_pmatch_test_responses');
 
         // Check results.
@@ -206,7 +198,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $response->response = "this is updated";
         $updated = \qtype_pmatch\testquestion_responses::update_response($response);
 
-        $dbresponse = $DB->get_record('qtype_pmatch_test_responses', array('id' => $response->id));
+        $dbresponse = $DB->get_record('qtype_pmatch_test_responses', ['id' => $response->id]);
         // Convert to test_response object.
         $dbresponse = \qtype_pmatch\testquestion_response::create($dbresponse);
 
@@ -226,7 +218,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Get one response and delete it.
         $response = array_pop($responses);
-        \qtype_pmatch\testquestion_responses::delete_responses_by_ids(array($response->id));
+        \qtype_pmatch\testquestion_responses::delete_responses_by_ids([$response->id]);
 
         // Confirm only the correct response was deleted.
         $dbresponseids = array_keys($DB->get_records('qtype_pmatch_test_responses'));
@@ -255,7 +247,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Confirm counts for unmarked grades.
         $this->assertEquals($expectedcounts, $actualcounts);
-        $params = array('questionid' => $this->currentquestion->id);
+        $params = ['questionid' => $this->currentquestion->id];
         $params['expectedfraction'] = 0;
         $params['gradedfraction'] = 0;
 
@@ -298,7 +290,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedcomputergrade = 1;
         \qtype_pmatch\testquestion_responses::grade_response($response, $this->currentquestion);
 
-        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($response->id));
+        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids([$response->id]);
         $dbresponse = array_shift($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
@@ -309,7 +301,7 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $expectedcomputergrade = 0;
         \qtype_pmatch\testquestion_responses::grade_response($wrongresponse, $this->currentquestion);
 
-        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids(array($wrongresponse->id));
+        $dbresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids([$wrongresponse->id]);
         $dbresponse = array_pop($dbresponses);
         $actualcomputergrade = $dbresponse->gradedfraction;
 
@@ -329,22 +321,22 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         list($responses, $problems) = $this->load_responses($question, $responsesfile);
 
         // Create expected responses.
-        $data = array(
-                array(1, "testing one two three four"),
-                array(0, "testing"),
-                array(1, "one"),
-                array(1, "two"),
-                array(1, "three"),
-                array(1, "four"),
-                array(0, "for"),
-                array(0, "free"),
-                array(0, "€£¥©®™±≠≤≥÷×∞µαβπΩ∑"),
-                array(0, "one not two but three and four."),
-                array(1, "another test"),
-                array(null, 'testing anything.'),
-                array(null, '')
-        );
-        $expectedresponses = array();
+        $data = [
+                [1, "testing one two three four"],
+                [0, "testing"],
+                [1, "one"],
+                [1, "two"],
+                [1, "three"],
+                [1, "four"],
+                [0, "for"],
+                [0, "free"],
+                [0, "€£¥©®™±≠≤≥÷×∞µαβπΩ∑"],
+                [0, "one not two but three and four."],
+                [1, "another test"],
+                [null, 'testing anything.'],
+                [null, '']
+        ];
+        $expectedresponses = [];
         foreach ($data as $datarow) {
             $response = new \qtype_pmatch\testquestion_response();
             $response->questionid = $question->id;
@@ -354,10 +346,10 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         }
 
         // Test problems.
-        $expectedproblems = array(
+        $expectedproblems = [
                 'Each row should contain exactly two items, a numerical mark and a response.' .
                 ' Row <b>11</b> contains <b>3</b> item(s).'
-        );
+        ];
 
         $this->assertEquals($expectedproblems, $problems);
 
@@ -414,19 +406,19 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         // Test grading for a correct response.
         // Note the response is fixed here as using load_default_responses gives unreliable results.
-        $response = (object) array('response' => 'Tom or Dick');
-        $answerstoruleids = array();
+        $response = (object) ['response' => 'Tom or Dick'];
+        $answerstoruleids = [];
         foreach ($answers as $aid => $answer) {
             $match = false;
-            $match = $this->currentquestion->compare_response_with_answer(array('answer' => $response->response), $answer);
+            $match = $this->currentquestion->compare_response_with_answer(['answer' => $response->response], $answer);
             if ($match === true) {
                 $response->ruleids[] = $aid;
             }
             $answerstoruleids[$answer->answer] = $aid;
         }
 
-        $this->assertEquals(array($answerstoruleids['match_w(Tom|Harry)'],
-                $answerstoruleids['match_w(Dick)']),
+        $this->assertEquals([$answerstoruleids['match_w(Tom|Harry)'],
+                $answerstoruleids['match_w(Dick)']],
                 $response->ruleids);
     }
 
@@ -442,12 +434,12 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
 
         $responseids = array_keys($responses);
         $compareresponses = \qtype_pmatch\testquestion_responses::get_responses_by_ids($responseids);
-        $responsestoruleids = array(
-                'Tom Dick or Harry' => array(13),
-                'Tom' => array(13),
-                'Harry' => array(13),
-                'Tom was janes companion' => array(13)
-        );
+        $responsestoruleids = [
+                'Tom Dick or Harry' => [13],
+                'Tom' => [13],
+                'Harry' => [13],
+                'Tom was janes companion' => [13]
+        ];
 
         foreach ($compareresponses as $compareresponse) {
             if (array_key_exists($compareresponse->response, $responsestoruleids)) {
@@ -585,22 +577,22 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         $this->currentquestion->answers = $rules;
 
         $responseids = array_keys($responses);
-        $comparerulematches = array(
-                'responseidstoruleids' => array(
-                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
-                        'Tom' => array(0 => 'match_w(Tom|Harry)'),
-                        'Dick' => array(0 => 'match_w(Dick)'),
-                        'Harry' => array(0 => 'match_w(Tom|Harry)'),
-                        'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
-                        'Felicity' => array(0 => 'match_w(Felicity)'),
-                ),
-                'ruleidstoresponseids' => array(
-                        'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
-                                3 => 'Tom was janes companion'),
-                        'match_w(Dick)' => array(0 => 'Tom Dick or Harry', 1 => 'Dick'),
-                        'match_w(Felicity)' => array(0 => "Felicity"),
-                )
-        );
+        $comparerulematches = [
+                'responseidstoruleids' => [
+                        'Tom Dick or Harry' => [0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'],
+                        'Tom' => [0 => 'match_w(Tom|Harry)'],
+                        'Dick' => [0 => 'match_w(Dick)'],
+                        'Harry' => [0 => 'match_w(Tom|Harry)'],
+                        'Tom was janes companion' => [0 => 'match_w(Tom|Harry)'],
+                        'Felicity' => [0 => 'match_w(Felicity)'],
+                ],
+                'ruleidstoresponseids' => [
+                        'match_w(Tom|Harry)' => [0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                3 => 'Tom was janes companion'],
+                        'match_w(Dick)' => [0 => 'Tom Dick or Harry', 1 => 'Dick'],
+                        'match_w(Felicity)' => [0 => "Felicity"],
+                ]
+        ];
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         \qtype_pmatch\testquestion_responses::save_rule_matches($this->currentquestion);
 
@@ -619,20 +611,20 @@ class qtype_pmatch_testquestion_responses_test extends qtype_pmatch_testquestion
         \qtype_pmatch\testquestion_responses::delete_rule_matches($this->currentquestion);
 
         // Set new expectations.
-        $deletedrulecomparerulematches = array(
-                'responseidstoruleids' => array(
-                        'Tom Dick or Harry' => array(0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'),
-                        'Tom' => array(0 => 'match_w(Tom|Harry)'),
-                        'Dick' => array(0 => 'match_w(Dick)'),
-                        'Harry' => array(0 => 'match_w(Tom|Harry)'),
-                        'Tom was janes companion' => array(0 => 'match_w(Tom|Harry)'),
-                ),
-                'ruleidstoresponseids' => array(
-                        'match_w(Tom|Harry)' => array(0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
-                                3 => 'Tom was janes companion'),
-                        'match_w(Dick)' => array(0 => "Tom Dick or Harry", 1 => "Dick"),
-                ),
-        );
+        $deletedrulecomparerulematches = [
+                'responseidstoruleids' => [
+                        'Tom Dick or Harry' => [0 => 'match_w(Tom|Harry)', 1 => 'match_w(Dick)'],
+                        'Tom' => [0 => 'match_w(Tom|Harry)'],
+                        'Dick' => [0 => 'match_w(Dick)'],
+                        'Harry' => [0 => 'match_w(Tom|Harry)'],
+                        'Tom was janes companion' => [0 => 'match_w(Tom|Harry)'],
+                ],
+                'ruleidstoresponseids' => [
+                        'match_w(Tom|Harry)' => [0 => 'Tom Dick or Harry', 1 => 'Tom', 2 => 'Harry',
+                                3 => 'Tom was janes companion'],
+                        'match_w(Dick)' => [0 => "Tom Dick or Harry", 1 => "Dick"],
+                ],
+        ];
 
         $deletedrule = array_pop($rules);
         // Update the question rules.

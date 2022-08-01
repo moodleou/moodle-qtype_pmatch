@@ -113,7 +113,7 @@ class upload_form extends moodleform {
 
 $questionid = required_param('id', PARAM_INT);
 
-$questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUST_EXIST);
+$questiondata = $DB->get_record('question', ['id' => $questionid], '*', MUST_EXIST);
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
 }
@@ -123,7 +123,7 @@ $question = question_bank::load_question($questionid);
 list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
 question_require_capability_on($questiondata, 'edit');
 
-$url = new moodle_url('/question/type/pmatch/uploadresponses.php', array('id' => $questionid));
+$url = new moodle_url('/question/type/pmatch/uploadresponses.php', ['id' => $questionid]);
 $title = get_string('testquestionformtitle', 'qtype_pmatch');
 
 $PAGE->set_url($url);
@@ -132,7 +132,7 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
 $form = new upload_form();
-$form->set_data(array('id' => $questionid));
+$form->set_data(['id' => $questionid]);
 
 $renderer = $PAGE->get_renderer('qtype_pmatch');
 $link = $renderer->back_to_test_question_link($questionid);

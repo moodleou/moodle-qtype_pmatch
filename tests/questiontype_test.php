@@ -14,31 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
+
 /**
  * Unit tests for the pmatch question type class.
  *
  * @package   qtype_pmatch
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
-defined('MOODLE_INTERNAL') || die();
-global $CFG;
-
-require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
-
-
-/**
- * Unit tests for the pmatch question type class.
- *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_pmatch
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_questiontype_test extends basic_testcase {
-    public static $includecoverage = array('question/type/questiontype.php',
-                                        'question/type/pmatch/questiontype.php');
+    public static $includecoverage = ['question/type/questiontype.php',
+                                        'question/type/pmatch/questiontype.php'];
     protected $qtype;
 
     protected function setUp(): void {
@@ -49,8 +39,8 @@ class qtype_pmatch_questiontype_test extends basic_testcase {
         $q = new stdClass();
         $q->id = 1;
         $q->options = new stdClass();
-        $q->options->answers[1] = (object) array('answer' => 'match(frog)', 'fraction' => 1);
-        $q->options->answers[2] = (object) array('answer' => '*', 'fraction' => 0);
+        $q->options->answers[1] = (object) ['answer' => 'match(frog)', 'fraction' => 1];
+        $q->options->answers[2] = (object) ['answer' => '*', 'fraction' => 0];
 
         return $q;
     }
@@ -71,11 +61,11 @@ class qtype_pmatch_questiontype_test extends basic_testcase {
     public function test_get_possible_responses() {
         $q = $this->get_test_question_data();
 
-        $this->assertEquals(array(
-            $q->id => array(
+        $this->assertEquals([
+            $q->id => [
                 1 => new question_possible_response('match(frog)', 1),
                 2 => new question_possible_response('*', 0),
-                null => question_possible_response::no_response()),
-        ), $this->qtype->get_possible_responses($q));
+                null => question_possible_response::no_response()],
+        ], $this->qtype->get_possible_responses($q));
     }
 }

@@ -18,20 +18,10 @@
  * Pattern match question type data generator tests
  *
  * @package   qtype_pmatch
- * @copyright  2015 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2015 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-
-/**
- * Test data generator
- *
- * @copyright  2015 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_pmatch_testquestion_generator_testcase extends advanced_testcase {
+class qtype_pmatch_testquestion_generator_test extends advanced_testcase {
     public function test_create() {
         global $DB;
 

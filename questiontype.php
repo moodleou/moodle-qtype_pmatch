@@ -55,14 +55,14 @@ class qtype_pmatch extends question_type {
         global $DB;
         parent::get_question_options($question);
         $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms',
-                                                        array('questionid' => $question->id),
+                                                        ['questionid' => $question->id],
                                                         'id ASC');
         return true;
     }
 
     public function extra_question_fields() {
-        return array('qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
-                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace', 'modelanswer');
+        return ['qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
+                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace', 'modelanswer'];
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -94,7 +94,7 @@ class qtype_pmatch extends question_type {
         global $DB;
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
-                array('questionid' => $questionform->id), 'id ASC');
+                ['questionid' => $questionform->id], 'id ASC');
 
         foreach ($questionform->synonymsdata as $key => $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
@@ -121,7 +121,7 @@ class qtype_pmatch extends question_type {
 
         // Delete any remaining synonyms.
         foreach ($oldsynonyms as $oldsynonym) {
-            $DB->delete_records('qtype_pmatch_synonyms', array('id' => $oldsynonym->id));
+            $DB->delete_records('qtype_pmatch_synonyms', ['id' => $oldsynonym->id]);
         }
 
         if (!isset($questionform->extenddictionary)) {
@@ -163,7 +163,7 @@ class qtype_pmatch extends question_type {
     protected function save_answers($question) {
         global $DB;
         $oldanswers = $DB->get_records('question_answers',
-                                            array('question' => $question->id), 'id ASC');
+                                            ['question' => $question->id], 'id ASC');
 
         $context = $question->context;
         $maxfraction = -1;
@@ -227,7 +227,7 @@ class qtype_pmatch extends question_type {
         $fs = get_file_storage();
         foreach ($oldanswers as $oldanswer) {
             $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
-            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
+            $DB->delete_records('question_answers', ['id' => $oldanswer->id]);
         }
 
         // Perform sanity checks on fractional grades.
@@ -249,14 +249,14 @@ class qtype_pmatch extends question_type {
             return false;
         }
 
-        $synonyms = $format->getpath($data, array('#', 'synonym'), false);
+        $synonyms = $format->getpath($data, ['#', 'synonym'], false);
         if ($synonyms) {
             $this->import_synonyms($format, $question, $synonyms);
         } else {
-            $question->synonymsdata = array();
+            $question->synonymsdata = [];
         }
 
-        $testquestionresponses = $format->getpath($data, array('#', 'testquestionresponse'), false);
+        $testquestionresponses = $format->getpath($data, ['#', 'testquestionresponse'], false);
         if ($testquestionresponses) {
             $this->import_responses($format, $question, $testquestionresponses);
         } else {
@@ -311,11 +311,11 @@ class qtype_pmatch extends question_type {
         static $indexno = 0;
         $question->synonymsdata[$indexno]['word'] =
                     $format->import_text($format->getpath($synonym,
-                                                            array('#', 'word', 0, '#', 'text'),
+                                                            ['#', 'word', 0, '#', 'text'],
                                                             ''));
         $question->synonymsdata[$indexno]['synonyms'] =
                     $format->import_text($format->getpath($synonym,
-                                                            array('#', 'synonyms', 0, '#', 'text'),
+                                                            ['#', 'synonyms', 0, '#', 'text'],
                                                             ''));
         $indexno++;
     }
@@ -418,7 +418,7 @@ class qtype_pmatch extends question_type {
     }
 
     public function get_possible_responses($questiondata) {
-        $responses = array();
+        $responses = [];
 
         $starfound = false;
         foreach ($questiondata->options->answers as $aid => $answer) {
@@ -434,14 +434,14 @@ class qtype_pmatch extends question_type {
 
         $responses[null] = question_possible_response::no_response();
 
-        return array($questiondata->id => $responses);
+        return [$questiondata->id => $responses];
     }
 
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $DB->delete_records('qtype_pmatch_synonyms', array('questionid' => $questionid));
-        $DB->delete_records('qtype_pmatch_rule_matches', array('questionid' => $questionid));
-        $DB->delete_records('qtype_pmatch_test_responses', array('questionid' => $questionid));
+        $DB->delete_records('qtype_pmatch_synonyms', ['questionid' => $questionid]);
+        $DB->delete_records('qtype_pmatch_rule_matches', ['questionid' => $questionid]);
+        $DB->delete_records('qtype_pmatch_test_responses', ['questionid' => $questionid]);
 
         parent::delete_question($questionid, $contextid);
     }

@@ -14,24 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Privacy provider for qtype_pmatch
- *
- * @copyright 2018 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package qtype_pmatch
- */
-
 namespace qtype_pmatch\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\transform;
 
-defined('MOODLE_INTERNAL') || die();
 /**
  * Privacy Subsystem for qtype_pmatch implementing user_preference_provider.
  *
+ * @package qtype_pmatch
  * @copyright  2018 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

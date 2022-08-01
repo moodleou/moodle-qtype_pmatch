@@ -56,14 +56,14 @@ class qtype_pmatch_question extends question_graded_by_strategy
     public $pmatchoptions;
 
     /** @var array of question_answer. */
-    public $answers = array();
+    public $answers = [];
 
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
     }
 
     public function get_expected_data() {
-        return array('answer' => PARAM_RAW_TRIMMED);
+        return ['answer' => PARAM_RAW_TRIMMED];
     }
 
     public function summarise_response(array $response) {
@@ -91,10 +91,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
     }
 
     protected function validate(array $response) {
-        $responsevalidationerrors = array();
+        $responsevalidationerrors = [];
 
         if (!array_key_exists('answer', $response) || ((!$response['answer']) && $response['answer'] !== '0')) {
-            return array(get_string('pleaseenterananswer', 'qtype_pmatch'));
+            return [get_string('pleaseenterananswer', 'qtype_pmatch')];
         }
 
         $parsestring = new pmatch_parsed_string($response['answer'], $this->pmatchoptions);
@@ -166,7 +166,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
-            $answer = $qa->get_question()->get_matching_answer(array('answer' => $currentanswer));
+            $answer = $qa->get_question()->get_matching_answer(['answer' => $currentanswer]);
             $answerid = reset($args); // Itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
 

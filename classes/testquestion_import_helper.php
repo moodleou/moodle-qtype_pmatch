@@ -114,14 +114,14 @@ abstract class qtype_pmatch_importer {
      *
      * @return array List of responses
      */
-    public abstract function get_responses();
+    abstract public function get_responses();
 
     /**
      * Validate the file
      *
      * @return array List of error if any.
      */
-    public abstract function validate();
+    abstract public function validate();
 
 }
 

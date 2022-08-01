@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * Library for the testquestion test suite.
- *
- * @package   qtype_pmatch
- * @copyright 2016 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -30,15 +21,14 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/pmatch/tests/helper.php');
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
-
 /**
  * Base test class providing defaults for the testquestion suite.
  *
+ * @package   qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group     qtype_pmatch
  */
-class qtype_pmatch_testquestion_testcase extends question_testcase {
+class qtype_pmatch_testquestion_test extends question_testcase {
 
     /**
      * File path to default responses csv file.
@@ -132,7 +122,7 @@ class qtype_pmatch_testquestion_testcase extends question_testcase {
         if (!$handle) {
             throw new coding_exception('Could not open testquestionresponses CSV file.');
         }
-        $gradeddata = array();
+        $gradeddata = [];
         while (($data = fgetcsv($handle)) !== false) {
             if (count($data) == 2) {
                 $data[2] = null;
@@ -174,15 +164,15 @@ class qtype_pmatch_testquestion_testcase extends question_testcase {
     protected function get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses) {
         global $DB;
 
-        $responseids = array();
-        $ruleids = array();
-        $matchedresponsesandrules = array();
-        $matchedrulesandresponses = array();
+        $responseids = [];
+        $ruleids = [];
+        $matchedresponsesandrules = [];
+        $matchedrulesandresponses = [];
         foreach ($rulematches['responseidstoruleids'] as $responseid => $responseruleids) {
             array_push($responseids, $responseid);
             $response = $responses[$responseid];
             if (!array_key_exists($response->response, $matchedresponsesandrules)) {
-                $matchedresponsesandrules[$response->response] = array();
+                $matchedresponsesandrules[$response->response] = [];
             }
             $matchedresponse = $matchedresponsesandrules[$response->response];
             foreach ($responseruleids as $ruleid) {
@@ -199,7 +189,7 @@ class qtype_pmatch_testquestion_testcase extends question_testcase {
             array_push($ruleids, $ruleid);
             $rule = $rules[$ruleid];
             if (!array_key_exists($rule->answer, $matchedrulesandresponses)) {
-                $matchedrulesandresponses[$rule->answer] = array();
+                $matchedrulesandresponses[$rule->answer] = [];
             }
             $matchedrule = $matchedrulesandresponses[$rule->answer];
             foreach ($ruleresponseids as $responseid) {
@@ -212,8 +202,8 @@ class qtype_pmatch_testquestion_testcase extends question_testcase {
             $matchedrulesandresponses[$rule->answer] = $matchedrule;
         }
 
-        $responseandrulematches = array('responseidstoruleids' => $matchedresponsesandrules,
-                                    'ruleidstoresponseids' => $matchedrulesandresponses);
+        $responseandrulematches = ['responseidstoruleids' => $matchedresponsesandrules,
+                                    'ruleidstoresponseids' => $matchedrulesandresponses];
         return $responseandrulematches;
     }
 

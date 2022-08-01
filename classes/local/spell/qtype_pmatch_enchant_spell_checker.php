@@ -14,20 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch\local\spell;
+
 /**
- * Enchant spell checker class.
+ * Implements the {@link qtype_pmatch_spell_checker} API using the Enchant PHP API.
  *
  * @package qtype_pmatch
  * @copyright 2019 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace qtype_pmatch\local\spell;
-
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Implements the {@core_spell_checker} API using enchant.
  */
 class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
 
@@ -49,7 +43,7 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
     }
 
     public function __destruct() {
-        if ($this->dictionary) {
+        if ($this->dictionary && PHP_MAJOR_VERSION <= 7) {
             enchant_broker_free_dict($this->dictionary);
         }
     }

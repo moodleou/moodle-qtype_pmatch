@@ -14,29 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * Test the amati rule suggestion facility.
- *
- * @package   qtype_pmatch
- * @copyright 2016 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
 
-
 /**
  * Establish a test approach for the amati rule suggestion facility using existing fixtures.
  *
+ * @package   qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group     qtype_pmatch
  */
-class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testquestion_testcase {
+class qtype_pmatch_testquestion_amati_rule_suggestion_test
+        extends qtype_pmatch_testquestion_testcase {
 
     /**
      * At first we didn't know how to write pmatch rules that were the equivalent on AMATI rules so
@@ -84,7 +75,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         // First we test with 10 responses against basic  AMATI term rules usiong the Add, Not and
         // Or operators.
         // Set correct expectation.
-        $comparerulematches = array(
+        $comparerulematches = [
                 // Add.
                 // The AMATI rule and responses returned.
                 // |  'term_in_response(A,tom)' => array(
@@ -93,10 +84,10 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       7 => 'tom was janes companion'
                 // |   )
                 // The best match in Pmatch.
-                'match_w(tom)' => array(
+                'match_w(tom)' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Tom',
-                        2 => 'Tom was janes companion'),
+                        2 => 'Tom was janes companion'],
                 // Try Harry
                 // The amati rule with responses.
                 // |   term_in_response(A,harry)' => array(
@@ -104,10 +95,10 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       6 => 'harry'
                 // |   )
                 // The best match in Pmatch.
-                'match_w(harry)' => array(
+                'match_w(harry)' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Harry'
-                    ),
+                ],
                 // Not.
                 // The Amati rule used with matched responses.
                 // |'not term_in_response(A,tom)' => array(
@@ -122,7 +113,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // The pmatch equivalent with matches.
                 // Notes:AMATI only stores alphanumeric responses '€£¥©®™±≠≤≥÷×∞µαβπΩ∑' became '' so
                 // these are equivlanet matches.
-                'not(match_w(tom))' => array(
+                'not(match_w(tom))' => [
                         0 => 'Dick',
                         1 => 'John',
                         2 => 'Tomato',
@@ -130,7 +121,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                         4 => 'Adam',
                         5 => 'Felicity',
                         6 => '€£¥©®™±≠≤≥÷×∞µαβπΩ∑',
-                    ),
+                ],
                 // Or.
                 // |term_in_response(A,B,felicity); term_in_response(A,C,dick)' => array(
                 // |       1 => 'tom dick or harry',
@@ -138,18 +129,18 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       9 => 'felicity'
                 // |   ),
                 // The pmatch equivalent with matches.
-                'match_w(dick|felicity)' => array(
+                'match_w(dick|felicity)' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Dick',
                         2 => 'Felicity'
-                    ),
+                ],
                 // Another equivalent rule.
-                'match_any(match_w(dick) match_w(felicity))' => array(
+                'match_any(match_w(dick) match_w(felicity))' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Dick',
                         2 => 'Felicity'
-                    )
-            );
+                ]
+        ];
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 10);
@@ -158,7 +149,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         // Next, test with 30 responses against basic versions of Add, Not and Or.See if
         // The pmatch commands still work.
         // Set correct expectation.
-        $comparerulematches = array(
+        $comparerulematches = [
                 // A Single term.
                 // |'term_in_response(A,tom)' => array(
                 // |       1 => 'tom dick or harry',
@@ -166,32 +157,32 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       7 => 'tom was janes companion',
                 // |       27 => 'tom is janes companion'
                 // |   ),.
-            'match_w(tom)' => array(
+            'match_w(tom)' => [
                     0 => 'Tom Dick or Harry',
                     1 => 'Tom',
                     2 => 'Tom was janes companion',
-                    3 => 'tom is jane\'s companion'),
+                    3 => 'tom is jane\'s companion'],
                 // Another single term.
                 // |'term_in_response(A,harry)' => array(
                 // |       1 => 'tom dick or harry',
                 // |       6 => 'harry',
                 // |       28 => 'harry is janes buddy'
                 // |   ).
-            'match_w(harry)' => array(
+            'match_w(harry)' => [
                     0 => 'Tom Dick or Harry',
                     1 => 'Harry',
                     2 => 'harry is jane\'s buddy'
-                ),
+            ],
                 // A rule combining And, or and Not.
                 // |'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
                 // |       25 => 'richard is janes friend',
                 // |       26 => 'thomas is janes mate'
                 // |   ).
-            'match_all(match_any(match_w(friend) match_w(mate)) not(match_w(harrriet)))' => array(
+            'match_all(match_any(match_w(friend) match_w(mate)) not(match_w(harrriet)))' => [
                     0 => 'Richard is jane\'s friend',
                     1 => 'Thomas is jane\'s mate',
-                ),
-            );
+            ],
+        ];
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 30);
         $this->assertEquals($comparerulematches, $responseandrulematches);
@@ -204,7 +195,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $this->resetAfterTest();
 
          // Set correct expectation.
-        $comparerulematches = array(
+        $comparerulematches = [
                 // A single template command.
                 // |'template_in_response(A,tom)' => array(
                 // |       1 => 'tom dick or harry',
@@ -214,13 +205,14 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       13 => 'tomcat',
                 // |       27 => 'tom is janes companion'
                 // |   ).
-                    'match_wmr(tom*)' => array(
-                            0 => 'Tom Dick or Harry',
-                            1 => 'Tom',
-                            2 => 'Tomato',
-                            3 => 'Tom was janes companion',
-                            4 => 'Tomcat',
-                            5 => 'tom is jane\'s companion'),
+                'match_wmr(tom*)' => [
+                    0 => 'Tom Dick or Harry',
+                    1 => 'Tom',
+                    2 => 'Tomato',
+                    3 => 'Tom was janes companion',
+                    4 => 'Tomcat',
+                    5 => 'tom is jane\'s companion'
+                ],
                 // Another single template command.
                 // |'template_in_response(A,harry)' => array(
                 // |       1 => 'tom dick or harry',
@@ -230,14 +222,14 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       29 => 'harriet is janes companion',
                 // |       30 => 'harrriet is janes most treasured friend and companion'
                 // |   ),.
-                    'match_wm(harry*)' => array(
-                            0 => 'Tom Dick or Harry',
-                            1 => 'Harry',
-                            2 => 'Harriet',
-                            3 => 'harry is jane\'s buddy',
-                            4 => 'harriet is jane\'s companion',
-                            5 => 'harrriet is jane\'s most treasured friend and companion'
-                        ),
+                'match_wm(harry*)' => [
+                    0 => 'Tom Dick or Harry',
+                    1 => 'Harry',
+                    2 => 'Harriet',
+                    3 => 'harry is jane\'s buddy',
+                    4 => 'harriet is jane\'s companion',
+                    5 => 'harrriet is jane\'s most treasured friend and companion'
+                ],
                 // A template rule using not(exclude).
                 // |'template_in_response(A,B,tom), not template_in_response(A,C,companion)' => array(
                 // |       1 => 'tom dick or harry',
@@ -245,15 +237,15 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |       5 => 'tomato',
                 // |       13 => 'tomcat'
                 // |   ).
-                    'match_all(match_wm(tom*) not(match_wm(companion*)))' => array(
-                            0 => 'Tom Dick or Harry',
-                            1 => 'Tom',
-                            2 => 'Tomato',
-                            3 => 'Tomcat',
-                            // Amati doesn't return this.
-                            4 => 'Thomas is jane\'s mate'
-                        )
-                );
+                'match_all(match_wm(tom*) not(match_wm(companion*)))' => [
+                    0 => 'Tom Dick or Harry',
+                    1 => 'Tom',
+                    2 => 'Tomato',
+                    3 => 'Tomcat',
+                    // Amati doesn't return this.
+                    4 => 'Thomas is jane\'s mate'
+                ]
+        ];
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 30);
@@ -270,7 +262,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $this->resetAfterTest();
 
         // Set the correct expectation.
-        $comparerulematches = array(
+        $comparerulematches = [
                 // A single AMATI precedes rule.
                 // |'term_in_response(A,B,is), term_in_response(A,C,companion), precedes(B, C).' => array(
                 // |       24 => 'frederick is janes companion',
@@ -287,27 +279,27 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // Pmatch misses these 2 responses because it cannot match words more than 4 words apart.
                 // 'harrriet is jane\'s most treasured friend and companion'
                 // 'Dick is jane\'s most trusted confidante, best friend and closest companion'.
-                'match_wp4(is_companion)' => array(
+                'match_wp4(is_companion)' => [
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
                         3 => 'tim is not jane\'s favourite close companion',
-                        4 => 'tim is jane\'s closest companion'),
+                        4 => 'tim is jane\'s closest companion'],
                 // Second attempt matches perfectly. This time  using a space ( ) between target words to
                 // match is precedes companion any where in a sentence.
-                'match_w(is companion)' => array(
+                'match_w(is companion)' => [
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
                         3 => 'harrriet is jane\'s most treasured friend and companion',
                         4 => 'tim is not jane\'s favourite close companion',
                         5 => 'tim is jane\'s closest companion',
-                        6 => 'Dick is jane\'s most trusted confidante, best friend and closest companion'),
+                        6 => 'Dick is jane\'s most trusted confidante, best friend and closest companion'],
                 // An extra test using syntax from translating parameters to pmatch rules.
                 // It's laid out in the format AMATI precedes rules are laid out with each target word
                 // in its own term or template match first then the precedes check.
                 // So I just tested this format would work correctly.
-                'match_all(match_wm(is) match_w(companion) match_w(is companion))' => array(
+                'match_all(match_wm(is) match_w(companion) match_w(is companion))' => [
                          0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
@@ -315,14 +307,14 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                         4 => 'tim is not jane\'s favourite close companion',
                         5 => 'tim is jane\'s closest companion',
                         6 => 'Dick is jane\'s most trusted confidante, best friend and closest companion'
-                    ),
+                ],
                 // I noticed templates hadn't been using the test so I added a quick test here to
                 // see what would happen. Though I didn't have the time to run the matching AMATI test at
                 // the same time.
-                'match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))' => array(
+                'match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))' => [
                         0 => 'Tom Dick or Harry'
-                    )
-            );
+                ]
+        ];
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 35);
@@ -336,7 +328,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $this->resetAfterTest();
 
         // The rule should match these responses.
-        $comparerulematches = array(
+        $comparerulematches = [
                 // An AMATI rules using closely_precedes and the responses it matches.
                 // We needed to confirm what the difference was between precedes and closely precedes. Is it just
                 // the number of words allowed between the target words?
@@ -348,24 +340,24 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 // |   )
                 // An equivalent pmatch rule using _ to which only allows 2 words between matching words.
                 // This proved that closely_precedes matches target words not more than 2 words apart.
-                'match_w(is_companion)' => array(
+                'match_w(is_companion)' => [
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
-                        3 => 'tim is jane\'s closest companion'),
+                        3 => 'tim is jane\'s closest companion'],
                 // An equivalent pmatch rule using the p2 parameter to achieve the same result.
-                'match_wp2(is_companion)' => array(
+                'match_wp2(is_companion)' => [
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
-                        3 => 'tim is jane\'s closest companion'),
+                        3 => 'tim is jane\'s closest companion'],
                 // Testing an equivalent template rule which also gives the same result.
-                'match_w(is*_companion*)' => array(
+                'match_w(is*_companion*)' => [
                         0 => 'Frederick is jane\'s companion',
                         1 => 'tom is jane\'s companion',
                         2 => 'harriet is jane\'s companion',
-                        3 => 'tim is jane\'s closest companion'),
-            );
+                        3 => 'tim is jane\'s closest companion'],
+        ];
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 35);
@@ -1023,7 +1015,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $this->resetAfterTest();
 
         // Start with these rules..
-        $suggestedrules = array(
+        $suggestedrules = [
                 "match_all(match_w(tom))",
                 "match_all(match_w(tom) match_w(harry))",
                 "match_all(not( match_w(harry)))",
@@ -1032,15 +1024,15 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
                 'match_any(not match_w(tom))',
                 'match_any(match_w tom))',
                 'match_all(match_wm(Felicity) match_w(dick))'
-        );
+        ];
 
          // Set the right expectation. These are the rules we should be left with.
-        $comparesuggestedrules = array(
+        $comparesuggestedrules = [
                 "match_all(match_w(tom))",
                 "match_all(not( match_w(harry)))",
                 "match_all(match_w(tom) not( match_w(harry)))",
                 'match_all(match_wm(Felicity) match_w(dick))'
-        );
+        ];
         // Format comparison rules for pmatch.
         $comparesuggestedrules = $this->format_rules($comparesuggestedrules);
 
@@ -1049,7 +1041,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
 
         // Set correct existing rules.
         $this->currentquestion->options = new \stdClass();
-        $this->currentquestion->options->answers = array();
+        $this->currentquestion->options->answers = [];
         $this->currentquestion->options->answers[17] = new question_answer(17,
                 'match_all(match_w(Tom) match_w(harry))', 1.0, '', FORMAT_HTML);
         $this->currentquestion->options->answers[18] = new question_answer(18,
@@ -1069,7 +1061,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
 
     protected function get_pmatch_rules_from_amati_rules($comparerules) {
         // Translate each rule into parameters.
-        $rules = array();
+        $rules = [];
         foreach ($comparerules as $rule) {
             $pmatchrule = qtype_pmatch\amati_rule_suggestion::get_pmatch_rule_from_amati_rule($rule);
             $rules[$pmatchrule] = $rule;
@@ -1092,7 +1084,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
 
     protected function get_pmatch_rules_from_parameters($comparerulesandparameters) {
         // Translate each rule into parameters.
-        $rulesandparameters = array();
+        $rulesandparameters = [];
         foreach ($comparerulesandparameters as $key => $subrules) {
             $rule = qtype_pmatch\amati_rule_suggestion::get_pmatch_rule_from_subrules($subrules);
             $rulesandparameters[$rule] = $subrules;
@@ -1106,13 +1098,13 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         $rules = $this->load_rules();
 
         // Create a rule lookup table.
-        $rulestoindex = array();
+        $rulestoindex = [];
         foreach ($rules as $index => $rule) {
             $rulestoindex[$rule->rule] = $index;
         }
 
         // Translate each rule into parameters.
-        $rulesandparameters = array();
+        $rulesandparameters = [];
         foreach ($comparerulesandparameters as $key => $subrules) {
             $rule = $rules[$rulestoindex[$key]];
             $parameters = qtype_pmatch\amati_rule_suggestion::get_parameters_from_amati_rule($rule->rule);
@@ -1128,7 +1120,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
      * @return array
      */
     protected function get_matched_responses($responses) {
-        $matchedresponses = array();
+        $matchedresponses = [];
         foreach ($responses as $response) {
             if (!count($response->ruleids)) {
                 continue;
@@ -1143,7 +1135,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
      * Replace the existing question rules with the given rules.
      */
     protected function set_question_rules($newruleanswers, $question) {
-        $newrules = array();
+        $newrules = [];
         $ruleid = 0;
         foreach ($newruleanswers as $newruleanswers) {
             $ruleid++;
@@ -1162,15 +1154,15 @@ class qtype_pmatch_testquestion_amati_rule_suggestion extends qtype_pmatch_testq
         // Convert answers object to separate arrays.
         $answers = $question->get_answers();
         $index = 0;
-        $question->answer = array();
-        $question->fraction = array();
-        $question->feedback = array();
+        $question->answer = [];
+        $question->fraction = [];
+        $question->feedback = [];
         foreach ($answers as $answer) {
             $question->answer[$index] = $answer->answer;
             $question->fraction[$index] = $answer->fraction;
-            $question->feedback[$index] = array(
-                array('text' => $answer->feedback, 'format' => FORMAT_HTML),
-            );
+            $question->feedback[$index] = [
+                ['text' => $answer->feedback, 'format' => FORMAT_HTML],
+            ];
             $index++;
         }
         return $question;

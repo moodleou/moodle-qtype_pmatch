@@ -16,8 +16,6 @@
 
 namespace qtype_pmatch\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Mobile output class for question type pattern match.
  *

@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use qtype_pmatch\testquestion_controller;
+
 /**
  * Render methods for the question testing tool.
  *
@@ -21,11 +23,6 @@
  * @copyright  2016 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-use qtype_pmatch\testquestion_controller;
-
-defined('MOODLE_INTERNAL') || die();
-
 class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
 
     /**
@@ -59,8 +56,8 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     public function get_uploadresponses_link(qtype_pmatch_question $question): string {
         $link = new moodle_url('/question/type/pmatch/uploadresponses.php', ['id' => $question->id]);
 
-        return html_writer::tag('input', '', array('value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
-            'type' => 'button', "onclick" => "window.location.href = '" . $link->out(false) . "'", 'class' => 'btn btn-secondary'));
+        return html_writer::tag('input', '', ['value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
+            'type' => 'button', "onclick" => "window.location.href = '" . $link->out(false) . "'", 'class' => 'btn btn-secondary']);
     }
 
     /**
@@ -82,7 +79,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     public function get_grade_summary(qtype_pmatch_question $question) {
         $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($question);
         return html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
-                array('id' => 'testquestion_gradesummary'));
+                ['id' => 'testquestion_gradesummary']);
     }
 
     /**
@@ -94,13 +91,13 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     public function get_table_bottom_buttons(qtype_pmatch_question $question): string {
         $html = '';
         if (question_has_capability_on($question, 'edit')) {
-            $html .= html_writer::start_div('', array('id' => 'commands'));
+            $html .= html_writer::start_div('', ['id' => 'commands']);
 
             // Add and upload actions.
             $html .= html_writer::start_tag('p', ['id' => 'wrapperactionresponse']);
-            $html .= html_writer::tag('input', '', array('type' => 'button',
+            $html .= html_writer::tag('input', '', ['type' => 'button',
                     'value' => get_string('testquestionformnewresponsebutton', 'qtype_pmatch'),
-                    'id' => 'newresponsebutton', 'class' => 'btn btn-secondary m-t-0'));
+                    'id' => 'newresponsebutton', 'class' => 'btn btn-secondary m-t-0']);
             $html .= ' ' . $this->get_uploadresponses_link($question);
             $html .= \html_writer::end_tag('p');
 
@@ -116,7 +113,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
             $html .= '<input type="submit" id="testresponsesbutton" class="btn btn-secondary" name="test" value="' .
                     get_string('testquestionformtestsubmit', 'qtype_pmatch') . '"/> ';
             $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
-                    array('message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')));
+                    ['message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')]);
             $html .= html_writer::end_div();
 
             // Initialise JavaScript.

@@ -14,23 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
 /**
- * Defines the \qtype_pmatch\test response class.
+ * A simple object representing one question-testing response.
  *
  * @package   qtype_pmatch
  * @copyright 2013 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace qtype_pmatch;
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Question type: Pattern match: Test response class.
- *
- * A simple object representing one test response.
- *
- * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_response {
@@ -60,7 +50,7 @@ class testquestion_response {
     public $gradedfraction = null;
 
     /** @var array ruleids. */
-    public $ruleids = array();
+    public $ruleids = [];
 
     /**
      * Create an instance of this class representing an empty test response.
@@ -69,7 +59,7 @@ class testquestion_response {
      */
     public static function create($response = null) {
         $testresponse = new self();
-        $fields = array('id', 'questionid', 'response', 'expectedfraction', 'gradedfraction');
+        $fields = ['id', 'questionid', 'response', 'expectedfraction', 'gradedfraction'];
 
         if ($response === null) {
             return null;

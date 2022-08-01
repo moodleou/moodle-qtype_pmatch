@@ -14,23 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+
 /**
  * Pattern-match question renderer class.
  *
  * @package    qtype_pmatch
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
-defined('MOODLE_INTERNAL') || die();
-
-use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
-
-
-/**
- * Generates the output for pattern-match questions.
- *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -42,12 +31,12 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
 
         $inputname = $qa->get_qt_field_name('answer');
-        $attributes = array(
+        $attributes = [
             'class' => 'answerinputfield',
             'name' => $inputname,
             'id' => $inputname,
             'aria-labelledby' => $inputname . '-label'
-        );
+        ];
 
         if ($options->readonly) {
             $attributes['readonly'] = 'readonly';
@@ -55,7 +44,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
 
         $feedbackimg = '';
         if ($options->correctness) {
-            $answer = $question->get_matching_answer(array('answer' => $currentanswer));
+            $answer = $question->get_matching_answer(['answer' => $currentanswer]);
             if ($answer) {
                 $fraction = $answer->fraction;
             } else {
@@ -109,28 +98,28 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $attributes['cols'] = $cols;
             $input = html_writer::tag('textarea', $currentanswer, $attributes) . $feedbackimg;
         } else {
-            $inputattributes = array(
+            $inputattributes = [
                 'type' => 'text',
                 'value' => $currentanswer
-            );
+            ];
             $inputattributes['size'] = $cols;
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
         if ($placeholder) {
             $inputinplace = html_writer::tag('label', get_string('answer'),
-                    array('for' => $attributes['id'], 'class' => 'accesshide'));
+                    ['for' => $attributes['id'], 'class' => 'accesshide']);
             $inputinplace .= $input;
             $questiontext = substr_replace($questiontext, $inputinplace,
                      strpos($questiontext, $placeholder), strlen($placeholder));
         }
 
         $result = $this->question_tests_link($question, $options);
-        $result .= html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        $result .= html_writer::tag('div', $questiontext, ['class' => 'qtext']);
 
         if (!$placeholder) {
-            $result .= html_writer::start_tag('div', array('class' => 'ablock', 'id' => $inputname . '-label'));
-            $result .= html_writer::tag('label', get_string('answercolon', 'qtype_numerical'), array('for' => $attributes['id']));
-            $result .= html_writer::tag('div', $input, array('class' => 'answer'));
+            $result .= html_writer::start_tag('div', ['class' => 'ablock', 'id' => $inputname . '-label']);
+            $result .= html_writer::tag('label', get_string('answercolon', 'qtype_numerical'), ['for' => $attributes['id']]);
+            $result .= html_writer::tag('div', $input, ['class' => 'answer']);
             $result .= html_writer::end_tag('div');
         }
 
@@ -142,16 +131,16 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else if ($question->allowsubscript) {
                 $supsub = 'sub';
             }
-            $options = array(
+            $options = [
                 'supsub' => $supsub
-            );
+            ];
             $editor->use_editor($attributes['id'], $options);
         }
 
         if ($qa->get_state() == question_state::$invalid) {
             $result .= html_writer::nonempty_tag('div',
-                    $question->get_validation_error(array('answer' => $currentanswer)),
-                    array('class' => 'validationerror'));
+                    $question->get_validation_error(['answer' => $currentanswer]),
+                    ['class' => 'validationerror']);
         }
 
         // Show the error if the question is using a language that does not available on the server.
@@ -167,7 +156,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
     public function specific_feedback(question_attempt $qa) {
         $question = $qa->get_question();
 
-        $answer = $question->get_matching_answer(array('answer' => $qa->get_last_qt_var('answer')));
+        $answer = $question->get_matching_answer(['answer' => $qa->get_last_qt_var('answer')]);
         if (!$answer || !$answer->feedback) {
             return '';
         }
@@ -195,15 +184,15 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
 
         $link = html_writer::link(new moodle_url(
-                '/question/type/pmatch/testquestion.php', array('id' => $question->id)),
+                '/question/type/pmatch/testquestion.php', ['id' => $question->id]),
                 get_string('testthisquestion', 'qtype_pmatch'));
 
-        return html_writer::tag('div', $link, array('class' => 'questiontestslink'));
+        return html_writer::tag('div', $link, ['class' => 'questiontestslink']);
     }
 
     public function back_to_test_question_link($qid) {
         return html_writer::tag('p', html_writer::link(
-                new moodle_url('/question/type/pmatch/testquestion.php', array('id' => $qid)),
+                new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $qid]),
                 get_string('testquestionbacklink', 'qtype_pmatch')));
     }
 

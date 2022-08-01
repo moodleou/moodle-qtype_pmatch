@@ -57,7 +57,7 @@ class pmatch_options {
      * @var array of words to recognise. These words may include sentence or
      * word divider characters.
      */
-    public $extradictionarywords = array('e.g.', 'eg.', 'etc.', 'i.e.', 'ie.');
+    public $extradictionarywords = ['e.g.', 'eg.', 'etc.', 'i.e.', 'ie.'];
 
     /**
      * @var string language of string -
@@ -68,14 +68,14 @@ class pmatch_options {
     /**
      * @var array of strings with preg expressions to match words that can be replaced.
      */
-    public $wordstoreplace = array();
+    public $wordstoreplace = [];
     /**
      * @var array of strings to replace words with.
      */
-    public $synonymtoreplacewith = array();
+    public $synonymtoreplacewith = [];
 
     /** @var array of words from synonyms that are exempt from spell check. */
-    public $nospellcheckwords = array();
+    public $nospellcheckwords = [];
 
     /**
      * Static factory to make an options object with various values set.
@@ -142,7 +142,7 @@ class pmatch_options {
 
     public function words_to_ignore_patterns() {
         $words = array_merge($this->extradictionarywords, $this->nospellcheckwords);
-        $wordpatterns = array(PMATCH_NUMBER);
+        $wordpatterns = [PMATCH_NUMBER];
         foreach ($words as $word) {
             if (trim($word) === '') {
                 continue;
@@ -253,7 +253,7 @@ class pmatch_parsed_string {
             $this->options = new pmatch_options();
         }
 
-        $this->words = array();
+        $this->words = [];
         $cursor = 0;
         $string = trim($string); // Trim off any extra whitespace.
         $string = $this->options->unicode_normalisation($string);
@@ -264,7 +264,7 @@ class pmatch_parsed_string {
         $po = $this->options->pattern_options();
         while ($cursor < core_text::strlen($string)) {
             $toprocess = core_text::substr($string, $cursor);
-            $matches = array();
+            $matches = [];
             // Using a named sub pattern to make sure to capture the sentence divider.
             $endofword = "(((?'sd'{$sd})({$wd})*)|({$wd})+|$)";
             foreach ($wtis as $wti) {
@@ -292,7 +292,7 @@ class pmatch_parsed_string {
         }
 
         if (count($this->words) == 0) {
-            $this->words = array('');
+            $this->words = [''];
         }
     }
 

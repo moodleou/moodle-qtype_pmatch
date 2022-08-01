@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/classes/output/testquestion_
 
 $questionid = required_param('id', PARAM_INT);
 $download = optional_param('download', '', PARAM_RAW);
-$questiondata = $DB->get_record('question', array('id' => $questionid), '*', MUST_EXIST);
+$questiondata = $DB->get_record('question', ['id' => $questionid], '*', MUST_EXIST);
 if ($questiondata->qtype != 'pmatch') {
     throw new coding_exception('That is not a pattern-match question.');
 }
@@ -54,9 +54,9 @@ $question = question_bank::load_question($questionid);
 // Process any other URL parameters, and do require_login.
 list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
 
-$url = new moodle_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
+$url = new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $questionid]);
 $PAGE->set_pagelayout('popup');
-$PAGE->set_url('/question/type/pmatch/testquestion.php', array('id' => $questionid));
+$PAGE->set_url('/question/type/pmatch/testquestion.php', ['id' => $questionid]);
 
 // Check permissions after initialising $PAGE so messages (not exceptions) can be rendered.
 $canview = question_has_capability_on($questiondata, 'view');

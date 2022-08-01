@@ -143,16 +143,16 @@ class testquestion_table extends \table_sql {
 
         $from = '{qtype_pmatch_test_responses}';
         $fields = 'id, expectedfraction, gradedfraction, response';
-        $params = array('questionid' => $this->question->id);
+        $params = ['questionid' => $this->question->id];
         $where = 'questionid = '.$this->question->id;
 
         if ($this->options->states) {
-            $statesqllist = array(
+            $statesqllist = [
                    \qtype_pmatch\testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
                    \qtype_pmatch\testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
                    \qtype_pmatch\testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
                    \qtype_pmatch\testquestion_response::UNGRADED => '(gradedfraction IS NULL)'
-            );
+            ];
             $statesql = ' AND (';
             $count = 0;
             foreach ($this->options->states as $state) {
@@ -169,7 +169,7 @@ class testquestion_table extends \table_sql {
             $where .= $statesql;
         }
 
-        return array($fields, $from, $where, $params);
+        return [$fields, $from, $where, $params];
     }
 
     /**
@@ -278,8 +278,8 @@ class testquestion_table extends \table_sql {
         $this->set_count_sql("SELECT COUNT(1) FROM $from WHERE $where", $params);
         $this->set_sql($fields, $from, $where, $params);
         // Define table columns and headers.
-        $columns = array();
-        $headers = array();
+        $columns = [];
+        $headers = [];
         $this->add_columns($columns, $headers);
         $this->define_columns($columns);
         // Add a column class to help distinguish updatable human marks.

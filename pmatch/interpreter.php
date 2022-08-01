@@ -71,7 +71,7 @@ abstract class pmatch_interpreter_item {
         } else {
             $this->codefragment = '';
         }
-        return array($found, $endofmatch);
+        return [$found, $endofmatch];
     }
 
     /**
@@ -85,7 +85,7 @@ abstract class pmatch_interpreter_item {
         // Regex pattern to match one character of pmatch code.
         list($found, $endofpattern, $subpatterns) = $this->find_pattern(
                 $this->pattern, $string, $start);
-        return array($found, $endofpattern);
+        return [$found, $endofpattern];
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class pmatch_interpreter_item {
      *               $matches array of matches of sub patterns with offset from $start
      */
     public function find_pattern($pattern, $string, $start) {
-        $matches = array();
+        $matches = [];
         preg_match($pattern.'iAu', core_text::substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found) {
@@ -109,7 +109,7 @@ abstract class pmatch_interpreter_item {
         }
 
         array_shift($matches); // Pop off the matched string and only return sub patterns.
-        return array($found, $endofpattern, $matches);
+        return [$found, $endofpattern, $matches];
     }
     public function get_error_message() {
         if (!empty($this->interpretererrormessage)) {
@@ -151,7 +151,7 @@ abstract class pmatch_interpreter_item {
 abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpreter_item {
 
 
-    protected $subcontents = array();
+    protected $subcontents = [];
     /**
      *
      * How many items can be contained as sub contents of this item. If 0 then no limit.
@@ -168,11 +168,11 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      * @return array (longest possible branch that matches the longest string,
      *                string position after code for these items.)
      */
-    protected function interpret_subcontents($string, $start, $branchfoundsofar = array()) {
+    protected function interpret_subcontents($string, $start, $branchfoundsofar = []) {
         $typestotry = $this->next_possible_subcontent($branchfoundsofar);
         $branchindex = 0;
-        $childbranches = array();
-        $childbranchcursor = array();
+        $childbranches = [];
+        $childbranchcursor = [];
 
         // Iterate down all branches.
         foreach ($typestotry as $typetotry) {
@@ -197,7 +197,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
 
         // Find the branch that matches the longest string.
         array_multisort($childbranchcursor, SORT_DESC, SORT_NUMERIC, $childbranches);
-        return array(array_shift($childbranches), array_shift($childbranchcursor));
+        return [array_shift($childbranches), array_shift($childbranchcursor)];
     }
     /**
      *
@@ -221,7 +221,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      *                (prefix with 'pmatch_interpreter_' to get classname)
      */
     protected function next_possible_subcontent($foundsofar) {
-        return array();
+        return [];
     }
     /**
      *
@@ -235,15 +235,15 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         $cancontain = new $cancontainclassname($this->pmatchoptions);
         list($found, $aftercontent) = $cancontain->interpret($string, $start);
         if ($found) {
-            return array($cancontain, true, $aftercontent);
+            return [$cancontain, true, $aftercontent];
         } else {
-            return array($cancontain, false, $start);
+            return [$cancontain, false, $start];
         }
     }
     protected function interpret_contents($string, $start) {
         list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $start);
         $this->check_subcontents();
-        return array((!empty($this->subcontents)), $endofcontents);
+        return [(!empty($this->subcontents)), $endofcontents];
     }
     /**
      *
@@ -259,13 +259,13 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
                 $this->codefragment);
         }
     }
-    protected $lastcontenttypeerrors = array('or_character' => 'lastsubcontenttypeorcharacter',
+    protected $lastcontenttypeerrors = ['or_character' => 'lastsubcontenttypeorcharacter',
                                  'word_delimiter_space' => 'lastsubcontenttypeworddelimiter',
-                                 'word_delimiter_proximity' => 'lastsubcontenttypeworddelimiter');
+                                 'word_delimiter_proximity' => 'lastsubcontenttypeworddelimiter'];
     public function interpret($string, $start = 0) {
         list($found, $endofmatch) = parent::interpret($string, $start);
         $this->check_subcontents();
-        return array($found, $endofmatch);
+        return [$found, $endofmatch];
     }
     public function get_subcontents() {
         return $this->subcontents;
@@ -289,12 +289,12 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
     protected $missingclosingpatternerror = '';
 
     protected function interpret_contents($string, $start) {
-        $subpatterns = array();
+        $subpatterns = [];
         list($found, $endofopening, $subpatterns) =
                                 $this->find_pattern($this->openingpattern, $string, $start);
 
         if (!$found) {
-            return array(false, $start);
+            return [false, $start];
         }
 
         if (!empty($subpatterns)) {
@@ -303,13 +303,13 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
             $subpattern = '';
         }
         if (!$this->interpret_subpattern_in_opening($subpattern)) {
-            return array(false, $start);
+            return [false, $start];
         }
         list($this->subcontents, $endofcontents) =
                                             $this->interpret_subcontents($string, $endofopening);
         if (empty($this->subcontents)) {
             $this->set_error_message('unrecognisedsubcontents', core_text::substr($string, $start, 20));
-            return array(false, $start);
+            return [false, $start];
         }
         list($found, $endofclosing, $subpatterns) =
                             $this->find_pattern($this->closingpattern, $string, $endofcontents);
@@ -318,9 +318,9 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
                 $this->set_error_message($this->missingclosingpatternerror,
                                             core_text::substr($string, $start, $endofcontents - $start));
             }
-            return array(true, $start);
+            return [true, $start];
         }
-        return array(true, $endofclosing);
+        return [true, $endofclosing];
     }
 
     protected function interpret_subpattern_in_opening($subpattern) {
@@ -344,12 +344,8 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
 class pmatch_interpreter_whole_expression extends pmatch_interpreter_item_with_subcontents {
     protected $limitsubcontents = 1;
 
-    public function interpret($string, $start = 0) {
-        return parent::interpret($string, $start);
-    }
-
     protected function next_possible_subcontent($foundsofar) {
-        return array('not', 'match_any', 'match_all', 'match_options');
+        return ['not', 'match_any', 'match_all', 'match_options'];
     }
 
     public function get_formatted_expression_string($indentlevel = 0) {
@@ -365,7 +361,7 @@ class pmatch_interpreter_not extends pmatch_interpreter_item_with_enclosed_subco
     protected $limitsubcontents = 1;
 
     protected function next_possible_subcontent($foundsofar) {
-        return array('match_any', 'match_all', 'match_options');
+        return ['match_any', 'match_all', 'match_options'];
     }
 
     protected function formatted_opening() {
@@ -387,7 +383,7 @@ class pmatch_interpreter_match_any extends pmatch_interpreter_match {
     }
 
     protected function next_possible_subcontent($foundsofar) {
-        return array('match_any', 'match_all', 'match_options', 'not');
+        return ['match_any', 'match_all', 'match_options', 'not'];
     }
 
     protected function formatted_opening() {
@@ -402,7 +398,7 @@ class pmatch_interpreter_match_all extends pmatch_interpreter_match {
     }
 
     protected function next_possible_subcontent($foundsofar) {
-        return array('match_any', 'match_all', 'match_options', 'not');
+        return ['match_any', 'match_all', 'match_options', 'not'];
     }
 
     protected function formatted_opening() {
@@ -599,7 +595,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $this->phraseleveloptions->reset_options();
         $wlopt = $this->wordleveloptions;
         $wlopt->reset_options();
-        $misspellingoptionmatches = array();
+        $misspellingoptionmatches = [];
         $cursor = 1; // Start at second character after '_'.
         while ($cursor < core_text::strlen($options)) {
             if (0 === preg_match('~c|o|w|m([frtx2])*|p[0-4]~A',
@@ -678,9 +674,9 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
             case '':
             case 'word_delimiter_space':
             case 'word_delimiter_proximity':
-                return array('or_list');
+                return ['or_list'];
             case 'or_list':
-                return array('word_delimiter_space', 'word_delimiter_proximity');
+                return ['word_delimiter_space', 'word_delimiter_proximity'];
         }
     }
 
@@ -706,7 +702,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         }
     }
 
-    protected function interpret_subcontents($string, $start, $branchfoundsofar = array()) {
+    protected function interpret_subcontents($string, $start, $branchfoundsofar = []) {
         list($found, $end) = parent::interpret_subcontents($string, $start, $branchfoundsofar);
         if (!count($branchfoundsofar)) {
             if ($found && !empty($this->pmatchoptions->wordstoreplace)) {
@@ -719,7 +715,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                 }
             }
         }
-        return array($found, $end);
+        return [$found, $end];
     }
 }
 
@@ -729,11 +725,11 @@ class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontent
         switch ($this->last_subcontent_type_found($foundsofar)) {
             case '':
             case 'or_character':
-                return array('or_list_phrase', 'number', 'word');
+                return ['or_list_phrase', 'number', 'word'];
             case 'word':
             case 'number':
             case 'or_list_phrase':
-                return array('or_character');
+                return ['or_character'];
         }
     }
 }
@@ -749,10 +745,10 @@ class pmatch_interpreter_synonym extends pmatch_interpreter_item_with_subcontent
         switch ($this->last_subcontent_type_found($foundsofar)) {
             case '':
             case 'or_character':
-                return array('number', 'word');
+                return ['number', 'word'];
             case 'number':
             case 'word':
-                return array('or_character');
+                return ['or_character'];
         }
     }
 }
@@ -771,7 +767,7 @@ class pmatch_interpreter_or_list_phrase extends pmatch_interpreter_item_with_enc
     protected $limitsubcontents = 1;
 
     protected function next_possible_subcontent($foundsofar) {
-        return array('phrase');
+        return ['phrase'];
     }
 
     public function get_formatted_expression_string($indentlevel = 0) {
@@ -791,9 +787,9 @@ class pmatch_interpreter_phrase extends pmatch_interpreter_item_with_subcontents
             case '':
             case 'word_delimiter_space':
             case 'word_delimiter_proximity':
-                return array('synonym');
+                return ['synonym'];
             case 'synonym':
-                return array('word_delimiter_space', 'word_delimiter_proximity');
+                return ['word_delimiter_space', 'word_delimiter_proximity'];
         }
     }
 }
@@ -811,8 +807,8 @@ class pmatch_interpreter_word_delimiter_proximity extends pmatch_interpreter_ite
 
 class pmatch_interpreter_word extends pmatch_interpreter_item_with_subcontents {
     protected function next_possible_subcontent($foundsofar) {
-        return array('character_in_word', 'special_character_in_word',
-                     'wildcard_match_multiple', 'wildcard_match_single');
+        return ['character_in_word', 'special_character_in_word',
+                     'wildcard_match_multiple', 'wildcard_match_single'];
     }
 }
 

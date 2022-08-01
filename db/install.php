@@ -22,13 +22,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
+/**
+ * Install code for the Pattern-match question type.
+ */
 function xmldb_qtype_pmatch_install() {
-    global $CFG;
-
     $backends = qtype_pmatch_spell_checker::get_installed_backends();
     end($backends);
     set_config('spellchecker', key($backends), 'qtype_pmatch');

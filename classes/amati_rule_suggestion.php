@@ -14,16 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Defines the \qtype_pmatch\test rules class.
- *
- * @package   qtype_pmatch
- * @copyright 2016 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace qtype_pmatch;
+
 defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/question/type/pmatch/question.php');
 require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
@@ -48,6 +42,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * Words are the target words themselves. For each term and template only one word is allowed but for precedes
  * 2 words are required.
  *
+ * @package   qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -72,7 +67,7 @@ class amati_rule_suggestion {
     public static function load_suggested_rules_from_amati_webservice($url, $responses) {
         \core_php_time_limit::raise(300);// 300 seconds = 5 minutes.
         $responses = \qtype_pmatch\testquestion_responses::responses_to_data($responses);
-        $post = array('service' => 'generate_rules', 'responses' => json_encode($responses), '');
+        $post = ['service' => 'generate_rules', 'responses' => json_encode($responses), ''];
         $header[] = "Content-Type: multipart/form-data";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -80,8 +75,8 @@ class amati_rule_suggestion {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        $errors = array();
-        $rules = array();
+        $errors = [];
+        $rules = [];
         $data = curl_exec ($ch);
         if ($errno = curl_errno($ch)) {
             $errors[] = curl_error($ch);
@@ -93,7 +88,7 @@ class amati_rule_suggestion {
         if (!$errors) {
             $rules = self::load_rules_from_json($data);
         }
-        return array($rules, $errors);
+        return [$rules, $errors];
     }
 
     /**
@@ -122,7 +117,7 @@ class amati_rule_suggestion {
      * @return array Array of subrules broken down into parameters
      */
     public static function get_parameters_from_amati_rule($rule) {
-        $subrulesasparameters = array();
+        $subrulesasparameters = [];
 
         // Return early if there are no rules.
         if ($rule === self::AMATI_EMPTY_RULE) {
@@ -187,7 +182,7 @@ class amati_rule_suggestion {
             $wordsstart = 1;
             $wordend = strpos($subrule, ')');
             $letters = explode(', ', substr($subrule, $wordsstart, $wordend - $wordsstart));
-            $words = array();
+            $words = [];
 
             // The letters used in AMATI precedes correspond to words in the previous sub rules.
             $characterstoindex = 'BCDEFGHI';
@@ -337,7 +332,7 @@ class amati_rule_suggestion {
      * @return string[] translated pmatch rules
      */
     public static function get_pmatch_rules_from_amati_rules ($amatirules) {
-        $rules = array();
+        $rules = [];
         foreach ($amatirules as $rule) {
             $pmatchrule = self::get_pmatch_rule_from_amati_rule($rule->rule);
             $rules[$rule->id] = $pmatchrule;
@@ -382,7 +377,7 @@ class amati_rule_suggestion {
 
         // If there were no rules returned no translation is needed so return early.
         if (!$amatirules || !count($amatirules) || $amatirules[0]->rule == self::AMATI_EMPTY_RULE) {
-            return array();
+            return [];
         }
 
         // Translate the amati rules into pmatch equivalents.
@@ -444,7 +439,7 @@ class amati_rule_suggestion {
         }
 
         // Reorder the array removing empty indexes.
-        $suggestedrules = array_merge(array(), $suggestedrules);
+        $suggestedrules = array_merge([], $suggestedrules);
         return $suggestedrules;
     }
 
@@ -463,7 +458,7 @@ class amati_rule_suggestion {
      */
     public static function add_suggested_rules_to_question($question, $suggestedrules) {
         foreach ($suggestedrules as $suggestedrule) {
-            $newrule = (object) array(
+            $newrule = (object) [
                 'id' => '',
                 'question' => $question->id,
                 'answer' => $suggestedrule,
@@ -472,7 +467,7 @@ class amati_rule_suggestion {
                 'fraction' => 1.0000000,
                 'feedback' => '',
                 'feedbackformat' => 1,
-            );
+            ];
 
             // Add the new rules/answer to the $question->options->answers object so that
             // pmatch can add them to the form ready to be saved if needed.
