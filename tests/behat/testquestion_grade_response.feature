@@ -21,12 +21,11 @@ Feature: Grade a test response for a pattern match question
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "teacher"
 
   @javascript
   Scenario: Grade an existing test response for pattern match question.
     # Check responses are listed correctly
-    Given I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I set the field with xpath "//form[@id='attemptsform']//table[@id='responses']//td[@id='qtype-pmatch-testquestion_r0_c0']//input" to "1"
     And I press "Test selected responses"

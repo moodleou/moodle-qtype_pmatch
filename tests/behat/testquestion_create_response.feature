@@ -21,8 +21,7 @@ Feature: Create new a response for a pattern match question
 
   @javascript
   Scenario: Create an existing test response for a pattern match question.
-    Given I log in as "teacher"
-    And I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     # Check responses are listed correctly
     And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     When I press "Add new response"
@@ -37,7 +36,7 @@ Feature: Create new a response for a pattern match question
     And I should see "Marked correctly: 0 (0%)"
     And I should see "Computed mark greater than human mark: 0 (missed positive)"
     And I should see "Computed mark less than human mark: 1 (missed negative)"
-    And I should see "New test response" in the "#qtype-pmatch-testquestion_r50_c5" "css_element"
+    And "New test response" "table_row" should be visible
     # Check duplicate response.
     When I press "Add new response"
     And I set the field "new-response" to "New test response"
@@ -54,13 +53,11 @@ Feature: Create new a response for a pattern match question
     And I press the enter key
     And I set the field "new-response" to "New test response 1"
     And I press the enter key
-    Then I should see "New test response 1" in the "#qtype-pmatch-testquestion_r51_c5" "css_element"
-    And I should see "1" in the "#qtype-pmatch-testquestion_r51_c4" "css_element"
+    And "New test response 1" row "Human mark" column of "responses" table should contain "1"
 
   @javascript
   Scenario: Create an test involving superscript
-    Given I log in as "teacher"
-    And I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     When I press "Add new response"
     And I set the field "new-response" to "5<sup>-4</sup>"
     And I press "Save"

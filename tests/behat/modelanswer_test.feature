@@ -23,20 +23,15 @@ Feature: Test the model answer functionality of pmatch question type
       | Test questions   | pmatch | Frog but not toad               | frogtoad |
       | Test questions   | pmatch | Spanish question                | spanish  |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
 
   Scenario: Fill with correct in question preview uses the model answer
-    When I choose "Preview" action for "My first pattern match question" in the question bank
-    And I switch to "questionpreview" window
-    And I should see "Listen, translate and write"
+    When I am on the "My first pattern match question" "core_question > preview" page logged in as teacher
+    Then I should see "Listen, translate and write"
     And I press "Fill in correct responses"
-    Then I should see "testing one two three four"
-    And I switch to the main window
+    And I should see "testing one two three four"
 
   Scenario: Validation of the model answer
-    When I choose "Edit question" action for "Frog but not toad" in the question bank
+    When I am on the "Frog but not toad" "core_question > edit" page logged in as teacher
     And I should see "Editing a Pattern match question"
     And I click on "Expand all" "link"
     And I set the following fields to these values:
@@ -57,7 +52,7 @@ Feature: Test the model answer functionality of pmatch question type
     Then "Frog but not toad" "table_row" in the "categoryquestions" "table" should be visible
 
   Scenario: Validation of the model answer with non-standard options
-    When I choose "Edit question" action for "Spanish question" in the question bank
+    When I am on the "Spanish question" "core_question > edit" page logged in as teacher
     # Should save with no validation error.
     And I press "id_submitbutton"
     Then "Spanish question" "table_row" in the "categoryquestions" "table" should be visible

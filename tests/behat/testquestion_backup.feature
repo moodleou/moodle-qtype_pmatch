@@ -15,10 +15,9 @@ Feature: Test backup and restore of a pmatch question with responses and matches
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "admin"
 
   Scenario: Test backup and restore with testquestion data.
-    Given I am on the pattern match test responses page for question "My first pattern match question"
+    Given I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as admin
     # Check course C1 version of uploaded responses.
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Showing the responses for the selected question: My first pattern match question"
@@ -27,10 +26,11 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And I should see "Computed mark greater than human mark: 0 (missed positive)"
     And I should see "Computed mark less than human mark: 0 (missed negative)"
     And I should see "1" in the "testing one two three four" "table_row"
-    # Now mark responses in order to test their backup.
+    # Mark responses in order to test their backup.
     When I set the field "tqheadercheckbox" to "1"
     And I press "Test selected responses"
     And I press "Continue"
+
     # Make a backup and restore to new course.
     Given I am on homepage
     When I backup "Course 1" course using this options:
@@ -38,16 +38,10 @@ Feature: Test backup and restore of a pmatch question with responses and matches
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
+
     # Check the new course's testquestion data.
     When I navigate to "Question bank" in current page administration
-    And I choose "Edit question" action for "My first pattern match question" in the question bank
-    Then I should see "Editing a Pattern match question"
-    When I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    When I choose "Preview" action for "My first pattern match question" in the question bank
-    And I switch to "questionpreview" window
-    And I follow "Test this question"
-    # Final check that the marked responses have been restored properly.
+    When I choose "Pattern-match testing tool" action for "My first pattern match question" in the question bank
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"

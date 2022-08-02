@@ -21,29 +21,22 @@ Feature: Test the try rule feature
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I choose "Preview" action for "My first pattern match question" in the question bank
-    And I switch to "questionpreview" window
-    And I click on "Test this question" "link"
-    And I set the field "tqheadercheckbox" to "1"
-    And I press "Test selected responses"
-    And I press "Continue"
 
   @javascript
   Scenario: Test the pmatch try rule feature
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
+    And I set the field "tqheadercheckbox" to "1"
+    And I press "Test selected responses"
+    And I press "Continue"
     # Confirm list responses is correct.
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Sample responses: 13 "
     And I should see "Marked correctly: 7 (54%)"
     And I should see "Computed mark greater than human mark: 0 (missed positive)"
     And I should see "Computed mark less than human mark: 5 (missed negative)"
-    And I switch to the main window
+
     # The page needs refreshing now.
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I choose "Edit question" action for "My first pattern match question" in the question bank
+    And I am on the "My first pattern match question" "core_question > edit" page
     # The waiting is required probably because the editor takes a long time to load.
     # Without waiting I get an unexpected 'alert open' exception on my PC.
     # The try rule button click is an ajax call, and is wrapped in js_pending js_complete,
@@ -76,8 +69,7 @@ Feature: Test the try rule feature
 
   @javascript
   Scenario: Test the pmatch rules response feature
-    Given I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     When I add a "Pattern match" question filling the form with:
       | Question name      | My first pattern match editor question |
       | Question text      | Draw ethanol                           |
@@ -90,8 +82,7 @@ Feature: Test the try rule feature
       | id_fraction_2      | None                                   |
       | id_otherfeedback   | Sorry, no.                             |
     Then I should see "My first pattern match editor question"
-    When I choose "Preview" action for "My first pattern match editor question" in the question bank
-    And I switch to "questionpreview" window
+    And I am on the "My first pattern match editor question" "core_question > preview" page
     And I click on "Test this question" "link"
     And I click on "Add new response" "button"
     And I set the field "new-response" to "CCOO"

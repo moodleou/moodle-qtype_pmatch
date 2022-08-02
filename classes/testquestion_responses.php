@@ -149,7 +149,7 @@ class testquestion_responses {
      * @param array $responses test_response objects convert
      * @return \stdClass
      */
-    public static function add_responses($responses) {
+    public static function add_responses(array $responses): \stdClass {
         global $DB;
 
         $feedback = new \stdClass();

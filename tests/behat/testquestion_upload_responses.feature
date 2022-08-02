@@ -19,24 +19,24 @@ Feature: Test uploading test responses in the pattern match test this question f
       | Course       | C1        | Test questions |
     And the following "questions" exist:
       | questioncategory | qtype    | name         | template |
-      | Test questions   | pmatch   | My first pattern match question | listen    |
-    And I log in as "teacher"
-    Given I am on the pattern match test responses page for question "My first pattern match question"
-    And I click on "Upload responses" "button"
+      | Test questions   | pmatch   | My first pattern match question | listen |
 
   @javascript @_file_upload
   Scenario: Upload responses to test with.
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
+    And I click on "Upload responses" "button"
     # Confirm list responses is correct.
-    And I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
+    Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "Back to Test question"
     And I should see "Marked responses to upload"
-    When I upload "question/type/pmatch/tests/fixtures/uploadreponses.csv" file to "Marked responses" filemanager
+    And I upload "question/type/pmatch/tests/fixtures/uploadreponses.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "Saved 8 responses"
+    And I should see "Saved 8 responses"
     And I should see "Upload another file"
 
   @javascript @_file_upload
   Scenario: Test error message if the file doesn't meet the condition.
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses upload" page logged in as teacher
     # Case 1: The file must be in .csv format.
     When I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
     And I press "Upload these responses"
@@ -61,10 +61,10 @@ Feature: Test uploading test responses in the pattern match test this question f
 
   @javascript @_file_upload
   Scenario: Test upload XLSX file type.
-    Given I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_error_1.xlsx" file to "Marked responses" filemanager
-    When I press "Upload these responses"
-    Then I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
-
-    When I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_normal.xlsx" file to "Marked responses" filemanager
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses upload" page logged in as teacher
+    And I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_error_1.xlsx" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "Saved 4 responses"
+    Then I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+    And I upload "question/type/pmatch/tests/fixtures/testreponses_xlsx_normal.xlsx" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    And I should see "Saved 4 responses"

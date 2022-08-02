@@ -4,13 +4,26 @@ Installing spell-checking
 Linux and Mac
 -------------
 
-I think this just works becasue these OSes come with the enchant library for PHP.
+I think this just works because these OSes come with the Enchant library for PHP.
 
-If it is not working, chech that the enchant extension is listed in php.ini, and
-check you can use aspell from teh command-line.
+If it is not working, check that the Enchant extension is listed in php.ini, and
+check you can use aspell from the command-line.
 
-Windows
--------
+Windows PHP 8.x
+---------------
+
+The situation sucks. See https://stackoverflow.com/a/67423119/1292707.
+
+1. Make a directory C:\usr\local\lib in your C: drive. (Yes really!)
+
+2. Copy the 'enchant' folder from in 'C:\tools\php80\lib' (or wherever) to C:\usr\local\lib and rename it to 'enchant-2'.
+
+3. Follow the instructions below to get the dictionary files, but put them in 'C:\usr\local\share\enchant\hunspell'
+   instead of '[... path to your PHP install ...]\share\myspell\dicts'.
+
+
+Windows up to PHP 7.x
+---------------------
 
 You definitely need to add extension=php_enchant.dll in your php.ini.
 
@@ -29,7 +42,7 @@ https://www.kildclient.org/forum/viewtopic.php?t=5411
    downloaded, there might be other files (such as hyphenation support files) with
    similar names. Those are not used by enchant.
 
-4. Copy the .aff and .dic files to the[... path to your PHP install ...]\share\myspell\dicts folder.
+4. Copy the .aff and .dic files to the [... path to your PHP install ...]\share\myspell\dicts folder.
    If this is the first dictionary you are installing, you will need to create the folders.
 
 A good one-liner to test it is working from the command-line is:

@@ -21,13 +21,10 @@ Feature: Test answer accuracy and response coverage
       | questioncategory | qtype    | name                            | template |
       | Test questions   | pmatch   | My first pattern match question | listen   |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Get standard responses graded against current answer rules.
-    When I choose "Edit question" action for "My first pattern match question" in the question bank
+    When I am on the "My first pattern match question" "core_question > edit" page logged in as teacher
     # First check of question editing page.
     Then I should see "Editing a Pattern match question"
     Then I should see "Responses not matched above: 0" in the "#fitem_accuracy_0" "css_element"
@@ -54,10 +51,7 @@ Feature: Test answer accuracy and response coverage
     And I should see "Computed mark less than human mark: 5 (missed negative)"
     # Now check edit question page for updated accuracy and coverage.
     When I switch to the main window
-    And I am on homepage
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I choose "Edit question" action for "My first pattern match question" in the question bank
+    When I am on the "My first pattern match question" "core_question > edit" page
     Then I should see "Editing a Pattern match question"
     And I should see "Responses not matched above: 12" in the "#fitem_accuracy_0" "css_element"
     And I should see "Correctly matched by this rule: 1" in the "#fitem_accuracy_0" "css_element"

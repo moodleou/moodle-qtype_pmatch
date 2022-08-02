@@ -21,11 +21,10 @@ Feature: Confirm a student cannot access the test this question feature
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "student"
 
   @javascript
   Scenario: Confirm a student cannot access the test this question feature.
-    Given I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as student
     Then I should see "Sorry, but you do not currently have permissions to do that (view)"
     And I should not see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should not see "Showing the responses for the selected question: My first pattern match question"

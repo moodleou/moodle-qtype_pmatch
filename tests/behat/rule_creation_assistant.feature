@@ -14,14 +14,11 @@ Feature: Test the rule creation assistant
     And the following "course enrolments" exist:
       | user    | course | role           |
       | teacher | C1     | editingteacher |
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Using the rule creation assistant.
     # Do not use I add a "Pattern match" question filling the form with as it requires a save
-    And I follow "Question bank"
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     And I press "Create a new question ..."
     And I set the field "Pattern match" to "1"
     And I click on ".submitbutton" "css_element"

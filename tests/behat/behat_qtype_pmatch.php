@@ -27,7 +27,6 @@
 
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 
-use Behat\Mink\Exception\ExpectationException as ExpectationException;
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 /**
@@ -41,14 +40,44 @@ class behat_qtype_pmatch extends behat_base {
     public static $responsesfilepath = "fixtures/myfirstquestion_responses.csv";
 
     /**
-     * Opens a test response home page.
+     * Convert page names to URLs for steps like 'When I am on the "[identifier]" "[page type]" page'.
      *
-     * @Given /^I am on the pattern match test responses page for question "(?P<question_name_string>(?:[^"]|\\")*)"$/
+     * Recognised page names are:
+     * | pagetype              | name meaning  | description                                |
+     * | test responses        | Question name | The response-testing screen for a question |
+     * | test responses upload | Question name | Upload test responses screen               |
+     *
+     * @param string $type identifies which type of page this is, e.g. 'Preview'.
+     * @param string $identifier identifies the particular page, e.g. 'My question'.
+     * @return moodle_url the corresponding URL.
+     * @throws Exception with a meaningful error message if the specified page cannot be found.
      */
-    public function i_am_on_pattern_match_test_responses_page($questionname) {
-        $question = $this->get_question_by_name($questionname);
-        $this->getSession()->visit($this->locate_path(
-                '/question/type/pmatch/testquestion.php?id=' . $question->id));
+    protected function resolve_page_instance_url(string $type, string $identifier): moodle_url {
+        switch (strtolower($type)) {
+            case 'test responses':
+                return new moodle_url('/question/type/pmatch/testquestion.php',
+                        ['id' => $this->find_question_by_name($identifier)]);
+
+            case 'test responses upload':
+                return new moodle_url('/question/type/pmatch/uploadresponses.php',
+                        ['id' => $this->find_question_by_name($identifier)]);
+
+            default:
+                throw new Exception('Unrecognised qtype_pmatch page type "' . $type . '."');
+        }
+    }
+
+    /**
+     * Find a question, and where it is, from the question name.
+     *
+     * This is a helper used by resolve_page_instance_url.
+     *
+     * @param string $questionname
+     * @return int question id.
+     */
+    protected function find_question_by_name(string $questionname): int {
+        global $DB;
+        return (int) $DB->get_field('question', 'id', ['name' => $questionname], MUST_EXIST);
     }
 
     /**
@@ -64,15 +93,13 @@ class behat_qtype_pmatch extends behat_base {
 
     /**
      * Load a csv file into an array of response objects reporting feedback
+     *
      * @param qtype_pmatch_question $question (optional) question to associate responses with.
-     * @return array $responses, $problems
+     * @param string|null $pathtoresponses responses file to load. Defaults to self::$responsesfilepath.
+     * @return array [$responses, $problems].
      */
-    protected function load_responses($question, $pathtoresponses = null) {
-        if (!$question) {
-            throw new ExpectationException('Question not provided', $this->getSession());
-        }
-
-        $pathtoresponses = $pathtoresponses ? $pathtoresponses : self::$responsesfilepath;
+    protected function load_responses(qtype_pmatch_question $question, string $pathtoresponses = null): array {
+        $pathtoresponses = $pathtoresponses ?? self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/../' . $pathtoresponses;
 
         return qtype_pmatch\testquestion_responses::load_responses_from_file($responsesfile, $question);
@@ -80,24 +107,28 @@ class behat_qtype_pmatch extends behat_base {
 
     /**
      * Create a default pmatch question object
+     *
+     * @param string $name the question name to use
      * @return qtype_pmatch_question
      */
-    protected function get_question_by_name($name) {
+    protected function get_question_by_name(string $name): qtype_pmatch_question {
         global $DB;
         $questionid = $DB->get_field('question', 'id', ['name' => $name]);
+        /** @var qtype_pmatch_question $question */
         $question = question_bank::load_question($questionid);
         return $question;
     }
 
     /**
      * load the default result set and store in the database.
-     * @return array \qtype_pmatch\test_response
+     *
+     * @param string $questionname the question name to use.
+     * @param string|null $pathtoresponses the file of responses to load.
      */
-    protected function intialise_default_responses($questionname, $pathtoresponses = null) {
-        global $DB;
+    protected function intialise_default_responses(string $questionname, string $pathtoresponses = null): void {
         $question = $this->get_question_by_name($questionname);
 
-        list($responses, $problems) = $this->load_responses($question, $pathtoresponses);
+        [$responses] = $this->load_responses($question, $pathtoresponses);
 
         // Add responses.
         \qtype_pmatch\testquestion_responses::add_responses($responses);

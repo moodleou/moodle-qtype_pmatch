@@ -19,11 +19,8 @@ Feature: Test spelling check of a pmatch question
   Scenario: Spell checking with Spell checking library is set to No spell checking available
     Given the following config values are set as admin:
       | spellchecker | null | qtype_pmatch |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    When I choose "Edit question" action for "My first pattern match question" in the question bank
-    When I expand all fieldsets
+    When I am on the "My first pattern match question" "core_question > edit" page logged in as admin
+    And I expand all fieldsets
     Then I should see "Spell checking"
     And I should see "Do not check spelling of student"
     And the "Spell checking" "select" should be disabled
@@ -31,14 +28,11 @@ Feature: Test spelling check of a pmatch question
 
   Scenario: Spell checking with Spell checking library is set to Pspell spell-checking library
     Given I check the "pspell" spell checking library already installed
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
     And the following config values are set as admin:
       | config       | value  | plugin       |
       | spellchecker | pspell | qtype_pmatch |
-    And I choose "Edit question" action for "My first pattern match question" in the question bank
-    When I expand all fieldsets
+    When I am on the "My first pattern match question" "core_question > edit" page logged in as admin
+    And I expand all fieldsets
     Then I should see "Spell checking"
     And I click on "Spell checking" "select"
     And I should see "English"
@@ -48,14 +42,11 @@ Feature: Test spelling check of a pmatch question
 
   Scenario: Spell checking with Spell checking library is set to Enchant spell-checking library
     Given I check the "enchant" spell checking library already installed
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
-    And I choose "Edit question" action for "My first pattern match question" in the question bank
-    When I expand all fieldsets
+    When I am on the "My first pattern match question" "core_question > edit" page logged in as admin
+    And I expand all fieldsets
     Then I should see "Spell checking"
     And I should not see "No dictionaries available"
     And I click on "Spell checking" "select"
@@ -72,11 +63,8 @@ Feature: Test spelling check of a pmatch question
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    And I choose "Edit question" action for "Missing dictionary pattern match question" in the question bank
-    When I expand all fieldsets
+    When I am on the "Missing dictionary pattern match question" "core_question > edit" page logged in as admin
+    And I expand all fieldsets
     Then I should see "Spell checking"
     And I should see "Vietnamese (Warning! Dictionary not installed on this server)"
 
@@ -88,11 +76,7 @@ Feature: Test spelling check of a pmatch question
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    When I choose "Preview" action for "Missing dictionary pattern match question" in the question bank
-    When I switch to "questionpreview" window
+    When I am on the "Missing dictionary pattern match question" "core_question > preview" page logged in as admin
     Then I should see "This question is set to use Vietnamese spell-check, but that language is not available on this server."
 
   Scenario: Spell check work normally
@@ -103,11 +87,7 @@ Feature: Test spelling check of a pmatch question
     And the following config values are set as admin:
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    When I choose "Preview" action for "English Spell Check pattern match question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "English Spell Check pattern match question" "core_question > preview" page logged in as admin
     And I set the field "Answer" to "Bonjour"
-    When I press "Save"
+    And I press "Save"
     Then I should see "The following words are not in our dictionary: Bonjour. Please correct your spelling."

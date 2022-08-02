@@ -21,17 +21,23 @@ Feature: Test all the basic functionality of testquestion question type
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
     And the default question test responses exist for question "My first pattern match question"
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    When I choose "Preview" action for "My first pattern match question" in the question bank
-    And I switch to "questionpreview" window
+
+  @javascript
+  Scenario: Navigate to the Test this question page from preview
+    When I am on the "My first pattern match question" "core_question > preview" page logged in as teacher
     And I click on "Test this question" "link"
+    Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
+
+  @javascript
+  Scenario: Navigate to the Test this question page from the question bank
+    When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
+    And I choose "Pattern-match testing tool" action for "My first pattern match question" in the question bank
+    Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
 
   @javascript
   Scenario: Test basic functionality of testquestion
-    # Confirm list responses is correct.
-    And I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
+    Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And I should see "Sample responses: 13"
@@ -42,7 +48,7 @@ Feature: Test all the basic functionality of testquestion question type
   @javascript
   Scenario: Test edit response.
     # Confirm can edit inplace the response.
-    Given I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     Then I should see "testing one two three four"
     When I follow "Edit response"
     Then I should see "Escape to cancel, Enter when finished"

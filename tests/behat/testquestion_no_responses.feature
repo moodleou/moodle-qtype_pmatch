@@ -20,12 +20,11 @@ Feature: Test no test responses existing for this question
     And the following "questions" exist:
       | questioncategory | qtype    | name         | template |
       | Test questions   | pmatch   | My first pattern match question | listen    |
-    And I log in as "teacher"
 
   @javascript
   Scenario: Confirm the display when no test responses exist for a pattern match question.
     # Confirm list responses is correct.
-    Given I am on the pattern match test responses page for question "My first pattern match question"
+    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "What to include in the report"
     And I should see "Showing the responses for the selected question: My first pattern match question"

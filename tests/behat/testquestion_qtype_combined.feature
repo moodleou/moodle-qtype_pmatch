@@ -14,13 +14,10 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    Then I log in as "admin"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
-    Then I press "Create a new question ..."
+    And I am on the "Course 1" "core_question > course question bank" page logged in as admin
+    And I press "Create a new question ..."
     And I set the field "Combined" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
-    Then I should see "Adding a combined question"
     And I set the field "Question name" to "Combined 001"
     And I set the field "Question text" to " What 5 + 5 ? [[1:pmatch:__10__]]. <br/>What is the IUPAC name of the molecule? [[2:pmatch:__20__]]. <br/>What is the pH of a 0.1M solution? [[3:numeric:__10__]]"
     Then I set the field "General feedback" to "The molecule is ethanoic acid which is more commonly known as acetic acid or in dilute solution as vinegar. The constituent elements are carbon (grey), hydrogen (white) and oxygen (red). A 0.1M solution has a pH of 2.88 and when a solution is combined with oil the result is a vinaigrette."
@@ -45,8 +42,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqnumeric3generalfeedback | You have the incorrect value for the pH |
     And I press "id_submitbutton"
     Then I should see "Combined 001"
-    When I choose "Preview" action for "Combined 001" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "Combined 001" "core_question > preview" page logged in as teacher
 
   @javascript
   Scenario: Should see the test question link on preview page Combined Pattern Match question type.
