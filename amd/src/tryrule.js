@@ -21,7 +21,6 @@
  *
  * @module    qtype_pmatch
  * @class     tryrule
- * @package   question
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     2.9
@@ -31,7 +30,7 @@ define(['jquery'], function($) {
     /**
      * @alias qtype_pmatch/tryrule
      */
-    var t = {
+    const t = {
         baseUrl: '',
         sessKey: '',
         qid: '',
@@ -44,7 +43,7 @@ define(['jquery'], function($) {
         init: function() {
             // Set up base variables.
             t.pendingid = 'tryrule_' + Math.random().toString(36).slice(2); // Random string.
-            var base = window.location;
+            const base = window.location;
             t.baseUrl = base.protocol + '//' + base.host +
                     base.pathname.replace('question.php', 'type/pmatch/api/api.php');
             if ($('#mform1').length) {
@@ -57,7 +56,7 @@ define(['jquery'], function($) {
             t.qid = t.baseForm.find('input[name="id"]').val();
             $('input[name="tryrule"]').on('click', function(e) {
                 e.preventDefault();
-                var id = $(this).parents('.try-rule').prevAll('.answer-rule').first()
+                const id = $(this).parents('.try-rule').prevAll('.answer-rule').first()
                     .attr('id').replace('fitem_id_answer_', '');
                 t.tryrule(id, this);
             });
@@ -65,19 +64,19 @@ define(['jquery'], function($) {
         /**
          * Try rule support send request try rule.
          *
-         * @param int is id answer try rule
-         * @param Element btn is element button click call tryrule function
+         * @param {number} id id answer try rule
+         * @param {Element} btn is element button click call tryrule function
          */
         tryrule: function(id, btn) {
             M.util.js_pending(t.pendingid);
-            var rule = $('#id_answer_' + id).val().trim();
+            const rule = $('#id_answer_' + id).val().trim();
             if (rule === undefined || rule === null || rule === '') {
                 return;
             }
-            var display = $(btn).next('.try-rule-result');
-            var fraction = $('#id_fraction_' + id).val();
+            const display = $(btn).next('.try-rule-result');
+            const fraction = $('#id_fraction_' + id).val();
             // Send request for tryrule result.
-            var data = {type: 'tryrule', qid: t.qid, ruletxt: rule, sesskey: t.sessKey, fraction: fraction};
+            const data = {type: 'tryrule', qid: t.qid, ruletxt: rule, sesskey: t.sessKey, fraction: fraction};
             $.post(t.baseUrl, data, function(result) {
                 // Display feedback to the user.
                 display.html(result);

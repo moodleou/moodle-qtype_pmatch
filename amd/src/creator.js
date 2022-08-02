@@ -18,15 +18,15 @@
  *
  * @module    qtype_pmatch
  * @class     creator
- * @package   question
  * @copyright 2018 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], function($, Str, Ajax, Templates, KeyCodes) {
+define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', 'core/notification'],
+    function($, Str, Ajax, Templates, KeyCodes, Notification) {
     /**
      * @alias qtype_pmatch/creator
      */
-    var t = {
+    const t = {
         /**
          * The id of row will append to Table Response.
          */
@@ -52,22 +52,23 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
                 t.idxLastRow++;
                 t.newRowId = 'qtype-pmatch-new-response_' + t.idxLastRow;
                 Templates.render('qtype_pmatch/newresponse', {newrowid: t.newRowId})
-                    .done(function(html) {
+                    .then(function(html) {
                         t.table.append(html);
                         $('html, body').animate({
                             scrollTop: $('#' + t.newRowId).offset().top
                         }, 800);
                         $('.new-expectedfraction').focus();
                         M.core_formchangechecker.set_form_changed();
-                    });
+                        return null;
+                    }).catch(Notification.exception);
                 t.disableControlButtons(true);
             });
 
-            var timeoutCheckResponse = null;
+            let timeoutCheckResponse = null;
 
             // Check response when key up or paste content.
             $(document).on('keyup paste', '.new-response', function() {
-                var response = $(this).val().trim();
+                const response = $(this).val().trim();
 
                 if (timeoutCheckResponse) {
                     M.util.js_complete('checkresponse');
@@ -85,14 +86,15 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
             });
 
             $(document).on('keydown', '.new-response', function(e) {
-                if (e.keyCode == KeyCodes.enter) {
+                if (e.keyCode === KeyCodes.enter) {
                     t.saveNewResponse();
                     return false;
                 }
+                return true;
             });
 
             $(document).on('keydown', '.new-expectedfraction, .new-response, .savenewresponse, .cancelnewresponse', function(e) {
-                if (e.keyCode == KeyCodes.escape) {
+                if (e.keyCode === KeyCodes.escape) {
                     t.cancelNewResponse();
                 }
             });
@@ -109,26 +111,25 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
          * Submit to save a new response.
          */
         saveNewResponse: function() {
-            var response = $('.new-response').val().trim();
+            const response = $('.new-response').val().trim();
             if (response !== '') {
-                var mark = $('.new-expectedfraction').is(':checked') ? 1 : 0;
-                var promises = Ajax.call([{
+                const mark = $('.new-expectedfraction').is(':checked') ? 1 : 0;
+                const promises = Ajax.call([{
                     methodname: 'qtype_pmatch_create_response',
                     args: {questionid: t.questionId, expectedfraction: mark, response: response, curentrow: t.idxLastRow}
                 }], true);
-                promises[0]
-                    .done(function(result) {
+                promises[0].then(function(result) {
                         if (result.status === 'error') {
                             t.handleSaveNewResponseButton(false, result.message);
                         } else {
                             t.disableControlButtons(false);
                             $('#' + t.newRowId).detach();
                             t.table.append($(result.html));
-                            var resultssummary = M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
+                            const resultssummary = M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
                             $('#testquestion_gradesummary').html(resultssummary);
                         }
-                    })
-                    .fail(function(response) {
+                        return null;
+                    }).catch(function(response) {
                         t.handleSaveNewResponseButton(false, response.message);
                     });
                 t.disableControlButtonAndSelectionBox();
@@ -154,20 +155,20 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
          * @param {String} response The response to check.
          */
         checkResponse: function(response) {
-            var promises = Ajax.call([{
+            const promises = Ajax.call([{
                 methodname: 'qtype_pmatch_check_response',
                 args: {questionid: t.questionId, response: response}
             }], true);
             promises[0]
-                .done(function(result) {
-                    var isCorrectResponse = false;
-                    if (result.status == 'success') {
+                .then(function(result) {
+                    let isCorrectResponse = false;
+                    if (result.status === 'success') {
                         result.message = '';
                         isCorrectResponse = true;
                     }
                     t.handleSaveNewResponseButton(isCorrectResponse, result.message);
-                })
-                .fail(function(response) {
+                    return null;
+                }).catch(function(response) {
                     t.handleSaveNewResponseButton(false, response.message);
                 });
         },
@@ -192,7 +193,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
          * Function disable or enable the outside table buttons when create new response.
          *
          * @method disableControlButtons
-         * @param {Bool} disable true if disable else enable the buttons.
+         * @param {Boolean} disable true if disable else enable the buttons.
          */
         disableControlButtons: function(disable) {
             if (disable) {
@@ -221,8 +222,8 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
          * @method disableControlButtons
          */
         disableControlButtonAndSelectionBox: function() {
-            var checkbox = $('#tqheadercheckbox');
-            var table = $('#responses');
+            const checkbox = $('#tqheadercheckbox');
+            const table = $('#responses');
             if (table.find('tbody tr:not(.emptyrow)').length <= 0) {
                 checkbox.attr('disabled', true);
                 $('#deleteresponsesbutton').attr('disabled', 'true');
@@ -234,5 +235,6 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes'], 
             }
         }
     };
+
     return t;
 });

@@ -18,7 +18,6 @@
  *
  * @module    qtype_pmatch
  * @class     updater
- * @package   question
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +25,7 @@ define(['jquery', 'core/notification'], function($, Notification) {
     /**
      * @alias qtype_pmatch/updater
      */
-    var t = {
+    const t = {
         baseUrl: '',
         sessKey: '',
         qid: '',
@@ -39,19 +38,19 @@ define(['jquery', 'core/notification'], function($, Notification) {
          * Initialise the updater.
          */
         init: function() {
-            var base = $('#attemptsform').attr('action');
-            var body = $('body');
+            const base = $('#attemptsform').attr('action');
+            const body = $('body');
             t.baseUrl = base.replace('testquestion.php', 'api/updater.php');
             t.sessKey = $('#attemptsform input[name="sesskey"]').val();
             t.qid = $('#attemptsform input[name="id"]').val();
             $(document).on('click', '.updater-ef', function() {
-                var id = $(this).data('id');
+                const id = $(this).data('id');
                 t.update(id);
                 return false;
             });
             // Prevent the form submit when user press enter on checkbox.
             $(document).on('keypress', '#tablecontainer :checkbox', function(e) {
-                if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                if ((e.keyCode ? e.keyCode : e.which) === 13) {
                     e.preventDefault();
                     $(this).trigger('click');
                 }
@@ -71,7 +70,7 @@ define(['jquery', 'core/notification'], function($, Notification) {
             });
 
             body.on('updatefailed', '[data-inplaceeditable]', function(e) {
-                var exception = e.exception;
+                const exception = e.exception;
                 e.preventDefault();
                 Notification.alert(M.util.get_string('error:title', 'qtype_pmatch'),
                     exception.message, M.util.get_string('ok', 'moodle'));
@@ -95,37 +94,35 @@ define(['jquery', 'core/notification'], function($, Notification) {
          * @param {object} target the DOM element.
          */
         handleUpdated: function(e, target) {
-            var ajaxReturn = e.ajaxreturn;
+            const ajaxReturn = e.ajaxreturn;
             if (ajaxReturn.value !== e.oldvalue) {
-                var jsonDecode = $.parseJSON(ajaxReturn.value);
-                var row = $(target).parent().parent();
-                var currentRow = row.attr('id');
-                var html = jsonDecode.html;
+                const jsonDecode = $.parseJSON(ajaxReturn.value);
+                const row = $(target).parent().parent();
+                const currentRow = row.attr('id');
+                const html = jsonDecode.html;
                 $(row).replaceWith(html.replace(t.REPLACESTRING, currentRow));
                 $('#testquestion_gradesummary').html(jsonDecode.summary);
             }
         },
         update: function(id) {
-            var val = $('#updater-ef_' + id).text();
-            var ef = 0;
-            if (val === '1') {
-                ef = 0;
-            } else {
-                ef = 1;
-            }
+            const val = $('#updater-ef_' + id).text();
+            const ef = (val === '1') ? 0 : 1;
             // Send update.
-            var data = {qid: t.qid, rid: id, expectedfraction: ef, sesskey: t.sessKey};
+            const data = {qid: t.qid, rid: id, expectedfraction: ef, sesskey: t.sessKey};
             $.post(t.baseUrl, data, function(result) {
                 if (result.status === 'success') {
                     // Update the ui.
-                    $('#updater-ef_' + id).text(result.ef);
-                    $('#updater-ef_' + id).parent().prev().text(result.gf);
-                    var tr = $('#updater-ef_' + id).parent().parent();
+                    const updater = $('#updater-ef_' + id);
+                    updater.text(result.ef);
+                    updater.parent().prev().text(result.gf);
+
+                    const tr = updater.parent().parent();
                     tr.removeClass();
                     tr.addClass(result.rowclass);
                     tr.find('td[class="c3"]').text(result.gf);
                     // Update the grade summary.
-                    var c = M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
+
+                    const c = M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
                     $('#testquestion_gradesummary').html(c);
                 } else {
                     // Developer debugging - failure states are in api/updater.php.

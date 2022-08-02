@@ -19,9 +19,7 @@
  * This is based on the work of Dr Alistair Willis published:
  * http://aclweb.org/anthology/W/W15/W15-0628.pdf
  *
- * @module    qtype_pmatch
  * @class     rulecreator
- * @package   question
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     2.9
@@ -31,7 +29,7 @@ define(['jquery'], function($) {
     /**
      * @alias qtype_pmatch/rulecreator
      */
-    var t = {
+    const t = {
         store: {},
 
         /**
@@ -39,8 +37,8 @@ define(['jquery'], function($) {
          */
         init: function() {
             $('textarea[name^="answer"]').each(function() {
-                var id = $(this).attr('id').replace('id_answer_', '');
-                var ref = 'id_' + id;
+                const id = $(this).attr('id').replace('id_answer_', '');
+                const ref = 'id_' + id;
                 t.store[ref] = [];
                 // Hide the 'show/hide rule creator assistant' unless there is no existing rule.
                 // It would be much better to not show this element unless js is enabled, but
@@ -50,7 +48,7 @@ define(['jquery'], function($) {
                 } else {
                     $(this).parent().parent().next().addClass('rcw');
                 }
-                var rc = $(this).parent().parent().next().find('div.rule-creator');
+                const rc = $(this).parent().parent().next().find('div.rule-creator');
                 // Add ids to make things easier, and add button clicks.
                 rc.attr('id', 'rc_' + id);
                 $(this).parent().parent().next().find('a.rule-creator-btn').attr('id', 'rc_btn_' + id);
@@ -103,10 +101,10 @@ define(['jquery'], function($) {
                     return false;
                 });
             });
-            $('.rule-creator-btn').click(function (e) {
-                var wrapper = $(e.target).closest('.fitem.rcw'),
-                    icon = $(e.target).closest('.rule-creator-btn').find('img.icon'),
-                    src = icon.attr('src');
+            $('.rule-creator-btn').click(function(e) {
+                const wrapper = $(e.target).closest('.fitem.rcw');
+                const icon = $(e.target).closest('.rule-creator-btn').find('img.icon');
+                let src = icon.attr('src');
                 wrapper.find('.rule-creator').slideToggle();
                 if (src === undefined) {
                     return false;
@@ -122,19 +120,19 @@ define(['jquery'], function($) {
         },
 
         termAdd: function(id) {
-            var term = this.getTerm(id, 'term');
+            const term = this.getTerm(id, 'term');
             if (!term) {
                 $('#rc_term_' + id).focus();
                 return;
             }
-            var termid = this.addToStore(id, term, 'and', 'term');
+            const termid = this.addToStore(id, term, 'and', 'term');
             this.addToPrecedes(id, termid, term);
             this.displayResult(id);
             $('#rc_term_' + id).val('');
         },
 
         termExclude: function(id) {
-            var term = this.getTerm(id, 'term');
+            const term = this.getTerm(id, 'term');
             if (!term) {
                 $('#rc_term_' + id).focus();
                 return;
@@ -146,31 +144,31 @@ define(['jquery'], function($) {
         },
 
         termOr: function(id) {
-            var term = this.getTerm(id, 'term');
+            const term = this.getTerm(id, 'term');
             if (!term) {
                 $('#rc_term_' + id).focus();
                 return;
             }
-            var termid = this.addToStore(id, term, 'or', 'term');
+            const termid = this.addToStore(id, term, 'or', 'term');
             this.addToPrecedes(id, termid, term);
             this.displayResult(id);
             $('#rc_term_' + id).val('');
         },
 
         templateAdd: function(id) {
-            var term = this.getTerm(id, 'template');
+            const term = this.getTerm(id, 'template');
             if (!term) {
                 $('#rc_template_' + id).focus();
                 return;
             }
-            var termid = this.addToStore(id, term, 'and', 'template');
+            const termid = this.addToStore(id, term, 'and', 'template');
             this.addToPrecedes(id, termid, term);
             this.displayResult(id);
             $('#rc_template_' + id).val('');
         },
 
         templateExclude: function(id) {
-            var term = this.getTerm(id, 'template');
+            const term = this.getTerm(id, 'template');
             if (!term) {
                 $('#rc_template_' + id).focus();
                 return;
@@ -182,7 +180,7 @@ define(['jquery'], function($) {
         },
 
         precedesAdd: function(id) {
-            var terms = this.getPrecedesChoices(id, 'precedes');
+            const terms = this.getPrecedesChoices(id, 'precedes');
             if (!terms) {
                 return;
             }
@@ -192,7 +190,7 @@ define(['jquery'], function($) {
         },
 
         cprecedesAdd: function(id) {
-            var terms = this.getPrecedesChoices(id, 'cprecedes');
+            const terms = this.getPrecedesChoices(id, 'cprecedes');
             if (!terms) {
                 return;
             }
@@ -202,7 +200,7 @@ define(['jquery'], function($) {
         },
 
         addToAnswer: function(id) {
-            var result = $('#rc_result_' + id).text();
+            const result = $('#rc_result_' + id).text();
             if (result === null || result === '') {
                 return;
             }
@@ -214,7 +212,7 @@ define(['jquery'], function($) {
         },
 
         clear: function(id) {
-            var ref = 'id_' + id;
+            const ref = 'id_' + id;
             this.store[ref] = [];
             $('#rc_term_' + id).val('');
             $('#rc_template_' + id).val('');
@@ -228,7 +226,7 @@ define(['jquery'], function($) {
                 $('#rc_notice_' + id).text(M.util.get_string('rulecreationtoomanyterms', 'qtype_pmatch'));
                 return false;
             }
-            var term = $('#rc_' + type + '_' + id).val();
+            let term = $('#rc_' + type + '_' + id).val();
             if (term === undefined || term === null || term === '') {
                 return false;
             }
@@ -260,12 +258,12 @@ define(['jquery'], function($) {
         },
 
         getPrecedesChoices: function(id, type) {
-            var term1 = $('#rc_' + type + '1_' + id).val();
+            const term1 = $('#rc_' + type + '1_' + id).val();
             if (term1 === '0') {
                 $('#rc_' + type + '1_' + id).focus();
                 return false;
             }
-            var term2 = $('#rc_' + type + '2_' + id).val();
+            const term2 = $('#rc_' + type + '2_' + id).val();
             if (term2 === '0') {
                 $('#rc_' + type + '2_' + id).focus();
                 return false;
@@ -300,8 +298,7 @@ define(['jquery'], function($) {
         },
 
         removeFromPrecedes: function(id, terms) {
-            var i;
-            for (i = 0; i < 2; i++) {
+            for (let i = 0; i < 2; i++) {
                 $('#rc_precedes1_' + id + ' option[value="' + terms[i] + '"]').remove();
                 $('#rc_precedes2_' + id + ' option[value="' + terms[i] + '"]').remove();
                 $('#rc_cprecedes1_' + id + ' option[value="' + terms[i] + '"]').remove();
@@ -310,35 +307,34 @@ define(['jquery'], function($) {
         },
 
         addToStore: function(id, term, op, type) {
-            var ref = 'id_' + id;
-            var termid = this.store[ref].length + 1;
+            const ref = 'id_' + id;
+            const termid = this.store[ref].length + 1;
             this.store[ref].push({termid: termid, term: term, op: op, type: type});
             return termid;
         },
 
         getStoreLength: function(id) {
-            var ref = 'id_' + id;
+            const ref = 'id_' + id;
             return this.store[ref].length;
         },
 
         getStoredResult: function(id) {
-            var ref = 'id_' + id;
-            var rule = '';
+            const ref = 'id_' + id;
+            let rule = '';
             // Temporary store of rule elements.
-            var temp = [];
+            let temp = [];
             // Clone the bit of the store we are interested in, so we can change elements.
-            var mystore = this.store[ref].slice(0);
-            var num = mystore.length;
-            var i = 0;
-            var first = 0;
-            var second = 0;
-            var orpos = [];
-            var orcount = 0;
+            const mystore = this.store[ref].slice(0);
+            let num = mystore.length;
+            let first = 0;
+            let second = 0;
+            let orpos = [];
+            let orcount = 0;
             if (num === 0) {
                 return rule;
             }
-            for (i = 0; i < num; i++) {
-                var currentterm = '';
+            for (let i = 0; i < num; i++) {
+                let currentterm = '';
                 if (mystore[i].type === 'term') {
                     if (mystore[i].op === 'and') {
                         currentterm = 'match_w(' + mystore[i].term + ')';
@@ -387,7 +383,7 @@ define(['jquery'], function($) {
                 // For term, template, precedes or closely precedes and press 'add' or 'exclude'.
                 // So no 'or' pressed, e.g. a add, b add. (Type a in term, press 'add', then ...)
                 rule = 'match_all(\n  ' + temp[0];
-                for (i = 1; i < num; i++) {
+                for (let i = 1; i < num; i++) {
                     rule = rule + ' ' + temp[i];
                 }
                 rule = rule + '\n)';
@@ -396,7 +392,7 @@ define(['jquery'], function($) {
             if (num === (orcount + 1)) {
                 // For a or, b or; a add, b or, c or.
                 rule = 'match_any(\n  ' + temp[0];
-                for (i = 1; i < num; i++) {
+                for (let i = 1; i < num; i++) {
                     rule = rule + ' ' + temp[i];
                 }
                 rule = rule + '\n)';
@@ -411,7 +407,7 @@ define(['jquery'], function($) {
                     } else {
                         // For a add, b or, c add.
                         rule = 'match_all(\n  match_any(\n    ' + temp[0] + ' ' + temp[1] + '\n  )\n ';
-                        for (i = 2; i < num; i++) {
+                        for (let i = 2; i < num; i++) {
                             rule = rule + ' ' + temp[i];
                         }
                         rule = rule + '\n)';
@@ -419,14 +415,14 @@ define(['jquery'], function($) {
                 } else {
                     // For a add, b add, c or.
                     rule = 'match_all(\n    ' + temp[0];
-                    for (i = 1; i < orpos[0]; i++) {
+                    for (let i = 1; i < orpos[0]; i++) {
                         rule = rule + ' ' + temp[i];
                     }
                     rule = 'match_any(\n  ' + rule + '\n  )\n  ' + temp[orpos[0]] + '\n)';
                     if (num > (orpos[0] + 1)) {
                         // For a add, b add, c or, d add.
                         rule = 'match_all(\n' + rule + '\n';
-                        for (i = orpos[0] + 1; i < num; i++) {
+                        for (let i = orpos[0] + 1; i < num; i++) {
                             rule = rule + ' ' + temp[i];
                         }
                         rule = rule + '\n)';
@@ -438,21 +434,21 @@ define(['jquery'], function($) {
                     if (orpos[1] === 2) {
                         // For a add, b or, c or, d add.
                         rule = 'match_all(\n' + rule + ' ' + temp[2] + '\n)\n';
-                        for (i = 3; i < num; i++) {
+                        for (let i = 3; i < num; i++) {
                             rule = rule + ' ' + temp[i];
                         }
                         rule = rule + '\n)';
                     } else {
                         // For a add, b or, c add, d or.
                         rule = 'match_all(\n' + rule + '\n)\n';
-                        for (i = 2; i < orpos[1]; i++) {
+                        for (let i = 2; i < orpos[1]; i++) {
                             rule = rule + ' ' + temp[i];
                         }
                         rule = 'match_any(\n' + rule + '\n)\n ' + temp[orpos[1]];
                         if (num > (orpos[1] + 1)) {
                             // For a add, b or, c add, d or, e add.
                             rule = '\nmatch_all(\n' + rule;
-                            for (i = orpos[1] + 1; i < num; i++) {
+                            for (let i = orpos[1] + 1; i < num; i++) {
                                 rule = rule + ' ' + temp[i];
                             }
                             rule = rule + '\n)';
@@ -462,7 +458,7 @@ define(['jquery'], function($) {
                 } else {
                     // For a add, b add, c or, d or/add.
                     rule = 'match_all(\n' + temp[0];
-                    for (i = 1; i < orpos[0]; i++) {
+                    for (let i = 1; i < orpos[0]; i++) {
                         rule = rule + ' ' + temp[i];
                     }
                     // For a add, b add, c or.
@@ -473,14 +469,14 @@ define(['jquery'], function($) {
                         if (num > (orpos[1] + 1)) {
                             // For a add, b add, c or, d or, e add.
                             rule = 'match_all(\n' + rule;
-                            for (i = orpos[1] + 1; i < num; i++) {
+                            for (let i = orpos[1] + 1; i < num; i++) {
                                 rule = rule + ' ' + temp[i];
                             }
                             rule = rule + '\n)';
                         }
                     } else {
                         rule = 'match_all(\n' + rule + '\n)\n';
-                        for (i = orpos[0] + 1; i < orpos[1]; i++) {
+                        for (let i = orpos[0] + 1; i < orpos[1]; i++) {
                             rule = rule + ' ' + temp[i];
                         }
                         // For a add, b add, c or, d add, e or.
@@ -488,7 +484,7 @@ define(['jquery'], function($) {
                         if (num > (orpos[1] + 1)) {
                             // For a add, b add, c or, d add, e or, f add.
                             rule = 'match_all(\n' + rule;
-                            for (i = orpos[1] + 1; i < num; i++) {
+                            for (let i = orpos[1] + 1; i < num; i++) {
                                 rule = rule + ' ' + temp[i];
                             }
                             rule = rule + '\n)\n';
@@ -505,7 +501,7 @@ define(['jquery'], function($) {
         },
 
         displayResult: function(id) {
-            var result = this.getStoredResult(id);
+            const result = this.getStoredResult(id);
             $('#rc_result_' + id).text(result);
         }
     };
