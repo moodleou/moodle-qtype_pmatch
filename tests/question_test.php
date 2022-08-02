@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+use pmatch_options;
+use qtype_pmatch_question;
+use qtype_pmatch_test_helper;
+use question_classified_response;
+use question_state;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -27,8 +35,10 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  * @package   qtype_pmatch
  * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \qtype_pmatch_question
  */
-class qtype_pmatch_question_test extends basic_testcase {
+class question_test extends \basic_testcase {
     public function test_compare_string_with_wildcard() {
         // Test case sensitive literal matches.
         $options = new pmatch_options();
@@ -131,7 +141,7 @@ class qtype_pmatch_question_test extends basic_testcase {
 
     public function test_classify_response() {
         $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
-        $sa->start_attempt(new question_attempt_step(), 1);
+        $sa->start_attempt(new \question_attempt_step(), 1);
 
         $this->assertEquals([
                 new question_classified_response(13, 'Tom', 1.0)],

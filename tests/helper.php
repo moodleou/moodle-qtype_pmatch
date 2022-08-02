@@ -38,7 +38,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
      *      basic_testcase ($this in the test code) to check.
      * @return qtype_pmatch_question
      */
-    public static function make_a_pmatch_question($applydictionarycheck = false) {
+    public static function make_a_pmatch_question($applydictionarycheck = false): qtype_pmatch_question {
         if ($applydictionarycheck) {
             self::skip_test_if_no_spellcheck($applydictionarycheck, 'en');
         }
@@ -72,7 +72,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
     /**
      * @return stdClass data to create a pattern match question.
      */
-    public function get_pmatch_question_form_data_listen() {
+    public function get_pmatch_question_form_data_listen(): stdClass {
         $fromform = new stdClass();
 
         $fromform->name = 'My first pattern match question';
@@ -118,7 +118,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
     /**
      * @return stdClass data to create a pattern match question.
      */
-    public function get_pmatch_question_form_data_frogtoad() {
+    public function get_pmatch_question_form_data_frogtoad(): stdClass {
         $fromform = new stdClass();
 
         $fromform->name = 'Frog but not toad';
@@ -169,7 +169,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
      *
      * @return stdClass data to create a pattern match question.
      */
-    public function get_pmatch_question_form_data_spanish() {
+    public function get_pmatch_question_form_data_spanish(): stdClass {
         $fromform = new stdClass();
 
         $fromform->name = 'Spanish question';
@@ -215,7 +215,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
      *
      * @return stdClass the question data.
      */
-    public static function get_pmatch_question_data_test0() {
+    public static function get_pmatch_question_data_test0(): stdClass {
         question_bank::load_question_definition_classes('pmatch');
         $qdata = new stdClass();
         test_question_maker::initialise_question_data($qdata);

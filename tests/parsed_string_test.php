@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
 defined('MOODLE_INTERNAL') || die();
 
+use pmatch_options;
+use pmatch_parsed_string;
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 global $CFG;
@@ -29,54 +33,56 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @package   qtype_pmatch
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \pmatch_parsed_string
  */
-class qtype_pmatch_parse_string_test extends basic_testcase {
+class parsed_string_test extends \basic_testcase {
     public function test_pmatch_parse_string() {
         $options = new pmatch_options();
 
         $parsedstring = new pmatch_parsed_string('abc.def', $options);
-        $this->assertEquals($parsedstring->get_words(), ['abc.', 'def']);
+        $this->assertEquals(['abc.', 'def'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('abc def', $options);
-        $this->assertEquals($parsedstring->get_words(), ['abc', 'def']);
+        $this->assertEquals(['abc', 'def'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('abc<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(), ['abc<sup>3</sup>']);
+        $this->assertEquals(['abc<sup>3</sup>'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(), ['123<sup>3</sup>']);
+        $this->assertEquals(['123<sup>3</sup>'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>?456<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(),
-                                                ['123<sup>3</sup>?', '456<sup>3</sup>']);
+        $this->assertEquals(['123<sup>3</sup>?', '456<sup>3</sup>'],
+                $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>!456<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(),
-                                                ['123<sup>3</sup>!', '456<sup>3</sup>']);
+        $this->assertEquals(['123<sup>3</sup>!', '456<sup>3</sup>'],
+                $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('1.23', $options);
-        $this->assertEquals($parsedstring->get_words(), ['1.23']);
+        $this->assertEquals(['1.23'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('1.23e-10', $options);
-        $this->assertEquals($parsedstring->get_words(), ['1.23e-10']);
+        $this->assertEquals(['1.23e-10'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('1.23x10<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(), ['1.23x10<sup>3</sup>']);
+        $this->assertEquals(['1.23x10<sup>3</sup>'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>', $options);
-        $this->assertEquals($parsedstring->get_words(), ['123<sup>3</sup>']);
+        $this->assertEquals(['123<sup>3</sup>'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('cat. dog', $options);
-        $this->assertEquals($parsedstring->get_words(), ['cat.', 'dog']);
+        $this->assertEquals(['cat.', 'dog'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('cat? dog', $options);
-        $this->assertEquals($parsedstring->get_words(), ['cat?', 'dog']);
+        $this->assertEquals(['cat?', 'dog'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('Test?', $options);
         $this->assertEquals(['Test?'], $parsedstring->get_words());
     }
 
-    public function pmatch_spelling_testcases() {
+    public function pmatch_spelling_testcases(): array {
         return [
             [[], 'e.g. tool'],                         // Default extra dictionary word & normal word.
             [[], 'e.g.. tool.'],                       // Trailing punctuation is skipped.
@@ -122,7 +128,7 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
             $options->lang = 'en_GB';
         }
 
-        qtype_pmatch_test_helper::skip_test_if_no_spellcheck($this, $options->lang);
+        \qtype_pmatch_test_helper::skip_test_if_no_spellcheck($this, $options->lang);
 
         $parsedstring = new pmatch_parsed_string($string, $options);
         $ok = $parsedstring->is_spelled_correctly();
@@ -145,8 +151,9 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
      * @param string $expectedlangname Expected language name
      * @param string $expecteddisplayname Expected language display name
      */
-    public function test_get_display_name_for_language_code($langcode, $expectedlangname, $expecteddisplayname) {
-        $language = new stdClass();
+    public function test_get_display_name_for_language_code(
+            string $langcode, string $expectedlangname, string $expecteddisplayname): void {
+        $language = new \stdClass();
         $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($langcode);
         $language->code = $langcode;
         $displayname = get_string('apply_spellchecker_select', 'qtype_pmatch', $language);
@@ -183,7 +190,8 @@ class qtype_pmatch_parse_string_test extends basic_testcase {
      * @param array $availablelangs List of available languages
      * @param string $expectedmatch Expected language match
      */
-    public function test_get_default_spell_check_dictionary($checklanguage, $availablelangs, $expectedmatch) {
+    public function test_get_default_spell_check_dictionary(
+            string $checklanguage, array $availablelangs, string $expectedmatch): void {
         $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($checklanguage, $availablelangs);
         $this->assertEquals($expectedmatch, $matched);
     }

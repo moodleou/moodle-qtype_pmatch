@@ -610,7 +610,7 @@ class testquestion_responses {
      * @param testquestion_response[] $responses response objects to grade
      * @return array
      */
-    public static function get_rule_matches_from_responses($responses) {
+    public static function get_rule_matches_from_responses(array $responses): array {
         $matchresponseidstoruleids = [];
         $matchruleidstoresponseids = [];
         $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
@@ -726,7 +726,7 @@ class testquestion_responses {
      * @param string $filepath path to the file
      * @param object $question question object
      * @param int $count the number of responses to load (optional)
-     * @return testquestion_response[] string[]
+     * @return array of two elements [testquestion_response[], string[]]
      */
     public static function load_responses_from_file($filepath, $question, $count=0) {
         $responses = [];

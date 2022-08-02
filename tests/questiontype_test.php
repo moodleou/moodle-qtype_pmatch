@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+use question_possible_response;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -25,20 +29,22 @@ require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
  * @package   qtype_pmatch
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \qtype_pmatch
  */
-class qtype_pmatch_questiontype_test extends basic_testcase {
+class questiontype_test extends \basic_testcase {
     public static $includecoverage = ['question/type/questiontype.php',
                                         'question/type/pmatch/questiontype.php'];
     protected $qtype;
 
     protected function setUp(): void {
-        $this->qtype = new qtype_pmatch();
+        $this->qtype = new \qtype_pmatch();
     }
 
-    protected function get_test_question_data() {
-        $q = new stdClass();
+    protected function get_test_question_data(): \stdClass {
+        $q = new \stdClass();
         $q->id = 1;
-        $q->options = new stdClass();
+        $q->options = new \stdClass();
         $q->options->answers[1] = (object) ['answer' => 'match(frog)', 'fraction' => 1];
         $q->options->answers[2] = (object) ['answer' => '*', 'fraction' => 0];
 
@@ -46,7 +52,7 @@ class qtype_pmatch_questiontype_test extends basic_testcase {
     }
 
     public function test_name() {
-        $this->assertEquals($this->qtype->name(), 'pmatch');
+        $this->assertEquals('pmatch', $this->qtype->name());
     }
 
     public function test_can_analyse_responses() {

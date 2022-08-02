@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+use pmatch_expression;
+use pmatch_options;
+use pmatch_parsed_string;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -25,21 +31,26 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @package   qtype_pmatch
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \pmatch_expression
+ * @covers \pmatch_options
+ * @covers \pmatch_parsed_string
  */
-class qtype_pmatch_test extends basic_testcase {
-    protected function match($string, $expression, $options = null) {
+class pmatch_test extends \basic_testcase {
+
+    protected function match(string $string, string $expression, pmatch_options $options = null): bool {
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
         $this->assertEquals('', $expression->get_parse_error());
         return $expression->matches($string);
     }
 
-    protected function error_message($expression, $options = null) {
+    protected function error_message(string $expression, pmatch_options $options = null): string {
         $expression = new pmatch_expression($expression, $options);
         return $expression->get_parse_error();
     }
 
-    public function test_strip_sentence_divider() {
+    public function test_strip_sentence_divider(): void {
         $options = new pmatch_options();
 
         $this->assertEquals('Cat', $options->strip_sentence_divider('Cat'));
@@ -55,7 +66,7 @@ class qtype_pmatch_test extends basic_testcase {
      *
      * @return array
      */
-    public function pmatch_error_provider() {
+    public function pmatch_error_provider(): array {
         return [
                 // No closing bracket.
                 ['match_mow([tom maud]|[sid jane]', get_string('ie_missingclosingbracket',
@@ -107,7 +118,7 @@ class qtype_pmatch_test extends basic_testcase {
      *
      * @return array
      */
-    public function pmatch_matching_provider() {
+    public function pmatch_matching_provider(): array {
         $options = new pmatch_options();
         $options->sentencedividers = '|$';
 
@@ -448,7 +459,7 @@ EOF;
                 ['Test.', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
                 ['Testa', 'match(Test?)', true, pmatch_options::make(['sentencedividers' => ''])],
                 ['Punctuation is important.', 'match(Punctuation is important.)', true,
-                        match_options::make(['sentencedividers' => ''])],
+                        pmatch_options::make(['sentencedividers' => ''])],
                 ['Punctuation is important', 'match(Punctuation is important.)', false,
                         pmatch_options::make(['sentencedividers' => ''])],
                 ['Is punctuation important?', 'match(Is punctuation important?)', true,
@@ -466,12 +477,14 @@ EOF;
      * For Test pmatch matching
      *
      * @dataProvider pmatch_matching_provider
+     *
      * @param string $string
-     * @param pmatch_expression $expression
+     * @param string $expression
      * @param bool|null $shouldmatch is method assert.
-     * @param pmatch_options|null $option is optionfor method assert.
+     * @param pmatch_options|null $options is options for method assert.
      */
-    public function test_pmatch_matching($string, $expression, $shouldmatch, $options = null) {
+    public function test_pmatch_matching(string $string, string $expression,
+            ?bool $shouldmatch, pmatch_options $options = null): void {
         if ($shouldmatch) {
             $this->assertTrue($this->match($string, $expression, $options));
         } else {
@@ -484,7 +497,7 @@ EOF;
      *
      * @return array
      */
-    public function pmatch_formatting_provider() {
+    public function pmatch_formatting_provider(): array {
         return [
                 ['match_all (
     match_any (
@@ -557,15 +570,16 @@ EOF;
      * For Test pmatch formatting
      *
      * @dataProvider pmatch_formatting_provider
+     *
      * @param string $expected
-     * @param $string $unformattedexpression
+     * @param string $unformattedexpression
      */
-    public function test_pmatch_formatting($expected, $unformattedexpression) {
+    public function test_pmatch_formatting(string $expected, string $unformattedexpression): void {
         $expression = new pmatch_expression($unformattedexpression);
         $this->assertEquals($expected, $expression->get_formatted_expression_string());
     }
 
-    public function pmatch_number_regex_testcases() {
+    public function pmatch_number_regex_testcases(): array {
         return [
             ['1.981', 1],
             ['-1.981', 1],
@@ -589,12 +603,15 @@ EOF;
 
     /**
      * @dataProvider pmatch_number_regex_testcases
+     *
+     * @param string $string
+     * @param array $expectedmatches
      */
-    public function test_pmatch_number_regex($string, $expectedmatches) {
+    public function test_pmatch_number_regex(string $string, int $expectedmatches): void {
         $this->assertSame($expectedmatches, preg_match('!'.PMATCH_NUMBER.'$!A', $string));
     }
 
-    public function pmatch_number_matching_cases() {
+    public function pmatch_number_matching_cases(): array {
         return [
             ['2', 'match(2)', true],
             ['1', 'match(1)', true],

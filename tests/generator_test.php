@@ -14,18 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
 /**
  * Pattern match question type data generator tests
  *
  * @package   qtype_pmatch
  * @copyright 2015 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \qtype_pmatch_generator
  */
-class qtype_pmatch_testquestion_generator_test extends advanced_testcase {
+class generator_test extends \advanced_testcase {
     public function test_create() {
         global $DB;
 
         $this->resetAfterTest();
+        /** @var \qtype_pmatch_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('qtype_pmatch');
 
         $count = $DB->count_records('qtype_pmatch_test_responses');

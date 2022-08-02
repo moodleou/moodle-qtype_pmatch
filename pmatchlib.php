@@ -473,7 +473,7 @@ class pmatch_expression {
     /**
      * Test a string with a given pmatch expression.
      * @param pmatch_parsed_string $parsedstring the parsed string to match.
-     * @return boolean whether this string matches the expression.
+     * @return bool whether this string matches the expression.
      */
     public function matches(pmatch_parsed_string $parsedstring) {
         if (!$this->is_valid()) {

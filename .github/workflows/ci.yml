@@ -88,7 +88,7 @@ jobs:
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        continue-on-error: true # This step will show errors but will not fail
+        continue-on-error: true # This step will show errors but will not fail.
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 
@@ -101,6 +101,7 @@ jobs:
         run: moodle-plugin-ci savepoints
 
       - name: Mustache Lint
+        continue-on-error: true # We are getting a false positive due to MDLSITE-6744 so ignore.
         if: ${{ always() }}
         run: moodle-plugin-ci mustache
 

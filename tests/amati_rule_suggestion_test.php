@@ -14,10 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_pmatch;
+
+use qtype_pmatch_question;
+use question_answer;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.php');
+require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_test_base.php');
 
 /**
  * Establish a test approach for the amati rule suggestion facility using existing fixtures.
@@ -25,9 +30,14 @@ require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_testcase.
  * @package   qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \qtype_pmatch\amati_rule_suggestion
  */
-class qtype_pmatch_testquestion_amati_rule_suggestion_test
-        extends qtype_pmatch_testquestion_testcase {
+class amati_rule_suggestion_test
+        extends testquestion_test_base {
+
+    /** @var \qtype_pmatch_question the data defining the question being tested. */
+    protected $currentquestion;
 
     /**
      * At first we didn't know how to write pmatch rules that were the equivalent on AMATI rules so
@@ -72,7 +82,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
     public function find_pmatch_equivalents_to_amati_term_command() {
         $this->resetAfterTest();
 
-        // First we test with 10 responses against basic  AMATI term rules usiong the Add, Not and
+        // First we test with 10 responses against basic AMATI term rules using the Add, Not and
         // Or operators.
         // Set correct expectation.
         $comparerulematches = [
@@ -146,43 +156,46 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
         $responseandrulematches = $this->grade_responses($comparerulematches, 10);
         $this->assertEquals($comparerulematches, $responseandrulematches);
 
+        // phpcs:disable Squiz.PHP.CommentedOutCode.Found
         // Next, test with 30 responses against basic versions of Add, Not and Or.See if
         // The pmatch commands still work.
         // Set correct expectation.
         $comparerulematches = [
-                // A Single term.
-                // |'term_in_response(A,tom)' => array(
-                // |       1 => 'tom dick or harry',
-                // |       2 => 'tom',
-                // |       7 => 'tom was janes companion',
-                // |       27 => 'tom is janes companion'
-                // |   ),.
+            // A Single term.
+            // |'term_in_response(A,tom)' => array(
+            // |       1 => 'tom dick or harry',
+            // |       2 => 'tom',
+            // |       7 => 'tom was janes companion',
+            // |       27 => 'tom is janes companion'
+            // |   ),.
             'match_w(tom)' => [
-                    0 => 'Tom Dick or Harry',
-                    1 => 'Tom',
-                    2 => 'Tom was janes companion',
-                    3 => 'tom is jane\'s companion'],
-                // Another single term.
-                // |'term_in_response(A,harry)' => array(
-                // |       1 => 'tom dick or harry',
-                // |       6 => 'harry',
-                // |       28 => 'harry is janes buddy'
-                // |   ).
+                0 => 'Tom Dick or Harry',
+                1 => 'Tom',
+                2 => 'Tom was janes companion',
+                3 => 'tom is jane\'s companion'],
+            // Another single term.
+            // |'term_in_response(A,harry)' => array(
+            // |       1 => 'tom dick or harry',
+            // |       6 => 'harry',
+            // |       28 => 'harry is janes buddy'
+            // |   ).
             'match_w(harry)' => [
-                    0 => 'Tom Dick or Harry',
-                    1 => 'Harry',
-                    2 => 'harry is jane\'s buddy'
+                0 => 'Tom Dick or Harry',
+                1 => 'Harry',
+                2 => 'harry is jane\'s buddy'
             ],
-                // A rule combining And, or and Not.
-                // |'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
-                // |       25 => 'richard is janes friend',
-                // |       26 => 'thomas is janes mate'
-                // |   ).
+            // A rule combining And, or and Not.
+            // |'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
+            // |       25 => 'richard is janes friend',
+            // |       26 => 'thomas is janes mate'
+            // |   ).
             'match_all(match_any(match_w(friend) match_w(mate)) not(match_w(harrriet)))' => [
-                    0 => 'Richard is jane\'s friend',
-                    1 => 'Thomas is jane\'s mate',
+                0 => 'Richard is jane\'s friend',
+                1 => 'Thomas is jane\'s mate',
             ],
         ];
+        // phpcs:enable
+
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 30);
         $this->assertEquals($comparerulematches, $responseandrulematches);
@@ -194,7 +207,8 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
     public function find_pmatch_equivalents_to_amati_template_command() {
         $this->resetAfterTest();
 
-         // Set correct expectation.
+        // phpcs:disable Squiz.PHP.CommentedOutCode.Found
+        // Set correct expectation.
         $comparerulematches = [
                 // A single template command.
                 // |'template_in_response(A,tom)' => array(
@@ -246,6 +260,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
                     4 => 'Thomas is jane\'s mate'
                 ]
         ];
+        // phpcs:enable
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 30);
@@ -261,6 +276,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
     public function find_pmatch_equivalents_to_amati_precedes_command() {
         $this->resetAfterTest();
 
+        // phpcs:disable Squiz.PHP.CommentedOutCode.Found
         // Set the correct expectation.
         $comparerulematches = [
                 // A single AMATI precedes rule.
@@ -315,6 +331,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
                         0 => 'Tom Dick or Harry'
                 ]
         ];
+        // phpcs:enable
 
         // Get the responses which match the rules and test them.
         $responseandrulematches = $this->grade_responses($comparerulematches, 35);
@@ -826,7 +843,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
 
     protected function check_valid_rules ($rules) {
         foreach ($rules as $rule) {
-            $expression = new pmatch_expression($rule);
+            $expression = new \pmatch_expression($rule);
             $this->assertTrue($expression->is_valid());
         }
     }
@@ -1052,25 +1069,31 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
         $this->add_question_form_fields($this->currentquestion);
 
         // Run the test.
-        $suggestedrules = \qtype_pmatch\amati_rule_suggestion::prepare_suggested_rules($this->currentquestion, $suggestedrules);
+        $suggestedrules = amati_rule_suggestion::prepare_suggested_rules($this->currentquestion, $suggestedrules);
 
         // Check the results.
         $this->assertEquals($comparesuggestedrules, $suggestedrules);
         $this->check_valid_rules($suggestedrules);
     }
 
-    protected function get_pmatch_rules_from_amati_rules($comparerules) {
+    protected function get_pmatch_rules_from_amati_rules(array $comparerules): array {
         // Translate each rule into parameters.
         $rules = [];
         foreach ($comparerules as $rule) {
-            $pmatchrule = qtype_pmatch\amati_rule_suggestion::get_pmatch_rule_from_amati_rule($rule);
+            $pmatchrule = amati_rule_suggestion::get_pmatch_rule_from_amati_rule($rule);
             $rules[$pmatchrule] = $rule;
         }
 
         return $rules;
     }
 
-    protected function format_rules($rules) {
+    /**
+     * Pretty-print all the rules in a list.
+     *
+     * @param string[] $rules the rules to format.
+     * @return string[] reformatted rules.
+     */
+    protected function format_rules(array $rules): array {
         // Apply pmatch Formatting to  each rule.
         foreach ($rules as $key => $rule) {
             $expression = new \pmatch_expression($rule);
@@ -1082,18 +1105,18 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
         return $rules;
     }
 
-    protected function get_pmatch_rules_from_parameters($comparerulesandparameters) {
+    protected function get_pmatch_rules_from_parameters(array $comparerulesandparameters): array {
         // Translate each rule into parameters.
         $rulesandparameters = [];
-        foreach ($comparerulesandparameters as $key => $subrules) {
-            $rule = qtype_pmatch\amati_rule_suggestion::get_pmatch_rule_from_subrules($subrules);
+        foreach ($comparerulesandparameters as $subrules) {
+            $rule = amati_rule_suggestion::get_pmatch_rule_from_subrules($subrules);
             $rulesandparameters[$rule] = $subrules;
         }
 
         return $rulesandparameters;
     }
 
-    protected function get_parameters_from_amati_rules($comparerulesandparameters) {
+    protected function get_parameters_from_amati_rules(array $comparerulesandparameters): array {
         // Get the AMATI rules fixture.
         $rules = $this->load_rules();
 
@@ -1107,7 +1130,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
         $rulesandparameters = [];
         foreach ($comparerulesandparameters as $key => $subrules) {
             $rule = $rules[$rulestoindex[$key]];
-            $parameters = qtype_pmatch\amati_rule_suggestion::get_parameters_from_amati_rule($rule->rule);
+            $parameters = amati_rule_suggestion::get_parameters_from_amati_rule($rule->rule);
             $rulesandparameters[$key] = $parameters;
         }
 
@@ -1116,10 +1139,10 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
 
     /**
      * Helper method returning the responses with rules that have been matched.
-     * @param unknown $responses
+     * @param array $responses
      * @return array
      */
-    protected function get_matched_responses($responses) {
+    protected function get_matched_responses(array $responses): array {
         $matchedresponses = [];
         foreach ($responses as $response) {
             if (!count($response->ruleids)) {
@@ -1133,24 +1156,29 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
 
     /**
      * Replace the existing question rules with the given rules.
+     *
+     * @param string[] the new answers to set.
+     * @param qtype_pmatch_question $question the question to update.
      */
-    protected function set_question_rules($newruleanswers, $question) {
+    protected function set_question_rules(array $newruleanswers, qtype_pmatch_question $question) {
         $newrules = [];
         $ruleid = 0;
-        foreach ($newruleanswers as $newruleanswers) {
+        foreach ($newruleanswers as $newruleanswer) {
             $ruleid++;
             $newrules[$ruleid] = new question_answer($ruleid,
-                                      $newruleanswers, 0.0, 'Feedback for rule: ' . $newruleanswers, FORMAT_HTML);
+                                      $newruleanswer, 0.0, 'Feedback for rule: ' . $newruleanswer, FORMAT_HTML);
         }
 
         $question->answers = $newrules;
     }
 
     /**
-     * Create a default pmatch question form object used in questiontype.php forms
+     * Update the data for a pmatch question in the form returned by the edit question form, to set the answers.
+     *
+     * @param qtype_pmatch_question $question
      * @return qtype_pmatch_question
      */
-    protected function add_question_form_fields($question) {
+    protected function add_question_form_fields(qtype_pmatch_question $question): qtype_pmatch_question {
         // Convert answers object to separate arrays.
         $answers = $question->get_answers();
         $index = 0;
@@ -1170,8 +1198,13 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
 
     /**
      * Grade given responses according to given rule match data.
+     *
+     * @param array $comparerulematches
+     * @param int $responsecount
+     * @param array|null $responses
+     * @return array
      */
-    protected function grade_responses($comparerulematches, $responsecount=0, $responses=null) {
+    protected function grade_responses(array $comparerulematches, int $responsecount = 0, array $responses = null): array {
         if (!$responses) {
             $responses = $this->load_default_responses('fixtures/testresponseslong.csv', $responsecount);
         }
@@ -1181,7 +1214,7 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
         $this->set_question_rules(array_keys($comparerulematches), $this->currentquestion);
         $rules = $this->currentquestion->get_answers();
         foreach ($rules as $rule) {
-            \qtype_pmatch\testquestion_responses::grade_responses_by_rule($responses, $rule, $this->currentquestion);
+            testquestion_responses::grade_responses_by_rule($responses, $rule, $this->currentquestion);
         }
 
         return $this->get_rule_matches($responses, $rules);
@@ -1189,13 +1222,13 @@ class qtype_pmatch_testquestion_amati_rule_suggestion_test
 
     /*
      * Load rules from a given file path or the default rule path.
+     *
      * @param $filepath string path to file
      * @return string file contents
      */
     public function load_rules($filepath=null) {
-        global $CFG;
-        $filepath = $filepath ? $filepath : self::$rulesfilepath;
+        $filepath = $filepath ?? self::$rulesfilepath;
         $filepath = dirname(__FILE__) . '/' . $filepath;
-        return qtype_pmatch\amati_rule_suggestion::load_rules_from_file($filepath);
+        return amati_rule_suggestion::load_rules_from_file($filepath);
     }
 }
