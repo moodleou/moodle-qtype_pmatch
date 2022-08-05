@@ -43,9 +43,7 @@ define(['jquery'], function($) {
         init: function() {
             // Set up base variables.
             t.pendingid = 'tryrule_' + Math.random().toString(36).slice(2); // Random string.
-            const base = window.location;
-            t.baseUrl = base.protocol + '//' + base.host +
-                    base.pathname.replace('question.php', 'type/pmatch/api/api.php');
+            t.baseUrl = M.cfg.wwwroot + '/question/type/pmatch/api/api.php';
             if ($('#mform1').length) {
                 t.baseForm = $('#mform1');
             } else {
