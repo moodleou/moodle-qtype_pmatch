@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use qtype_pmatch\testquestion_response;
+use qtype_pmatch\testquestion_responses;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -42,16 +44,16 @@ class qtype_pmatch extends question_type {
         $actions = parent::get_extra_question_bank_actions($question);
 
         if (question_has_capability_on($question, 'view')) {
-            $actions[] = new \action_menu_link_secondary(
+            $actions[] = new action_menu_link_secondary(
                     new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $question->id]),
-                    new \pix_icon('t/approve', ''),
+                    new pix_icon('t/approve', ''),
                     get_string('testquestiontool', 'qtype_pmatch'));
         }
 
         return $actions;
     }
 
-    public function get_question_options($question) {
+    public function get_question_options($question): bool {
         global $DB;
         parent::get_question_options($question);
         $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms',
@@ -60,7 +62,7 @@ class qtype_pmatch extends question_type {
         return true;
     }
 
-    public function extra_question_fields() {
+    public function extra_question_fields(): array {
         return ['qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
                 'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace', 'modelanswer'];
     }
@@ -90,13 +92,26 @@ class qtype_pmatch extends question_type {
         $this->set_default_value('converttospace', $fromform->converttospace);
     }
 
-    public function save_question_options($questionform) {
+    public function save_question($question, $fromform): stdClass {
+        global $CFG;
+
+        // In Moodle versions with question versioning, copy over any test responses before saving.
+        $previousversionquestionid = $question->id ?? 0;
+        if ($CFG->branch >= 400 && $previousversionquestionid) {
+            $fromform->responsesdata = testquestion_responses::get_responses_by_questionid(
+                    $previousversionquestionid);
+        }
+
+        return parent::save_question($question, $fromform);
+    }
+
+    public function save_question_options($fromform) {
         global $DB;
 
         $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
-                ['questionid' => $questionform->id], 'id ASC');
+                ['questionid' => $fromform->id], 'id ASC');
 
-        foreach ($questionform->synonymsdata as $key => $synonymfromform) {
+        foreach ($fromform->synonymsdata as $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
             $word = trim($synonymfromform['word']);
             if ($word == '') {
@@ -107,7 +122,7 @@ class qtype_pmatch extends question_type {
             $synonym = array_shift($oldsynonyms);
             if (!$synonym) {
                 $synonym = new stdClass();
-                $synonym->questionid = $questionform->id;
+                $synonym->questionid = $fromform->id;
                 $synonym->synonyms = '';
                 $synonym->word = '';
                 $synonym->id = $DB->insert_record('qtype_pmatch_synonyms', $synonym);
@@ -124,30 +139,30 @@ class qtype_pmatch extends question_type {
             $DB->delete_records('qtype_pmatch_synonyms', ['id' => $oldsynonym->id]);
         }
 
-        if (!isset($questionform->extenddictionary)) {
-            $questionform->extenddictionary = '';
+        if (!isset($fromform->extenddictionary)) {
+            $fromform->extenddictionary = '';
         }
-        $parentresult = parent::save_question_options($questionform);
+        $parentresult = parent::save_question_options($fromform);
 
         if ($parentresult !== null) {
             // Parent function returns null if all is OK.
             return $parentresult;
         }
 
-        $this->save_hints($questionform);
+        $this->save_hints($fromform);
 
-        $savedanswersresult = $this->save_answers($questionform);
+        $savedanswersresult = $this->save_answers($fromform);
 
         // If the data include exemplar test cases then add them to database.
-        if (isset($questionform->responsesdata)) {
-            $responses = $questionform->responsesdata;
+        if (isset($fromform->responsesdata)) {
+            $responses = $fromform->responsesdata;
             foreach ($responses as $response) {
-                $response->questionid = $questionform->id;
+                $response->questionid = $fromform->id;
             }
-            \qtype_pmatch\testquestion_responses::add_responses($responses);
+            testquestion_responses::add_responses($responses);
         }
 
-        $this->save_rule_matches($questionform);
+        $this->save_rule_matches($fromform);
 
         return $savedanswersresult;
     }
@@ -155,12 +170,13 @@ class qtype_pmatch extends question_type {
     protected function save_rule_matches($question) {
         // Purge this question from the cache.
         question_bank::notify_question_edited($question->id);
+        /** @var qtype_pmatch_question $questionobj */
         $questionobj = question_bank::load_question($question->id);
         // If there are test responses grade them with the new answers and record matches.
-        \qtype_pmatch\testquestion_responses::grade_responses_and_save_matches($questionobj);
+        testquestion_responses::grade_responses_and_save_matches($questionobj);
     }
 
-    protected function save_answers($question) {
+    protected function save_answers($question): ?stdClass {
         global $DB;
         $oldanswers = $DB->get_records('question_answers',
                                             ['question' => $question->id], 'id ASC');
@@ -272,10 +288,10 @@ class qtype_pmatch extends question_type {
      * Helper method used by {@link import_from_xml()}. Handle the data for test question responses text.
      *
      * @param qformat_xml $format the importer/exporter object.
-     * @param object $question the question.
+     * @param stdClass $question the question.
      * @param array $testquestionresponses the bit of the XML representing test question responses data.
      */
-    public function import_responses($format, &$question, $testquestionresponses) {
+    public function import_responses(qformat_xml $format, stdClass$question, array $testquestionresponses): void {
         $responses = [];
         foreach ($testquestionresponses as $testquestionresponse) {
             $response = $this->get_response_data($format, $testquestionresponse);
@@ -291,8 +307,8 @@ class qtype_pmatch extends question_type {
      * @param array $testquestionresponse the bit of the XML representing one test question response.
      * @return testquestion_response $response A simple object representing one test response.
      */
-    public function get_response_data($format, $testquestionresponse) {
-        $response = new \qtype_pmatch\testquestion_response();
+    public function get_response_data(qformat_xml $format, array $testquestionresponse): testquestion_response {
+        $response = new testquestion_response();
         $response->response = $format->import_text($format->getpath($testquestionresponse, ['#', 'response', 0, '#', 'text'], ''));
         $response->expectedfraction = $format->import_text($format->getpath($testquestionresponse,
                 ['#', 'expectedfraction', 0, '#', 'text'], ''));
@@ -301,26 +317,22 @@ class qtype_pmatch extends question_type {
         return $response;
     }
 
-    public function import_synonyms($format, &$question, $synonyms) {
+    public function import_synonyms(qformat_xml $format, stdClass $question, array $synonyms): void {
         foreach ($synonyms as $synonym) {
             $this->import_synonym($format, $question, $synonym);
         }
     }
 
-    public function import_synonym($format, &$question, $synonym) {
+    public function import_synonym(qformat_xml $format, stdClass $question, array $synonym): void {
         static $indexno = 0;
         $question->synonymsdata[$indexno]['word'] =
-                    $format->import_text($format->getpath($synonym,
-                                                            ['#', 'word', 0, '#', 'text'],
-                                                            ''));
+                $format->import_text($format->getpath($synonym, ['#', 'word', 0, '#', 'text'], ''));
         $question->synonymsdata[$indexno]['synonyms'] =
-                    $format->import_text($format->getpath($synonym,
-                                                            ['#', 'synonyms', 0, '#', 'text'],
-                                                            ''));
+                $format->import_text($format->getpath($synonym, ['#', 'synonyms', 0, '#', 'text'], ''));
         $indexno++;
     }
 
-    public function export_to_xml($question, qformat_xml $format, $extra = null) {
+    public function export_to_xml($question, qformat_xml $format, $extra = null): string {
         $output = parent::export_to_xml($question, $format, $extra);
 
         $output .= $this->write_synonyms($question->options->synonyms, $format);
@@ -332,12 +344,12 @@ class qtype_pmatch extends question_type {
     /**
      * Helper method used by {@link export_to_xml()}.
      *
-     * @param object $question the question.
+     * @param stdClass $question the question.
      * @param qformat_xml $format the importer/exporter object.
      * @return string $output XML fragment.
      */
-    protected function write_testquestion_responses($question, $format) {
-        $responses = \qtype_pmatch\testquestion_responses::get_responses_by_questionid($question->id);
+    protected function write_testquestion_responses(stdClass $question, qformat_xml $format): string {
+        $responses = testquestion_responses::get_responses_by_questionid($question->id);
         if (empty($responses)) {
             return '';
         }
@@ -350,11 +362,12 @@ class qtype_pmatch extends question_type {
 
     /**
      * Write XML fragment for one test question response.
-     * @param object $response The test question response.
+     *
+     * @param testquestion_response $response The test question response.
      * @param qformat_xml $format the importer/exporter object.
      * @return string $output XML fragment.
      */
-    protected function write_testquestion_response($response, $format) {
+    protected function write_testquestion_response(testquestion_response $response, qformat_xml $format): string {
         $output = '';
         $output .= "    <testquestionresponse>\n";
         $output .= "      <response>\n";
@@ -370,7 +383,7 @@ class qtype_pmatch extends question_type {
         return $output;
     }
 
-    protected function write_synonyms($synonyms, $format) {
+    protected function write_synonyms(array $synonyms, qformat_xml $format): string {
         if (empty($synonyms)) {
             return '';
         }
@@ -381,7 +394,7 @@ class qtype_pmatch extends question_type {
         return $output;
     }
 
-    protected function write_synonym($synonym, $format) {
+    protected function write_synonym(stdClass $synonym, qformat_xml $format): string {
         $output = '';
         $output .= "    <synonym>\n";
         $output .= "      <word>\n";
@@ -397,6 +410,7 @@ class qtype_pmatch extends question_type {
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
 
+        /** @var qtype_pmatch_question $question */
         $question->pmatchoptions = new pmatch_options();
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
         $question->pmatchoptions->set_extra_dictionary_words(
@@ -413,11 +427,11 @@ class qtype_pmatch extends question_type {
         $this->initialise_question_answers($question, $questiondata);
     }
 
-    public function get_random_guess_score($questiondata) {
+    public function get_random_guess_score($questiondata): float {
         return 0;
     }
 
-    public function get_possible_responses($questiondata) {
+    public function get_possible_responses($questiondata): array {
         $responses = [];
 
         $starfound = false;
@@ -437,7 +451,7 @@ class qtype_pmatch extends question_type {
         return [$questiondata->id => $responses];
     }
 
-    public function delete_question($questionid, $contextid) {
+    public function delete_question($questionid, $contextid): void {
         global $DB;
         $DB->delete_records('qtype_pmatch_synonyms', ['questionid' => $questionid]);
         $DB->delete_records('qtype_pmatch_rule_matches', ['questionid' => $questionid]);

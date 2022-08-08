@@ -36,7 +36,7 @@ Feature: List test responses for a pattern match question
     # Confirm the human mark
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     # Confirm the response
-    Then I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
+    And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"
 
   @javascript
   Scenario: Able to download the test responses for a pattern match question.

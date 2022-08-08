@@ -1,8 +1,8 @@
 @ou @ou_vle @qtype @qtype_pmatch
-Feature: Test all the basic functionality of testquestion question type
-  In order evaluate students understanding
+Feature: Basic test of the question testing tool
+  In order have confidence in my pattern-match questions
   As an teacher
-  I need to create and preview pattern match questions.
+  I need to be able to test them
 
   Background:
     Given the following "courses" exist:

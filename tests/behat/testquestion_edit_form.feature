@@ -1,8 +1,8 @@
 @ou @ou_vle @qtype @qtype_pmatch
-Feature: Test answer accuracy and response coverage
-  In order to find out whether an answer rule is accurate and covers the responses
+Feature: Display of sample responses performance on the editing form for pattern match questions
+  In order to better edit my pattern-match questions
   As an teacher
-  I need to see the accuracy and coverage features on the question edit page.
+  I need to see the accuracy and coverage features on the question edit page
 
   Background:
     Given the following "courses" exist:
