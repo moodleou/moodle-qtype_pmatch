@@ -27,7 +27,7 @@ Feature: Test the paging functionality of the test this question feature of this
     # Confirm list responses pagin options is correctly displayed
     When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
-    And I should see "What to include in the report"
+    And I should see "Show responses that are"
     And I should see "Showing the responses for the selected question: My first pattern match question"
     And the field "id_pagesize" matches value "50"
 

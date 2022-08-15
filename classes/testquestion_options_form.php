@@ -30,7 +30,6 @@ class testquestion_options_form extends \moodleform {
 
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('header', 'preferencespage', get_string('reportwhattoinclude', 'quiz'));
         $stategroup = [
                 $mform->createElement('advcheckbox', 'statematches', '',
                         get_string('testquestionmatches', 'qtype_pmatch')),
@@ -47,10 +46,10 @@ class testquestion_options_form extends \moodleform {
         $mform->setDefault('statemissedpositive', 1);
         $mform->setDefault('statemissednegative', 1);
         $mform->setDefault('stateungraded', 1);
-        $mform->addElement('header', 'preferencesuser',
-                get_string('reportdisplayoptions', 'quiz'));
-        $mform->addElement('text', 'pagesize', get_string('pagesize', 'quiz'));
+
+        $mform->addElement('text', 'pagesize', get_string('pagesize', 'quiz'), ['size' => 3]);
         $mform->setType('pagesize', PARAM_INT);
+
         $mform->addElement('submit', 'submitbutton',
                 get_string('updatedisplayoptions', 'core_question'));
     }

@@ -28,6 +28,6 @@ $plugin->version   = 2022080900;
 $plugin->requires  = 2021051700;
 $plugin->component = 'qtype_pmatch';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.2 for Moodle 3.11+';
+$plugin->release   = '3.2+ for Moodle 3.11+';
 
 $plugin->outestssufficient = true;

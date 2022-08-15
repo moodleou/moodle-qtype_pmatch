@@ -167,14 +167,14 @@ $string['testquestionformduplicateresponse'] = 'Duplicate responses are not allo
 $string['testquestionformerror_incorrectquestionid'] = 'Incorrect question id, or not a pattern match question.';
 $string['testquestionheader'] = 'Testing question: {$a}';
 $string['testquestionmatches'] = 'matches';
-$string['testquestionincorrectlymarkedwrong'] = 'missed positive';
-$string['testquestionincorrectlymarkedrights'] = 'missed negative';
+$string['testquestionincorrectlymarkedwrong'] = 'missed positives';
+$string['testquestionincorrectlymarkedrights'] = 'missed negatives';
 $string['testthisquestionnoresponsesfound'] = 'No responses were found.';
 $string['testthisquestionnoresmoreponsesrequired'] = 'More responses are required for auto-suggestion to work. There are {$a->existing} responses and you need {$a->required}';
 $string['testthisquestionnorulesreturned'] = 'No rules were suggested.';
 $string['testquestiontool'] = 'Pattern-match testing tool';
 $string['testquestionresponse'] = 'Response';
-$string['testquestionresponsesthatare'] = 'Responses that are';
+$string['testquestionresponsesthatare'] = 'Show responses that are';
 $string['testquestionresultsheader'] = 'Test results: {$a}';
 $string['testquestionresultssummary'] = 'Sample responses: {$a->total} <br>
      Marked correctly: {$a->correct} ({$a->accuracy}%)<br>
