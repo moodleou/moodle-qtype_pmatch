@@ -25,63 +25,63 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since     2.9
  */
-define(['jquery'], function($) {
 
-    /**
-     * @alias qtype_pmatch/tryrule
-     */
-    const t = {
-        baseUrl: '',
-        sessKey: '',
-        qid: '',
-        pendingid: '',
-        baseForm: null,
+import Notification from 'core/notification';
 
-        /**
-         * Initialise the try rule button.
-         */
-        init: function() {
-            // Set up base variables.
-            t.pendingid = 'tryrule_' + Math.random().toString(36).slice(2); // Random string.
-            t.baseUrl = M.cfg.wwwroot + '/question/type/pmatch/api/api.php';
-            if ($('#mform1').length) {
-                t.baseForm = $('#mform1');
-            } else {
-                // Get the first form in the page.
-                t.baseForm = $('form.mform').first();
-            }
-            t.sessKey = t.baseForm.find('input[name="sesskey"]').val();
-            t.qid = t.baseForm.find('input[name="id"]').val();
-            $('input[name="tryrule"]').on('click', function(e) {
-                e.preventDefault();
-                const id = $(this).parents('.try-rule').prevAll('.answer-rule').first()
-                    .attr('id').replace('fitem_id_answer_', '');
-                t.tryrule(id, this);
-            });
-        },
-        /**
-         * Try rule support send request try rule.
-         *
-         * @param {number} id id answer try rule
-         * @param {Element} btn is element button click call tryrule function
-         */
-        tryrule: function(id, btn) {
-            M.util.js_pending(t.pendingid);
-            const rule = $('#id_answer_' + id).val().trim();
-            if (rule === undefined || rule === null || rule === '') {
-                return;
-            }
-            const display = $(btn).next('.try-rule-result');
-            const fraction = $('#id_fraction_' + id).val();
-            // Send request for tryrule result.
-            const data = {type: 'tryrule', qid: t.qid, ruletxt: rule, sesskey: t.sessKey, fraction: fraction};
-            $.post(t.baseUrl, data, function(result) {
-                // Display feedback to the user.
-                display.html(result);
-                M.util.js_complete(t.pendingid);
-            }, 'json');
+/**
+ * Try rule support send request try rule.
+ *
+ * @param {number} answerNumber id answer try rule
+ * @param {Element} tryRow is element button click call tryrule function
+ */
+const tryRule = (answerNumber, tryRow) => {
+    const rule = document.getElementById('id_answer_' + answerNumber).value;
+    if (!rule) {
+        return;
+    }
+
+    // Send request for tryrule result.
+    const pendingid = {};
+    M.util.js_pending(pendingid);
+
+    const data = new FormData();
+    data.append('type', 'tryrule');
+    data.append('qid', tryRow.closest('form').querySelector('input[name="id"]').value);
+    data.append('ruletxt', rule);
+    data.append('fraction', document.getElementById('id_fraction_' + answerNumber).value);
+    data.append('sesskey', M.cfg.sesskey);
+
+    fetch(M.cfg.wwwroot + '/question/type/pmatch/api/api.php', {
+        method: 'POST',
+        body: data,
+    }).then(response => response.json()
+    ).then(text => {
+        tryRow.querySelector('.try-rule-result').innerHTML = text;
+        M.util.js_complete(pendingid);
+        return;
+    }).catch(Notification.exception);
+};
+
+export const init = () => {
+    document.addEventListener('click', (e) => {
+        const button = e.target.closest('input[name="tryrule"]');
+        if (!button) {
+            // Not an event we care about. Ignore.
+            return;
         }
-    };
 
-    return t;
-});
+        // This is ours.
+        e.preventDefault();
+
+        const tryRow = button.closest('.try-rule');
+
+        // Find the corresponding answer rule id.
+        let ruleRow = tryRow;
+        while (!ruleRow.matches('.answer-rule')) {
+            ruleRow = ruleRow.previousElementSibling;
+        }
+        const answerNumber = ruleRow.id.replace('fitem_id_answer_', '');
+
+        tryRule(answerNumber, tryRow);
+    });
+};
