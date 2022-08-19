@@ -44,7 +44,7 @@ class testquestion_table extends \table_sql {
     /**
      * Constructor
      * @param object $question
-     * @param \qtype_pmatch\testquestion_responses $testresponses
+     * @param testquestion_responses $testresponses
      * @param \qtype_pmatch\testquestion_options $options
      */
     public function __construct($question, $testresponses, \qtype_pmatch\testquestion_options $options) {
@@ -57,13 +57,36 @@ class testquestion_table extends \table_sql {
     }
 
     /**
+     * Render input checkbox for header.
+     *
+     * @return string The checkbox for header.
+     */
+    protected function get_checkbox_header() {
+        global $OUTPUT;
+        return $OUTPUT->render(new \core\output\checkbox_toggleall(
+                'responses', true, [
+                    'id' => 'tqheadercheckbox',
+                    'value' => 1,
+                    'label' => get_string('selectall'),
+                    'labelclasses' => 'accesshide',
+                ]));
+    }
+
+    /**
      * Generate the display of the checkbox column.
      * @param object $response the table row being output.
      * @return string HTML content to go inside the td.
      */
     public function col_checkbox($response) {
+        global $OUTPUT;
         if ($response->id) {
-            return '<input type="checkbox" name="responseid[]" value="'.$response->id.'" />';
+            return $OUTPUT->render(new \core\output\checkbox_toggleall(
+                'responses', false, [
+                    'name' => 'responseid[]',
+                    'value' => $response->id,
+                    'label' => get_string('testquestionseletresponsex', 'qtype_pmatch', $response->id),
+                    'labelclasses' => 'accesshide',
+                ]));
         } else {
             return '';
         }
@@ -104,10 +127,10 @@ class testquestion_table extends \table_sql {
      * @return string HTML content to go inside the td.
      */
     public function col_rules($response) {
-        if (\qtype_pmatch\testquestion_responses::has_rule_match_for_response(
+        if (testquestion_responses::has_rule_match_for_response(
                     $this->testresponses->rulematches, $response->id)) {
             return implode(',',
-                    \qtype_pmatch\testquestion_responses::get_matching_rule_indexes_for_response(
+                    testquestion_responses::get_matching_rule_indexes_for_response(
                             $this->testresponses, $response->id));
         } else {
             return '';
@@ -148,10 +171,10 @@ class testquestion_table extends \table_sql {
 
         if ($this->options->states) {
             $statesqllist = [
-                   \qtype_pmatch\testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
-                   \qtype_pmatch\testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
-                   \qtype_pmatch\testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
-                   \qtype_pmatch\testquestion_response::UNGRADED => '(gradedfraction IS NULL)'
+                   testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
+                   testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
+                   testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
+                   testquestion_response::UNGRADED => '(gradedfraction IS NULL)'
             ];
             $statesql = ' AND (';
             $count = 0;
@@ -208,7 +231,7 @@ class testquestion_table extends \table_sql {
      * Format the data into test responses classes.
      */
     protected function format_data() {
-        $this->rawdata = \qtype_pmatch\testquestion_responses::data_to_responses($this->rawdata);
+        $this->rawdata = testquestion_responses::data_to_responses($this->rawdata);
     }
 
     /**
@@ -292,16 +315,6 @@ class testquestion_table extends \table_sql {
         $this->collapsible(false);
         $this->set_attribute('class', 'generaltable generalbox grades');
         $this->set_attribute('id', 'responses');
-    }
-
-    /**
-     * Render input checkbox for header.
-     *
-     * @return string The checkbox for header.
-     */
-    protected function get_checkbox_header() {
-        return '<input type="checkbox" id="tqheadercheckbox" title="' .
-                get_string('selectall', 'moodle') . '"/>';
     }
 
     /**

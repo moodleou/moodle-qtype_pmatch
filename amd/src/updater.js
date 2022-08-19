@@ -21,118 +21,118 @@
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/notification'], function($, Notification) {
+
+import $ from 'jquery';
+import Notification from 'core/notification';
+
+/**
+ * @alias qtype_pmatch/updater
+ */
+const t = {
     /**
-     * @alias qtype_pmatch/updater
+     * Initialise the updater.
      */
-    const t = {
-        baseUrl: '',
-        sessKey: '',
-        qid: '',
-        headerCheckboxChecked: true,
-        /**
-         *  The string need to be replaced to get correct row.
-         */
-        REPLACESTRING: /qtype-pmatch-testquestion_r/g,
-        /**
-         * Initialise the updater.
-         */
-        init: function() {
-            const base = $('#attemptsform').attr('action');
-            const body = $('body');
-            t.baseUrl = base.replace('testquestion.php', 'api/updater.php');
-            t.sessKey = $('#attemptsform input[name="sesskey"]').val();
-            t.qid = $('#attemptsform input[name="id"]').val();
-            $(document).on('click', '.updater-ef', function() {
-                const id = $(this).data('id');
-                t.update(id);
-                return false;
-            });
-            // Prevent the form submit when user press enter on checkbox.
-            $(document).on('keypress', '#tablecontainer :checkbox', function(e) {
-                if ((e.keyCode ? e.keyCode : e.which) === 13) {
-                    e.preventDefault();
-                    $(this).trigger('click');
-                }
-            });
-            $('#tqheadercheckbox').click(function() {
-                if (t.headerCheckboxChecked) {
-                    $(this).attr('title', M.util.get_string('deselectall', 'moodle'));
-                    t.headerCheckboxChecked = false;
-                } else {
-                    $(this).attr('title', M.util.get_string('selectall', 'moodle'));
-                    t.headerCheckboxChecked = true;
-                }
-                $('#tablecontainer :checkbox').each(function() {
-                    this.checked = !t.headerCheckboxChecked;
-                });
-                $(this).prop('checked', false);
-            });
+    init: function() {
+        const table = document.getElementById('attemptsform');
+        table.addEventListener('click', e => {
+            const updater = e.target.closest('.updater-ef');
+            if (!updater) {
+                return;
+            }
 
-            body.on('updatefailed', '[data-inplaceeditable]', function(e) {
-                const exception = e.exception;
+            e.preventDefault();
+            t.update(updater.dataset.id);
+        });
+
+        // Prevent the form submit when user press enter on checkbox. Toggle instead.
+        table.addEventListener('keypress', e => {
+            const checkbox = e.target.closest('input[type="checkbox"]');
+            if (checkbox && e.key === 'Enter') {
+                // Enter on checkbox should toggle it.
                 e.preventDefault();
-                Notification.alert(M.util.get_string('error:title', 'qtype_pmatch'),
-                    exception.message, M.util.get_string('ok', 'moodle'));
-            });
-            body.on('updated', '[data-inplaceeditable]', function(e) {
-                t.handleUpdated(e, this);
-            });
-            t.bindInplaceEditEvent();
-        },
-        /**
-         * If there is no row in table, bind core/inplace_editable to the page.
-         */
-        bindInplaceEditEvent: function() {
-            if ($('#qtype-pmatch-testquestion_r0').hasClass('emptyrow')) {
-                require(['core/inplace_editable']);
+                checkbox.click();
+                return;
             }
-        },
-        /**
-         * Handle updated inplace-editable data returned.
-         * @param {object} e the event handlers.
-         * @param {object} target the DOM element.
-         */
-        handleUpdated: function(e, target) {
-            const ajaxReturn = e.ajaxreturn;
-            if (ajaxReturn.value !== e.oldvalue) {
-                const jsonDecode = $.parseJSON(ajaxReturn.value);
-                const row = $(target).parent().parent();
-                const currentRow = row.attr('id');
-                const html = jsonDecode.html;
-                $(row).replaceWith(html.replace(t.REPLACESTRING, currentRow));
-                $('#testquestion_gradesummary').html(jsonDecode.summary);
+
+            const row = e.target.closest('tr');
+            if (row && e.key === 'Enter') {
+                // Ensure other actions in the table row don't submit the form.
+                e.preventDefault();
+                return;
             }
-        },
-        update: function(id) {
-            const val = $('#updater-ef_' + id).text();
-            const ef = (val === '1') ? 0 : 1;
-            // Send update.
-            const data = {qid: t.qid, rid: id, expectedfraction: ef, sesskey: t.sessKey};
-            $.post(t.baseUrl, data, function(result) {
-                if (result.status === 'success') {
-                    // Update the ui.
-                    const updater = $('#updater-ef_' + id);
-                    updater.text(result.ef);
-                    updater.parent().prev().text(result.gf);
+        });
 
-                    const tr = updater.parent().parent();
-                    tr.removeClass();
-                    tr.addClass(result.rowclass);
-                    tr.find('td[class="c3"]').text(result.gf);
-                    // Update the grade summary.
+        // We have to use legacy jQuery events here, for it to work in 3.11 and 4.0.
+        const body = $('body');
+        body.on('updatefailed', '[data-inplaceeditable]', e => {
+            e.preventDefault();
+            Notification.alert(M.util.get_string('error:title', 'qtype_pmatch'),
+                    e.exception.message, M.util.get_string('ok', 'moodle'));
+        });
 
-                    const c = M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
-                    $('#testquestion_gradesummary').html(c);
-                } else {
-                    // Developer debugging - failure states are in api/updater.php.
-                    window.console.log(
-                        'Testquestion response updater has experienced an issue.\n' + result.data);
-                    // If spinner is added - remove it here $('#updater-ef_' + id).text(val);.
-                }
-            });
+        // We have to use legacy jQuery events here, for it to work in 3.11 and 4.0.
+        body.on('updated', '[data-inplaceeditable]', e => {
+            t.handleUpdated(e);
+        });
+
+        // If there is no row in table, bind core/inplace_editable to the page.
+        if (document.getElementById('qtype-pmatch-testquestion_r0').classList.contains('emptyrow')) {
+            require(['core/inplace_editable']);
         }
-    };
+    },
 
-    return t;
-});
+    /**
+     * Handle updated inplace-editable data returned.
+     *
+     * @param {object} e the event.
+     */
+    handleUpdated: function(e) {
+        if (e.ajaxreturn.value === e.oldvalue) {
+            return;
+        }
+
+        const result = JSON.parse(e.ajaxreturn.value);
+        const existingRow = e.target.closest('tr');
+        existingRow.outerHTML =
+            result.html.replace(/qtype-pmatch-testquestion_r/g, existingRow.id);
+        document.getElementById('testquestion_gradesummary').innerHtml = result.summary;
+    },
+
+    update: function(id) {
+        const pendingid = {};
+        M.util.js_pending(pendingid);
+
+        const data = new FormData();
+        data.append('qid', document.getElementById('attemptsform').querySelector('input[name="id"]').value);
+        data.append('rid', id);
+        data.append('expectedfraction', document.getElementById('updater-ef_' + id).innerText === '1' ? 0 : 1);
+        data.append('sesskey', M.cfg.sesskey);
+
+        fetch(M.cfg.wwwroot + '/question/type/pmatch/api/updater.php', {
+            method: 'POST',
+            body: data,
+        }).then(response => response.json()
+        ).then(result => {
+            if (result.status !== 'success') {
+                M.util.js_complete(pendingid);
+                throw new Error(result.data);
+            }
+
+            // Update the ui.
+            const updater = document.getElementById('updater-ef_' + id);
+            updater.innerText = result.ef;
+            updater.parentNode.previousElementSibling.innerText = result.gf;
+
+            const tr = updater.parentNode.parentNode;
+            tr.className = result.rowclass;
+
+            document.getElementById('testquestion_gradesummary').innerHtml =
+                    M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
+
+            M.util.js_complete(pendingid);
+            return; // Pointless return for eslint.
+        }).catch(Notification.exception);
+    }
+};
+
+export default t;

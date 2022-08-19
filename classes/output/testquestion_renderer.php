@@ -106,17 +106,39 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
             $html .= html_writer::empty_tag('br');
 
             // Delete responses.
-            $html .= '<input type="submit" id="deleteresponsesbutton" class="btn btn-secondary" name="delete" value="' .
-                get_string('testquestionformdeletesubmit', 'qtype_pmatch') . '"/> ';
+            $html .= html_writer::empty_tag('input', [
+                    'type' => 'submit',
+                    'id' => 'deleteresponsesbutton',
+                    'class' => 'btn btn-secondary',
+                    'name' => "delete",
+                    'value' => get_string('testquestionformdeletesubmit', 'qtype_pmatch'),
+                    'data-action' => 'toggle',
+                    'data-togglegroup' => 'responses',
+                    'data-toggle' => 'action',
+                    // This data-confirmation stuff does not currently work, but in future ...
+                    // 'data-confirmation' => 'modal',
+                    // 'data-confirmation-title-str' => '["confirmation", "admin"]',
+                    // 'data-confirmation-question-str' => '["testquestionformdeletecheck", "qtype_pmatch"]',
+                    // 'data-confirmation-yes-button-str' => '["delete", "core"]',
+                    // ... will be a nice way to do it.
+                ]);
 
             // Test responses.
-            $html .= '<input type="submit" id="testresponsesbutton" class="btn btn-secondary" name="test" value="' .
-                    get_string('testquestionformtestsubmit', 'qtype_pmatch') . '"/> ';
-            $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
-                    ['message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')]);
+            $html .= html_writer::empty_tag('input', [
+                    'type' => 'submit',
+                    'id' => 'testresponsesbutton',
+                    'class' => 'btn btn-secondary',
+                    'name' => 'test',
+                    'value' => get_string('testquestionformtestsubmit', 'qtype_pmatch'),
+                    'data-action' => 'toggle',
+                    'data-togglegroup' => 'responses',
+                    'data-toggle' => 'action',
+                ]);
             $html .= html_writer::end_div();
 
             // Initialise JavaScript.
+            $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
+                    ['message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')]);
             $this->page->requires->js_call_amd('qtype_pmatch/updater', 'init');
             $this->page->requires->js_call_amd('qtype_pmatch/creator', 'init');
             $this->page->requires->strings_for_js(['ok', 'selectall', 'deselectall'], 'moodle');
