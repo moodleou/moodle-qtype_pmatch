@@ -21,8 +21,9 @@
  * @copyright 2018 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', 'core/notification'],
-    function($, Str, Ajax, Templates, KeyCodes, Notification) {
+define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', 'core/notification', 'core/checkbox-toggleall'],
+    function($, Str, Ajax, Templates, KeyCodes, Notification, CheckboxToggleAll) {
+
     /**
      * @alias qtype_pmatch/creator
      */
@@ -58,7 +59,6 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', '
                             scrollTop: $('#' + t.newRowId).offset().top
                         }, 800);
                         $('.new-expectedfraction').focus();
-                        M.core_formchangechecker.set_form_changed();
                         return null;
                     }).catch(Notification.exception);
                 t.disableControlButtons(true);
@@ -211,9 +211,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', '
          * Notify user when the form Add new response has changed.
          */
         resetFormState: function() {
-            if (M.core_formchangechecker.get_form_dirty_state()) {
-                M.core_formchangechecker.reset_form_dirty_state();
-            }
+            M.core_formchangechecker.reset_form_dirty_state();
         },
 
         /**
@@ -230,8 +228,7 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', '
                 $('#testresponsesbutton').attr('disabled', 'true');
             } else {
                 checkbox.removeAttr('disabled');
-                $('#deleteresponsesbutton').removeAttr('disabled');
-                $('#testresponsesbutton').removeAttr('disabled');
+                CheckboxToggleAll.updateSlavesFromMasterState($(document.body), 'responses');
             }
         }
     };

@@ -110,7 +110,7 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
                     'type' => 'submit',
                     'id' => 'deleteresponsesbutton',
                     'class' => 'btn btn-secondary',
-                    'name' => "delete",
+                    'name' => 'delete',
                     'value' => get_string('testquestionformdeletesubmit', 'qtype_pmatch'),
                     'data-action' => 'toggle',
                     'data-togglegroup' => 'responses',
