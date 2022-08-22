@@ -56,8 +56,13 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
     public function get_uploadresponses_link(qtype_pmatch_question $question): string {
         $link = new moodle_url('/question/type/pmatch/uploadresponses.php', ['id' => $question->id]);
 
-        return html_writer::tag('input', '', ['value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
-            'type' => 'button', "onclick" => "window.location.href = '" . $link->out(false) . "'", 'class' => 'btn btn-secondary']);
+        return html_writer::tag('input', '', [
+                'type' => 'button',
+                'id' => 'uploadbutton',
+                'value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
+                "onclick" => "window.location.href = '" . $link->out(false) . "'",
+                'class' => 'btn btn-secondary']
+            );
     }
 
     /**

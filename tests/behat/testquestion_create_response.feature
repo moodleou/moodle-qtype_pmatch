@@ -54,6 +54,8 @@ Feature: Create new a response for a pattern match question
     And I set the field "new-response" to "New test response 1"
     And I press the enter key
     And "New test response 1" row "Human mark" column of "responses" table should contain "1"
+    And the "Delete" "button" should be disabled
+    And the "Test selected responses" "button" should be disabled
 
   @javascript
   Scenario: Create an test involving superscript

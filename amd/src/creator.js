@@ -198,12 +198,13 @@ define(['jquery', 'core/str', 'core/ajax', 'core/templates', 'core/key_codes', '
         disableControlButtons: function(disable) {
             if (disable) {
                 $('#newresponsebutton').attr('disabled', 'true');
+                $('#uploadbutton').attr('disabled', 'true');
                 $('#deleteresponsesbutton').attr('disabled', 'true');
                 $('#testresponsesbutton').attr('disabled', 'true');
             } else {
                 $('#newresponsebutton').removeAttr('disabled');
-                $('#deleteresponsesbutton').removeAttr('disabled');
-                $('#testresponsesbutton').removeAttr('disabled');
+                $('#uploadbutton').removeAttr('disabled');
+                CheckboxToggleAll.updateSlavesFromMasterState($(document.body), 'responses');
             }
         },
 
