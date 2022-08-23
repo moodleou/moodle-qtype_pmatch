@@ -6,6 +6,7 @@
   be upgraded to work with Moodle 4.0 question versioning 
 * Fix the question testing tool, so it can handle responses including &lt;sup> and &lt;sub> tags.
 * Improve the UI for the options form at the top of the question testing tool.
+* Improve other controls the question testing tool, e.g. the select all/none behaviour.
 * When creating new questions, for some key settings, the option used for the next
   question you create will be the same as the options you just used.
 * Improve styling of the edit question form.
