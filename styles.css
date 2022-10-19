@@ -9,9 +9,9 @@
 }
 
 /* Editing form. Style repeated elements*/
-#page-question-type-pmatch .mform textarea.textareamonospace {
+#page-question-type-pmatch .mform .textareamonospace textarea {
     white-space: pre;
-    font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
+    font-family: monospace;
 }
 
 /* Top */
