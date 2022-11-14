@@ -42,7 +42,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqnumeric3generalfeedback | You have the incorrect value for the pH |
     And I press "id_submitbutton"
     Then I should see "Combined 001"
-    When I am on the "Combined 001" "core_question > preview" page logged in as teacher
+    When I am on the "Combined 001" "core_question > preview" page logged in as teacher1
 
   @javascript
   Scenario: Should see the test question link on preview page Combined Pattern Match question type.
