@@ -22,19 +22,16 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I set the field "Question text" to " What 5 + 5 ? [[1:pmatch:__10__]]. <br/>What is the IUPAC name of the molecule? [[2:pmatch:__20__]]. <br/>What is the pH of a 0.1M solution? [[3:numeric:__10__]]"
     Then I set the field "General feedback" to "The molecule is ethanoic acid which is more commonly known as acetic acid or in dilute solution as vinegar. The constituent elements are carbon (grey), hydrogen (white) and oxygen (red). A 0.1M solution has a pH of 2.88 and when a solution is combined with oil the result is a vinaigrette."
     And I press "Update the form"
-    Then I follow "'pmatch' input '1'"
     And I set the following fields to these values:
       | id_subqpmatch1defaultmark     | 50%                                |
       | Spell checking                | Do not check spelling of student   |
       | id_subqpmatch1answer_0        | match_mw (ethanoic acid)           |
       | id_subqpmatch1generalfeedback | You have the incorrect IUPAC name. |
-    Then I follow "'pmatch' input '2'"
     And I set the following fields to these values:
       | id_subqpmatch2defaultmark     | 25%                                |
       | Spell checking                | Do not check spelling of student   |
       | id_subqpmatch2answer_0        | match_m (10)                       |
       | id_subqpmatch2generalfeedback | You have the incorrect IUPAC name. |
-    Then I follow "'numeric' input '3'"
     And I set the following fields to these values:
       | id_subqnumeric3defaultmark     | 25%                                     |
       | id_subqnumeric3answer_0        | 2.88                                    |
