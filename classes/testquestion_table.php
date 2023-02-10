@@ -174,7 +174,7 @@ class testquestion_table extends \table_sql {
                    testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
                    testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
                    testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
-                   testquestion_response::UNGRADED => '(gradedfraction IS NULL)'
+                   testquestion_response::UNGRADED => '(expectedfraction IS NULL)'
             ];
             $statesql = ' AND (';
             $count = 0;
