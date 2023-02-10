@@ -14,3 +14,5 @@ mark,response
 1,another test
 ,testing anything.
 0,
+2,greater than one
+-1,negative

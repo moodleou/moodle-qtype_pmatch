@@ -38,26 +38,31 @@ Feature: Test uploading test responses in the pattern match test this question f
   Scenario: Test error message if the file doesn't meet the condition.
     When I am on the "My first pattern match question" "qtype_pmatch > test responses upload" page logged in as teacher
     # Case 1: The file must be in .csv format.
-    When I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
+    And I upload "question/type/pmatch/tests/fixtures/testerrorcase1.xls" file to "Marked responses" filemanager
     And I press "Upload these responses"
     Then I should see "The file must be in .csv/.xlsx/.html/.json/.ods format."
     # Case 2: The file requires at least two rows (the first row is the header row, the second row onwards for responses).
-    When I upload "question/type/pmatch/tests/fixtures/testerrorcase2.csv" file to "Marked responses" filemanager
+    And I upload "question/type/pmatch/tests/fixtures/testerrorcase2.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
+    And I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
     # Case 3: The file has more than two columns. Please only include the expected mark and response.
-    When I upload "question/type/pmatch/tests/fixtures/testerrorcase3.csv" file to "Marked responses" filemanager
+    And I upload "question/type/pmatch/tests/fixtures/testerrorcase3.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "The file has more than two columns. Please only include the expected mark and response."
+    And I should see "The file has more than two columns. Please only include the expected mark and response."
     # Case 4: The file requires at least two columns (the first column for expected marks, the second column for responses).
-    When I upload "question/type/pmatch/tests/fixtures/testerrorcase4.csv" file to "Marked responses" filemanager
+    And I upload "question/type/pmatch/tests/fixtures/testerrorcase4.csv" file to "Marked responses" filemanager
     And I press "Upload these responses"
-    Then I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
-    # Case 5: test error case 2 and case 4
-    When I upload "question/type/pmatch/tests/fixtures/testerror.csv" file to "Marked responses" filemanager
-    And I press "Upload these responses"
-    Then I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
     And I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+    # Case 5: test error case 2 and case 4
+    And I upload "question/type/pmatch/tests/fixtures/testerror.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    And I should see "The file requires at least two rows (the first row is the header row, the second row onwards for responses)."
+    And I should see "The file requires at least two columns (the first column for expected marks, the second column for responses)."
+    # Case 6: The expected mark can be either 0 or 1.
+    And I upload "question/type/pmatch/tests/fixtures/myfirstquestion_responses.csv" file to "Marked responses" filemanager
+    And I press "Upload these responses"
+    And I should see "greater than one: The expected mark was 2. Only 0 or 1 are allowed."
+    And I should see "negative: The expected mark was -1. Only 0 or 1 are allowed."
 
   @javascript @_file_upload
   Scenario: Test upload XLSX file type.

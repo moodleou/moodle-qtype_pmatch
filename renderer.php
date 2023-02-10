@@ -197,16 +197,15 @@ class qtype_pmatch_renderer extends qtype_renderer {
     }
 
     public function display_feedback($feedback) {
-        $html = html_writer::div(get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved)));
-        if (count($feedback->duplicates)) {
-            $html .= html_writer::div(get_string('xresponsesduplicated', 'qtype_pmatch',
-                    (count($feedback->duplicates))));
-            $html .= html_writer::alist($feedback->duplicates);
-        }
-        if (count($feedback->problems)) {
+        $html = html_writer::tag('p', html_writer::div(
+                    get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved))));
+        $total = count($feedback->duplicates) + count($feedback->problems);
+        if ($total) {
             $html .= html_writer::div(get_string('xresponsesproblems', 'qtype_pmatch',
-                    (count($feedback->problems))));
-            $html .= html_writer::alist($feedback->problems);
+                $total));
+
+            $feebacklist = array_merge($feedback->duplicates, $feedback->problems);
+            $html .= html_writer::alist($feebacklist);
         }
         return $html;
     }

@@ -166,7 +166,8 @@ class testquestion_responses {
             // Check for duplicates.
             if ($id) {
                 // Record duplicate response against it's number in the saved array.
-                $feedback->duplicates[$count] = $response->response;
+                $feedback->duplicates[$count] = get_string('duplicateresponse', 'qtype_pmatch',
+                        $response->response);
                 continue;
             }
 
@@ -740,7 +741,6 @@ class testquestion_responses {
 
         foreach ($datas as $data) {
             $row += 1;
-            $problem = false;
             if (empty($data)) {
                 continue;
             }
@@ -751,6 +751,11 @@ class testquestion_responses {
                 // There has been a request to allow unmarked responses within the upload file.
                 // Previously this check would have placed an entry in the problems array.
                 $score = null;
+            } else if ($data[0] != 0 && $data[0] != 1) {
+                // We don't want to upload responses with expected mark other than 0 or 1.
+                $problems[] = get_string('testquestionuploadincorrectmark', 'qtype_pmatch',
+                        ['expectedmark' => $data[0], 'response' => $data[1]]);
+                continue;
             } else {
                 $score = (float)$data[0];
             }
@@ -767,26 +772,24 @@ class testquestion_responses {
                 // upload. See e.g. in fixtures/shortanswerquestion_webserviceresponses.csv.
                 $problems[] = get_string('testquestionuploadrowhastwoitems', 'qtype_pmatch',
                                     ['row' => $row, 'items' => count($data)]);
-                $problem = true;
+                continue;
             }
 
-            if (!$problem) {
-                // Data needs to be in utf8 format. Authors using Excel will often have
-                // xA0 or #160 (non-breaking spaces) present in the data, as well as other
-                // extended characters allowed by iso-8859-1 encoding.
-                if (function_exists('mb_detect_encoding') && !mb_detect_encoding($data[1], 'UTF-8', true)) {
-                    // Convert to utf8.
-                    $data[1] = \core_text::convert($data[1], mb_detect_encoding($data[1]));
-                }
-                $response = new testquestion_response();
-                $response->questionid = $question->id;
-                $response->response = trim($data[1]);
-                $response->expectedfraction = $score;
-                $responses[] = $response;
-                // If we have loaded the right number of responses stop.
-                if ($count && $row > $count) {
-                    break;
-                }
+            // Data needs to be in utf8 format. Authors using Excel will often have
+            // xA0 or #160 (non-breaking spaces) present in the data, as well as other
+            // extended characters allowed by iso-8859-1 encoding.
+            if (function_exists('mb_detect_encoding') && !mb_detect_encoding($data[1], 'UTF-8', true)) {
+                // Convert to utf8.
+                $data[1] = \core_text::convert($data[1], mb_detect_encoding($data[1]));
+            }
+            $response = new testquestion_response();
+            $response->questionid = $question->id;
+            $response->response = trim($data[1]);
+            $response->expectedfraction = $score;
+            $responses[] = $response;
+            // If we have loaded the right number of responses stop.
+            if ($count && $row > $count) {
+                break;
             }
         }
 

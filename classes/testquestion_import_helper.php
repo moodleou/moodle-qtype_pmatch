@@ -215,7 +215,7 @@ abstract class qtype_pmatch_spout_importer {
                         // Ignore blank rows.
                         continue;
                     }
-                    if ($row > testquestion_import_helper::UPLOAD_FILE_MIN_ROW) {
+                    if ($row >= testquestion_import_helper::UPLOAD_FILE_MIN_ROW) {
                         $errcase['row'] = false;
                         break;
                     }

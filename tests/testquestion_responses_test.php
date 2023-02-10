@@ -351,7 +351,9 @@ class testquestion_responses_test extends testquestion_test_base {
         // Test problems.
         $expectedproblems = [
                 'Each row should contain exactly two items, a numerical mark and a response.' .
-                ' Row <b>11</b> contains <b>3</b> item(s).'
+                ' Row <b>11</b> contains <b>3</b> item(s).',
+                'greater than one: The expected mark was 2. Only 0 or 1 are allowed.',
+                'negative: The expected mark was -1. Only 0 or 1 are allowed.'
         ];
 
         $this->assertEquals($expectedproblems, $problems);
