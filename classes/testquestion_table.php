@@ -98,18 +98,18 @@ class testquestion_table extends \table_sql {
      * @return string HTML content to go inside the td.
      */
     public function col_expectedfraction($response) {
-        if (!is_null($response->expectedfraction )) {
-            if ($this->is_downloading()) {
-                return $response->expectedfraction;
-            }
-            return \html_writer::tag('a',
-                    $response->expectedfraction,
-                    ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
-                            'title' => get_string('testquestionchangescore', 'qtype_pmatch') ]);
-        } else {
-            // Two spaces looks better than one.
-            return '&nbsp;&nbsp;';
+        // If expectedfraction is null, then display it with a '-'.
+        $expectedfraction = $response->expectedfraction ?? '-';
+
+        if ($this->is_downloading()) {
+            return $expectedfraction;
         }
+
+        return \html_writer::tag('a',
+                $expectedfraction,
+                ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
+                        'title' => get_string('testquestionchangescore', 'qtype_pmatch') ]);
+
     }
 
     /**
