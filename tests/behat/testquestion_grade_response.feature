@@ -46,3 +46,5 @@ Feature: Grade a test response for a pattern match question
     And I should see "1" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
     When I click on "a.updater-ef" "css_element" in the "testing one two three four" "table_row"
     Then I should see "0" in the "#qtype-pmatch-testquestion_r0_c4" "css_element"
+    # Confirm the display of updated grade summary when human mark is changed.
+    And I should see "Computed mark greater than human mark: 1 (missed positive)"

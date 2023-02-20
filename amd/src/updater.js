@@ -95,7 +95,7 @@ const t = {
         const existingRow = e.target.closest('tr');
         existingRow.outerHTML =
             result.html.replace(/qtype-pmatch-testquestion_r/g, existingRow.id);
-        document.getElementById('testquestion_gradesummary').innerHtml = result.summary;
+        document.getElementById('testquestion_gradesummary').innerHTML = result.summary;
     },
 
     update: function(id) {
@@ -126,7 +126,7 @@ const t = {
             const tr = updater.parentNode.parentNode;
             tr.className = result.rowclass;
 
-            document.getElementById('testquestion_gradesummary').innerHtml =
+            document.getElementById('testquestion_gradesummary').innerHTML =
                     M.util.get_string('testquestionresultssummary', 'qtype_pmatch', result.counts);
 
             M.util.js_complete(pendingid);
