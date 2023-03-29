@@ -92,8 +92,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->question);
             $results = html_writer::tag('p',
-                    get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
-                    ["id" => 'testquestion_gradesummary']);
+                get_string('overallgradingaccuracy', 'qtype_pmatch'),
+                ['class' => 'font-weight-bold']);
+            $results .= html_writer::tag('p',
+                get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
+                ["id" => 'testquestion_gradesummary']);
         }
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
                                                 get_string('correctanswers', 'qtype_pmatch'),
@@ -103,7 +106,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             // Add rule suggestion button.
-            $answerssuggest = $this->add_rule_suggestion_fields($mform);
+            $this->add_rule_suggestion_fields($mform);
         }
 
         $this->add_answer_accuracy_fields($mform);

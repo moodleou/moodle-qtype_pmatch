@@ -25,6 +25,8 @@ Feature: Sample pattern match responses preserved when editing a question
   Scenario: Edit a pattern match question and verify that the test responses are still present
     # Edit the question.
     When I am on the "My first pattern match question" "core_question > edit" page logged in as teacher
+    And I should see "Overall grading accuracy"
+    And I should see "Sample responses: 13"
     And I set the following fields to these values:
       | Question name | Improved pattern match question                        |
       | Question text | What were the names of the tunnels in the Great Escape |

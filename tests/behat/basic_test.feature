@@ -98,5 +98,6 @@ Feature: Test all the basic functionality of pmatch question type
       | Hint 2                        | Use a calculator if necessary.            |
     And I set the following fields to these values:
       | Question name | Edited question name |
+    And I should not see "Overall grading accuracy"
     And I press "id_submitbutton"
     Then I should see "Edited question name"
