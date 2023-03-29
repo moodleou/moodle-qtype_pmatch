@@ -23,6 +23,7 @@ Feature: Test the rule creation assistant
     And I set the field "Pattern match" to "1"
     And I click on ".submitbutton" "css_element"
     And I should see "Show/hide rule creation assistant"
+    And the field "Answer 1" matches value "match ()"
     # Open the rule creation assistant
     And I follow "Show/hide rule creation assistant"
     # Test term add

@@ -43,7 +43,7 @@ define(['jquery'], function($) {
                 // Hide the 'show/hide rule creator assistant' unless there is no existing rule.
                 // It would be much better to not show this element unless js is enabled, but
                 // using a static element means we cannot add classes to enable this.
-                if ($(this).val() !== '') {
+                if ($(this).val() !== '' && $(this).val() !== 'match ()') {
                     $(this).parent().parent().next().addClass('rc-hidden');
                 } else {
                     $(this).parent().parent().next().addClass('rcw');

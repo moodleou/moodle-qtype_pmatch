@@ -71,6 +71,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
                 question_bank::fraction_options());
+        $this->_form->setDefault('answer', [0 => 'match ()']);
 
         $this->add_interactive_settings();
     }
