@@ -38,6 +38,7 @@ $string['amatiwsurl'] = 'Amati webservice URL';
 $string['amatiwsurl_desc'] = 'URL for the Amati webservice';
 $string['answer'] = 'Answer: {$a}';
 $string['answermustbegiven'] = 'You must enter an answer if there is a grade or feedback.';
+$string['answermustmatch'] = 'Answer must match';
 $string['answerno'] = 'Answer {$a} must match';
 $string['caseno'] = 'No, case is unimportant';
 $string['casesensitive'] = 'Case sensitivity';

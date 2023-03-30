@@ -25,7 +25,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I set the following fields to these values:
       | id_subqpmatch1defaultmark     | 50%                                |
       | Spell checking                | Do not check spelling of student   |
-      | id_subqpmatch1answer_0        | match_mw (ethanoic acid)           |
+      | Answer must match             | match_mw (ethanoic acid)           |
       | id_subqpmatch1generalfeedback | You have the incorrect IUPAC name. |
     And I set the following fields to these values:
       | id_subqpmatch2defaultmark     | 25%                                |
