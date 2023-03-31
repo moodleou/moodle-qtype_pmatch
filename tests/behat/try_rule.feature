@@ -47,20 +47,20 @@ Feature: Test the try rule feature
     And I should see "Incorrectly matched: 0" in the "#fitem_accuracy_0" "css_element"
     And I should see "Incorrectly matched: 0" in the "span.qtype_pmatch-selftest" "css_element"
     And I should see "Responses still to be processed below: 11" in the "#fitem_accuracy_0" "css_element"
-    When I set the field "Answer 1" to "match_w(test)"
-    And I take focus off "Answer 1" "field"
+    When I set the field "Answer 1 must match" to "match_w(test)"
+    And I take focus off "Answer 1 must match" "field"
     And I press "Try rule"
     Then I should see "Responses not matched above: 12" in the "div.try-rule-result" "css_element"
     And I should see "Correctly matched by this rule: 0" in the "div.try-rule-result" "css_element"
     And I should see "Incorrectly matched: 1" in the "div.try-rule-result" "css_element"
     And I should see "Responses still to be processed below: 11" in the "div.try-rule-result" "css_element"
-    When I set the field "Answer 1" to "match_w(test*)"
+    When I set the field "Answer 1 must match" to "match_w(test*)"
     And I press "Try rule"
     Then I should see "Responses not matched above: 12" in the "div.try-rule-result" "css_element"
     And I should see "Correctly matched by this rule: 2" in the "div.try-rule-result" "css_element"
     And I should see "Incorrectly matched: 1" in the "div.try-rule-result" "css_element"
     And I should see "Responses still to be processed below: 9" in the "div.try-rule-result" "css_element"
-    When I set the field "Answer 1" to "match_w(testing)"
+    When I set the field "Answer 1 must match" to "match_w(testing)"
     And I press "Try rule"
     Then I should see "Responses not matched above: 12" in the "div.try-rule-result" "css_element"
     And I should see "Correctly matched by this rule: 2" in the "div.try-rule-result" "css_element"
@@ -71,16 +71,16 @@ Feature: Test the try rule feature
   Scenario: Test the pmatch rules response feature
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     When I add a "Pattern match" question filling the form with:
-      | Question name      | My first pattern match editor question |
-      | Question text      | Draw ethanol                           |
-      | Answer 1           | match (CCOO)                           |
-      | id_fraction_0      | 100%                                   |
-      | id_feedback_0      | Well done!                             |
-      | Answer 2           | match (CCO)                            |
-      | id_fraction_1      | 60%                                    |
-      | Answer 3           | match (CO)                             |
-      | id_fraction_2      | None                                   |
-      | id_otherfeedback   | Sorry, no.                             |
+      | Question name       | My first pattern match editor question |
+      | Question text       | Draw ethanol                           |
+      | Answer 1 must match | match (CCOO)                           |
+      | id_fraction_0       | 100%                                   |
+      | id_feedback_0       | Well done!                             |
+      | Answer 2 must match | match (CCO)                            |
+      | id_fraction_1       | 60%                                    |
+      | Answer 3 must match | match (CO)                             |
+      | id_fraction_2       | None                                   |
+      | id_otherfeedback    | Sorry, no.                             |
     Then I should see "My first pattern match editor question"
     And I am on the "My first pattern match editor question" "core_question > preview" page
     And I click on "Test this question" "link"

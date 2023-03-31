@@ -19,23 +19,23 @@ Feature: Test all the basic functionality of pmatch question type
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     # Create a new question.
     And I add a "Pattern match" question filling the form with:
-      | Question name                 | My first pattern match question    |
-      | Question text                 | Listen, translate and write        |
-      | id_usecase                    | Yes, case must match                                            |
-      | id_allowsubscript             | Yes                                                             |
-      | id_allowsuperscript           | Yes                                                             |
-      | id_forcelength                | warn that answer is too long and invite respondee to shorten it |
-      | id_applydictionarycheck       | Do not check spelling of student                                |
-      | id_sentencedividers           | ?!                                                              |
-      | id_converttospace             | ;:                                                              |
-      | id_synonymsdata_0_word        | any                                |
-      | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"   |
-      | Answer 1                      | match (testing one two three four) |
-      | id_fraction_0                 | 100%                               |
-      | id_feedback_0                 | Well done!                         |
-      | id_otherfeedback              | Sorry, no.                         |
-      | Hint 1                        | Please try again.                  |
-      | Hint 2                        | Use a calculator if necessary.     |
+      | Question name              | My first pattern match question                                 |
+      | Question text              | Listen, translate and write                                     |
+      | id_usecase                 | Yes, case must match                                            |
+      | id_allowsubscript          | Yes                                                             |
+      | id_allowsuperscript        | Yes                                                             |
+      | id_forcelength             | warn that answer is too long and invite respondee to shorten it |
+      | id_applydictionarycheck    | Do not check spelling of student                                |
+      | id_sentencedividers        | ?!                                                              |
+      | id_converttospace          | ;:                                                              |
+      | id_synonymsdata_0_word     | any                                                             |
+      | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                                |
+      | Answer 1 must match        | match (testing one two three four)                              |
+      | id_fraction_0              | 100%                                                            |
+      | id_feedback_0              | Well done!                                                      |
+      | id_otherfeedback           | Sorry, no.                                                      |
+      | Hint 1                     | Please try again.                                               |
+      | Hint 2                     | Use a calculator if necessary.                                  |
     Then I should see "My first pattern match question"
     # Checking that the next new question form displays user preferences settings.
     When I press "Create a new question ..."
@@ -90,7 +90,7 @@ Feature: Test all the basic functionality of pmatch question type
       | Question text                 | Listen, translate and write               |
       | id_synonymsdata_0_word        | any                                       |
       | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"          |
-      | Answer 1                      | match (testing one two three four)        |
+      | Answer 1 must match           | match (testing one two three four)        |
       | id_fraction_0                 | 100%                                      |
       | id_feedback_0                 | Well done!                                |
       | id_otherfeedback              | Sorry, no.                                |
