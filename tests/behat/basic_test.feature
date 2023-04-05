@@ -85,6 +85,10 @@ Feature: Test all the basic functionality of pmatch question type
 
     # Edit the copy and verify the form field contents.
     When I choose "Edit question" action for "My first pattern match question" in the question bank
+    And "Help with Answer matching" "icon" should exist
+    And I click on "Help with Answer matching" "icon"
+    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
+    And "More help" "link" should exist
     Then the following fields match these values:
       | Question name                 | My first pattern match question           |
       | Question text                 | Listen, translate and write               |

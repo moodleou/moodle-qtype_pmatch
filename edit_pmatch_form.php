@@ -100,10 +100,10 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 ["id" => 'testquestion_gradesummary']);
         }
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
-                                                get_string('correctanswers', 'qtype_pmatch'),
-                                                get_string('filloutoneanswer', 'qtype_pmatch') .
-                                                $results);
+            get_string('correctanswers', 'qtype_pmatch'),
+            get_string('filloutoneanswer', 'qtype_pmatch') . $results);
         $mform->insertElementBefore($answersinstruct, 'topborder[0]');
+        $mform->addHelpButton('answersinstruct', 'correctanswers', 'qtype_pmatch');
 
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             // Add rule suggestion button.

@@ -48,6 +48,21 @@ $string['combinedcontrolnamepmatch'] = 'text input';
 $string['converttospace'] = 'Convert to space';
 $string['converttospace_help'] = 'Specify characters that you want the system to convert to spaces before running the pattern-matching process. This is great for simplifying the input if punctuation does not matter.';
 $string['correctanswers'] = 'Answer matching';
+$string['correctanswers_help'] = 'The most basic form of pattern match is to type `match (word)`, where ‘word’ is what you want to match.
+
+If you have alternative words, you can either use the Synonyms above, or use a pipe (`|`) to signify ‘or’. E.g. `match (word|words)`. For more complicated cases, you might use:
+```
+match_any (
+    match (word)
+    match (words)
+    match (wordage)
+    match (wordiness)
+)
+```
+In the above example, because the responses all start the same, you could also simply use asterisk (`*`) to allow multiple character wildcards: `match (word*)`. A question mark (`?`) is used for single character wildcards.
+
+If you have a short phase you want to match, you should enclose it in square brackets (`[...]`). E.g. `match ([numerous words make a short sentence])`. You can combine pipe and square bracketed sentences if desired.';
+$string['correctanswers_link'] = 'Pattern-match_question_type_detailed_documentation#Pattern_match_syntax';
 $string['errors'] = 'Please fix the following problems : {$a}';
 $string['error:title'] = 'Error';
 $string['error:blank'] = 'The response cannot be blank';
