@@ -108,6 +108,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answermustmatch', 'qtype_pmatch'),
                                                              ['rows' => '6', 'cols' => '57', 'class' => 'textareamonospace']);
+        $mform->addHelpButton($this->form_field_name('answer[0]'), 'correctanswers', 'qtype_pmatch');
         $mform->setDefault($this->form_field_name('answer'), [0 => 'match ()']);
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);

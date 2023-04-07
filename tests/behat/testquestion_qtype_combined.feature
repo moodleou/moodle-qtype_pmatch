@@ -22,6 +22,11 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I set the field "Question text" to " What 5 + 5 ? [[1:pmatch:__10__]]. <br/>What is the IUPAC name of the molecule? [[2:pmatch:__20__]]. <br/>What is the pH of a 0.1M solution? [[3:numeric:__10__]]"
     Then I set the field "General feedback" to "The molecule is ethanoic acid which is more commonly known as acetic acid or in dilute solution as vinegar. The constituent elements are carbon (grey), hydrogen (white) and oxygen (red). A 0.1M solution has a pH of 2.88 and when a solution is combined with oil the result is a vinaigrette."
     And I press "Update the form"
+    And I expand all fieldsets
+    And "Help with Answer matching" "icon" should exist
+    And I click on "Help with Answer matching" "icon"
+    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
+    And "More help" "link" should exist
     And I set the following fields to these values:
       | id_subqpmatch1defaultmark     | 50%                                |
       | Spell checking                | Do not check spelling of student   |
