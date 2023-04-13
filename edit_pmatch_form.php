@@ -520,9 +520,8 @@ EOT;
         foreach ($data['answer'] as $key => $answer) {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
-                $expression = new pmatch_expression($trimmedanswer);
-                if (!$expression->is_valid()) {
-                    $errors["answer[$key]"] = $expression->get_parse_error();
+                if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {
+                    $errors["answer[$key]"] = $message;
                 }
                 $answercount++;
                 if ($data['fraction'][$key] == 1) {
@@ -585,6 +584,7 @@ EOT;
 
     public function js_call() {
         global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
         $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
         $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
         $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');

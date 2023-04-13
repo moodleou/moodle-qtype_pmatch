@@ -26,6 +26,7 @@ namespace qtype_pmatch;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../question.php');
+require_once(__DIR__ . '/../pmatchlib.php');
 
 
 /**
@@ -231,5 +232,16 @@ class form_utils {
         $grouparray[] = $mquickform->createElement('text', 'synonyms',
                 get_string('synonym', 'qtype_pmatch'), ['size' => 50]);
         return $grouparray;
+    }
+
+    /**
+     * Check valid or invalid of expression.
+     *
+     * @param string $expressionstring Inputted expression data. E.g: match(example).
+     * @return string Error message when the expression is invalid or empty string if expression is valid.
+     */
+    public static function validate_pmatch_expression(string $expressionstring): string {
+        $expression = new \pmatch_expression($expressionstring);
+        return $expression->get_parse_error();
     }
 }

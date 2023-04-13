@@ -115,6 +115,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
         $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
+        $this->js_call();
     }
 
     public function data_to_form($context, $fileoptions) {
@@ -144,8 +145,8 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
             $expression = new pmatch_expression($trimmedanswer);
-            if (!$expression->is_valid()) {
-                $errors[$this->form_field_name('answer[0]')] = $expression->get_parse_error();
+            if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {
+                $errors[$this->form_field_name('answer[0]')] = $message;
             }
         } else {
             $errors[$this->form_field_name('answer[0]')] = get_string('err_providepmatchexpression', 'qtype_pmatch');
@@ -189,5 +190,13 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
     public function has_submitted_data() {
         return $this->submitted_data_array_not_empty('answer') || parent::has_submitted_data();
+    }
+
+    /**
+     * Perform the needed JS setup for this question type.
+     */
+    public function js_call(): void {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
     }
 }

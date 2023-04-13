@@ -59,3 +59,19 @@ Feature: Display of sample responses performance on the editing form for pattern
     And I should see "Responses still to be processed below: 11" in the "#fitem_accuracy_0" "css_element"
     When I click on "Show coverage" "link"
     Then I should see "testing one two three four" in the "//div[@id='matchedresponses_0_inner']" "xpath_element"
+
+  @javascript
+  Scenario: Check validation of answer field real time.
+    Given I am on the "My first pattern match question" "core_question > edit" page logged in as teacher
+    When I set the field "Answer 1 must match" to "match()"
+    And I take focus off "Answer 1 must match" "field"
+    Then I should see "Non recognized sub content in code fragment \"match()\""
+    And I set the field "Answer 1 must match" to "test"
+    And I take focus off "Answer 1 must match" "field"
+    And I should see "Unrecognised expression."
+    And I set the field "Answer 1 must match" to "match(test"
+    And I take focus off "Answer 1 must match" "field"
+    And I should see "Missing closing bracket in code fragment \"match(test\"."
+    And I set the field "Answer 1 must match" to "matchtest("
+    And I take focus off "Answer 1 must match" "field"
+    And I should see "Illegal options in expression \"matchtest()\"."

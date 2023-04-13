@@ -42,5 +42,12 @@ $functions = [
         'type' => 'write',
         'capabilities' => 'moodle/question:editall',
         'ajax' => true
+    ],
+    'qtype_pmatch_validate_pmatch_expression' => [
+        'classname' => 'qtype_pmatch\external\check_expression',
+        'methodname' => 'check_valid_expression',
+        'description' => 'Check expression valid or invalid',
+        'type' => 'read',
+        'ajax' => true
     ]
 ];
