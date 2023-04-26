@@ -30,7 +30,7 @@ import {exception as displayException} from 'core/notification';
  * Validation for expression.
  */
 const validation = () => {
-    const answerTextareas = document.querySelectorAll('textarea[name*="answer"]');
+    const answerTextareas = document.querySelectorAll('textarea[name^="answer"]');
     answerTextareas.forEach(answerextarea => {
         answerextarea.addEventListener('blur', function(e) {
             const pendingid = {};

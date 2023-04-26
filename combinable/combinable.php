@@ -144,7 +144,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
-            $expression = new pmatch_expression($trimmedanswer);
             if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {
                 $errors[$this->form_field_name('answer[0]')] = $message;
             }
