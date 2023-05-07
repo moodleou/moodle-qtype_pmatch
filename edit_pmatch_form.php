@@ -462,7 +462,7 @@ EOT;
                 $this->context->id,
                 'question',
                 'answerfeedback',
-                !empty($answer->id) ? (int) $answer->id : null,
+                !empty($this->otheranswer->id) ? (int) $this->otheranswer->id : null,
                 $this->fileoptions,
                 $this->otheranswer->feedback
             );
