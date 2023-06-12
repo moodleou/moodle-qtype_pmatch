@@ -43,15 +43,18 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
     }
 
     public function subq_form_fragment_question_option_fields() {
-        return ['allowsubscript' => null,
-                     'allowsuperscript' => null,
-                     'usecase' => null,
-                     'applydictionarycheck' => null,
-                     'extenddictionary' => '',
-                     'sentencedividers' => '.?!',
-                     'converttospace' => ',;:',
-                     'modelanswer' => '',
-                     'synonymsdata' => []];
+        return [
+            'allowsubscript' => null,
+            'allowsuperscript' => null,
+            'usecase' => null,
+            'applydictionarycheck' => null,
+            'extenddictionary' => '',
+            'sentencedividers' => '.?!',
+            'converttospace' => ',;:',
+            'modelanswer' => '',
+            'responsetemplate' => '',
+            'synonymsdata' => []
+        ];
     }
 }
 
@@ -101,21 +104,29 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         $mform->addElement('text', $this->form_field_name('sentencedividers'), get_string('sentencedividers', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('sentencedividers'), '.?!');
+        $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);
+
         $mform->addElement('text', $this->form_field_name('converttospace'), get_string('converttospace', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('converttospace'), ',;:');
+        $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
+
         $mform->addElement('text', $this->form_field_name('modelanswer'), get_string('modelanswer', 'qtype_pmatch'));
+        $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
+
+        $mform->addElement('text', $this->form_field_name('responsetemplate'), get_string('prefillanswertext', 'qtype_pmatch'));
+        $mform->addHelpButton($this->form_field_name('responsetemplate'), 'prefillanswertext', 'qtype_pmatch');
+        $mform->setType($this->form_field_name('responsetemplate'), PARAM_RAW_TRIMMED);
+
         form_utils::add_synonyms($combinedform, $mform, $this->questionrec, false,
                 $this->form_field_name('synonymsdata'), 1, 0);
+        $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
 
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answermustmatch', 'qtype_pmatch'),
                                                              ['rows' => '6', 'cols' => '57', 'class' => 'textareamonospace']);
         $mform->addHelpButton($this->form_field_name('answer[0]'), 'correctanswers', 'qtype_pmatch');
         $mform->setDefault($this->form_field_name('answer'), [0 => 'match ()']);
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
-        $mform->setType($this->form_field_name('sentencedividers'), PARAM_RAW_TRIMMED);
-        $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
-        $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
-        $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
+
         $this->js_call();
     }
 

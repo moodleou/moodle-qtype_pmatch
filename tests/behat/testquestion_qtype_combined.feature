@@ -31,12 +31,16 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqpmatch1defaultmark     | 50%                                |
       | Spell checking                | Do not check spelling of student   |
       | Answer must match             | match_mw (ethanoic acid)           |
+      | Pre-filled answer text        | ethaic aicd                        |
       | id_subqpmatch1generalfeedback | You have the incorrect IUPAC name. |
     And I set the following fields to these values:
-      | id_subqpmatch2defaultmark     | 25%                                |
-      | Spell checking                | Do not check spelling of student   |
-      | id_subqpmatch2answer_0        | match_m (10)                       |
-      | id_subqpmatch2generalfeedback | You have the incorrect IUPAC name. |
+      | id_subqpmatch2defaultmark      | 25%                                |
+      | Spell checking                 | Do not check spelling of student   |
+      | id_subqpmatch2answer_0         | match_m (10)                       |
+      | id_subqpmatch2responsetemplate | 5                                  |
+      | id_subqpmatch2generalfeedback  | You have the incorrect IUPAC name. |
+      | id_subqpmatch2allowsubscript   | Yes                                |
+      | id_subqpmatch2allowsuperscript | Yes                                |
     And I set the following fields to these values:
       | id_subqnumeric3defaultmark     | 25%                                     |
       | id_subqnumeric3answer_0        | 2.88                                    |
@@ -63,3 +67,12 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I press "Yes"
     And I press "Continue"
     Then I should not see "New test response"
+
+  @javascript
+  Scenario: Spell checking is disable when user input identical to pre-fill answer.
+    Given "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
+    And "//textarea[@spellcheck='false']" "xpath" should exist
+    When I set the field "Answer 3" to "2.55"
+    And I press "Save"
+    Then "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
+    And "//textarea[@spellcheck='false']" "xpath" should exist

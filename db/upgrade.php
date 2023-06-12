@@ -190,5 +190,20 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019091000, 'qtype', 'pmatch');
     }
 
+    if ($oldversion < 2023060200) {
+
+        // Define field responsetemplate to be added to qtype_pmatch.
+        $table = new xmldb_table('qtype_pmatch');
+        $field = new xmldb_field('responsetemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'extenddictionary');
+
+        // Conditionally launch add field responsetemplate.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Pmatch savepoint reached.
+        upgrade_plugin_savepoint(true, 2023060200, 'qtype', 'pmatch');
+    }
+
     return true;
 }

@@ -91,3 +91,11 @@ Feature: Test spelling check of a pmatch question
     And I set the field "Answer" to "Bonjour"
     And I press "Save"
     Then I should see "The following words are not in our dictionary: Bonjour. Please correct your spelling."
+
+  Scenario: Spell checking disable with pre-fill answer text.
+    When I am on the "My first pattern match question" "core_question > preview" page logged in as admin
+    Then "//textarea[@spellcheck='false']" "xpath" should be visible
+    And I should see "testing one wto there fuor"
+    And I set the field "Answer" to "Bonjour"
+    And I press "Save"
+    And I should not see "testing one wto there fuor"

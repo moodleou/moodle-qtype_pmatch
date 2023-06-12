@@ -238,6 +238,7 @@ class form_utils {
             $question->sentencedividers = $question->options->sentencedividers;
             $question->converttospace = $question->options->converttospace;
             $question->modelanswer = $question->options->modelanswer;
+            $question->responsetemplate = $question->options->responsetemplate;
         }
 
         if (isset($question->options->synonyms)) {

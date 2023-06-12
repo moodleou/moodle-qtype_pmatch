@@ -283,6 +283,11 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 get_string('modelanswer', 'qtype_pmatch'), ['size' => 50]);
         $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
         $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
+
+        $mform->addElement('text', 'responsetemplate',
+            get_string('prefillanswertext', 'qtype_pmatch'), ['size' => 50]);
+        $mform->addHelpButton('responsetemplate', 'prefillanswertext', 'qtype_pmatch');
+        $mform->setType('responsetemplate', PARAM_RAW_TRIMMED);
     }
 
     /**

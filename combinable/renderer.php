@@ -44,4 +44,17 @@ class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_
         }
         return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input']);
     }
+
+    protected function prepare_current_answer(question_display_options $options, ?string $currentanswer,
+            qtype_combined_combinable_base $subq): ?string {
+        $currentanswer = parent::prepare_current_answer($options, $currentanswer, $subq);
+        $currentanswer = $subq->question->modify_current_answer($currentanswer, $options);
+        return $currentanswer;
+    }
+
+    protected function get_extra_input_attributes(): array {
+        $extra = parent::get_extra_input_attributes();
+        $extra['spellcheck'] = 'false';
+        return $extra;
+    }
 }

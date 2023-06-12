@@ -64,7 +64,8 @@ class qtype_pmatch extends question_type {
 
     public function extra_question_fields(): array {
         return ['qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
-                'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace', 'modelanswer'];
+            'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace',
+            'modelanswer', 'responsetemplate'];
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -424,6 +425,7 @@ class qtype_pmatch extends question_type {
         $question->forcelength = $questiondata->options->forcelength;
         $question->applydictionarycheck = $questiondata->options->applydictionarycheck;
         $question->modelanswer = $questiondata->options->modelanswer;
+        $question->responsetemplate = $questiondata->options->responsetemplate;
         $this->initialise_question_answers($question, $questiondata);
     }
 

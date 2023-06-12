@@ -52,6 +52,9 @@ class qtype_pmatch_question extends question_graded_by_strategy
     /** @var string to be used for 'Preview question' and 'Answer sheet' in print. */
     public $modelanswer;
 
+    /** @var string to be used for display a pre-fill answer */
+    public $responsetemplate;
+
     /** @var pmatch_options options for pmatch expression matching. */
     public $pmatchoptions;
 
@@ -227,5 +230,19 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
         return !in_array($this->applydictionarycheck, $availablelangs) &&
                 $this->applydictionarycheck !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
+    }
+
+    /**
+     * Modify the current answer base on question display option and response template.
+     *
+     * @param string|null $currentanswer the current answer of user in the question attempt.
+     * @param question_display_options $options controls what should and should not be displayed.
+     * @return string|null
+     */
+    public function modify_current_answer(?string $currentanswer, question_display_options $options): ?string {
+        if (!$currentanswer && !$options->readonly) {
+            $currentanswer = $this->responsetemplate;
+        }
+        return $currentanswer;
     }
 }

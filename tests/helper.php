@@ -92,6 +92,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->sentencedividers = '.?!';
         $fromform->converttospace = ',;:';
         $fromform->modelanswer = 'testing one two three four';
+        $fromform->responsetemplate = 'testing one wto there fuor';
         $fromform->answer = ['match (testing one two three four)'];
         $fromform->fraction = ['1'];
         $fromform->feedback = [
@@ -235,7 +236,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $qdata->options->sentencedividers = '.?!';
         $qdata->options->converttospace = ',;:';
         $qdata->options->modelanswer = 'testing one two three four';
-
+        $qdata->options->responsetemplate = '';
         $qdata->options->answers = [
                 13 => new question_answer(13, 'match (testing one two three four)', 1.0,
                         'Well done!', FORMAT_MOODLE),

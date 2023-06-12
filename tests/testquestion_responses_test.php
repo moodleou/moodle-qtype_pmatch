@@ -1002,6 +1002,7 @@ class testquestion_responses_test extends testquestion_test_base {
     <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <modelanswer>testing one two three four</modelanswer>
+    <responsetemplate></responsetemplate>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">
@@ -1076,6 +1077,7 @@ class testquestion_responses_test extends testquestion_test_base {
     <sentencedividers>.?!</sentencedividers>
     <converttospace>,;:</converttospace>
     <modelanswer>testing one two three four</modelanswer>
+    <responsetemplate></responsetemplate>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">

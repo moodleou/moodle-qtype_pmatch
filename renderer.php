@@ -28,20 +28,20 @@ class qtype_pmatch_renderer extends qtype_renderer {
                                                             question_display_options $options) {
 
         $question = $qa->get_question();
-        $currentanswer = $qa->get_last_qt_var('answer');
+        $currentanswer = $question->modify_current_answer($qa->get_last_qt_var('answer'), $options);
 
         $inputname = $qa->get_qt_field_name('answer');
         $attributes = [
             'class' => 'answerinputfield',
             'name' => $inputname,
             'id' => $inputname,
-            'aria-labelledby' => $inputname . '-label'
+            'aria-labelledby' => $inputname . '-label',
+            'spellcheck' => 'false'
         ];
 
         if ($options->readonly) {
             $attributes['readonly'] = 'readonly';
         }
-
         $feedbackimg = '';
         if ($options->correctness) {
             $answer = $question->get_matching_answer(['answer' => $currentanswer]);
@@ -86,7 +86,6 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
         $rows = round($rows * 1.1);
         $cols = round($cols * 1.1);
-
         if ($htmlresponse && $options->readonly) {
             $input = html_writer::tag('span', $currentanswer, $attributes) . $feedbackimg;
         } else if ($htmlresponse) {
