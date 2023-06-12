@@ -23,6 +23,13 @@
 
 namespace qtype_pmatch;
 
+use OpenSpout\Reader\CSV\Reader as CSVReader;
+use OpenSpout\Reader\CSV\Options as CSVOptions;
+use OpenSpout\Reader\ODS\Reader as ODSReader;
+use OpenSpout\Reader\ODS\Options as ODSOptions;
+use OpenSpout\Reader\XLSX\Reader as XLSXReader;
+use OpenSpout\Reader\XLSX\Options as XLSXOptions;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -245,8 +252,9 @@ class qtype_pmatch_csv_importer extends qtype_pmatch_spout_importer {
      *
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createCSVReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        $options = new CSVOptions();
+        $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+        $this->reader = new CSVReader($options);
     }
 }
 
@@ -263,8 +271,9 @@ class qtype_pmatch_xlsx_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createXLSXReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        $options = new XLSXOptions();
+        $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+        $this->reader = new XLSXReader($options);
     }
 }
 
@@ -281,8 +290,9 @@ class qtype_pmatch_ods_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createODSReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        $options = new ODSOptions();
+        $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+        $this->reader = new ODSReader($options);
     }
 }
 
