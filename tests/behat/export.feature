@@ -1,8 +1,8 @@
 @ou @ou_vle @qtype @qtype_pmatch
-Feature: Import and export pattern match questions
+Feature: Test exporting pattern match questions
   As a teacher
-  In order to reuse my pattern match questions
-  I need to be able to import and export them
+  In order to be able to reuse my pattern match questions
+  I need to export them
 
   Background:
     Given the following "courses" exist:
@@ -16,20 +16,14 @@ Feature: Import and export pattern match questions
       | teacher | C1     | editingteacher |
 
   @javascript @_file_upload
-  Scenario: Import and export pattern match questions
-    When I am on the "Course 1" "core_question > course question import" page logged in as teacher
-    # Import sample file.
-    And I set the field "id_format_xml" to "1"
+  Scenario: Export pattern match questions
+    # Import sample file
+    Given I am on the "Course 1" "core_question > course question import" page logged in as teacher
+    When I set the field "id_format_xml" to "1"
     And I upload "question/type/pmatch/tests/fixtures/testquestion.moodle.xml" file to "Import" filemanager
     And I press "id_submitbutton"
-    Then I should see "Parsing questions from import file."
-    And I should see "Importing 1 questions from file"
-    And I should see "1. Listen, translate and write"
     And I press "Continue"
-    And I should see "Imported pattern match question"
-
-    # Now export again.
-    When I am on the "Course 1" "core_question > course question export" page
+    And I am on the "Course 1" "core_question > course question export" page
     And I set the field "id_format_xml" to "1"
     And I set the field "category" to "Imported questions (1)"
     And I press "Export questions to file"

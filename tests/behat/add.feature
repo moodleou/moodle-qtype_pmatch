@@ -1,8 +1,8 @@
-@ou @ou_vle @qtype @qtype_pmatch @_switch_window @javascript
-Feature: Test all the basic functionality of pmatch question type
-  In order evaluate students understanding
-  As an teacher
-  I need to create and preview pattern match questions.
+@ou @ou_vle @qtype @qtype_pmatch
+Feature: Test creating a new Pattern Matching question
+  In order to create a pattern match question
+  As an in-experienced teacher
+  I need to be able to create a Pattern Matching question
 
   Background:
     Given the following "courses" exist:
@@ -15,7 +15,8 @@ Feature: Test all the basic functionality of pmatch question type
       | user    | course | role           |
       | teacher | C1     | editingteacher |
 
-  Scenario: Create, edit then preview a pattern match question.
+  @javascript
+  Scenario: Create a pattern match question.
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     # Create a new question.
     And I add a "Pattern match" question filling the form with:
@@ -51,57 +52,57 @@ Feature: Test all the basic functionality of pmatch question type
       | id_converttospace       | ;:                                                              |
     And I press "Cancel"
 
-    # Preview it. Test correct and incorrect answers.
-    And I am on the "My first pattern match question" "core_question > preview" page
-
-    And I set the following fields to these values:
-      | How questions behave | Interactive with multiple tries |
-      | Marked out of        | 3                               |
-      | Marks                | Show mark and max               |
-    And I press "Start again with these options"
-    Then I should see "Listen, translate and write"
-    And the state of "Listen, translate and write" question is shown as "Tries remaining: 3"
-    When I set the field "Answer:" to "testing"
-    And I press "Check"
-    Then I should see "Sorry, no."
-    And I should see "Please try again."
-    When I press "Try again"
-    Then the state of "Listen, translate and write" question is shown as "Tries remaining: 2"
-    When I set the field "Answer:" to "testing one two three four"
-    And I press "Check"
-    Then I should see "Well done!"
-    Then the state of "Listen, translate and write" question is shown as "Correct"
-
-    # Backup the course and restore it.
-    When I log out
-    And I log in as "admin"
-    When I backup "Course 1" course using this options:
-      | Confirmation | Filename | test_backup.mbz |
-    When I restore "test_backup.mbz" backup into a new course using this options:
-      | Schema | Course name | Course 2 |
-    Then I should see "Course 2"
-    When I navigate to "Question bank" in current page administration
-    Then I should see "My first pattern match question"
-
-    # Edit the copy and verify the form field contents.
-    When I choose "Edit question" action for "My first pattern match question" in the question bank
-    And "Help with Answer matching" "icon" should exist
-    And I click on "Help with Answer matching" "icon"
-    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
-    And "More help" "link" should exist
-    Then the following fields match these values:
-      | Question name                 | My first pattern match question           |
-      | Question text                 | Listen, translate and write               |
-      | id_synonymsdata_0_word        | any                                       |
-      | id_synonymsdata_0_synonyms    | "testing\|one\|two\|three\|four"          |
-      | Answer 1 must match           | match (testing one two three four)        |
-      | id_fraction_0                 | 100%                                      |
-      | id_feedback_0                 | Well done!                                |
-      | id_otherfeedback              | Sorry, no.                                |
-      | Hint 1                        | Please try again.                         |
-      | Hint 2                        | Use a calculator if necessary.            |
-    And I set the following fields to these values:
-      | Question name | Edited question name |
-    And I should not see "Overall grading accuracy"
-    And I press "id_submitbutton"
-    Then I should see "Edited question name"
+  @javascript
+  Scenario: Create the rule creation assistant.
+    # Do not use I add a "Pattern match" question filling the form with as it requires a save
+    Given I am on the "Course 1" "core_question > course question bank" page logged in as teacher
+    When I press "Create a new question ..."
+    And I set the field "Pattern match" to "1"
+    And I click on ".submitbutton" "css_element"
+    And I should see "Show/hide rule creation assistant"
+    And the field "Answer 1 must match" matches value "match ()"
+    # Open the rule creation assistant
+    And I follow "Show/hide rule creation assistant"
+    # Test term add
+    And I set the field "Term" to "a"
+    And I press "rc_termadd_0"
+    Then I should see "match_w(a)"
+    # Test term exclude
+    And I set the field "Term" to "b"
+    And I press "rc_termexclude_0"
+    And I should see "not(match_w(b))"
+    And I should see "match_all"
+    # Test term or
+    And I set the field "Term" to "c"
+    And I press "rc_termor_0"
+    And I should see "match_w(c)"
+    And I should see "match_any"
+    # Test reset
+    And I press "rc_clear_0"
+    And I should not see "match_w(c)"
+    # Test template
+    And I set the field "Term" to "a"
+    And I press "rc_termadd_0"
+    And I should see "match_w(a)"
+    And I set the field "Template" to "b"
+    And I press "rc_templateadd_0"
+    And I should see "match_wm(b*)"
+    # Test precedes
+    And I select "a" from the "precedes1" singleselect
+    And I select "b*" from the "precedes2" singleselect
+    And I press "rc_precedesadd_0"
+    And I should see "match_w(a b*)"
+    And I press "rc_clear_0"
+    # Test closely precedes
+    And I set the field "Term" to "a"
+    And I press "rc_termadd_0"
+    And I set the field "Term" to "b"
+    And I press "rc_termadd_0"
+    And I select "a" from the "cprecedes1" singleselect
+    And I select "b" from the "cprecedes2" singleselect
+    And I press "rc_cprecedesadd_0"
+    And I should see "match_w(a_b)"
+    # It would have been nice to check for the full string
+    # but "match_all(match_w(a) match_w(b) match_w(a_b))" is now
+    # multi-line (for better user experience) and that seems
+    # difficult to test for with current tests.
