@@ -236,7 +236,7 @@ class form_utils {
     }
 
     /**
-     * Add a geader for the general answer option.
+     * Add a header for the general answer option.
      *
      * @param \MoodleQuickForm $mquickform
      */
