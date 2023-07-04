@@ -28,8 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../question.php');
 require_once(__DIR__ . '/../pmatchlib.php');
 
-use  qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
-
 /**
  * Pattern match form utils.
  *
@@ -198,8 +196,10 @@ class form_utils {
         if ($showheader) {
             $mform->addElement('header', 'synonymshdr', get_string('synonym', 'qtype_pmatch'));
         }
+
         $mform->addElement('static', 'synonymsdescription', '',
                 get_string('synonymsheader', 'qtype_pmatch'));
+
         $textboxgroup = [];
         $textboxgroup[] = $mform->createElement('group', $elementname,
                 get_string('synonymsno', 'qtype_pmatch', '{no}'), self::add_synonym($mform));
@@ -233,127 +233,6 @@ class form_utils {
         $grouparray[] = $mquickform->createElement('text', 'synonyms',
                 get_string('synonym', 'qtype_pmatch'), ['size' => 50]);
         return $grouparray;
-    }
-
-    /**
-     * Add a header for the general answer option.
-     *
-     * @param \MoodleQuickForm $mquickform
-     */
-    public static function add_general_answer_header($mform): void {
-        $mform->addElement('header', 'answeroptionsheader',
-            get_string('answeroptions', 'qtype_pmatch'));
-        $mform->addElement('static', 'generaldescription', '',
-            get_string('answeringoptions', 'qtype_pmatch'));
-    }
-
-    /**
-     * Add case sensitivity dropdown.
-     *
-     * @param \MoodleQuickForm $mform the form being built.
-     * @param int $defaultvalue check whether this question allow case sensitive.
-     */
-    public static function add_case_sensitivity(object $mform, int $defaultvalue): void {
-        $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), [
-            get_string('caseno', 'qtype_pmatch'),
-            get_string('caseyes', 'qtype_pmatch')
-        ]);
-        $mform->setDefault('usecase', $defaultvalue);
-    }
-
-    /**
-     * Add force length dropdown.
-     *
-     * @param \MoodleQuickForm $mform the form being built.
-     * @param int $defaultvalue check whether this question allow maximum number of words.
-     */
-    public static function add_force_length(object $mform, int $defaultvalue): void {
-        $mform->addElement('select', 'forcelength', get_string('forcelength', 'qtype_pmatch'), [
-            get_string('forcelengthno', 'qtype_pmatch'),
-            get_string('forcelengthyes', 'qtype_pmatch')
-        ]);
-        $mform->setDefault('forcelength', $defaultvalue);
-    }
-
-    /**
-     * Add spell checker dropdown.
-     *
-     * @param \MoodleQuickForm $mform the form being built.
-     * @param object $question question object
-     * @param string $defaultvalue the default language for the field. E.g: en_GB
-     */
-    public static function add_spell_checker(object $mform, object $question, string $defaultvalue): void {
-        [$options, $disable] = qtype_pmatch_spell_checker::get_spell_checker_language_options($question);
-        if ($disable) {
-            $mform->addElement('select', 'applydictionarycheck',
-                get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
-        } else {
-            $mform->addElement('select', 'applydictionarycheck',
-                get_string('applydictionarycheck', 'qtype_pmatch'), $options);
-            $mform->setDefault('applydictionarycheck', $defaultvalue);
-        }
-    }
-
-    /**
-     * Add dictionary textarea field.
-     *
-     * @param \MoodleQuickForm $mform the form being built.
-     */
-    public static function add_extend_dictionary(object $mform): void {
-        $mform->addElement('textarea', 'extenddictionary',
-            get_string('extenddictionary', 'qtype_pmatch'), ['rows' => '5', 'cols' => '80']);
-        $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
-    }
-
-    /**
-     * Add convert to space text field.
-     *
-     * @param \MoodleQuickForm $mform the form being built.
-     * @param string $defaultvalue Default character to convert to space. E.g:,;:
-     */
-    public static function add_convert_to_space(object $mform, string $defaultvalue): void {
-        $mform->addElement('text', 'converttospace', get_string('converttospace', 'qtype_pmatch'), ['size' => 50]);
-        $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
-        $mform->setDefault('converttospace', $defaultvalue);
-        $mform->setType('converttospace', PARAM_RAW_TRIMMED);
-    }
-
-    /**
-     * Add sentence divider text field.
-     *
-     * @param \MoodleQuickForm $mform
-     * @param string $defaultvalue Default characters for the system to treat as sentence end points. E.g: .?!
-     */
-    public static function add_sentence_divider(object $mform, string $defaultvalue): void {
-        $mform->addElement('text', 'sentencedividers', get_string('sentencedividers', 'qtype_pmatch'), ['size' => 50]);
-        $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');
-        $mform->setDefault('sentencedividers', $defaultvalue);
-        $mform->setType('sentencedividers', PARAM_RAW_TRIMMED);
-    }
-
-    /**
-     * Add model answer text field.
-     *
-     * @param \MoodleQuickForm $mform
-     */
-    public static function add_model_answer(object $mform): void {
-        $mform->addElement('text', 'modelanswer',
-            get_string('modelanswer', 'qtype_pmatch'), ['size' => 50]);
-        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
-        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
-    }
-
-    /**
-     * Add a select dropdown with yes/no option base on elementname.
-     *
-     * @param \MoodleQuickForm $mform
-     * @param string $elementname the name of the element.
-     * @param string $defaultvalue the default value of the dropdown 1 or 0.
-     */
-    public static function add_yesno_select_with_element_name(object $mform, string $elementname, string $defaultvalue): void {
-        $mform->addElement('selectyesno', $elementname,
-            get_string($elementname, 'qtype_pmatch'));
-        $mform->setDefault($elementname, $defaultvalue);
     }
 
     /**

@@ -49,6 +49,14 @@ body#page-question-type-pmatch #region-main #fgroup_id_updatebuttonar {
     border: none !important; /* stylelint-disable-line declaration-no-important */
 }
 
+body#page-question-type-pmatch div#fgroup_id_supsubels label[for*='allowsubscript'],
+body#page-question-type-combined div[id^=fgroup_id_subqpmatch][id*=supsubels] label[for*='allowsubscript'] {
+    position: absolute;
+    left: -10000px;
+    font-weight: normal;
+    font-size: 1em;
+}
+
 /* Middle */
 body#page-question-type-pmatch div[id^=fitem_id_][id*=answer_],
 body#page-question-type-pmatch div[id^=fitem_id_][id*=fraction_],

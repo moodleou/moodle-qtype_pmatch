@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
 use qtype_pmatch\form_utils;
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 /**
  * Short answer question editing form definition.
@@ -221,17 +222,67 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function general_answer_fields($mform) {
-        form_utils::add_general_answer_header($mform);
-        form_utils::add_case_sensitivity($mform, $this->get_default_value('usecase', 0));
-        form_utils::add_yesno_select_with_element_name($mform, 'allowsubscript', $this->get_default_value('allowsubscript', 0));
-        form_utils::add_yesno_select_with_element_name($mform, 'allowsuperscript', $this->get_default_value('allowsuperscript', 0));
-        form_utils::add_force_length($mform, $this->get_default_value('forcelength', 1));
-        form_utils::add_spell_checker($mform, $this->question,
-            $this->get_default_value('applydictionarycheck', get_string('iso6391', 'langconfig')));
-        form_utils::add_extend_dictionary($mform);
-        form_utils::add_sentence_divider($mform, $this->get_default_value('sentencedividers', '.?!'));
-        form_utils::add_convert_to_space($mform, $this->get_default_value('converttospace', ',;:'));
-        form_utils::add_model_answer($mform);
+        $mform->addElement('header', 'answeroptionsheader',
+                get_string('answeroptions', 'qtype_pmatch'));
+
+        $mform->addElement('static', 'generaldescription', '',
+                get_string('answeringoptions', 'qtype_pmatch'));
+
+        $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), [
+                get_string('caseno', 'qtype_pmatch'),
+                get_string('caseyes', 'qtype_pmatch'),
+        ]);
+        $mform->setDefault('usecase', $this->get_default_value('usecase', 0));
+
+        $supsubels = [];
+        $supsubels[] = $mform->createElement('selectyesno', 'allowsubscript',
+                get_string('allowsubscript', 'qtype_pmatch'));
+        $mform->setDefault('allowsubscript', $this->get_default_value('allowsubscript', false));
+
+        $supsubels[] = $mform->createElement('selectyesno', 'allowsuperscript',
+                get_string('allowsuperscript', 'qtype_pmatch'));
+        $mform->setDefault('allowsuperscript', $this->get_default_value('allowsuperscript', false));
+
+        $mform->addGroup($supsubels, 'supsubels',
+                get_string('allowsubscript', 'qtype_pmatch'), '', false);
+
+        $mform->addElement('select', 'forcelength', get_string('forcelength', 'qtype_pmatch'), [
+                get_string('forcelengthno', 'qtype_pmatch'),
+                get_string('forcelengthyes', 'qtype_pmatch'),
+        ]);
+        $mform->setDefault('forcelength', $this->get_default_value('forcelength', 1));
+
+        [$options, $disable] =
+                qtype_pmatch_spell_checker::get_spell_checker_language_options($this->question);
+        if ($disable) {
+            $mform->addElement('select', 'applydictionarycheck',
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
+        } else {
+            $mform->addElement('select', 'applydictionarycheck',
+                    get_string('applydictionarycheck', 'qtype_pmatch'), $options);
+            $mform->setDefault('applydictionarycheck',
+                    $this->get_default_value('applydictionarycheck', get_string('iso6391', 'langconfig')));
+        }
+
+        $mform->addElement('textarea', 'extenddictionary',
+                get_string('extenddictionary', 'qtype_pmatch'), ['rows' => '5', 'cols' => '80']);
+        $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq',
+                qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+
+        $mform->addElement('text', 'sentencedividers', get_string('sentencedividers', 'qtype_pmatch'), ['size' => 50]);
+        $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');
+        $mform->setDefault('sentencedividers', $this->get_default_value('sentencedividers', '.?!'));
+        $mform->setType('sentencedividers', PARAM_RAW_TRIMMED);
+
+        $mform->addElement('text', 'converttospace', get_string('converttospace', 'qtype_pmatch'), ['size' => 50]);
+        $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
+        $mform->setDefault('converttospace', $this->get_default_value('converttospace', ',;:'));
+        $mform->setType('converttospace', PARAM_RAW_TRIMMED);
+
+        $mform->addElement('text', 'modelanswer',
+                get_string('modelanswer', 'qtype_pmatch'), ['size' => 50]);
+        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
+        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
     }
 
     /**

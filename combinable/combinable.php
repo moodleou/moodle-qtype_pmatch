@@ -65,32 +65,33 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
      * @return mixed
      */
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
-        $susubels = [];
-        $susubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsubscript'),
-                                            get_string('allowsubscript', 'qtype_pmatch'));
-        $susubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsuperscript'),
-                                            get_string('allowsuperscript', 'qtype_pmatch'));
-        $mform->addGroup($susubels, $this->form_field_name('susubels'), get_string('allowsubscript', 'qtype_pmatch'),
-                                                                    '',
-                                                                    false);
-        $menu = [
-            get_string('caseno', 'qtype_pmatch'),
-            get_string('caseyes', 'qtype_pmatch')
-        ];
-        $casedictels = [];
-        $casedictels[] = $mform->createElement('select', $this->form_field_name('usecase'),
-                                               get_string('casesensitive', 'qtype_pmatch'), $menu);
-        list ($options, $disable) = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
+        $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), [
+                get_string('caseno', 'qtype_pmatch'),
+                get_string('caseyes', 'qtype_pmatch'),
+        ]);
+
+        $supsubels = [];
+        $supsubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsubscript'),
+                get_string('allowsubscript', 'qtype_pmatch'));
+        $supsubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsuperscript'),
+                get_string('allowsuperscript', 'qtype_pmatch'));
+        $mform->addGroup($supsubels, $this->form_field_name('supsubels'),
+                get_string('allowsubscript', 'qtype_pmatch'), '', false);
+
+        $mform->addElement('select', $this->form_field_name('usecase'), get_string('casesensitive', 'qtype_pmatch'), [
+                get_string('caseno', 'qtype_pmatch'),
+                get_string('caseyes', 'qtype_pmatch'),
+        ]);
+
+        [$options, $disable] = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
         if ($disable) {
-            $casedictels[] = $mform->createElement('select', $this->form_field_name('applydictionarycheck'),
+            $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
         } else {
-            $casedictels[] = $mform->createElement('select', $this->form_field_name('applydictionarycheck'),
+            $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
             $mform->setDefault('applydictionarycheck', get_string('iso6391', 'langconfig'));
         }
-        $mform->addGroup($casedictels, $this->form_field_name('casedictels'),
-                                                                        get_string('casesensitive', 'qtype_pmatch'), '', false);
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
             ['rows' => '3', 'cols' => '57']);
