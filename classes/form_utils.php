@@ -23,6 +23,8 @@
  */
 
 namespace qtype_pmatch;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../question.php');
@@ -221,6 +223,36 @@ class form_utils {
     }
 
     /**
+     * Data_preprocessing implementation for common pmatch options
+     *
+     * @param stdClass $question
+     */
+    public static function data_preprocessing_pmatch_options(stdClass $question): void {
+        if (isset($question->options)) {
+            $question->usecase = $question->options->usecase;
+            $question->allowsubscript = $question->options->allowsubscript;
+            $question->allowsuperscript = $question->options->allowsuperscript;
+            $question->forcelength = $question->options->forcelength;
+            $question->applydictionarycheck = $question->options->applydictionarycheck;
+            $question->extenddictionary = $question->options->extenddictionary;
+            $question->sentencedividers = $question->options->sentencedividers;
+            $question->converttospace = $question->options->converttospace;
+            $question->modelanswer = $question->options->modelanswer;
+        }
+
+        if (isset($question->options->synonyms)) {
+            $synonyms = $question->options->synonyms;
+            $question->synonymsdata = [];
+            $key = 0;
+            foreach ($synonyms as $synonym) {
+                $question->synonymsdata[$key]['word'] = $synonym->word;
+                $question->synonymsdata[$key]['synonyms'] = $synonym->synonyms;
+                $key++;
+            }
+        }
+    }
+
+    /**
      * Add symnonym field: word and synonyms.
      *
      * @param \MoodleQuickForm $mquickform
@@ -244,5 +276,14 @@ class form_utils {
     public static function validate_pmatch_expression(string $expressionstring): string {
         $expression = new \pmatch_expression($expressionstring);
         return $expression->get_parse_error();
+    }
+
+    public static function initialise_pmatch_form_js() {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
+        $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
+        $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
+        $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');
+        $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
     }
 }

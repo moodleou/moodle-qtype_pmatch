@@ -488,31 +488,10 @@ EOT;
         $question = $this->data_preprocessing_answers($question);
 
         $question = $this->data_preprocessing_hints($question);
-        if (isset($question->options)) {
-            $question->usecase = $question->options->usecase;
-            $question->allowsubscript = $question->options->allowsubscript;
-            $question->allowsuperscript = $question->options->allowsuperscript;
-            $question->forcelength = $question->options->forcelength;
-            $question->applydictionarycheck = $question->options->applydictionarycheck;
-            $question->extenddictionary = $question->options->extenddictionary;
-            $question->sentencedividers = $question->options->sentencedividers;
-            $question->converttospace = $question->options->converttospace;
-            $question->modelanswer = $question->options->modelanswer;
-        }
-        if (isset($question->options->synonyms)) {
-            $synonyms = $question->options->synonyms;
-            $question->synonymsdata = [];
-            $key = 0;
-            foreach ($synonyms as $synonym) {
-                $question->synonymsdata[$key]['word'] = $synonym->word;
-                $question->synonymsdata[$key]['synonyms'] = $synonym->synonyms;
-                $key++;
-            }
-        }
-        $this->js_call();
+        form_utils::data_preprocessing_pmatch_options($question);
+        form_utils::initialise_pmatch_form_js();
         return $question;
     }
-
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
@@ -589,15 +568,6 @@ EOT;
 
     public function qtype() {
         return 'pmatch';
-    }
-
-    public function js_call() {
-        global $PAGE;
-        $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
-        $PAGE->requires->js_call_amd('qtype_pmatch/rulecreator', 'init');
-        $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
-        $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');
-        $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
     }
 }
 
