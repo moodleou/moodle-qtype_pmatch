@@ -16,15 +16,15 @@
 
 namespace qtype_pmatch\external;
 
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
+use qtype_pmatch\form_utils;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
-use qtype_pmatch\form_utils;
-use external_api;
-use external_function_parameters;
-use external_single_structure;
-use external_value;
 
 /**
  * This is the check expression API for pattern match question type.
