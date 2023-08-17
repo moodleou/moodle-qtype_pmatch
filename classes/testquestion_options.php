@@ -18,9 +18,7 @@ namespace qtype_pmatch;
 
 /**
  * Class to store options for {@link \qtype_pmatch\testquestion_controller}.
- * Design references are:
- * mod_quiz_attempts_report_options in mod/quiz/report/attemptsreport_options.php
- * quiz_overview_options in mod/quiz/report/overview/overview_options.php
+ * Design references are: mod_quiz\local\reports\attempts_report_options, quiz_overview_options.
  *
  * @package   qtype_pmatch
  * @copyright 2016 The Open University
