@@ -44,7 +44,7 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
 
     public function __destruct() {
         if ($this->dictionary && PHP_MAJOR_VERSION <= 7) {
-            // phpcs:ignore moodle.PHP.DeprecatedFunctions.Deprecated
+            // phpcs:ignore
             enchant_broker_free_dict($this->dictionary);
         }
     }

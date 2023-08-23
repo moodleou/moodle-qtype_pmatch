@@ -245,8 +245,14 @@ class qtype_pmatch_csv_importer extends qtype_pmatch_spout_importer {
      *
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createCSVReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        if (class_exists('\OpenSpout\Reader\CSV\Reader')) {
+            $options = new \OpenSpout\Reader\CSV\Options();
+            $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+            $this->reader = new \OpenSpout\Reader\CSV\Reader($options);
+        } else {
+            $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createCSVReader();
+            $this->reader->setShouldPreserveEmptyRows(true);
+        }
     }
 }
 
@@ -263,8 +269,14 @@ class qtype_pmatch_xlsx_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createXLSXReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        if (class_exists('\OpenSpout\Reader\XLSX\Reader')) {
+            $options = new \OpenSpout\Reader\XLSX\Options();
+            $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+            $this->reader = new \OpenSpout\Reader\XLSX\Reader($options);
+        } else {
+            $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createXLSXReader();
+            $this->reader->setShouldPreserveEmptyRows(true);
+        }
     }
 }
 
@@ -281,8 +293,14 @@ class qtype_pmatch_ods_importer extends qtype_pmatch_spout_importer {
      * qtype_pmatch_xlsx_importer constructor.
      */
     public function __construct() {
-        $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createODSReader();
-        $this->reader->setShouldPreserveEmptyRows(true);
+        if (class_exists('\OpenSpout\Reader\ODS\Reader')) {
+            $options = new \OpenSpout\Reader\ODS\Options();
+            $options->SHOULD_PRESERVE_EMPTY_ROWS = true;
+            $this->reader = new \OpenSpout\Reader\ODS\Reader($options);
+        } else {
+            $this->reader = \Box\Spout\Reader\Common\Creator\ReaderEntityFactory::createODSReader();
+            $this->reader->setShouldPreserveEmptyRows(true);
+        }
     }
 }
 
