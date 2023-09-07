@@ -52,7 +52,7 @@ class check_expression extends external_api {
      */
     public static function check_valid_expression_parameters(): external_single_structure {
         return new external_function_parameters([
-            'expressionvalue' => new external_value(PARAM_TEXT, 'The expressionvalue is'),
+            'expressionvalue' => new external_value(PARAM_RAW, 'The expressionvalue is'),
         ]);
     }
 

@@ -188,3 +188,6 @@ Feature: Test editing a pattern match question
     And I set the field "Answer 1 must match" to "matchtest("
     And I take focus off "Answer 1 must match" "field"
     And I should see "Illegal options in expression \"matchtest()\"."
+    And I set the field "Answer 1 must match" to "match (3<sup>7</sup>)"
+    And I take focus off "Answer 1 must match" "field"
+    And I should not see "expression" in the "fitem_id_answer_0" "region"
