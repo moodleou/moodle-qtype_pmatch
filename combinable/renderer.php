@@ -42,7 +42,7 @@ class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_
                     get_string('test', 'qtype_pmatch'), ['title' => get_string('testsubquestionx', 'qtype_pmatch',
                             $subq->get_identifier())]);
         }
-        return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input']);
+        return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input mw-100 pb-2']);
     }
 
     protected function prepare_current_answer(question_display_options $options, ?string $currentanswer,
