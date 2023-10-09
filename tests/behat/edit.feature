@@ -178,7 +178,7 @@ Feature: Test editing a pattern match question
     Given I am on the "My first pattern match question" "core_question > edit" page logged in as teacher
     When I set the field "Answer 1 must match" to "match()"
     And I take focus off "Answer 1 must match" "field"
-    Then I should see "Non recognized sub content in code fragment \"match()\""
+    Then I should see "Unrecognised sub-content in code fragment \"match()\"."
     And I set the field "Answer 1 must match" to "test"
     And I take focus off "Answer 1 must match" "field"
     And I should see "Unrecognised expression."

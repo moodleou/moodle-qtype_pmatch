@@ -74,6 +74,12 @@ class pmatch_test extends \basic_testcase {
                 // No contents.
                 ['match_mow()', get_string('ie_unrecognisedsubcontents',
                         'qtype_pmatch', 'match_mow()')],
+                // Short contents and wrong format.
+                ['match_any([tom])', get_string('ie_unrecognisedsubcontents',
+                    'qtype_pmatch', 'match_any([tom])')],
+                // Long contents and wrong format.
+                ['match_any([tom maud])', get_string('ie_unrecognisedsubcontents',
+                    'qtype_pmatch', 'match_any([tom ma...')],
                 // Ends in an or character.
                 ['match_mow([tom maud]|)', get_string('ie_lastsubcontenttypeorcharacter',
                         'qtype_pmatch', '[tom maud]|')],
