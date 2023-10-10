@@ -42,7 +42,14 @@ class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_
                     get_string('test', 'qtype_pmatch'), ['title' => get_string('testsubquestionx', 'qtype_pmatch',
                             $subq->get_identifier())]);
         }
-        return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input mw-100 pb-2']);
+
+        /** @var qtype_pmatch_renderer $pmatchrenderer */
+        $pmatchrenderer = $this->page->get_renderer('qtype_pmatch');
+
+        return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input mw-100 pb-2']) .
+            $pmatchrenderer->reset_button($subq->question, $options,
+                $qa->get_qt_field_name($subq->step_data_name('resetbutton')),
+                $qa->get_qt_field_name($subq->step_data_name('answer')));
     }
 
     protected function prepare_current_answer(question_display_options $options, ?string $currentanswer,

@@ -52,7 +52,11 @@ Feature: Test the basic functionality of Test Question Link when preview combine
 
   @javascript
   Scenario: Should see the test question link on preview page Combined Pattern Match question type.
-    Then "Test sub question 1" "link" should be visible
+    # Check teacher click on the reset button.
+    Given I set the field "Answer 1" to "aicd"
+    When I click on "Reset" "button"
+    And the field "Answer 1" matches value "ethaic aicd"
+    And "Test sub question 1" "link" should be visible
     And "Test sub question 2" "link" should be visible
     When I click on "Test sub question 1" "link"
     Then I should see "Pattern-match question testing tool: Testing question: 1"

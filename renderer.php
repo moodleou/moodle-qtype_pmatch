@@ -24,9 +24,9 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_renderer extends qtype_renderer {
-    public function formulation_and_controls(question_attempt $qa,
-                                                            question_display_options $options) {
+    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
+        /** @var qtype_pmatch_question $question */
         $question = $qa->get_question();
         $currentanswer = $question->modify_current_answer($qa->get_last_qt_var('answer'), $options);
 
@@ -71,7 +71,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $rows = 2;
         $cols = 50;
         $placeholder = false;
-        if (preg_match('/__([0-9]+)x([0-9]+)__/i', $questiontext, $matches)) {
+        if (preg_match('/__(\d+)x(\d+)__/i', $questiontext, $matches)) {
             $placeholder = $matches[0];
             $cols = $matches[1];
             $rows = $matches[2];
@@ -104,10 +104,13 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $inputattributes['size'] = $cols;
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
         }
+
+        $resetbutton = $this->reset_button($question, $options, $qa->get_qt_field_name('resetbutton'), $inputname);
+
         if ($placeholder) {
             $inputinplace = html_writer::tag('label', get_string('answer'),
                     ['for' => $attributes['id'], 'class' => 'accesshide']);
-            $inputinplace .= $input;
+            $inputinplace .= $input . $resetbutton;
             $questiontext = substr_replace($questiontext, $inputinplace,
                      strpos($questiontext, $placeholder), strlen($placeholder));
         }
@@ -118,7 +121,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         if (!$placeholder) {
             $result .= html_writer::start_tag('div', ['class' => 'ablock', 'id' => $inputname . '-label']);
             $result .= html_writer::tag('label', get_string('answercolon', 'qtype_numerical'), ['for' => $attributes['id']]);
-            $result .= html_writer::tag('div', $input, ['class' => 'answer']);
+            $result .= html_writer::tag('div', $input, ['class' => 'answer']) . $resetbutton;
             $result .= html_writer::end_tag('div');
         }
 
@@ -130,10 +133,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else if ($question->allowsubscript) {
                 $supsub = 'sub';
             }
-            $options = [
-                'supsub' => $supsub
-            ];
-            $editor->use_editor($attributes['id'], $options);
+            $editor->use_editor($attributes['id'], ['supsub' => $supsub]);
         }
 
         if ($qa->get_state() == question_state::$invalid) {
@@ -152,7 +152,43 @@ class qtype_pmatch_renderer extends qtype_renderer {
         return $result;
     }
 
+    /**
+     * Render a button to reset the response input to the template.
+     *
+     * @param qtype_pmatch_question $question the pmatch question
+     * @param question_display_options $options display options.
+     * @param string $resetbuttonid id to use for this reset button.
+     * @param string $inputname id for the input the button should affect.
+     * @return string HTML to output.
+     */
+    public function reset_button(
+        qtype_pmatch_question $question,
+        question_display_options $options,
+        string $resetbuttonid,
+        string $inputname,
+    ): string {
+        if ($options->readonly || !$question->responsetemplate) {
+            return '';
+        }
+
+        $this->page->requires->js_call_amd('qtype_pmatch/reset_button', 'initResetButton', [
+            $resetbuttonid,
+            $inputname,
+            $question->responsetemplate,
+        ]);
+
+        return html_writer::tag(
+            'button',
+            $options->add_question_identifier_to_label(get_string('reset', 'core'), true),
+            [
+                'id' => $resetbuttonid,
+                'class' => 'submit btn btn-secondary align-top'
+            ],
+        );
+    }
+
     public function specific_feedback(question_attempt $qa) {
+        /** @var qtype_pmatch_question $question */
         $question = $qa->get_question();
 
         $answer = $question->get_matching_answer(['answer' => $qa->get_last_qt_var('answer')]);

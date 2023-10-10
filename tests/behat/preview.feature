@@ -68,3 +68,10 @@ Feature: Preview a pattern match question
     And I should see "Listen, translate and write"
     When I press "Fill in correct responses"
     Then I should see "testing one two three four"
+
+  Scenario: Click on the reset button.
+    Given I am on the "Course 1" "core_question > course question bank" page logged in as teacher
+    When I am on the "My first pattern match question" "core_question > preview" page
+    And I set the field "Answer:" to "aicd"
+    And I click on "Reset" "button"
+    Then I should see "testing one wto there fuor"
