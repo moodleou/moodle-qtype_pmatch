@@ -68,9 +68,9 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
      * @return mixed
      */
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
-        $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), [
-                get_string('caseno', 'qtype_pmatch'),
-                get_string('caseyes', 'qtype_pmatch'),
+        $mform->addElement('select', $this->form_field_name('usecase'), get_string('casesensitive', 'qtype_pmatch'), [
+            get_string('caseno', 'qtype_pmatch'),
+            get_string('caseyes', 'qtype_pmatch'),
         ]);
 
         $supsubels = [];
@@ -81,11 +81,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->addGroup($supsubels, $this->form_field_name('supsubels'),
                 get_string('allowsubscript', 'qtype_pmatch'), '', false);
 
-        $mform->addElement('select', $this->form_field_name('usecase'), get_string('casesensitive', 'qtype_pmatch'), [
-                get_string('caseno', 'qtype_pmatch'),
-                get_string('caseyes', 'qtype_pmatch'),
-        ]);
-
         [$options, $disable] = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
         if ($disable) {
             $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
@@ -93,7 +88,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         } else {
             $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
-            $mform->setDefault('applydictionarycheck', get_string('iso6391', 'langconfig'));
+            $mform->setDefault($this->form_field_name('applydictionarycheck'), get_string('iso6391', 'langconfig'));
         }
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
