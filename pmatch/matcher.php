@@ -148,6 +148,12 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
 
     protected $subcontents = [];
 
+    /** @var pmatch_word_level_options */
+    protected $wordleveloptions;
+
+    /** @var pmatch_phrase_level_options */
+    protected $phraseleveloptions;
+
     /**
      *
      * Create a tree of matcher items.
@@ -663,9 +669,6 @@ class pmatch_matcher_number extends pmatch_matcher_item
 
 class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase {
-
-    /** @var pmatch_word_level_options */
-    private $wordleveloptions;
 
     /**
      * @param pmatch_word_level_options $wordleveloptions

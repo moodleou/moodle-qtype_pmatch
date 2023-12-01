@@ -18,6 +18,7 @@ namespace qtype_pmatch;
 
 use qtype_pmatch_question;
 use question_answer;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -1054,10 +1055,10 @@ class amati_rule_suggestion_test
         $comparesuggestedrules = $this->format_rules($comparesuggestedrules);
 
         // Load the question.
-        $this->currentquestion = $this->create_default_question();
+        $this->currentquestion = \qtype_pmatch_test_helper::get_pmatch_question_data_test0();
 
         // Set correct existing rules.
-        $this->currentquestion->options = new \stdClass();
+        $this->currentquestion->options = new stdClass();
         $this->currentquestion->options->answers = [];
         $this->currentquestion->options->answers[17] = new question_answer(17,
                 'match_all(match_w(Tom) match_w(harry))', 1.0, '', FORMAT_HTML);
@@ -1175,17 +1176,16 @@ class amati_rule_suggestion_test
     /**
      * Update the data for a pmatch question in the form returned by the edit question form, to set the answers.
      *
-     * @param qtype_pmatch_question $question
-     * @return qtype_pmatch_question
+     * @param stdClass $question
+     * @return stdClass
      */
-    protected function add_question_form_fields(qtype_pmatch_question $question): qtype_pmatch_question {
+    protected function add_question_form_fields(stdClass $question): stdClass {
         // Convert answers object to separate arrays.
-        $answers = $question->get_answers();
         $index = 0;
         $question->answer = [];
         $question->fraction = [];
         $question->feedback = [];
-        foreach ($answers as $answer) {
+        foreach ($question->options->answers as $answer) {
             $question->answer[$index] = $answer->answer;
             $question->fraction[$index] = $answer->fraction;
             $question->feedback[$index] = [

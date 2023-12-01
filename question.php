@@ -37,6 +37,20 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 class qtype_pmatch_question extends question_graded_by_strategy
         implements question_response_answer_comparer {
 
+    /** @var boolean whether answers should be graded case-sensitively. */
+    public $usecase;
+
+    /** @var string add more words to the dictionary. */
+    public $extenddictionary;
+
+    /** @var string not really used here, the value used is stored in the pmatch_options,
+     * but this gets set because of extra_question_fields() so we need to declare it. */
+    public $sentencedividers;
+
+    /** @var string not really used here, the value used is stored in the pmatch_options,
+     * but this gets set because of extra_question_fields() so we need to declare it. */
+    public $converttospace;
+
     /** @var boolean whether to allow students to use subscript. */
     public $allowsubscript;
 
@@ -60,6 +74,7 @@ class qtype_pmatch_question extends question_graded_by_strategy
 
     /** @var array of question_answer. */
     public $answers = [];
+
 
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
