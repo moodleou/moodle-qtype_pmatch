@@ -149,6 +149,7 @@ $string['spellcheckernull'] = 'No spell checking available';
 $string['spellcheckerpspell'] = 'Pspell spell-checking library';
 $string['spellcheckertype'] = 'Spell checking library';
 $string['spellcheckertype_desc'] = 'Which spell checking library to use. This should automatically be set to the correct value on install.';
+$string['spellcheckdisabled'] = 'Allowing use of sub- or superscript will disable spellchecking.';
 $string['setting_installed_spell_check_dictionaries'] = 'Spell check dictionaries';
 $string['setting_installed_spell_check_dictionaries_des'] = 'This setting controls which spell-check language options are displayed to question authors when they create or edit a question.';
 $string['apply_spellchecker_label'] = 'Do not check spelling of student';

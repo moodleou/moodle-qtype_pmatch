@@ -80,6 +80,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 get_string('allowsuperscript', 'qtype_pmatch'));
         $mform->addGroup($supsubels, $this->form_field_name('supsubels'),
                 get_string('allowsubscript', 'qtype_pmatch'), '', false);
+        $mform->addElement('static', 'spellcheckdescription', '', get_string('spellcheckdisabled', 'qtype_pmatch'));
 
         [$options, $disable] = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
         if ($disable) {
@@ -88,6 +89,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         } else {
             $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
+            $mform->disabledIf($this->form_field_name('applydictionarycheck'), $this->form_field_name('allowsubscript'),
+                'eq', true);
+            $mform->disabledIf($this->form_field_name('applydictionarycheck'), $this->form_field_name('allowsuperscript'),
+                'eq', true);
             $mform->setDefault($this->form_field_name('applydictionarycheck'), get_string('iso6391', 'langconfig'));
         }
 
@@ -96,6 +101,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->disabledIf($this->form_field_name('extenddictionary'),
                 $this->form_field_name('applydictionarycheck'),
                 'eq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+        $mform->disabledIf($this->form_field_name('extenddictionary'), $this->form_field_name('allowsubscript'),
+            'eq', true);
+        $mform->disabledIf($this->form_field_name('extenddictionary'), $this->form_field_name('allowsuperscript'),
+            'eq', true);
 
         $mform->addElement('text', $this->form_field_name('sentencedividers'), get_string('sentencedividers', 'qtype_pmatch'));
         $mform->setDefault($this->form_field_name('sentencedividers'), '.?!');

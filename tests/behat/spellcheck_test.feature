@@ -99,3 +99,11 @@ Feature: Test spelling check of a pmatch question
     And I set the field "Answer" to "Bonjour"
     And I press "Save"
     And I should not see "testing one wto there fuor"
+
+  Scenario: Spell checking disable when use sup-sub.
+    Given I am on the "My first pattern match question" "core_question > edit" page logged in as admin
+    And I expand all fieldsets
+    When I set the field "Allow use of subscript" to "Yes"
+    Then the "Spell checking" "field" should be disabled
+    And the "Add these words to dictionary" "field" should be disabled
+    And I should see "Allowing use of sub- or superscript will disable spellchecking."

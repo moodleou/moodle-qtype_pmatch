@@ -80,3 +80,12 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I press "Save"
     Then "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
     And "//textarea[@spellcheck='false']" "xpath" should exist
+
+  @javascript
+  Scenario: Spell checking disable when use sup-sub on combined pmatch.
+    Given I am on the "Combined 001" "core_question > edit" page logged in as teacher1
+    And I expand all fieldsets
+    When I set the field "Allow use of subscript" to "Yes"
+    Then the "Spell checking" "field" should be disabled
+    And the "Add these words to dictionary" "field" should be disabled
+    And I should see "Allowing use of sub- or superscript will disable spellchecking."

@@ -245,6 +245,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
         $mform->addGroup($supsubels, 'supsubels',
                 get_string('allowsubscript', 'qtype_pmatch'), '', false);
+        $mform->addElement('static', 'spellcheckdescription', '', get_string('spellcheckdisabled', 'qtype_pmatch'));
 
         $mform->addElement('select', 'forcelength', get_string('forcelength', 'qtype_pmatch'), [
                 get_string('forcelengthno', 'qtype_pmatch'),
@@ -258,6 +259,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $mform->addElement('select', 'applydictionarycheck',
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
         } else {
+            $mform->disabledIf('applydictionarycheck', 'allowsuperscript', 'eq', true);
+            $mform->disabledIf('applydictionarycheck', 'allowsubscript', 'eq', true);
             $mform->addElement('select', 'applydictionarycheck',
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
             $mform->setDefault('applydictionarycheck',
@@ -268,6 +271,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 get_string('extenddictionary', 'qtype_pmatch'), ['rows' => '5', 'cols' => '80']);
         $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq',
                 qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+        $mform->disabledIf('extenddictionary', 'allowsuperscript', 'eq', true);
+        $mform->disabledIf('extenddictionary', 'allowsubscript', 'eq', true);
 
         $mform->addElement('text', 'sentencedividers', get_string('sentencedividers', 'qtype_pmatch'), ['size' => 50]);
         $mform->addHelpButton('sentencedividers', 'sentencedividers', 'qtype_pmatch');

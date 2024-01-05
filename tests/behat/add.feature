@@ -47,7 +47,6 @@ Feature: Test creating a new Pattern Matching question
       | id_allowsubscript       | Yes                                                             |
       | id_allowsuperscript     | Yes                                                             |
       | id_forcelength          | warn that answer is too long and invite respondee to shorten it |
-      | id_applydictionarycheck | Do not check spelling of student                                |
       | id_sentencedividers     | ?!                                                              |
       | id_converttospace       | ;:                                                              |
     And I press "Cancel"
