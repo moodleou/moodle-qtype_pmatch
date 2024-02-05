@@ -36,8 +36,9 @@ class qtype_pmatch_renderer extends qtype_renderer {
             'name' => $inputname,
             'id' => $inputname,
             'aria-labelledby' => $inputname . '-label',
-            'spellcheck' => 'false'
         ];
+
+        $attributes = array_merge($attributes, $this->display_spellcheck($question));
 
         if ($options->readonly) {
             $attributes['readonly'] = 'readonly';
@@ -244,5 +245,20 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $html .= html_writer::alist($feebacklist);
         }
         return $html;
+    }
+
+    /**
+     * Check whether we want to display spell check
+     *
+     * @param qtype_pmatch_question $question object that contain question properties.
+     * @return array spell-check attribute.
+     */
+    public function display_spellcheck(qtype_pmatch_question $question): array {
+        $attribute['spellcheck'] = 'false';
+        if ($question->applydictionarycheck !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION) {
+            $attribute['spellcheck'] = 'true';
+            $attribute['lang'] = str_replace('_', '-', $question->applydictionarycheck);
+        }
+        return $attribute;
     }
 }

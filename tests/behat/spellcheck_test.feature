@@ -88,12 +88,16 @@ Feature: Test spelling check of a pmatch question
       | config       | value   | plugin       |
       | spellchecker | enchant | qtype_pmatch |
     When I am on the "English Spell Check pattern match question" "core_question > preview" page logged in as admin
+    And "//textarea[@spellcheck='true' and @lang='en-GB']" "xpath" should be visible
     And I set the field "Answer" to "Bonjour"
     And I press "Save"
     Then I should see "The following words are not in our dictionary: Bonjour. Please correct your spelling."
 
-  Scenario: Spell checking disable with pre-fill answer text.
-    When I am on the "My first pattern match question" "core_question > preview" page logged in as admin
+  Scenario: Spell check disable
+    Given the following "questions" exist:
+      | questioncategory | qtype  | name                                                | template | applydictionarycheck |
+      | Test questions   | pmatch | My first pattern match question without spell check | listen   | -                    |
+    When I am on the "My first pattern match question without spell check" "core_question > preview" page logged in as admin
     Then "//textarea[@spellcheck='false']" "xpath" should be visible
     And I should see "testing one wto there fuor"
     And I set the field "Answer" to "Bonjour"

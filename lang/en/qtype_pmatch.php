@@ -114,7 +114,9 @@ $string['pluginnamesummary'] = 'Allows a short response of one or a few sentence
 $string['precedes'] = 'Precedes';
 $string['precedesclosely'] = 'Closely precedes';
 $string['prefillanswertext'] = 'Pre-filled answer text';
-$string['prefillanswertext_help'] = 'Use this box to add in any text you want to appear in the answer text for the student to complete, adapt, or correct. You can include (and are limited to) `<sub>` and `<sup>` hypertext mark-up language (HTML) tags.';
+$string['prefillanswertext_help'] = 'Use this box to add in any text you want to appear in the answer text for the student to complete, adapt, or correct. You can include (and are limited to) `<sub>` and `<sup>` hypertext mark-up language (HTML) tags.
+
+If you are using this setting, you may wish to disable spell-checking.';
 $string['privacy:metadata'] = 'Pattern match question type plugin allows question authors to set default options as user preferences.';
 $string['privacy:preference:testquestion_pagesize'] = 'Number of pattern match question attempts to show per page.';
 $string['privacy:preference:defaultmark'] = 'The default mark set for a given question.';

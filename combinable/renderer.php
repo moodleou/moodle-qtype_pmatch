@@ -59,9 +59,10 @@ class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_
         return $currentanswer;
     }
 
-    protected function get_extra_input_attributes(): array {
-        $extra = parent::get_extra_input_attributes();
-        $extra['spellcheck'] = 'false';
-        return $extra;
+    protected function get_extra_input_attributes(question_graded_automatically $question): array {
+        $extra = parent::get_extra_input_attributes($question);
+        /** @var qtype_pmatch_renderer $pmatchrenderer */
+        $pmatchrenderer = $this->page->get_renderer('qtype_pmatch');
+        return array_merge($extra, $pmatchrenderer->display_spellcheck($question));
     }
 }

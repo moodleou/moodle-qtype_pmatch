@@ -23,6 +23,7 @@
  */
 
 namespace qtype_pmatch;
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -233,7 +234,12 @@ class form_utils {
             $question->allowsubscript = $question->options->allowsubscript;
             $question->allowsuperscript = $question->options->allowsuperscript;
             $question->forcelength = $question->options->forcelength;
-            $question->applydictionarycheck = $question->options->applydictionarycheck;
+            // These options are incompatible, so of sup or sub is set, unset applydictionarycheck before showing the form.
+            if ($question->allowsubscript || $question->allowsuperscript) {
+                $question->applydictionarycheck = qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
+            } else {
+                $question->applydictionarycheck = $question->options->applydictionarycheck;
+            }
             $question->extenddictionary = $question->options->extenddictionary;
             $question->sentencedividers = $question->options->sentencedividers;
             $question->converttospace = $question->options->converttospace;
@@ -286,5 +292,6 @@ class form_utils {
         $PAGE->requires->string_for_js('rulecreationtoomanyterms', 'qtype_pmatch');
         $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');
         $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
+        $PAGE->requires->js_call_amd('qtype_pmatch/formchanged', 'init', ['']);
     }
 }

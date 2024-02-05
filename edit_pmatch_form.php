@@ -247,10 +247,16 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $supsubels[] = $mform->createElement('selectyesno', 'allowsubscript',
                 get_string('allowsubscript', 'qtype_pmatch'));
         $mform->setDefault('allowsubscript', $this->get_default_value('allowsubscript', false));
+        // Add hidden sub field so that we can retain the selected value when the field is disabled.
+        $mform->addElement('hidden', 'allowsubscriptselectedvalue', '');
+        $mform->setType('allowsubscriptselectedvalue', PARAM_BOOL);
 
         $supsubels[] = $mform->createElement('selectyesno', 'allowsuperscript',
                 get_string('allowsuperscript', 'qtype_pmatch'));
         $mform->setDefault('allowsuperscript', $this->get_default_value('allowsuperscript', false));
+        // Add hidden sup field so that we can retain the selected value when the field is disabled.
+        $mform->addElement('hidden', 'allowsuperscriptselectedvalue', '');
+        $mform->setType('allowsuperscriptselectedvalue', PARAM_BOOL);
 
         $mform->addGroup($supsubels, 'supsubels',
                 get_string('allowsubscript', 'qtype_pmatch'), '', false);
@@ -268,12 +274,18 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $mform->addElement('select', 'applydictionarycheck',
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
         } else {
-            $mform->disabledIf('applydictionarycheck', 'allowsuperscript', 'eq', true);
-            $mform->disabledIf('applydictionarycheck', 'allowsubscript', 'eq', true);
             $mform->addElement('select', 'applydictionarycheck',
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
             $mform->setDefault('applydictionarycheck',
                     $this->get_default_value('applydictionarycheck', get_string('iso6391', 'langconfig')));
+            // Add hidden spell-check field so that we can retain the selected value when the field is disabled.
+            $mform->addElement('hidden', 'applydictionarycheckselectedvalue', '');
+            $mform->setType('applydictionarycheckselectedvalue', PARAM_ALPHAEXT);
+
+            $mform->disabledIf('applydictionarycheck', 'allowsuperscript', 'eq', true);
+            $mform->disabledIf('applydictionarycheck', 'allowsubscript', 'eq', true);
+            $mform->disabledIf('allowsuperscript', 'applydictionarycheck', 'neq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            $mform->disabledIf('allowsubscript', 'applydictionarycheck', 'neq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
         }
 
         $mform->addElement('textarea', 'extenddictionary',
@@ -547,7 +559,7 @@ EOT;
         }
 
         $errors += $this->place_holder_errors($data['questiontext']['text'],
-                                              $data['allowsubscript'] || $data['allowsuperscript']);
+                                             ($data['allowsubscript'] ?? false) || ($data['allowsuperscript'] ?? false));
         return $errors;
     }
 

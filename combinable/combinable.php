@@ -80,6 +80,14 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 get_string('allowsuperscript', 'qtype_pmatch'));
         $mform->addGroup($supsubels, $this->form_field_name('supsubels'),
                 get_string('allowsubscript', 'qtype_pmatch'), '', false);
+
+        // Add hidden sup field so that we can retain the value when the field is disabled.
+        $mform->addElement('hidden', $this->form_field_name('allowsuperscriptselectedvalue'), '');
+        $mform->setType($this->form_field_name('allowsuperscriptselectedvalue'), PARAM_BOOL);
+        // Add hidden sub field so that we can retain the value when the field is disabled.
+        $mform->addElement('hidden', $this->form_field_name('allowsubscriptselectedvalue'), '');
+        $mform->setType($this->form_field_name('allowsubscriptselectedvalue'), PARAM_BOOL);
+
         $mform->addElement('static', 'spellcheckdescription', '', get_string('spellcheckdisabled', 'qtype_pmatch'));
 
         [$options, $disable] = qtype_pmatch_spell_checker::get_spell_checker_language_options($this->questionrec);
@@ -89,11 +97,18 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         } else {
             $mform->addElement('select', $this->form_field_name('applydictionarycheck'),
                     get_string('applydictionarycheck', 'qtype_pmatch'), $options);
+            $mform->setDefault($this->form_field_name('applydictionarycheck'), get_string('iso6391', 'langconfig'));
+            $mform->addElement('hidden', $this->form_field_name('applydictionarycheckselectedvalue'), '');
+            $mform->setType($this->form_field_name('applydictionarycheckselectedvalue'), PARAM_ALPHAEXT);
+
             $mform->disabledIf($this->form_field_name('applydictionarycheck'), $this->form_field_name('allowsubscript'),
                 'eq', true);
             $mform->disabledIf($this->form_field_name('applydictionarycheck'), $this->form_field_name('allowsuperscript'),
                 'eq', true);
-            $mform->setDefault($this->form_field_name('applydictionarycheck'), get_string('iso6391', 'langconfig'));
+            $mform->disabledIf($this->form_field_name('allowsuperscript'),
+                $this->form_field_name('applydictionarycheck'), 'neq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            $mform->disabledIf($this->form_field_name('allowsubscript'),
+                $this->form_field_name('applydictionarycheck'), 'neq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
         }
 
         $mform->addElement('textarea', $this->form_field_name('extenddictionary'), get_string('extenddictionary', 'qtype_pmatch'),
@@ -144,7 +159,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         }
 
         $data = parent::data_to_form($context, $fileoptions) + $answers;
-
+        // These options are incompatible, so of sup or sub is set, unset applydictionarycheck before showing the form.
+        if ($data['allowsubscript'] || $data['allowsuperscript']) {
+            $data['applydictionarycheck'] = qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
+        }
         if (isset($this->questionrec)) {
             // Convert synonyms from record into synonymsdata for form fields.
             $data['synonymsdata'] = array_values($this->questionrec->options->synonyms);
@@ -215,5 +233,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
     public function js_call(): void {
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
+        $PAGE->requires->js_call_amd('qtype_pmatch/formchanged', 'init', [$this->form_field_name_prefix()]);
     }
 }

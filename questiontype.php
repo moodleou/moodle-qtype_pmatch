@@ -24,6 +24,7 @@
 
 use qtype_pmatch\testquestion_response;
 use qtype_pmatch\testquestion_responses;
+use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -83,8 +84,8 @@ class qtype_pmatch extends question_type {
     public function save_defaults_for_new_questions(stdClass $fromform): void {
         parent::save_defaults_for_new_questions($fromform);
         $this->set_default_value('usecase', $fromform->usecase);
-        $this->set_default_value('allowsubscript', $fromform->allowsubscript);
-        $this->set_default_value('allowsuperscript', $fromform->allowsuperscript);
+        $this->set_default_value('allowsubscript', $fromform->allowsubscript ?? 0);
+        $this->set_default_value('allowsuperscript', $fromform->allowsuperscript ?? 0);
         $this->set_default_value('forcelength', $fromform->forcelength);
         if (isset($fromform->applydictionarycheck)) {
             $this->set_default_value('applydictionarycheck', $fromform->applydictionarycheck);
@@ -139,10 +140,24 @@ class qtype_pmatch extends question_type {
         foreach ($oldsynonyms as $oldsynonym) {
             $DB->delete_records('qtype_pmatch_synonyms', ['id' => $oldsynonym->id]);
         }
-
+        // The allowsubscriptselectedvalue/allowsuperscriptselectedvalue can be NULL.
+        // And they only existing when user change the select value of allowsubscript/allowsuperscript
+        // These options are incompatible, so of sup or sub is set, unset applydictionarycheck before saving to the database.
+        if (!empty($fromform->allowsubscriptselectedvalue) || !empty($fromform->allowsuperscriptselectedvalue)) {
+            $fromform->applydictionarycheck = qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
+        }
+        // The applydictionarycheckselectedvalue can be NULL.
+        // And it only existing when user change the select value of applydictionarycheck.
+        // These options are incompatible, applydictionarycheckselectedvalue is set.
+        // Unset allowsubscript/allowsuperscript before saving to the database.
+        if (!empty($fromform->applydictionarycheckselectedvalue) &&
+            ($fromform->applydictionarycheckselectedvalue !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION)) {
+            $fromform->allowsubscript = $fromform->allowsuperscript = 0;
+        }
         if (!isset($fromform->extenddictionary)) {
             $fromform->extenddictionary = '';
         }
+
         $parentresult = parent::save_question_options($fromform);
 
         if ($parentresult !== null) {

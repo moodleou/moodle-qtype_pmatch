@@ -28,23 +28,23 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
     And "More help" "link" should exist
     And I set the following fields to these values:
-      | id_subqpmatch1defaultmark      | 50%                                     |
-      | Spell checking                 | Do not check spelling of student        |
-      | Answer must match              | match_mw (ethanoic acid)                |
-      | Pre-filled answer text         | ethaic aicd                             |
-      | id_subqpmatch1generalfeedback  | You have the incorrect IUPAC name.      |
-      | id_subqpmatch2defaultmark      | 25%                                     |
-      | Spell checking                 | Do not check spelling of student        |
-      | id_subqpmatch2answer_0         | match_m (10)                            |
-      | id_subqpmatch2responsetemplate | 5                                       |
-      | id_subqpmatch2generalfeedback  | You have the incorrect IUPAC name.      |
-      | id_subqpmatch2allowsubscript   | Yes                                     |
-      | id_subqpmatch2allowsuperscript | Yes                                     |
-      | id_subqpmatch2modelanswer      | 10                                      |
-      | id_subqnumeric3defaultmark     | 25%                                     |
-      | id_subqnumeric3answer_0        | 2.88                                    |
-      | Scientific notation            | No                                      |
-      | id_subqnumeric3generalfeedback | You have the incorrect value for the pH |
+      | id_subqpmatch1defaultmark          | 50%                                     |
+      | Spell checking                     | Do not check spelling of student        |
+      | Answer must match                  | match_mw (ethanoic acid)                |
+      | Pre-filled answer text             | ethaic aicd                             |
+      | id_subqpmatch1generalfeedback      | You have the incorrect IUPAC name.      |
+      | id_subqpmatch2defaultmark          | 25%                                     |
+      | id_subqpmatch2applydictionarycheck | Do not check spelling of student        |
+      | id_subqpmatch2answer_0             | match_m (10)                            |
+      | id_subqpmatch2responsetemplate     | 5                                       |
+      | id_subqpmatch2generalfeedback      | You have the incorrect IUPAC name.      |
+      | id_subqpmatch2allowsubscript       | Yes                                     |
+      | id_subqpmatch2allowsuperscript     | Yes                                     |
+      | id_subqpmatch2modelanswer          | 10                                      |
+      | id_subqnumeric3defaultmark         | 25%                                     |
+      | id_subqnumeric3answer_0            | 2.88                                    |
+      | Scientific notation                | No                                      |
+      | id_subqnumeric3generalfeedback     | You have the incorrect value for the pH |
     And I press "id_submitbutton"
     And I should see "You must provide a possible response to this question, which would be graded 100% correct."
     And I set the following fields to these values:
@@ -76,7 +76,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     Then I should not see "New test response"
 
   @javascript
-  Scenario: Spell checking is disable when user input identical to pre-fill answer.
+  Scenario: Spell checking is disable
     Given "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
     And "//textarea[@spellcheck='false']" "xpath" should exist
     When I set the field "Answer 3" to "2.55"

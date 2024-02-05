@@ -44,12 +44,12 @@ Feature: Test creating a new Pattern Matching question
     And I set the field "item_qtype_pmatch" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
     Then the following fields match these values:
-      | id_usecase              | Yes, case must match                                            |
-      | id_allowsubscript       | Yes                                                             |
-      | id_allowsuperscript     | Yes                                                             |
-      | id_forcelength          | warn that answer is too long and invite respondee to shorten it |
-      | id_sentencedividers     | ?!                                                              |
-      | id_converttospace       | ;:                                                              |
+      | id_usecase          | Yes, case must match                                            |
+      | id_allowsubscript   | No                                                              |
+      | id_allowsuperscript | No                                                              |
+      | id_forcelength      | warn that answer is too long and invite respondee to shorten it |
+      | id_sentencedividers | ?!                                                              |
+      | id_converttospace   | ;:                                                              |
     And I press "Cancel"
 
   @javascript
