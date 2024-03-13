@@ -71,7 +71,7 @@ Feature: Test editing a pattern match question
   Scenario: Validation of the model answer
     When I am on the "Frog but not toad" "core_question > edit" page logged in as teacher
     And I should see "Editing a Pattern match question"
-    And I click on "Expand all" "link"
+    And I click on "Expand all" "link" in the "region-main" "region"
     And I set the following fields to these values:
       | id_modelanswer | I saw a toad which was bigger than a frog |
     And I press "id_submitbutton"
