@@ -49,7 +49,7 @@ Feature: Preview a pattern match question
       | How questions behave | Interactive with multiple tries |
       | Marked out of        | 3                               |
       | Marks                | Show mark and max               |
-    And I press "Start again with these options"
+    And I press "id_saverestart"
     Then I should see "Listen, translate and write"
     And the state of "Listen, translate and write" question is shown as "Tries remaining: 3"
     And I set the field "Answer:" to "testing"
