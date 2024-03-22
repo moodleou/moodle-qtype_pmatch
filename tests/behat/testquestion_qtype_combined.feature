@@ -4,7 +4,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
   Create and preview combined (Combined) Pattern Match question type.
 
   Background:
-    Given I check the "combined" question type already installed
+    Given the qtype_combined plugin is installed
     And the following "users" exist:
       | username | firstname | lastname | email               |
       | teacher1 | T1        | Teacher1 | teacher1@moodle.com |

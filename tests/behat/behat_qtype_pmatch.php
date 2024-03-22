@@ -165,17 +165,4 @@ class behat_qtype_pmatch extends behat_base {
         $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($defaultlanguage, $availablelangs);
         set_config('spellcheck_languages', $matched, 'qtype_pmatch');
     }
-
-    /**
-     * Check that the given Question type already installed.
-     *
-     * @Given /^I check the "(?P<question_type_string>(?:[^"]|\\")*)" question type already installed$/
-     */
-    public function check_question_type_installed($questiontype) {
-        $qtypes = question_bank::get_creatable_qtypes();
-        if (!array_key_exists($questiontype, $qtypes)) {
-            // Question type not available.
-            throw new \Moodle\BehatExtension\Exception\SkippedException();
-        }
-    }
 }
