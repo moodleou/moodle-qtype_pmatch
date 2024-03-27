@@ -114,9 +114,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->setDefault($this->form_field_name('converttospace'), ',;:');
         $mform->setType($this->form_field_name('converttospace'), PARAM_RAW_TRIMMED);
 
-        $mform->addElement('text', $this->form_field_name('modelanswer'), get_string('modelanswer', 'qtype_pmatch'));
-        $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
-
         $mform->addElement('text', $this->form_field_name('responsetemplate'), get_string('prefillanswertext', 'qtype_pmatch'));
         $mform->addHelpButton($this->form_field_name('responsetemplate'), 'prefillanswertext', 'qtype_pmatch');
         $mform->setType($this->form_field_name('responsetemplate'), PARAM_RAW_TRIMMED);
@@ -124,6 +121,11 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         form_utils::add_synonyms($combinedform, $mform, $this->questionrec, false,
                 $this->form_field_name('synonymsdata'), 1, 0);
         $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
+
+        $mform->addElement('text', $this->form_field_name('modelanswer'), get_string('modelanswer', 'qtype_pmatch'));
+        $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
+        $mform->addRule($this->form_field_name('modelanswer'), get_string('modelanswermissing', 'qtype_pmatch'),
+            'required');
 
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answermustmatch', 'qtype_pmatch'),
                                                              ['rows' => '6', 'cols' => '57', 'class' => 'textareamonospace']);

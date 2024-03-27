@@ -99,6 +99,16 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
                 ["id" => 'testquestion_gradesummary']);
         }
+
+        // Add Model Answer field to the answers section.
+        $answermodel = $mform->createElement('text', 'modelanswer', get_string('modelanswer', 'qtype_pmatch'),
+            'size="50"');
+        $mform->insertElementBefore($answermodel, 'topborder[0]');
+        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
+        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
+        $mform->addRule('modelanswer', get_string('modelanswermissing', 'qtype_pmatch'),
+            'required', null, 'client');
+
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
             get_string('correctanswers', 'qtype_pmatch'),
             get_string('filloutoneanswer', 'qtype_pmatch') . $results);
@@ -283,11 +293,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->addHelpButton('converttospace', 'converttospace', 'qtype_pmatch');
         $mform->setDefault('converttospace', $this->get_default_value('converttospace', ',;:'));
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
-
-        $mform->addElement('text', 'modelanswer',
-                get_string('modelanswer', 'qtype_pmatch'), ['size' => 50]);
-        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
-        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
 
         $mform->addElement('text', 'responsetemplate',
             get_string('prefillanswertext', 'qtype_pmatch'), ['size' => 50]);

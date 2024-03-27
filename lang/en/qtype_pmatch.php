@@ -98,6 +98,7 @@ $string['minresponses_desc'] = 'Minimum number of marked responses that should b
 $string['modelanswer'] = 'Model answer';
 $string['modelanswer_help'] = 'Give one possible answer to this question that would be graded correct.';
 $string['modelanswererror'] = '\'<strong>{$a}</strong>\' is not a correct answer to this question.';
+$string['modelanswermissing'] = 'You must provide a possible response to this question, which would be graded 100% correct.';
 $string['nomatchingsynonymforword'] = 'No synonyms entered for word. Delete the word or enter synonym(s) for it.';
 $string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
 $string['nomatchingwordforsynonym'] = 'You have not entered a word that the synonym is equivalent too. Delete the synonym(s) or enter an equivalent word for it.';

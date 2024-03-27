@@ -30,6 +30,7 @@ Feature: Test backup restore of pattern match question
       | id_synonymsdata_0_word     | any                                                             |
       | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                                |
       | Answer 1 must match        | match (testing one two three four)                              |
+      | Model answer               | testing one two three four                                                             |
       | id_fraction_0              | 100%                                                            |
       | id_feedback_0              | Well done!                                                      |
       | id_otherfeedback           | Sorry, no.                                                      |

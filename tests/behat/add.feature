@@ -34,6 +34,7 @@ Feature: Test creating a new Pattern Matching question
       | Answer 1 must match        | match (testing one two three four)                              |
       | id_fraction_0              | 100%                                                            |
       | id_feedback_0              | Well done!                                                      |
+      | Model answer               | testing one two three four                                      |
       | id_otherfeedback           | Sorry, no.                                                      |
       | Hint 1                     | Please try again.                                               |
       | Hint 2                     | Use a calculator if necessary.                                  |

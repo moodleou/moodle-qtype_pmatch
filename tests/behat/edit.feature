@@ -40,6 +40,7 @@ Feature: Test editing a pattern match question
       | id_synonymsdata_0_word     | any                                                             |
       | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                                |
       | Answer 1 must match        | match (testing one two three four)                              |
+      | Model answer               | testing one two three four                                      |
       | id_fraction_0              | 100%                                                            |
       | id_feedback_0              | Well done!                                                      |
       | id_otherfeedback           | Sorry, no.                                                      |
@@ -56,6 +57,7 @@ Feature: Test editing a pattern match question
       | id_synonymsdata_0_word     | any                                |
       | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"   |
       | Answer 1 must match        | match (testing one two three four) |
+      | Model answer               | testing one two three four         |
       | id_fraction_0              | 100%                               |
       | id_feedback_0              | Well done!                         |
       | id_otherfeedback           | Sorry, no.                         |
@@ -63,6 +65,10 @@ Feature: Test editing a pattern match question
       | Hint 2                     | Use a calculator if necessary.     |
     And I set the following fields to these values:
       | Question name | Edited question name |
+      | Model answer  |                      |
+    And I should see "You must provide a possible response to this question, which would be graded 100% correct."
+    And I set the following fields to these values:
+      | Model answer  | testing one two three four |
     And I should not see "Overall grading accuracy"
     And I press "id_submitbutton"
     And I should see "Edited question name"
@@ -77,7 +83,7 @@ Feature: Test editing a pattern match question
     And I press "id_submitbutton"
     Then I should see "'I saw a toad which was bigger than a frog' is not a correct answer to this question."
     And I set the following fields to these values:
-      | id_modelanswer |  |
+      | id_modelanswer | frog |
     # Should save with no validation error.
     And I press "id_submitbutton"
     And "Frog but not toad" "table_row" in the "categoryquestions" "table" should be visible
@@ -153,6 +159,7 @@ Feature: Test editing a pattern match question
       | Answer 3 must match | match (CO)                             |
       | id_fraction_2       | None                                   |
       | id_otherfeedback    | Sorry, no.                             |
+      | Model answer        | CCOO                                   |
     Then I should see "My first pattern match editor question"
     And I am on the "My first pattern match editor question" "core_question > preview" page
     And I click on "Test this question" "link"
