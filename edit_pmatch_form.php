@@ -42,7 +42,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected $otheranswer = null;
 
     /**
-     * @var string[] place holder for suggested rules.
+     * @var string[] placeholder for suggested rules.
      */
     protected $suggestedrules = null;
 
@@ -60,11 +60,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
         parent::__construct($submiturl, $question, $category, $contexts, $formeditable = true);
     }
 
-    /**
-     * Add question-type specific form fields.
-     *
-     * @param MoodleQuickForm $mform the form being built.
-     */
     protected function definition_inner($mform) {
         $this->general_answer_fields($mform);
         form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
@@ -79,8 +74,8 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
             $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
 
-        // Nasty hack. The auto suggest answers button is a no submit button so it doesn't
-        // appear in the normal form flow. Though it is in the $_FORM object so we access it
+        // Nasty hack. The auto suggest answers button is a no submit button, so it doesn't
+        // appear in the normal form flow. Though it is in the $_FORM object, so we access it
         // there to see if rules need to be suggested.
         $suggestrules = optional_param('answersuggestbutton', '', PARAM_TEXT);
         if ($suggestrules && $suggestrules !== '') {
@@ -88,8 +83,22 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
 
         parent::add_per_answer_fields($mform, $label, $gradeoptions);
-        $results = '';
 
+        // The 'Answers' section heading is added in parent::add_per_answer_fields, so to
+        // add fields at the top of that secion, we need to add them here, above the
+        // first field in the section (which is 'topborder[0]').
+
+        // Add Model answer field.
+        $answermodel = $mform->createElement('text', 'modelanswer', get_string('modelanswer', 'qtype_pmatch'),
+            'size="50"');
+        $mform->insertElementBefore($answermodel, 'topborder[0]');
+        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
+        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
+        $mform->addRule('modelanswer', get_string('modelanswermissing', 'qtype_pmatch'),
+            'required', null, 'client');
+
+        // Prepare grading accuracy info to add to the static text.
+        $results = '';
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->question);
             $results = html_writer::tag('p',
@@ -100,15 +109,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 ["id" => 'testquestion_gradesummary']);
         }
 
-        // Add Model Answer field to the answers section.
-        $answermodel = $mform->createElement('text', 'modelanswer', get_string('modelanswer', 'qtype_pmatch'),
-            'size="50"');
-        $mform->insertElementBefore($answermodel, 'topborder[0]');
-        $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
-        $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
-        $mform->addRule('modelanswer', get_string('modelanswermissing', 'qtype_pmatch'),
-            'required', null, 'client');
-
+        // Add instructions.
         $answersinstruct = $mform->createElement('static', 'answersinstruct',
             get_string('correctanswers', 'qtype_pmatch'),
             get_string('filloutoneanswer', 'qtype_pmatch') . $results);
@@ -206,12 +207,10 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
     }
 
-    /**
-     * Language string to use for 'Add {no} more {whatever we call answers}'.
-     */
     protected function get_more_choices_string() {
         return get_string('addmoreanswerblanks', 'qtype_pmatch');
     }
+
     /**
      * Add answer options for any other (wrong) answer.
      *
@@ -300,16 +299,6 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->setType('responsetemplate', PARAM_RAW_TRIMMED);
     }
 
-    /**
-     * Get the list of form elements to repeat, one for each answer.
-     * @param object $mform the form being built.
-     * @param string $label the label to use for each option.
-     * @param array $gradeoptions the possible grades for each answer.
-     * @param array $repeatedoptions reference to array of repeated options to fill
-     * @param string $answersoption reference to return the name of $question->options
-     *                       field holding an array of answers
-     * @return array of form fields.
-     */
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                                             &$repeatedoptions, &$answersoption) {
         $repeated = [];
@@ -352,6 +341,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     /**
      * Gets the rule creation assistant link.
+     *
      * @return string
      */
     protected function get_rc_title() {
@@ -363,6 +353,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
     /**
      * Gets the rule creation assistant content.
      * This could be added as a template at a later stage.
+     *
      * @return string
      */
     protected function get_rc_content() {
@@ -428,7 +419,7 @@ EOT;
 
     /*
      * Adds the rule suggestion fields to the form
-     * @param object $mform
+     * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_rule_suggestion_fields($mform) {
         $feedback = '';
@@ -451,7 +442,8 @@ EOT;
 
     /**
      * Retrieves suggested answers processes them and appends to the existing question answers.
-     * @param object $fromform form contents
+     *
+     * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_suggested_answers($mform) {
         try {
@@ -460,7 +452,7 @@ EOT;
             $this->suggestedrules = $suggestedrules;
 
             // Formslib.php::repeat_elements checks the submitted form to
-            // establish the number of answer fields required. To accomdate the suggested
+            // establish the number of answer fields required. To accommodate the suggested
             // rules we just added we must override this form parameter with the new
             // number of answers.
             $_POST['noanswers'] = count($this->question->options->answers);
