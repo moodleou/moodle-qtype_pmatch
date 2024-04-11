@@ -92,3 +92,20 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     Then the "Spell checking" "field" should be disabled
     And the "Add these words to dictionary" "field" should be disabled
     And I should see "Allowing use of sub- or superscript will disable spellchecking."
+
+  @javascript
+  Scenario: Edit combine pmatch question and check the placeholder.
+    Given I am on the "Combined 001" "core_question > edit" page logged in as teacher1
+    When I expand all fieldsets
+    And I should see "Appropriate input size:"
+    And the following fields match these values:
+      | subq:pmatch:1:placeholder | __15__ |
+    And I set the following fields to these values:
+      | Question name             | Edited question name |
+      | id_subqpmatch1modelanswer |                      |
+    Then the following fields match these values:
+      | subq:pmatch:1:placeholder | __6__ |
+    And I set the following fields to these values:
+      | id_subqpmatch1modelanswer | testing one two three four |
+    And the following fields match these values:
+      | subq:pmatch:1:placeholder | __28__ |

@@ -67,8 +67,16 @@ Feature: Test editing a pattern match question
       | Question name | Edited question name |
       | Model answer  |                      |
     And I should see "You must provide a possible response to this question, which would be graded 100% correct."
+    And the following fields match these values:
+      | possibleanswerplaceholder-0 | ______  |
+      | possibleanswerplaceholder-1 | __6__   |
+      | possibleanswerplaceholder-2 | __6x2__ |
     And I set the following fields to these values:
       | Model answer  | testing one two three four |
+    And the following fields match these values:
+      | possibleanswerplaceholder-0 | ____________________________ |
+      | possibleanswerplaceholder-1 | __28__                       |
+      | possibleanswerplaceholder-2 | __28x2__                     |
     And I should not see "Overall grading accuracy"
     And I press "id_submitbutton"
     And I should see "Edited question name"

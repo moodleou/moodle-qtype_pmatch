@@ -26,6 +26,8 @@
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
+define('QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE', '__6__');
+
 use qtype_pmatch\form_utils;
 
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
@@ -55,6 +57,10 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
             'responsetemplate' => '',
             'synonymsdata' => []
         ];
+    }
+
+    protected function third_param_for_default_question_text() {
+        return QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE;
     }
 }
 
@@ -137,7 +143,24 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 $this->form_field_name('synonymsdata'), 1, 0);
         $mform->setType($this->form_field_name('synonymsdata'), PARAM_RAW_TRIMMED);
 
-        $mform->addElement('text', $this->form_field_name('modelanswer'), get_string('modelanswer', 'qtype_pmatch'));
+        $modalanswer = [];
+        $modalanswer[] = $mform->createElement('text', $this->form_field_name('modelanswer'), null);
+        $modalanswer[] = $mform->createElement('static', 'appropriately-size-placeholder', '',
+            get_string('modelanswer_appropriateinputsize', 'qtype_pmatch'));
+        $htmlplaceholder = html_writer::empty_tag('input', [
+            'type' => 'text',
+            'readonly' => 'readonly',
+            'size' => '22',
+            'name' => $this->form_field_name('placeholder'),
+            'id' => $this->form_field_name('placeholder'),
+            'value' => QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE,
+            'onfocus' => 'this.select()',
+            'class' => 'form-control-plaintext d-inline-block w-auto mr-3',
+        ]);
+        $modalanswer[] = $mform->createElement('static', 'possible-answer-placeholder',
+            get_string('modelanswer_possibleanswerplaceholders', 'qtype_pmatch'), $htmlplaceholder);
+        $mform->addGroup($modalanswer, $this->form_field_name('modelanswer'),
+            get_string('modelanswer', 'qtype_pmatch'), '', false);
         $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
         $mform->addRule($this->form_field_name('modelanswer'), get_string('modelanswermissing', 'qtype_pmatch'),
             'required');
@@ -234,5 +257,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');
         $PAGE->requires->js_call_amd('qtype_pmatch/formchanged', 'init', [$this->form_field_name_prefix()]);
+        $PAGE->requires->js_call_amd('qtype_pmatch/populate_placeholder', 'init' , [$this->form_field_name_prefix()]);
     }
 }

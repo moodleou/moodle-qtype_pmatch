@@ -293,5 +293,6 @@ class form_utils {
         $PAGE->requires->string_for_js('rulecreationtoomanyors', 'qtype_pmatch');
         $PAGE->requires->js_call_amd('qtype_pmatch/tryrule', 'init');
         $PAGE->requires->js_call_amd('qtype_pmatch/formchanged', 'init', ['']);
+        $PAGE->requires->js_call_amd('qtype_pmatch/populate_placeholder', 'init', ['']);
     }
 }

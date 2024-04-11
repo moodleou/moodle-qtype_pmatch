@@ -62,6 +62,19 @@ class qtype_pmatch_edit_form extends question_edit_form {
 
     protected function definition_inner($mform) {
         $this->general_answer_fields($mform);
+        $standardplaceholders = $this->get_possible_answer_placeholders(6);
+        $placeholders = array_map(
+            function($key, $placeholder) {
+                return html_writer::empty_tag('input', ['type' => 'text', 'readonly' => 'readonly', 'size' => '22',
+                    'value' => $placeholder, 'onfocus' => 'this.select()',
+                    'class' => 'form-control-plaintext d-inline-block w-auto mr-3',
+                    'name' => 'placeholder',
+                    'id' => 'possibleanswerplaceholder-' . $key]);
+            }, array_keys($standardplaceholders), $standardplaceholders);
+        $possibleanswerplaceholders = $mform->createElement('static', 'possibleanswerplaceholder',
+            get_string('modelanswer_possibleanswerplaceholders', 'qtype_pmatch'), implode("\n", $placeholders));
+        $mform->insertElementBefore($possibleanswerplaceholders, 'status');
+
         form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
 
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
@@ -69,6 +82,25 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $this->_form->setDefault('answer', [0 => 'match ()']);
 
         $this->add_interactive_settings();
+    }
+
+    /**
+     * Generates an array of standard placeholders based on the specified number.
+     * Example: get_possible_answer_placeholders(6).
+     * Output: ['______', '__6__', '__6x2__'].
+     *
+     * @param int $number The number of placeholders to add.
+     * @return array The array of placeholders.
+     */
+    protected function get_possible_answer_placeholders(int $number): array {
+        $codes = [];
+        // Create a default set of placeholders.
+        $codes[] = [str_repeat("_", $number), "__" . $number ."__", "__" . $number . "x2__"];
+        foreach ($codes as $value) {
+            $output = $value;
+        }
+
+        return $output;
     }
 
     protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
