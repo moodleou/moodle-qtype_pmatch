@@ -164,6 +164,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $mform->setType($this->form_field_name('modelanswer'), PARAM_RAW_TRIMMED);
         $mform->addRule($this->form_field_name('modelanswer'), get_string('modelanswermissing', 'qtype_pmatch'),
             'required');
+        $mform->addHelpButton($this->form_field_name('modelanswer'), 'modelanswer', 'qtype_pmatch');
 
         $mform->addElement('textarea', $this->form_field_name('answer[0]'), get_string('answermustmatch', 'qtype_pmatch'),
                                                              ['rows' => '6', 'cols' => '57', 'class' => 'textareamonospace']);
