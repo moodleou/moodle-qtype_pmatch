@@ -14,49 +14,18 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
-    And I am on the "Course 1" "core_question > course question bank" page logged in as admin
-    And I press "Create a new question ..."
-    And I set the field "Combined" to "1"
-    And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
-    And I set the field "Question name" to "Combined 001"
-    And I set the field "Question text" to " What 5 + 5 ? [[1:pmatch:__10__]]. <br/>What is the IUPAC name of the molecule? [[2:pmatch:__20__]]. <br/>What is the pH of a 0.1M solution? [[3:numeric:__10__]]"
-    Then I set the field "General feedback" to "The molecule is ethanoic acid which is more commonly known as acetic acid or in dilute solution as vinegar. The constituent elements are carbon (grey), hydrogen (white) and oxygen (red). A 0.1M solution has a pH of 2.88 and when a solution is combined with oil the result is a vinaigrette."
-    And I press "Update the form"
-    And I expand all fieldsets
-    And "Help with Answer matching" "icon" should exist
-    And I click on "Help with Answer matching" "icon"
-    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
-    And "More help" "link" should exist
-    And I set the following fields to these values:
-      | id_subqpmatch1defaultmark          | 50%                                     |
-      | Spell checking                     | Do not check spelling of student        |
-      | Answer must match                  | match_mw (ethanoic acid)                |
-      | Pre-filled answer text             | ethaic aicd                             |
-      | id_subqpmatch1generalfeedback      | You have the incorrect IUPAC name.      |
-      | id_subqpmatch2defaultmark          | 25%                                     |
-      | id_subqpmatch2applydictionarycheck | Do not check spelling of student        |
-      | id_subqpmatch2answer_0             | match_m (10)                            |
-      | id_subqpmatch2responsetemplate     | 5                                       |
-      | id_subqpmatch2generalfeedback      | You have the incorrect IUPAC name.      |
-      | id_subqpmatch2allowsubscript       | Yes                                     |
-      | id_subqpmatch2allowsuperscript     | Yes                                     |
-      | id_subqpmatch2modelanswer          | 10                                      |
-      | id_subqnumeric3defaultmark         | 25%                                     |
-      | id_subqnumeric3answer_0            | 2.88                                    |
-      | Scientific notation                | No                                      |
-      | id_subqnumeric3generalfeedback     | You have the incorrect value for the pH |
-    And I press "id_submitbutton"
-    And I should see "You must provide a possible response to this question, which would be graded 100% correct."
-    And I set the following fields to these values:
-      | id_subqpmatch1modelanswer | ethanoic acid |
-    And I press "id_submitbutton"
-    Then I should see "Combined 001"
-    When I am on the "Combined 001" "core_question > preview" page logged in as teacher1
+    And the following "question categories" exist:
+      | contextlevel | reference | name           |
+      | Course       | C1        | Test questions |
+    And the following "questions" exist:
+      | questioncategory | qtype    | name         | template   |
+      | Test questions   | combined | Combined 001 | twopmatchs |
 
   @javascript
   Scenario: Should see the test question link on preview page Combined Pattern Match question type.
+    Given I am on the "Combined 001" "core_question > preview" page logged in as teacher1
     # Check teacher click on the reset button.
-    Given I set the field "Answer 1" to "aicd"
+    And I set the field "Answer 1" to "aicd"
     When I click on "Reset" "button"
     And the field "Answer 1" matches value "ethaic aicd"
     And "Test sub question 1" "link" should be visible
@@ -77,9 +46,9 @@ Feature: Test the basic functionality of Test Question Link when preview combine
 
   @javascript
   Scenario: Spell checking is disable
-    Given "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
+    Given I am on the "Combined 001" "core_question > preview" page logged in as teacher1
+    When "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
     And "//textarea[@spellcheck='false']" "xpath" should exist
-    When I set the field "Answer 3" to "2.55"
     And I press "Save"
     Then "//input[@value='ethaic aicd' and @spellcheck='false']" "xpath" should be visible
     And "//textarea[@spellcheck='false']" "xpath" should exist
@@ -109,3 +78,16 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqpmatch1modelanswer | testing one two three four |
     And the following fields match these values:
       | subq:pmatch:1:placeholder | __28__ |
+
+  @javascript
+  Scenario: Edit combine pmatch question and check model answer validation.
+    Given I am on the "Combined 001" "core_question > edit" page logged in as teacher1
+    And I expand all fieldsets
+    And "Help with Answer matching" "icon" should exist
+    And I click on "Help with Answer matching" "icon"
+    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
+    And "More help" "link" should exist
+    When I set the following fields to these values:
+      | id_subqpmatch1modelanswer |  |
+    And I press "id_submitbutton"
+    Then I should see "You must provide a possible response to this question, which would be graded 100% correct."

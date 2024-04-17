@@ -27,11 +27,11 @@
 /**
  * Watch the value change for element that using disableIf rule.
  *
- * {String} fieldNamePrefix prefix of the field name.
+ * @param {String} fieldNamePrefix prefix of the field name.
  */
 export const init = (fieldNamePrefix) => {
-    // Spellcheck feature is already disabled.
-    if (document.querySelector('[name="' + fieldNamePrefix + 'applydictionarycheck"]').disabled) {
+    // Spellcheck feature is not enabled if the hidden field is not exist.
+    if (!document.querySelector('[name="' + fieldNamePrefix + 'applydictionarycheckselectedvalue"]')) {
         return;
     }
     // Moodle formslib handles disables form fields in a way that is not helpful.
