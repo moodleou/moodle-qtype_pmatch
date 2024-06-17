@@ -185,8 +185,22 @@ class pmatch_options {
         return $string;
     }
 
-    public function word_divider_pattern() {
-        return $this->pattern_to_match_any_of($this->worddividers . $this->converttospace);
+    /**
+     * Return a string comprising the characters that are considered a word dividers.
+     *
+     * @return string
+     */
+    public function word_divider_chars(): string {
+        return $this->worddividers . $this->converttospace;
+    }
+
+    /**
+     * Return a fragment of preg expression that matches any one of the word divider characters.
+     *
+     * @return string
+     */
+    public function word_divider_pattern(): string {
+        return $this->pattern_to_match_any_of($this->word_divider_chars());
     }
 
     public function character_in_word_pattern() {
@@ -253,15 +267,19 @@ class pmatch_parsed_string {
             $this->options = new pmatch_options();
         }
 
-        $this->words = [];
-        $cursor = 0;
-        $string = trim($string); // Trim off any extra whitespace.
+        // Normalise the input, and remove word-dividers from the start and end.
         $string = $this->options->unicode_normalisation($string);
+        $string = trim($string, $this->options->word_divider_chars());
 
+        // Prepare some useful regex fragments.
         $sd = $this->options->sentence_divider_pattern();
         $wd = $this->options->word_divider_pattern();
         $wtis = $this->options->words_to_ignore_patterns();
         $po = $this->options->pattern_options();
+
+        // Extract the words one at a time.
+        $this->words = [];
+        $cursor = 0;
         while ($cursor < core_text::strlen($string)) {
             $toprocess = core_text::substr($string, $cursor);
             $matches = [];

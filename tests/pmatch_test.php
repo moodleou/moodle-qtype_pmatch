@@ -66,7 +66,7 @@ class pmatch_test extends \basic_testcase {
      *
      * @return array
      */
-    public function pmatch_error_provider(): array {
+    public static function pmatch_error_provider(): array {
         return [
                 // No closing bracket.
                 ['match_mow([tom maud]|[sid jane]', get_string('ie_missingclosingbracket',
@@ -124,7 +124,7 @@ class pmatch_test extends \basic_testcase {
      *
      * @return array
      */
-    public function pmatch_matching_provider(): array {
+    public static function pmatch_matching_provider(): array {
         $options = new pmatch_options();
         $options->sentencedividers = '|$';
 
@@ -486,11 +486,55 @@ EOF;
      *
      * @param string $string
      * @param string $expression
-     * @param bool|null $shouldmatch is method assert.
+     * @param bool $shouldmatch is method assert.
      * @param pmatch_options|null $options is options for method assert.
      */
     public function test_pmatch_matching(string $string, string $expression,
-            ?bool $shouldmatch, pmatch_options $options = null): void {
+            bool $shouldmatch, pmatch_options $options = null): void {
+        if ($shouldmatch) {
+            $this->assertTrue($this->match($string, $expression, $options));
+        } else {
+            $this->assertFalse($this->match($string, $expression, $options));
+        }
+    }
+
+    /**
+     * Data provider function for test_pmatch_matching_coverttospace.
+     *
+     * @return array test cases.
+     */
+    public static function pmatch_matching_coverttospace_provider(): array {
+        // These tests run with $options->converttospace = '"';.
+        return [
+            ['X', 'match(X)', true],
+            ['X"', 'match(X)', true],
+            ['"X', 'match(X)', true],
+            [' "X', 'match(X)', true],
+            ['X#', 'match(X)', false],
+            ['#X', 'match(X)', false],
+            ['X Y"', 'match(X Y)', true],
+            ['X"Y', 'match(X Y)', true],
+            ['X "Y', 'match(X Y)', true],
+            ['X" Y', 'match(X Y)', true],
+            ['X " Y', 'match(X Y)', true],
+            ['"X Y', 'match(X Y)', true],
+            ['X#Y', 'match(X)', false],
+        ];
+    }
+
+    /**
+     * For Test pmatch matching with coverttospace
+     *
+     * @dataProvider pmatch_matching_coverttospace_provider
+     *
+     * @param string $string a string to match.
+     * @param string $expression the pattern to match against.
+     * @param bool $shouldmatch whether this string should match this pattern.
+     */
+    public function test_pmatch_matching_coverttospace(string $string, string $expression, bool $shouldmatch): void {
+        $options = new pmatch_options();
+        $options->converttospace = '"';
+
         if ($shouldmatch) {
             $this->assertTrue($this->match($string, $expression, $options));
         } else {
@@ -503,7 +547,7 @@ EOF;
      *
      * @return array
      */
-    public function pmatch_formatting_provider(): array {
+    public static function pmatch_formatting_provider(): array {
         return [
                 ['match_all (
     match_any (
