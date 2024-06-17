@@ -82,7 +82,49 @@ class parsed_string_test extends \basic_testcase {
         $this->assertEquals(['Test?'], $parsedstring->get_words());
     }
 
-    public function pmatch_spelling_testcases(): array {
+    /**
+     * Data provider function for test_parsing_with_coverttospace.
+     *
+     * @return array test cases.
+     */
+    public static function parsing_with_coverttospace_provider(): array {
+        // These tests run with $options->converttospace = '"';.
+        return [
+            ['X', ['X']],
+            ['X"', ['X']],
+            ['X" ', ['X']],
+            ['"X', ['X']],
+            [' "X', ['X']],
+            ['X#', ['X#']],
+            ['#X', ['#X']],
+            [' #X ', ['#X']],
+            ['X Y"', ['X', 'Y']],
+            ['X"Y', ['X', 'Y']],
+            ['X "Y"', ['X', 'Y']],
+            ['X" Y"', ['X', 'Y']],
+            ['X " Y"', ['X', 'Y']],
+            ['"X Y"', ['X', 'Y']],
+            ['X# Y"', ['X#', 'Y']],
+            ['X#Y', ['X#Y']],
+        ];
+    }
+
+    /**
+     * Test parsing of strings that include 'converttospace' chracters.
+     *
+     * @dataProvider parsing_with_coverttospace_provider
+     *
+     * @param string $string a string to parse.
+     * @params array $expected expected list of words.
+     */
+    public function test_parsing_with_coverttospace(string $string, array $expected): void {
+        $options = new pmatch_options();
+        $options->converttospace = '"';
+
+        $this->assertEquals($expected, (new pmatch_parsed_string($string, $options))->get_words());
+    }
+
+    public static function pmatch_spelling_testcases(): array {
         return [
             [[], 'e.g. tool'],                         // Default extra dictionary word & normal word.
             [[], 'e.g.. tool.'],                       // Trailing punctuation is skipped.
