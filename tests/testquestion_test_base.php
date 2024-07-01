@@ -232,8 +232,14 @@ class testquestion_test_base extends \question_testcase {
      * @param string $expectedxml Expected xml content
      * @param string $xml Actual xml content
      */
-    public function assert_same_xml(string $expectedxml, string $xml) {
-        $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
-                str_replace("\r\n", "\n", $xml));
+    public function assert_same_xml($expectedxml, $xml) {
+        // Use our own implementation if method not present in parent class.
+        // (Method was added to parent class in Moodle 4.4.1 by MDL-81581).
+        if (!method_exists(parent::class, 'assert_same_xml')) {
+            $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
+                    str_replace("\r\n", "\n", $xml));
+        } else {
+            parent::assert_same_xml($expectedxml, $xml);
+        }
     }
 }
