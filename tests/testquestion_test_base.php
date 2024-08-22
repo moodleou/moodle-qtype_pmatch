@@ -225,15 +225,4 @@ class testquestion_test_base extends \question_testcase {
 
         return $responseandrulematches['ruleidstoresponseids'];
     }
-
-    /**
-     * Replace all \r\n to \n and compare the xml.
-     *
-     * @param string $expectedxml Expected xml content
-     * @param string $xml Actual xml content
-     */
-    public function assert_same_xml(string $expectedxml, string $xml) {
-        $this->assertEquals(str_replace("\r\n", "\n", $expectedxml),
-                str_replace("\r\n", "\n", $xml));
-    }
 }
