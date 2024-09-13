@@ -14,6 +14,8 @@ Feature: Test backup restore of pattern match question
     And the following "course enrolments" exist:
       | user    | course | role           |
       | teacher | C1     | editingteacher |
+    And the following config values are set as admin:
+      | enableasyncbackup | 0 |
 
   Scenario: Backup an restore a pattern match question.
     Given I am on the "Course 1" "core_question > course question bank" page logged in as teacher
