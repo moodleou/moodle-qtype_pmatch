@@ -133,12 +133,19 @@ body.pagelayout-embedded .que.combined .combined-pmatch-input > a {
     padding: 1px;
     line-height: 1;
 }
+/* Styling the test link when we use sub-sup editor. */
 .combined-pmatch-input > .answerwrap + a {
-    top: 5px;
-    right: 5px;
+    top: -5px;
+    right: -21px;
     padding: 2px 4px;
     border: 1px solid #bbb;
+}
 
+/* Styling the test link when we use plain text field and when user receive feedback. */
+.combined-pmatch-input > input + img + a,
+.combined-pmatch-input > img + a {
+    top: -5px;
+    right: 5px;
 }
 
 #page-question-type-pmatch .rcw input[type=submit] {
