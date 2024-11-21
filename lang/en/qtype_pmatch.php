@@ -61,7 +61,7 @@ match_any (
 ```
 In the above example, because the responses all start the same, you could also simply use asterisk (`*`) to allow multiple character wildcards: `match (word*)`. A question mark (`?`) is used for single character wildcards.
 
-If you have a short phase you want to match, you should enclose it in square brackets (`[...]`). E.g. `match ([numerous words make a short sentence])`. You can combine pipe and square bracketed sentences if desired.';
+If you have a short phrase you want to match, you should enclose it in square brackets (`[...]`). E.g. `match ([numerous words make a short sentence])`. You can combine pipe and square bracketed sentences if desired.';
 $string['correctanswers_link'] = 'Pattern-match_question_type_detailed_documentation#Pattern_match_syntax';
 $string['errors'] = 'Please fix the following problems : {$a}';
 $string['error:title'] = 'Error';
