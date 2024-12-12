@@ -49,7 +49,7 @@ Feature: Test editing a pattern match question
     And I choose "Edit question" action for "My edit match question" in the question bank
     And "Help with Answer matching" "icon" should exist
     And I click on "Help with Answer matching" "icon"
-    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
+    And I should see "If you have a short phrase you want to match, you should enclose it in square brackets ([...])."
     And "More help" "link" should exist
     Then the following fields match these values:
       | Question name              | My edit match question             |
