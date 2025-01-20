@@ -74,4 +74,14 @@ class questiontype_test extends \basic_testcase {
                 null => question_possible_response::no_response()],
         ], $this->qtype->get_possible_responses($q));
     }
+
+    public function test_convert_quote_to_straight_quote(): void {
+        $data = [
+            'arrayelement' => ['hasrecursion' => '‘ single smart quote ’ and “ double smart quote ”'],
+            'test' => '&lsquo; HTML entities single quote &rsquo; and &ldquo; HTML entities double quote &rdquo;',
+        ];
+        $result = $this->qtype->convert_quote_to_straight_quote($data);
+        $this->assertEquals($result['arrayelement']['hasrecursion'], "' single smart quote ' and " . '" double smart quote "');
+        $this->assertEquals($result['test'], "' HTML entities single quote ' and " . '" HTML entities double quote "');
+    }
 }

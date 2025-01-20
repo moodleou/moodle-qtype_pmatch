@@ -85,9 +85,26 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     And I expand all fieldsets
     And "Help with Answer matching" "icon" should exist
     And I click on "Help with Answer matching" "icon"
-    And I should see "If you have a short phase you want to match, you should enclose it in square brackets ([...])."
+    And I should see "If you have a short phrase you want to match, you should enclose it in square brackets ([...])."
     And "More help" "link" should exist
     When I set the following fields to these values:
       | id_subqpmatch1modelanswer |  |
     And I press "id_submitbutton"
     Then I should see "You must provide a possible response to this question, which would be graded 100% correct."
+
+  @javascript
+  Scenario: Edit combine pmatch question and check the quotematching.
+    Given I am on the "Combined 001" "core_question > edit" page logged in as teacher1
+    And I expand all fieldsets
+    When I set the following fields to these values:
+      | id_subqpmatch1quotematching   | 0                                             |
+      | id_subqpmatch1generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |
+      | id_subqpmatch2quotematching   | 1                                             |
+      | id_subqpmatch2generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |
+    And I press "id_submitbutton"
+    And I choose "Edit question" action for "Combined 001 " in the question bank
+    Then the following fields match these values:
+      | id_subqpmatch1quotematching   | 0                                             |
+      | id_subqpmatch1generalfeedback | Correct response: "ethanoic acid". 'Not bad!' |
+      | id_subqpmatch2quotematching   | 1                                             |
+      | id_subqpmatch2generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |

@@ -40,6 +40,9 @@ class qtype_pmatch_question extends question_graded_by_strategy
     /** @var boolean whether answers should be graded case-sensitively. */
     public $usecase;
 
+    /** @var bool Whether smart and straight quotes are matched strictly or relaxed. */
+    public $quotematching;
+
     /** @var string add more words to the dictionary. */
     public $extenddictionary;
 
