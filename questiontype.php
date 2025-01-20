@@ -66,7 +66,7 @@ class qtype_pmatch extends question_type {
     public function extra_question_fields(): array {
         return ['qtype_pmatch', 'usecase', 'allowsubscript', 'allowsuperscript',
             'forcelength', 'applydictionarycheck', 'extenddictionary', 'sentencedividers', 'converttospace',
-            'modelanswer', 'responsetemplate'];
+            'modelanswer', 'responsetemplate', 'quotematching'];
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -84,6 +84,7 @@ class qtype_pmatch extends question_type {
     public function save_defaults_for_new_questions(stdClass $fromform): void {
         parent::save_defaults_for_new_questions($fromform);
         $this->set_default_value('usecase', $fromform->usecase);
+        $this->set_default_value('quotematching', $fromform->quotematching);
         $this->set_default_value('allowsubscript', $fromform->allowsubscript ?? 0);
         $this->set_default_value('allowsuperscript', $fromform->allowsuperscript ?? 0);
         $this->set_default_value('forcelength', $fromform->forcelength);
@@ -103,7 +104,13 @@ class qtype_pmatch extends question_type {
             $fromform->responsesdata = testquestion_responses::get_responses_by_questionid(
                     $previousversionquestionid);
         }
-
+        if (!$fromform->quotematching) {
+            foreach ($fromform as $property => $value) {
+                if (isset($value)) {
+                    $fromform->{$property} = $this->convert_quote_to_straight_quote($value);
+                }
+            }
+        }
         return parent::save_question($question, $fromform);
     }
 
@@ -434,7 +441,7 @@ class qtype_pmatch extends question_type {
         $question->pmatchoptions->sentencedividers = $questiondata->options->sentencedividers;
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
         $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
-
+        $question->quotematching = $questiondata->options->quotematching;
         $question->allowsubscript = $questiondata->options->allowsubscript;
         $question->allowsuperscript = $questiondata->options->allowsuperscript;
         $question->forcelength = $questiondata->options->forcelength;
@@ -475,5 +482,30 @@ class qtype_pmatch extends question_type {
         $DB->delete_records('qtype_pmatch_test_responses', ['questionid' => $questionid]);
 
         parent::delete_question($questionid, $contextid);
+    }
+
+    /**
+     * Convert smart quotes to straight quotes, handling recursion for arrays.
+     *
+     * @param mixed $input Form input data can be a string / number / array.
+     * @return mixed
+     */
+    public function convert_quote_to_straight_quote(mixed $input): mixed {
+        if (is_array($input)) {
+            // If input is an array, process each element recursively.
+            foreach ($input as $key => $subvalue) {
+                $input[$key] = $this->convert_quote_to_straight_quote($subvalue);
+            }
+        } else if (is_string($input)) {
+            // If input is a string, convert quotes.
+            // Replace smart quotes with straight quotes.
+            $input = str_replace(
+                ['&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;', '‘', '’', '“', '”'], // HTML entities and smart quotes.
+                ["'", "'", '"', '"', "'", "'", '"', '"'],                         // Corresponding straight quotes.
+                $input
+            );
+        }
+
+        return $input;
     }
 }

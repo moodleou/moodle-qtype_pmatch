@@ -231,6 +231,7 @@ class form_utils {
     public static function data_preprocessing_pmatch_options(stdClass $question): void {
         if (isset($question->options)) {
             $question->usecase = $question->options->usecase;
+            $question->quotematching = $question->options->quotematching;
             $question->allowsubscript = $question->options->allowsubscript;
             $question->allowsuperscript = $question->options->allowsuperscript;
             $question->forcelength = $question->options->forcelength;

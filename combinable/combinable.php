@@ -49,6 +49,7 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
             'allowsubscript' => null,
             'allowsuperscript' => null,
             'usecase' => null,
+            'quotematching' => null,
             'applydictionarycheck' => null,
             'extenddictionary' => '',
             'sentencedividers' => '.?!',
@@ -78,6 +79,12 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
             get_string('caseno', 'qtype_pmatch'),
             get_string('caseyes', 'qtype_pmatch'),
         ]);
+
+        $mform->addElement('select', $this->form_field_name('quotematching'),
+            get_string('smart_straight_quote_matching', 'qtype_pmatch'), [
+                get_string('smart_straight_quote_matching_relaxed', 'qtype_pmatch'),
+                get_string('smart_straight_quote_matching_strict', 'qtype_pmatch'),
+            ]);
 
         $supsubels = [];
         $supsubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsubscript'),

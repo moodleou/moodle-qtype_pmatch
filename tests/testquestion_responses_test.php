@@ -1003,6 +1003,7 @@ class testquestion_responses_test extends testquestion_test_base {
     <converttospace>,;:</converttospace>
     <modelanswer>testing one two three four</modelanswer>
     <responsetemplate></responsetemplate>
+    <quotematching>0</quotematching>
     <answer fraction="100" format="plain_text">
       <text>match (testing one two three four)</text>
       <feedback format="moodle_auto_format">

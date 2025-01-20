@@ -47,6 +47,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         test_question_maker::initialise_a_question($pm);
         $pm->name = 'Short answer question';
         $pm->questiontext = 'Who was Jane\'s companion : __________';
+        $pm->quotematching = 0;
         $pm->generalfeedback = 'Generalfeedback: Tom, Dick or Harry are all possible answers.';
         $pm->pmatchoptions = new pmatch_options();
         $pm->modelanswer = 'Tom';
@@ -81,6 +82,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->generalfeedback = ['text' => 'This is the simplest aromatic molecule.', 'format' => FORMAT_HTML];
         $fromform->allowsubscript = 0;
         $fromform->allowsuperscript = 0;
+        $fromform->quotematching = 0;
         $fromform->synonymsdata = [
             [
                 'word' => 'any',
@@ -129,6 +131,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
                 'format' => FORMAT_HTML];
         $fromform->allowsubscript = 0;
         $fromform->allowsuperscript = 0;
+        $fromform->quotematching = 0;
         $fromform->synonymsdata = [
             [
                 'word' => '',
@@ -172,7 +175,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
      */
     public function get_pmatch_question_form_data_spanish(): stdClass {
         $fromform = new stdClass();
-
+        $fromform->quotematching = 0;
         $fromform->name = 'Spanish question';
         $fromform->questiontext = ['text' => 'What is the Spanish for "How do you feel?" __15x1__', 'format' => FORMAT_HTML];
         $fromform->defaultmark = 1.0;
@@ -228,6 +231,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
 
         $qdata->options = new stdClass();
         $qdata->options->usecase = 0;
+        $qdata->options->quotematching = 0;
         $qdata->options->allowsubscript = 0;
         $qdata->options->allowsuperscript = 0;
         $qdata->options->forcelength = 1;

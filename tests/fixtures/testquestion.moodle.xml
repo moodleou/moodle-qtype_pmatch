@@ -23,6 +23,7 @@
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <usecase>0</usecase>
+    <quotematching>0</quotematching>
     <allowsubscript>0</allowsubscript>
     <allowsuperscript>0</allowsuperscript>
     <forcelength>1</forcelength>

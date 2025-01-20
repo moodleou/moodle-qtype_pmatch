@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/pmatch/db" VERSION="20230602" COMMENT="XMLDB file for Moodle question/type/pmatch"
+<XMLDB PATH="question/type/pmatch/db" VERSION="20250107" COMMENT="XMLDB file for Moodle question/type/pmatch"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -18,6 +18,7 @@
         <FIELD NAME="applydictionarycheck" TYPE="char" LENGTH="5" NOTNULL="true" DEFAULT="-" SEQUENCE="false" COMMENT="Whether to check student answers for spelling mistakes."/>
         <FIELD NAME="extenddictionary" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Extra words for dictionary."/>
         <FIELD NAME="responsetemplate" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The sample answer so user don't need to type the whole sentence"/>
+        <FIELD NAME="quotematching" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether smart and straight quotes are matched strictly or relaxed."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

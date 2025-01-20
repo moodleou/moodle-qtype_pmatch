@@ -275,6 +275,12 @@ class qtype_pmatch_edit_form extends question_edit_form {
         ]);
         $mform->setDefault('usecase', $this->get_default_value('usecase', 0));
 
+        $mform->addElement('select', 'quotematching', get_string('smart_straight_quote_matching', 'qtype_pmatch'), [
+            get_string('smart_straight_quote_matching_relaxed', 'qtype_pmatch'),
+            get_string('smart_straight_quote_matching_strict', 'qtype_pmatch'),
+        ]);
+        $mform->setDefault('quotematching', $this->get_default_value('quotematching', 0));
+
         $supsubels = [];
         $supsubels[] = $mform->createElement('selectyesno', 'allowsubscript',
                 get_string('allowsubscript', 'qtype_pmatch'));

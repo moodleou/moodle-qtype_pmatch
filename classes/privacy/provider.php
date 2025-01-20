@@ -44,6 +44,7 @@ class provider implements
         $collection->add_user_preference('qtype_pmatch_defaultmark', 'privacy:preference:defaultmark');
         $collection->add_user_preference('qtype_pmatch_penalty', 'privacy:preference:penalty');
         $collection->add_user_preference('qtype_pmatch_usecase', 'privacy:preference:usecase');
+        $collection->add_user_preference('qtype_pmatch_quotematching', 'privacy:preference:quotematching');
         $collection->add_user_preference('qtype_pmatch_allowsubscript', 'privacy:preference:allowsubscript');
         $collection->add_user_preference('qtype_pmatch_allowsuperscript', 'privacy:preference:allowsuperscript');
         $collection->add_user_preference('qtype_pmatch_applydictionarycheck', 'privacy:preference:applydictionarycheck');
@@ -86,6 +87,17 @@ class provider implements
             }
             $desc = get_string('privacy:preference:usecase', 'qtype_pmatch');
             writer::export_user_preference('qtype_pmatch', 'usecase', $stringvalue, $desc);
+        }
+
+        $preference = get_user_preferences('qtype_pmatch_quotematching', null, $userid);
+        if (null !== $preference) {
+            if ($preference) {
+                $stringvalue = get_string('smart_straight_quote_matching_strict', 'qtype_pmatch');
+            } else {
+                $stringvalue = get_string('smart_straight_quote_matching_relaxed', 'qtype_pmatch');
+            }
+            $desc = get_string('privacy:preference:quotematching', 'qtype_pmatch');
+            writer::export_user_preference('qtype_pmatch', 'quotematching', $stringvalue, $desc);
         }
 
         $preferences = [
