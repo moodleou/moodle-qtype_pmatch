@@ -191,7 +191,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
 
         $data = parent::data_to_form($context, $fileoptions) + $answers;
         // These options are incompatible, so of sup or sub is set, unset applydictionarycheck before showing the form.
-        if ($data['allowsubscript'] || $data['allowsuperscript']) {
+        if (!empty($data['allowsubscript']) || !empty($data['allowsuperscript'])) {
             $data['applydictionarycheck'] = qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION;
         }
         if (isset($this->questionrec)) {
