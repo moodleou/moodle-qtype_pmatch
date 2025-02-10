@@ -86,6 +86,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
                 get_string('smart_straight_quote_matching_relaxed', 'qtype_pmatch'),
                 get_string('smart_straight_quote_matching_strict', 'qtype_pmatch'),
             ]);
+        $mform->addHelpButton($this->form_field_name('quotematching'), 'smart_straight_quote_matching', 'qtype_pmatch');
 
         $supsubels = [];
         $supsubels[] = $mform->createElement('selectyesno', $this->form_field_name('allowsubscript'),

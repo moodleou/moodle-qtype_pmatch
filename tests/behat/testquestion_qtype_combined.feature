@@ -103,6 +103,8 @@ Feature: Test the basic functionality of Test Question Link when preview combine
       | id_subqpmatch1modelanswer     | match_mw (ethanoic ” acid)                    |
       | id_subqpmatch2quotematching   | 1                                             |
       | id_subqpmatch2generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |
+    And I click on "Quote/apostrophe matching" "icon"
+    And I should see "If the \"Relaxed\" option is enabled"
     And I press "id_submitbutton"
     And I choose "Edit question" action for "Combined 001 " in the question bank
     Then the following fields match these values:
