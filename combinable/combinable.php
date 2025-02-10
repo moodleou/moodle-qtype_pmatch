@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 define('QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE', '__6__');
 
 use qtype_pmatch\form_utils;
+use qtype_pmatch\utils;
 
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
@@ -209,6 +210,10 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
     public function validate() {
         $errors = [];
 
+        // Convert smart quotes to straight quotes in the form data before validating.
+        if (!$this->formdata->quotematching) {
+            $this->formdata = utils::convert_quote_to_straight_quote($this->formdata);
+        }
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
             if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {

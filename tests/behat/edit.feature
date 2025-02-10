@@ -40,8 +40,8 @@ Feature: Test editing a pattern match question
       | id_converttospace          | ;:                                                              |
       | id_synonymsdata_0_word     | any                                                             |
       | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”                                |
-      | Answer 1 must match        | match (testing one two three four)                              |
-      | Model answer               | testing one two three four                                      |
+      | Answer 1 must match        | match (testing one " two three four)                            |
+      | Model answer               | testing one “ two three four                                    |
       | id_fraction_0              | 100%                                                            |
       | id_feedback_0              | ‘Well done!’                                                    |
       | id_otherfeedback           | Sorry, no.                                                      |
@@ -58,8 +58,8 @@ Feature: Test editing a pattern match question
       | id_quotematching           | Relaxed: ` ' and ' are interchangeable (default) |
       | id_synonymsdata_0_word     | any                                              |
       | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                 |
-      | Answer 1 must match        | match (testing one two three four)               |
-      | Model answer               | testing one two three four                       |
+      | Answer 1 must match        | match (testing one " two three four)             |
+      | Model answer               | testing one " two three four                     |
       | id_fraction_0              | 100%                                             |
       | id_feedback_0              | 'Well done!'                                     |
       | id_otherfeedback           | Sorry, no.                                       |
@@ -74,11 +74,11 @@ Feature: Test editing a pattern match question
       | possibleanswerplaceholder-1 | __6__   |
       | possibleanswerplaceholder-2 | __6x2__ |
     And I set the following fields to these values:
-      | Model answer  | testing one two three four |
+      | Model answer | testing one " two three four |
     And the following fields match these values:
-      | possibleanswerplaceholder-0 | ____________________________ |
-      | possibleanswerplaceholder-1 | __28__                       |
-      | possibleanswerplaceholder-2 | __28x2__                     |
+      | possibleanswerplaceholder-0 | ______________________________ |
+      | possibleanswerplaceholder-1 | __30__                         |
+      | possibleanswerplaceholder-2 | __30x2__                       |
     And I should not see "Overall grading accuracy"
     And I press "id_submitbutton"
     And I should see "Edited question name"
