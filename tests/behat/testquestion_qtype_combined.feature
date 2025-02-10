@@ -99,6 +99,8 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     When I set the following fields to these values:
       | id_subqpmatch1quotematching   | 0                                             |
       | id_subqpmatch1generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |
+      | id_subqpmatch1answer_0        | match_mw (ethanoic " acid)                    |
+      | id_subqpmatch1modelanswer     | match_mw (ethanoic ” acid)                    |
       | id_subqpmatch2quotematching   | 1                                             |
       | id_subqpmatch2generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |
     And I press "id_submitbutton"
@@ -106,5 +108,7 @@ Feature: Test the basic functionality of Test Question Link when preview combine
     Then the following fields match these values:
       | id_subqpmatch1quotematching   | 0                                             |
       | id_subqpmatch1generalfeedback | Correct response: "ethanoic acid". 'Not bad!' |
+      | id_subqpmatch1answer_0        | match_mw (ethanoic " acid)                    |
+      | id_subqpmatch1modelanswer     | match_mw (ethanoic " acid)                    |
       | id_subqpmatch2quotematching   | 1                                             |
       | id_subqpmatch2generalfeedback | Correct response: “ethanoic acid”. ‘Not bad!’ |

@@ -25,6 +25,7 @@
 use qtype_pmatch\testquestion_response;
 use qtype_pmatch\testquestion_responses;
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
+use qtype_pmatch\utils;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -107,7 +108,7 @@ class qtype_pmatch extends question_type {
         if (!$fromform->quotematching) {
             foreach ($fromform as $property => $value) {
                 if (isset($value)) {
-                    $fromform->{$property} = $this->convert_quote_to_straight_quote($value);
+                    $fromform->{$property} = utils::convert_quote_to_straight_quote($value);
                 }
             }
         }
@@ -484,28 +485,4 @@ class qtype_pmatch extends question_type {
         parent::delete_question($questionid, $contextid);
     }
 
-    /**
-     * Convert smart quotes to straight quotes, handling recursion for arrays.
-     *
-     * @param mixed $input Form input data can be a string / number / array.
-     * @return mixed
-     */
-    public function convert_quote_to_straight_quote(mixed $input): mixed {
-        if (is_array($input)) {
-            // If input is an array, process each element recursively.
-            foreach ($input as $key => $subvalue) {
-                $input[$key] = $this->convert_quote_to_straight_quote($subvalue);
-            }
-        } else if (is_string($input)) {
-            // If input is a string, convert quotes.
-            // Replace smart quotes with straight quotes.
-            $input = str_replace(
-                ['&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;', '‘', '’', '“', '”'], // HTML entities and smart quotes.
-                ["'", "'", '"', '"', "'", "'", '"', '"'],                         // Corresponding straight quotes.
-                $input
-            );
-        }
-
-        return $input;
-    }
 }

@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
 use qtype_pmatch\form_utils;
+use qtype_pmatch\utils;
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 /**
@@ -552,6 +553,12 @@ EOT;
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+
+
+        // Convert smart quotes to straight quotes in the form data before validating.
+        if (!$data['quotematching']) {
+            $data = utils::convert_quote_to_straight_quote($data);
+        }
 
         // Check whether any chars of sentencedividers field exists in converttospace field.
         if (isset($data['sentencedividers'])) {
