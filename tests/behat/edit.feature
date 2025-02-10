@@ -65,6 +65,8 @@ Feature: Test editing a pattern match question
       | id_otherfeedback           | Sorry, no.                                       |
       | Hint 1                     | Please try again.                                |
       | Hint 2                     | Use a calculator if necessary.                   |
+    And I click on "Quote/apostrophe matching" "icon"
+    And I should see "If the \"Relaxed\" option is enabled"
     And I set the following fields to these values:
       | Question name | Edited question name |
       | Model answer  |                      |
