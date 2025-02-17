@@ -556,7 +556,7 @@ EOT;
 
 
         // Convert smart quotes to straight quotes in the form data before validating.
-        if (!$data['quotematching']) {
+        if (isset($data['quotematching']) && !$data['quotematching']) {
             $data = utils::convert_quote_to_straight_quote($data);
         }
 
