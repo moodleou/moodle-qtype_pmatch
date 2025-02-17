@@ -211,7 +211,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $errors = [];
 
         // Convert smart quotes to straight quotes in the form data before validating.
-        if (!$this->formdata->quotematching) {
+        if (isset($this->formdata->quotematching) && !$this->formdata->quotematching) {
             $this->formdata = utils::convert_quote_to_straight_quote($this->formdata);
         }
         $trimmedanswer = $this->formdata->answer[0];
