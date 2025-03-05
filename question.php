@@ -165,6 +165,9 @@ class qtype_pmatch_question extends question_graded_by_strategy
         if (!isset($response['answer'])) {
             return false;
         }
+        if (isset($this->quotematching) && !$this->quotematching) {
+            $response = \qtype_pmatch\utils::convert_quote_to_straight_quote($response);
+        }
         return self::compare_string_with_pmatch_expression($response['answer'],
                                                             $answer->answer,
                                                             $this->pmatchoptions);

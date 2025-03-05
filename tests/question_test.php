@@ -114,6 +114,19 @@ class question_test extends \basic_testcase {
                 $question->grade_response(['answer' => 'Harry']));
                 $this->assertEquals([0.8, question_state::$gradedpartial],
                 $question->grade_response(['answer' => 'Dick']));
+
+        // Pmatch question with quotematching = 0.
+        $question = qtype_pmatch_test_helper::make_a_pmatch_question();
+        $question->answers = [
+            16 => new \question_answer(16, 'match_w(D\'Angelo)', 1.0,
+                'D\'Angelo a very good answer.', FORMAT_HTML),
+        ];
+        $this->assertEquals([1, question_state::$gradedright],
+            $question->grade_response(['answer' => 'D’Angelo']));
+        // Pmatch question with quotematching = 1.
+        $question->quotematching = 1;
+        $this->assertEquals([0, question_state::$gradedwrong],
+            $question->grade_response(['answer' => 'D’Angelo']));
     }
 
     public function test_get_correct_response() {
