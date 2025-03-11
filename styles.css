@@ -204,7 +204,7 @@ body#page-question-type-pmatch-testquestion .resettable {
     vertical-align: top;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
     #page-question-type-pmatch-testquestion #attemptsform table .section-input,
     #page-question-type-pmatch-testquestion #attemptsform table .section-button {
         display: block;
