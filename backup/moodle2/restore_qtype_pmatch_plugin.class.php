@@ -150,4 +150,40 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
             $newitemid = $DB->insert_record('qtype_pmatch_rule_matches', $data);
         }
     }
+
+    /**
+     * Convert the backup structure of the Formulas question type into a structure matching its
+     * question data. This data will then be used to produce an identity hash for comparison with
+     * questions in the database. We have to override the parent function, because we use a special
+     * structure during backup.
+     *
+     * @param array $backupdata
+     * @return stdClass
+     */
+    public static function convert_backup_to_questiondata(array $backupdata): stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+
+        // Some question will have "synonyms" defined. We must make sure these are integrated
+        // in the question data.
+        if (key_exists('synonyms', $backupdata['plugin_qtype_pmatch_question'])) {
+            foreach ($backupdata['plugin_qtype_pmatch_question']['synonyms']['synonym'] as $synonym) {
+                $questiondata->options->synonyms[] = (object) $synonym;
+            }
+        }
+
+        return $questiondata;
+    }
+
+    /**
+     * Return a list of paths to fields to be removed from questiondata before creating an identity hash.
+     * We have to remove the id and questionid property from synonyms, if there are any.
+     *
+     * @return array
+     */
+    protected function define_excluded_identity_hash_fields(): array {
+        return [
+            '/options/synonyms/id',
+            '/options/synonyms/questionid',
+        ];
+    }
 }
