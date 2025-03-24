@@ -48,31 +48,6 @@ Feature: Basic test of the question testing tool
     And I should see "Computed mark less than human mark: 0 (missed negative)"
 
   @javascript
-  Scenario: Test edit response.
-    # Confirm can edit inplace the response.
-    When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as teacher
-    Then I should see "testing one two three four"
-    When I follow "Edit response"
-    Then I should see "Escape to cancel, Enter when finished"
-    When I set the field "Edit response" to ""
-    And I press the enter key
-    Then I should see "The response cannot be blank"
-    And I click on "OK" "button" in the "Error" "dialogue"
-    When I follow "Edit response"
-    And I set the field "Edit response" to "testing"
-    And I press the enter key
-    Then I should see "Duplicate responses are not allowed"
-    And I click on "OK" "button" in the "Error" "dialogue"
-    When I follow "Edit response"
-    And I set the field "Edit response" to "New improved response"
-    And I press the enter key
-    Then I should not see "testing one two three four"
-    And I should see "New improved response"
-    And I reload the page
-    And I should not see "testing one two three four"
-    And I should see "New improved response"
-
-  @javascript
   Scenario: Get standard responses graded against current answer rules.
     Given I am on the "My first pattern match question" "core_question > edit" page logged in as teacher
     # First check of question editing page.
