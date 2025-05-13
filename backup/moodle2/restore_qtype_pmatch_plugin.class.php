@@ -53,6 +53,35 @@ class restore_qtype_pmatch_plugin extends restore_qtype_plugin {
         return $paths; // And we return the interesting paths.
     }
 
+    #[\Override]
+    public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+        $qtype = $questiondata->qtype;
+        if (isset($backupdata["plugin_qtype_{$qtype}_question"]['pmatch'])) {
+            $questiondata->options = (object) array_merge(
+                (array) $questiondata->options,
+                $backupdata["plugin_qtype_{$qtype}_question"]['pmatch'][0],
+            );
+        }
+
+        if (isset($backupdata["plugin_qtype_{$qtype}_question"]['synonyms']['synonym'])) {
+            $questiondata->options->synonyms = [];
+            foreach ($backupdata["plugin_qtype_{$qtype}_question"]['synonyms']['synonym'] as $synonym) {
+                $questiondata->options->synonyms[] = (object) $synonym;
+            }
+        }
+
+        return $questiondata;
+    }
+
+    #[\Override]
+    protected function define_excluded_identity_hash_fields(): array {
+        return [
+            'options/synonyms/id',
+            'options/synonyms/questionid',
+        ];
+    }
+
     /**
      * Process the qtype/pmatch element.
      *
