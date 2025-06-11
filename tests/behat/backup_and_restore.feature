@@ -45,5 +45,5 @@ Feature: Test backup restore of pattern match question
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
-    And I navigate to "Question bank" in current page administration
+    And I am on the "Course 2 copy 1" "core_question > course question bank" page
     And I should see "My first pattern match question"

@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-/**
- * Admin settings class for generate spell-checker back-end select box.
- *
- * @package   qtype_pmatch
- * @copyright 2019 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace qtype_pmatch\admin;
 
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;

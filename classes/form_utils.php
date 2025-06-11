@@ -286,6 +286,9 @@ class form_utils {
         return $expression->get_parse_error();
     }
 
+    /**
+     * Initialise the javascript for the pattern match form.
+     */
     public static function initialise_pmatch_form_js() {
         global $PAGE;
         $PAGE->requires->js_call_amd('qtype_pmatch/check_valid_expression', 'init');

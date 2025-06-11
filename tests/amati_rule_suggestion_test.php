@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_test_base
  *
  * @covers \qtype_pmatch\amati_rule_suggestion
  */
-class amati_rule_suggestion_test
+final class amati_rule_suggestion_test
         extends testquestion_test_base {
 
     /** @var \qtype_pmatch_question the data defining the question being tested. */
@@ -70,7 +70,7 @@ class amati_rule_suggestion_test
      *  1) AMATI stores only alphanumeric data (no punctuation or syumbols) pmatch stores the raw data
      *  2) Amati stores lower case text, pmatch stores either text in the case it is supplied
      */
-    public function test_find_pmatch_equivalents_to_amati_commands() {
+    public function test_find_pmatch_equivalents_to_amati_commands(): void {
         $this->find_pmatch_equivalents_to_amati_term_command();
         $this->find_pmatch_equivalents_to_amati_template_command();
         $this->find_pmatch_equivalents_to_amati_precedes_command();
@@ -108,7 +108,7 @@ class amati_rule_suggestion_test
                 // The best match in Pmatch.
                 'match_w(harry)' => [
                         0 => 'Tom Dick or Harry',
-                        1 => 'Harry'
+                        1 => 'Harry',
                 ],
                 // Not.
                 // The Amati rule used with matched responses.
@@ -143,14 +143,14 @@ class amati_rule_suggestion_test
                 'match_w(dick|felicity)' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Dick',
-                        2 => 'Felicity'
+                        2 => 'Felicity',
                 ],
                 // Another equivalent rule.
                 'match_any(match_w(dick) match_w(felicity))' => [
                         0 => 'Tom Dick or Harry',
                         1 => 'Dick',
-                        2 => 'Felicity'
-                ]
+                        2 => 'Felicity',
+                ],
         ];
 
         // Get the responses which match the rules and test them.
@@ -183,7 +183,7 @@ class amati_rule_suggestion_test
             'match_w(harry)' => [
                 0 => 'Tom Dick or Harry',
                 1 => 'Harry',
-                2 => 'harry is jane\'s buddy'
+                2 => 'harry is jane\'s buddy',
             ],
             // A rule combining And, or and Not.
             // |'term_in_response(A,B,mate); term_in_response(A,C,friend), not term_in_response(A,D,harrriet)' => array(
@@ -226,7 +226,7 @@ class amati_rule_suggestion_test
                     2 => 'Tomato',
                     3 => 'Tom was janes companion',
                     4 => 'Tomcat',
-                    5 => 'tom is jane\'s companion'
+                    5 => 'tom is jane\'s companion',
                 ],
                 // Another single template command.
                 // |'template_in_response(A,harry)' => array(
@@ -243,7 +243,7 @@ class amati_rule_suggestion_test
                     2 => 'Harriet',
                     3 => 'harry is jane\'s buddy',
                     4 => 'harriet is jane\'s companion',
-                    5 => 'harrriet is jane\'s most treasured friend and companion'
+                    5 => 'harrriet is jane\'s most treasured friend and companion',
                 ],
                 // A template rule using not(exclude).
                 // |'template_in_response(A,B,tom), not template_in_response(A,C,companion)' => array(
@@ -258,8 +258,8 @@ class amati_rule_suggestion_test
                     2 => 'Tomato',
                     3 => 'Tomcat',
                     // Amati doesn't return this.
-                    4 => 'Thomas is jane\'s mate'
-                ]
+                    4 => 'Thomas is jane\'s mate',
+                ],
         ];
         // phpcs:enable
 
@@ -323,14 +323,14 @@ class amati_rule_suggestion_test
                         3 => 'harrriet is jane\'s most treasured friend and companion',
                         4 => 'tim is not jane\'s favourite close companion',
                         5 => 'tim is jane\'s closest companion',
-                        6 => 'Dick is jane\'s most trusted confidante, best friend and closest companion'
+                        6 => 'Dick is jane\'s most trusted confidante, best friend and closest companion',
                 ],
                 // I noticed templates hadn't been using the test so I added a quick test here to
                 // see what would happen. Though I didn't have the time to run the matching AMATI test at
                 // the same time.
                 'match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))' => [
-                        0 => 'Tom Dick or Harry'
-                ]
+                        0 => 'Tom Dick or Harry',
+                ],
         ];
         // phpcs:enable
 
@@ -406,7 +406,7 @@ class amati_rule_suggestion_test
      * The amati rules we use are taken from the previous tests and we assert that the given rule is broken down
      * into the parameters in the following array.
      */
-    public function test_get_parameters_from_amati_rules() {
+    public function test_get_parameters_from_amati_rules(): void {
         $this->get_parameters_from_amati_term_rules();
         $this->get_parameters_from_amati_template_rules();
         $this->get_parameters_from_amati_precedes_rules();
@@ -417,7 +417,7 @@ class amati_rule_suggestion_test
     /**
      * Test separating amati term rules from the web service into their constituent parameters.
      */
-    public function get_parameters_from_amati_term_rules() {
+    public function get_parameters_from_amati_term_rules(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -426,50 +426,50 @@ class amati_rule_suggestion_test
                 0 => (object) [
                     'command' => 'term',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
             ],
             "correct_response(A) :- term_in_response(A,B,tom), term_in_response(A,C,harry)." => [
                 0 => (object) [
                     'command' => 'term',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
                 1 => (object) [
                     'command' => 'term',
                     'operator' => 'AND',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
             "correct_response(A) :- not term_in_response(A,B,harry)." => [
                 0 => (object) [
                     'command' => 'term',
                     'operator' => 'NOT',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
             "correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry)." => [
                 0 => (object) [
                     'command' => 'term',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
                 1 => (object) [
                     'command' => 'term',
                     'operator' => 'NOT',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
             "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)." => [
                 0 => (object) [
                     'command' => 'term',
                     'operator' => 'OR',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
                 1 => (object) [
                     'command' => 'term',
                     'operator' => 'AND',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
         ];
@@ -483,7 +483,7 @@ class amati_rule_suggestion_test
     /**
      * Test separating amati template rules from the web service into their constituent parameters.
      */
-    public function get_parameters_from_amati_template_rules() {
+    public function get_parameters_from_amati_template_rules(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -492,38 +492,38 @@ class amati_rule_suggestion_test
                 0 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
             ],
             "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry)." => [
                 0 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
                 1 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
             "correct_response(A) :- not template_in_response(A,B,harry)." => [
                 0 => (object) [
                     'command' => 'template',
                     'operator' => 'NOT',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
             "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)." => [
                 0 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'tom'
+                    'word' => 'tom',
                 ],
                 1 => (object) [
                     'command' => 'template',
                     'operator' => 'NOT',
-                    'word' => 'harry'
+                    'word' => 'harry',
                 ],
             ],
         ];
@@ -537,7 +537,7 @@ class amati_rule_suggestion_test
     /**
      * Test separating amati precedes rules from the web service into their constituent parameters.
      */
-    public function get_parameters_from_amati_precedes_rules() {
+    public function get_parameters_from_amati_precedes_rules(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -546,12 +546,12 @@ class amati_rule_suggestion_test
                 0 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'jane'
+                    'word' => 'jane',
                 ],
                 1 => (object) [
                     'command' => 'template',
                     'operator' => 'AND',
-                    'word' => 'comp'
+                    'word' => 'comp',
                 ],
                 2 => (object) [
                     'operator' => 'AND',
@@ -573,7 +573,7 @@ class amati_rule_suggestion_test
     /**
      * Test separating amati closely precedes rules from the web service into their constituent parameters.
      */
-    public function get_parameters_from_amati_closely_precedes_rules() {
+    public function get_parameters_from_amati_closely_precedes_rules(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -595,7 +595,7 @@ class amati_rule_suggestion_test
                     'operator' => 'AND',
                     'word' => [
                         0 => 'jane*',
-                        1 => 'comp*'
+                        1 => 'comp*',
                     ],
                 ],
             ],
@@ -616,7 +616,7 @@ class amati_rule_suggestion_test
      * command unfortunately I only had time to provide a few. A more extenisve list would be very
      * helpful.
      */
-    public function get_parameters_from_amati_complex_rules() {
+    public function get_parameters_from_amati_complex_rules(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -713,7 +713,7 @@ class amati_rule_suggestion_test
      * the parameters into valid PMatch rules. We won't test that they match responses yet, we are just
      * testing each part of the process before we test the whole later.
      */
-    public function test_get_pmatch_rules_from_rule_parameters() {
+    public function test_get_pmatch_rules_from_rule_parameters(): void {
         $this->get_pmatch_rule_from_term_rule_parameters();
         $this->get_pmatch_rule_from_template_rule_parameters();
         $this->get_pmatch_rule_from_precedes_rule_parameters();
@@ -790,7 +790,7 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from parameters based on rules containing templates.
      */
-    public function get_pmatch_rule_from_template_rule_parameters() {
+    public function get_pmatch_rule_from_template_rule_parameters(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -842,7 +842,12 @@ class amati_rule_suggestion_test
         $this->check_valid_rules(array_keys($rulesandparameters));
     }
 
-    protected function check_valid_rules ($rules) {
+    /**
+     * Check that all the rules are valid pmatch rules.
+     *
+     * @param array $rules The rules to check.
+     */
+    protected function check_valid_rules($rules): void {
         foreach ($rules as $rule) {
             $expression = new \pmatch_expression($rule);
             $this->assertTrue($expression->is_valid());
@@ -852,7 +857,7 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from parameters based on rules containing precedes.
      */
-    public function get_pmatch_rule_from_precedes_rule_parameters() {
+    public function get_pmatch_rule_from_precedes_rule_parameters(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -889,7 +894,7 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from parameters based on rules containing precedes.
      */
-    public function get_pmatch_rule_from_closely_precedes_rule_parameters() {
+    public function get_pmatch_rule_from_closely_precedes_rule_parameters(): void {
 
         // Set the expectation.
         $comparerulesandparameters = [
@@ -929,7 +934,7 @@ class amati_rule_suggestion_test
      * Now that we have tested each part of the translation process we can now test the whole
      * We can make sure that each amati rule is correctly translated to a valid pmatch rule.
      */
-    public function test_get_pmatch_rules_from_amati_term_rules() {
+    public function test_get_pmatch_rules_from_amati_term_rules(): void {
         $this->get_pmatch_rules_from_amati_term_rules();
         $this->get_pmatch_rules_from_amati_template_rules();
         $this->get_pmatch_rules_from_amati_precedes_rules();
@@ -939,7 +944,7 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from amati rules containing terms.
      */
-    public function get_pmatch_rules_from_amati_term_rules() {
+    public function get_pmatch_rules_from_amati_term_rules(): void {
 
         // Set the expectation.
         $comparerules = [
@@ -950,7 +955,7 @@ class amati_rule_suggestion_test
             "match_all(match_w(tom) not( match_w(harry)))" =>
                 "correct_response(A) :- term_in_response(A,B,tom), not term_in_response(A,C,harry).",
             "match_any(match_w(tom) match_w(harry))" =>
-                "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry)."
+                "correct_response(A) :- term_in_response(A,B,tom); term_in_response(A,C,harry).",
         ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
@@ -963,7 +968,7 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from amati rules containing termplates.
      */
-    public function get_pmatch_rules_from_amati_template_rules() {
+    public function get_pmatch_rules_from_amati_template_rules(): void {
 
         // Set the expectation.
         $comparerules = [
@@ -974,7 +979,7 @@ class amati_rule_suggestion_test
             "match_all(not( match_wm(harry*)))" =>
                 "correct_response(A) :- not template_in_response(A,B,harry).",
             "match_all(match_wm(tom*) not( match_wm(harry*)))" =>
-                "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry)."
+                "correct_response(A) :- template_in_response(A,B,tom), not template_in_response(A,C,harry).",
         ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
@@ -987,13 +992,13 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from amati rules containing precedes.
      */
-    public function get_pmatch_rules_from_amati_precedes_rules() {
+    public function get_pmatch_rules_from_amati_precedes_rules(): void {
 
             // Set the expectation.
         $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             "match_all(match_wm(tom*) match_wm(harry*) match_w(tom* harry*))" =>
-                "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), precedes(B, C)."
+                "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), precedes(B, C).",
         ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
@@ -1006,13 +1011,13 @@ class amati_rule_suggestion_test
     /**
      * Test generating pattern match rules from amati rules containing closely precedes.
      */
-    public function get_pmatch_rules_from_amati_closely_precedes_rules() {
+    public function get_pmatch_rules_from_amati_closely_precedes_rules(): void {
 
         // Set the expectation.
         $comparerules = [
             // Each Pmatch rule should be generated from the AMATI rule that follows it.
             "match_all(match_wm(tom*) match_wm(harry*) match_w(tom*_harry*))" =>
-                "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), closely_precedes(B, C)."
+                "correct_response(A) :- template_in_response(A,B,tom), template_in_response(A,C,harry), closely_precedes(B, C).",
         ];
 
         $rules = $this->get_pmatch_rules_from_amati_rules($comparerules);
@@ -1029,7 +1034,7 @@ class amati_rule_suggestion_test
      * - Format the rules in pmatch format
      *
      */
-    public function test_prepare_suggested_rules() {
+    public function test_prepare_suggested_rules(): void {
         $this->resetAfterTest();
 
         // Start with these rules..
@@ -1041,7 +1046,7 @@ class amati_rule_suggestion_test
                 // Add some invalid rules that should be removed.
                 'match_any(not match_w(tom))',
                 'match_any(match_w tom))',
-                'match_all(match_wm(Felicity) match_w(dick))'
+                'match_all(match_wm(Felicity) match_w(dick))',
         ];
 
          // Set the right expectation. These are the rules we should be left with.
@@ -1049,7 +1054,7 @@ class amati_rule_suggestion_test
                 "match_all(match_w(tom))",
                 "match_all(not( match_w(harry)))",
                 "match_all(match_w(tom) not( match_w(harry)))",
-                'match_all(match_wm(Felicity) match_w(dick))'
+                'match_all(match_wm(Felicity) match_w(dick))',
         ];
         // Format comparison rules for pmatch.
         $comparesuggestedrules = $this->format_rules($comparesuggestedrules);
@@ -1077,6 +1082,13 @@ class amati_rule_suggestion_test
         $this->check_valid_rules($suggestedrules);
     }
 
+
+    /**
+     * Get the pmatch rules from the AMATI rules.
+     *
+     * @param array $comparerules The rules
+     * @return array The pmatch rules extracted from the AMATI rules.
+     */
     protected function get_pmatch_rules_from_amati_rules(array $comparerules): array {
         // Translate each rule into parameters.
         $rules = [];
@@ -1106,6 +1118,12 @@ class amati_rule_suggestion_test
         return $rules;
     }
 
+    /**
+     * Get the pmatch rules from the given parameters.
+     *
+     * @param array $comparerulesandparameters The rules and parameters to convert.
+     * @return array The pmatch rules extracted from the parameters.
+     */
     protected function get_pmatch_rules_from_parameters(array $comparerulesandparameters): array {
         // Translate each rule into parameters.
         $rulesandparameters = [];
@@ -1117,6 +1135,12 @@ class amati_rule_suggestion_test
         return $rulesandparameters;
     }
 
+    /**
+     * Get the parameters from the AMATI rules.
+     *
+     * @param array $comparerulesandparameters The rules and parameters to convert.
+     * @return array The parameters extracted from the AMATI rules.
+     */
     protected function get_parameters_from_amati_rules(array $comparerulesandparameters): array {
         // Get the AMATI rules fixture.
         $rules = $this->load_rules();
@@ -1204,7 +1228,7 @@ class amati_rule_suggestion_test
      * @param array|null $responses
      * @return array
      */
-    protected function grade_responses(array $comparerulematches, int $responsecount = 0, array $responses = null): array {
+    protected function grade_responses(array $comparerulematches, int $responsecount = 0, ?array $responses = null): array {
         if (!$responses) {
             $responses = $this->load_default_responses('fixtures/testresponseslong.csv', $responsecount);
         }
@@ -1220,13 +1244,13 @@ class amati_rule_suggestion_test
         return $this->get_rule_matches($responses, $rules);
     }
 
-    /*
+    /**
      * Load rules from a given file path or the default rule path.
      *
      * @param $filepath string path to file
      * @return string file contents
      */
-    public function load_rules($filepath=null) {
+    public function load_rules(?string $filepath = null): array {
         $filepath = $filepath ?? self::$rulesfilepath;
         $filepath = dirname(__FILE__) . '/' . $filepath;
         return amati_rule_suggestion::load_rules_from_file($filepath);

@@ -16,9 +16,6 @@
 
 namespace qtype_pmatch;
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Unit tests for for utility class.
  *
@@ -28,8 +25,11 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @covers \qtype_pmatch\utils
  */
-class utils_test extends \basic_testcase {
+final class utils_test extends \basic_testcase {
 
+    /**
+     * This function should convert smart quotes and HTML entities to straight quotes.
+     */
     public function test_convert_quote_to_straight_quote(): void {
         $array = [
             'arrayelement' => ['hasrecursion' => '‘ single smart quote ’ and “ double smart quote ”'],

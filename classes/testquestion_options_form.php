@@ -23,11 +23,13 @@ require_once($CFG->libdir . '/formslib.php');
 /**
  * Pmatch testquestion options form.
  *
+ * @package qtype_pmatch
  * @copyright 2016 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_options_form extends \moodleform {
 
+    #[\Override]
     protected function definition() {
         $mform = $this->_form;
         $stategroup = [
@@ -54,6 +56,7 @@ class testquestion_options_form extends \moodleform {
                 get_string('updatedisplayoptions', 'core_question'));
     }
 
+    #[\Override]
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if (!($data['statematches'] || $data['statemissedpositive'] ||

@@ -28,32 +28,37 @@ class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
     /** @var int the pspell link handle. */
     protected $pspell;
 
+    /**
+     * Constructor for the pspell spell checker.
+     *
+     * @param string $lang The language code for the spell checker.
+     */
     public function __construct($lang) {
         parent::__construct($lang);
         $this->pspell = pspell_new($lang);
     }
 
+    #[\Override]
     public function is_initialised() {
         return (bool) $this->pspell;
     }
 
+    #[\Override]
     public function is_in_dictionary($word) {
         return pspell_check($this->pspell, $word);
     }
 
+    #[\Override]
     public static function get_name() {
         return get_string('spellcheckerpspell', 'qtype_pmatch');
     }
 
+    #[\Override]
     public static function is_available() {
         return function_exists('pspell_new');
     }
 
-    /**
-     * Get the available languages on server.
-     *
-     * @return array List of available languages.
-     */
+    #[\Override]
     public static function available_languages(): array {
         $installeddicts = explode(PHP_EOL, rtrim(shell_exec('aspell dicts')));
         $availablelanguages = [];

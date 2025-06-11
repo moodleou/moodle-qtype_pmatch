@@ -137,11 +137,7 @@ class testquestion_table extends \table_sql {
         }
     }
 
-    /**
-     * Get any extra classes names to add to this row in the HTML.
-     * @param $row array the data for this row.
-     * @return string added to the class="" attribute of the tr.
-     */
+    #[\Override]
     public function get_row_class($response) {
         $class = 'qtype_pmatch-selftest-';
         if ($response->expectedfraction === $response->gradedfraction) {
@@ -174,7 +170,7 @@ class testquestion_table extends \table_sql {
                    testquestion_response::MATCHED => '(expectedfraction = gradedfraction)',
                    testquestion_response::MISSED_POSITIVE => '(gradedfraction = 0 AND expectedfraction = 1)',
                    testquestion_response::MISSED_NEGATIVE => '(gradedfraction = 1 AND expectedfraction = 0)',
-                   testquestion_response::UNGRADED => '(expectedfraction IS NULL)'
+                   testquestion_response::UNGRADED => '(expectedfraction IS NULL)',
             ];
             $statesql = ' AND (';
             $count = 0;
@@ -195,10 +191,7 @@ class testquestion_table extends \table_sql {
         return [$fields, $from, $where, $params];
     }
 
-    /**
-     * Prints the responses table form. Overrides parent functionality.
-     * Parameters passed here are not used, but must refect parent function declaration.
-     */
+    #[\Override]
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $this->set_up_table_form();
         $this->setup();
@@ -234,15 +227,13 @@ class testquestion_table extends \table_sql {
         $this->rawdata = testquestion_responses::data_to_responses($this->rawdata);
     }
 
-    /**
-     * Default sorting on test response id.
-     * @see flexible_table::get_sort_columns()
-     */
+    #[\Override]
     public function get_sort_columns() {
         $sortcolumns = parent::get_sort_columns();
         return $sortcolumns;
     }
 
+    #[\Override]
     public function wrap_html_start() {
         if ($this->is_downloading() || !$this->includecheckboxes) {
             return;
@@ -255,6 +246,7 @@ class testquestion_table extends \table_sql {
         echo \html_writer::input_hidden_params($url);
     }
 
+    #[\Override]
     public function wrap_html_finish() {
         global $PAGE;
         if ($this->is_downloading() || !$this->includecheckboxes) {
@@ -335,9 +327,7 @@ class testquestion_table extends \table_sql {
         return $this->get_row_html($this->get_row_from_keyed($formattedrow), $this->get_row_class($row));
     }
 
-    /**
-     * This function is not part of the public api.
-     */
+    #[\Override]
     public function finish_html() {
         if (!$this->started_output) {
             // No data has been added to the table.

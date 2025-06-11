@@ -112,7 +112,9 @@ abstract class qtype_pmatch_spell_checker {
     }
 
     /**
-     * @return array a list of all the back-end library classes.
+     * Get a list of the known back-end library classes.
+     *
+     * @return array list of all the back-end library classes
      */
     public static function get_known_backends() {
         return [
@@ -123,6 +125,8 @@ abstract class qtype_pmatch_spell_checker {
     }
 
     /**
+     * Get a list of the installed back-end library classes.
+     *
      * @return array a list of the back-end library classes that might work on this server.
      */
     public static function get_installed_backends() {

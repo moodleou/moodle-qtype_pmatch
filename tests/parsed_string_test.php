@@ -36,8 +36,8 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  *
  * @covers \pmatch_parsed_string
  */
-class parsed_string_test extends \basic_testcase {
-    public function test_pmatch_parse_string() {
+final class parsed_string_test extends \basic_testcase {
+    public function test_pmatch_parse_string(): void {
         $options = new pmatch_options();
 
         $parsedstring = new pmatch_parsed_string('abc.def', $options);
@@ -115,7 +115,7 @@ class parsed_string_test extends \basic_testcase {
      * @dataProvider parsing_with_coverttospace_provider
      *
      * @param string $string a string to parse.
-     * @params array $expected expected list of words.
+     * @param array $expected expected list of words.
      */
     public function test_parsing_with_coverttospace(string $string, array $expected): void {
         $options = new pmatch_options();
@@ -124,6 +124,11 @@ class parsed_string_test extends \basic_testcase {
         $this->assertEquals($expected, (new pmatch_parsed_string($string, $options))->get_words());
     }
 
+    /**
+     * Data provider function for test_pmatch_spelling.
+     *
+     * @return array test cases.
+     */
     public static function pmatch_spelling_testcases(): array {
         return [
             [[], 'e.g. tool'],                         // Default extra dictionary word & normal word.
@@ -155,13 +160,16 @@ class parsed_string_test extends \basic_testcase {
     }
 
     /**
+     *
+     * Test the spelling checking of a string.
+     *
      * @dataProvider pmatch_spelling_testcases
      *
      * @param array $misspelledwords
      * @param $string
      * @param null $options
      */
-    public function test_pmatch_spelling(array $misspelledwords, $string, $options = null) {
+    public function test_pmatch_spelling(array $misspelledwords, $string, $options = null): void {
         if ($options === null) {
             $options = new pmatch_options();
         }
@@ -209,7 +217,7 @@ class parsed_string_test extends \basic_testcase {
      *
      * @return array Dataset
      */
-    public function get_display_name_for_language_code_provider(): array {
+    public static function get_display_name_for_language_code_provider(): array {
         return [
                 ['en_US', 'English', 'English (en_US)'],
                 ['en_GB', 'English', 'English (en_GB)'],
@@ -219,7 +227,7 @@ class parsed_string_test extends \basic_testcase {
                 ['es_BO', 'Spanish; Castilian', 'Spanish; Castilian (es_BO)'],
                 ['fr_BE', 'French', 'French (fr_BE)'],
                 ['fr_CA', 'French', 'French (fr_CA)'],
-                ['fr_CH', 'French', 'French (fr_CH)']
+                ['fr_CH', 'French', 'French (fr_CH)'],
         ];
     }
 
@@ -232,8 +240,8 @@ class parsed_string_test extends \basic_testcase {
      * @param array $availablelangs List of available languages
      * @param string $expectedmatch Expected language match
      */
-    public function test_get_default_spell_check_dictionary(
-            string $checklanguage, array $availablelangs, string $expectedmatch): void {
+    public function test_get_default_spell_check_dictionary(string $checklanguage,
+            array $availablelangs, string $expectedmatch): void {
         $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($checklanguage, $availablelangs);
         $this->assertEquals($expectedmatch, $matched);
     }
@@ -243,14 +251,14 @@ class parsed_string_test extends \basic_testcase {
      *
      * @return array Dataset
      */
-    public function get_default_spell_check_dictionary_provider(): array {
+    public static function get_default_spell_check_dictionary_provider(): array {
         return [
             ['en', ['en', 'en_US', 'en_GB'], 'en'],
             ['en', ['en_US', 'en_GB'], 'en_GB'],
             ['fr', ['fr', 'fr_FR'], 'fr'],
             ['fr', ['fr_FR'], 'fr_FR'],
             ['fr', ['fr_FR'], 'fr_FR'],
-            ['de', ['de_AT', 'de_CH'], 'de_AT']
+            ['de', ['de_AT', 'de_CH'], 'de_AT'],
         ];
     }
 }

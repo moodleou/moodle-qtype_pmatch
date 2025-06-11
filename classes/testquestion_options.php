@@ -36,7 +36,7 @@ class testquestion_options {
             'statematches' => \qtype_pmatch\testquestion_response::MATCHED,
             'statemissedpositive' => \qtype_pmatch\testquestion_response::MISSED_POSITIVE,
             'statemissednegative' => \qtype_pmatch\testquestion_response::MISSED_NEGATIVE,
-            'stateungraded' => \qtype_pmatch\testquestion_response::UNGRADED
+            'stateungraded' => \qtype_pmatch\testquestion_response::UNGRADED,
     ];
 
     /**
@@ -64,6 +64,10 @@ class testquestion_options {
         $this->question = $question;
     }
 
+    /**
+     * Get the URL parameters for this report.
+     * @return array the URL parameters.
+     */
     protected function get_url_params() {
         $params = [];
         $params['id'] = $this->question->id;
@@ -73,6 +77,10 @@ class testquestion_options {
         return $params;
     }
 
+    /**
+     * Get the initial data to put into the form.
+     * @return object the data to put into the form.
+     */
     public function get_initial_form_data() {
         $toform = new \stdClass();
         $toform->pagesize   = $this->pagesize;
@@ -84,6 +92,12 @@ class testquestion_options {
         return $toform;
     }
 
+    /**
+     * Set up this options object from the data in the form.
+     * This is used when the form is submitted, and we want to update the
+     * settings in this object.
+     * @param object $fromform The data from $mform->get_data() from the settings form.
+     */
     public function setup_from_form_data($fromform) {
         $this->pagesize   = $fromform->pagesize;
         $this->states = [];
@@ -94,6 +108,11 @@ class testquestion_options {
         }
     }
 
+    /**
+     * Set up this options object from the URL parameters.
+     * This is used when the page is loaded, and we want to update the
+     * settings in this object.
+     */
     public function setup_from_params() {
         $this->pagesize = optional_param('pagesize', $this->pagesize, PARAM_INT);
         $states = optional_param('states', '', PARAM_ALPHAEXT);

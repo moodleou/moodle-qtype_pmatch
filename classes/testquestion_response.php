@@ -79,6 +79,11 @@ class testquestion_response {
         return $testresponse;
     }
 
+    /**
+     * Set the graded fraction value.
+     *
+     * @param float $value The value to set.
+     */
     public function set_gradedfraction($value) {
         $this->gradedfraction = round($value);
     }

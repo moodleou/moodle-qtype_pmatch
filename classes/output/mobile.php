@@ -25,6 +25,14 @@ namespace qtype_pmatch\output;
  */
 class mobile {
 
+    /**
+     * Returns the mobile view for the pattern match question type.
+     *
+     * This method provides the HTML and JavaScript required for rendering
+     * the pattern match question type in mobile app.
+     *
+     * @return array An array containing templates and JavaScript for the mobile view.
+     */
     public static function pmatch_view() {
         global $CFG;
         // General notes:
@@ -36,10 +44,10 @@ class mobile {
             'templates' => [
                 [
                     'id' => 'main',
-                    'html' => file_get_contents($CFG->dirroot . '/question/type/pmatch/mobile/pmatch.html')
+                    'html' => file_get_contents($CFG->dirroot . '/question/type/pmatch/mobile/pmatch.html'),
                 ],
             ],
-            'javascript' => file_get_contents($CFG->dirroot . '/question/type/pmatch/mobile/pmatch.js')
+            'javascript' => file_get_contents($CFG->dirroot . '/question/type/pmatch/mobile/pmatch.js'),
         ];
     }
 }

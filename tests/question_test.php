@@ -38,8 +38,12 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  *
  * @covers \qtype_pmatch_question
  */
-class question_test extends \basic_testcase {
-    public function test_compare_string_with_wildcard() {
+final class question_test extends \basic_testcase {
+
+    /**
+     * Test that the pmatch expression is correctly compared with a string.
+     */
+    public function test_compare_string_with_wildcard(): void {
         // Test case sensitive literal matches.
         $options = new pmatch_options();
         $this->assertTrue(qtype_pmatch_question::compare_string_with_pmatch_expression('mop',
@@ -69,7 +73,7 @@ class question_test extends \basic_testcase {
                                                                     'match_c(C)', $options));
     }
 
-    public function test_is_complete_response() {
+    public function test_is_complete_response(): void {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertFalse($question->is_complete_response([]));
@@ -85,10 +89,7 @@ class question_test extends \basic_testcase {
                                                         ['answer' => 'Long kive the Kin.']));
     }
 
-    public function test_is_complete_response_with_spelling() {
-    }
-
-    public function test_is_gradable_response() {
+    public function test_is_gradable_response(): void {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertFalse($question->is_gradable_response([]));
@@ -103,7 +104,7 @@ class question_test extends \basic_testcase {
         $this->assertTrue($question->is_gradable_response(['answer' => 'Long kive the Kin.']));
     }
 
-    public function test_grading() {
+    public function test_grading(): void {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
         $this->assertEquals([0, question_state::$gradedwrong],
@@ -129,7 +130,7 @@ class question_test extends \basic_testcase {
             $question->grade_response(['answer' => 'D’Angelo']));
     }
 
-    public function test_get_correct_response() {
+    public function test_get_correct_response(): void {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
         $this->assertEquals(['answer' => 'Tom'], $question->get_correct_response());
 
@@ -140,19 +141,19 @@ class question_test extends \basic_testcase {
         $this->assertEquals(['answer' => '0'], $question->get_correct_response());
     }
 
-    public function test_get_question_summary() {
+    public function test_get_question_summary(): void {
         $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $qsummary = $sa->get_question_summary();
         $this->assertEquals('Who was Jane\'s companion : __________', $qsummary);
     }
 
-    public function test_summarise_response() {
+    public function test_summarise_response(): void {
         $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $summary = $sa->summarise_response(['answer' => 'dog']);
         $this->assertEquals('dog', $summary);
     }
 
-    public function test_classify_response() {
+    public function test_classify_response(): void {
         $sa = qtype_pmatch_test_helper::make_a_pmatch_question();
         $sa->start_attempt(new \question_attempt_step(), 1);
 

@@ -13,8 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * Defines the testquestion_import_helper class.
+ * This file defines the testquestion_import_helper class and import interfaces for
+ * the pattern match question type.
  *
  * @package qtype_pmatch
  * @copyright 2019 The Open University

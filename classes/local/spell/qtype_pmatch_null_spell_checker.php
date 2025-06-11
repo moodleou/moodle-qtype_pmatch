@@ -26,14 +26,17 @@ namespace qtype_pmatch\local\spell;
  */
 class qtype_pmatch_null_spell_checker extends qtype_pmatch_spell_checker {
 
+    #[\Override]
     public function is_in_dictionary($word) {
         return true;
     }
 
+    #[\Override]
     public static function get_name() {
         return get_string('spellcheckernull', 'qtype_pmatch');
     }
 
+    #[\Override]
     public static function is_available() {
         return true;
     }

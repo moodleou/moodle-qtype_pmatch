@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/questionlib.php');
 /**
  * This is the check expression API for pattern match question type.
  *
+ * @package    qtype_pmatch
  * @copyright  2023 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +42,7 @@ class check_expression extends external_api {
     public static function check_valid_expression_returns(): external_single_structure {
         return new external_single_structure([
             'isvalid' => new external_value(PARAM_BOOL, 'Status when check'),
-            'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL)
+            'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL),
         ]);
     }
 

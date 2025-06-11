@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * OU pmatch question type language strings.
  *
@@ -22,7 +21,6 @@
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 $string['add'] = 'Add';
 $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
@@ -33,9 +31,9 @@ $string['allowsuperscript'] = 'Allow use of superscript';
 $string['answeringoptions'] = 'Options For Entering Answers';
 $string['answeroptions'] = 'Answer options';
 $string['anyotheranswer'] = 'Any other answer';
-$string['applydictionarycheck'] = 'Spell checking';
 $string['amatiwsurl'] = 'Amati webservice URL';
 $string['amatiwsurl_desc'] = 'URL for the Amati webservice';
+$string['applydictionarycheck'] = 'Spell checking';
 $string['answer'] = 'Answer: {$a}';
 $string['answermustbegiven'] = 'You must enter an answer if there is a grade or feedback.';
 $string['answermustmatch'] = 'Answer must match';
@@ -63,9 +61,6 @@ In the above example, because the responses all start the same, you could also s
 
 If you have a short phrase you want to match, you should enclose it in square brackets (`[...]`). E.g. `match ([numerous words make a short sentence])`. You can combine pipe and square bracketed sentences if desired.';
 $string['correctanswers_link'] = 'Pattern-match_question_type_detailed_documentation#Pattern_match_syntax';
-$string['errors'] = 'Please fix the following problems : {$a}';
-$string['error:title'] = 'Error';
-$string['error:blank'] = 'The response cannot be blank';
 $string['env_dictmissing'] = 'Missing spell check dictionary {$a->langforspellchecker} for installed language {$a->humanfriendlylang} is installed.';
 $string['env_dictmissing2'] = 'Student attempted a spell check in language \'{$a}\'. But aspell dictionary for this language is not installed.';
 $string['env_dictok'] = 'Spell check dictionary {$a->langforspellchecker} for installed language {$a->humanfriendlylang} is installed.';
@@ -73,6 +68,9 @@ $string['env_peclnormalisationmissing'] = 'PECL Package for Unicode Normalizer a
 $string['env_peclnormalisationok'] = 'PECL Package for Unicode Normalizer appears to be correctly installed';
 $string['env_pspellmissing'] = 'Pspell library appears not to be correctly installed';
 $string['env_pspellok'] = 'Pspell library appears to be correctly installed';
+$string['error:title'] = 'Error';
+$string['error:blank'] = 'The response cannot be blank';
+$string['errors'] = 'Please fix the following problems : {$a}';
 $string['environmentcheck'] = 'Environment checks for the pmatch question type';
 $string['err_ousupsubnotsupportedonmobile'] = 'This question requires superscripts or subscripts and so does not yet work in this app. Please answer this question in the web browser.';
 $string['err_providepmatchexpression'] = 'You must provide a pmatch expression here.';
@@ -94,7 +92,6 @@ $string['inputareatoobig'] = 'The input area defined by "{$a}" is too big. Input
 $string['minresponses'] = 'Minimum number of responses';
 $string['minresponses_desc'] = 'Minimum number of marked responses that should be uploaded in order for the Amati system to generate rules.';
 $string['nolanguagesfound'] = '<i>No languages found</i>';
-$string['minresponses_desc'] = 'Minimum number of marked responses that should be uploaded in order for the Amati system to generate rules';
 $string['modelanswer'] = 'Model answer';
 $string['modelanswer_appropriateinputsize'] = 'Appropriate input size:';
 $string['modelanswer_possibleanswerplaceholders'] = 'Possible answer placeholders';

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 /**
  * This page allows responses to be tested against the rules contained in the question.
  * The user can select one or more responses, and have the computer mark these, or
@@ -39,6 +37,7 @@
 // phpcs:disable moodle.Files.RequireLogin.Missing
 // phpcs:disable moodle.Files.MoodleInternal.MoodleInternalGlobalState
 
+/** @var bool **/
 const NO_OUTPUT_BUFFERING = true;
 
 require_once(__DIR__ . '/../../../config.php');
