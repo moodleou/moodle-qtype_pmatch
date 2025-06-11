@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Defines the hooks necessary to make the pmatch question type combinable
+/** * Combinable pattern match question type.
  *
- * @package   qtype_pmatch
+ * This file defines the combinable pattern match question type, which is used
+ * as a sub-question in a combined question.
+ *
+ * @package    qtype_pmatch
  * @copyright  2013 The Open University
- * @author     Jamie Pratt <me@jamiep.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,18 +34,33 @@ use qtype_pmatch\utils;
 
 require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
 
+/**
+ * Defines the hooks necessary to make the pmatch question type combinable
+ *
+ * @package    qtype_pmatch
+ * @copyright  2013 The Open University
+ * @author     Jamie Pratt <me@jamiep.org>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_type_base {
 
+    /**
+     * The name of the question type.
+     * @var string
+     */
     protected $identifier = 'pmatch';
 
+    #[\Override]
     protected function extra_question_properties() {
         return ['forcelength' => '0'];
     }
 
+    #[\Override]
     protected function extra_answer_properties() {
         return ['fraction' => '1', 'feedback' => ['text' => '', 'format' => FORMAT_PLAIN]];
     }
 
+    #[\Override]
     public function subq_form_fragment_question_option_fields() {
         return [
             'allowsubscript' => null,
@@ -57,24 +73,28 @@ class qtype_combined_combinable_type_pmatch extends qtype_combined_combinable_ty
             'converttospace' => ',;:',
             'modelanswer' => '',
             'responsetemplate' => '',
-            'synonymsdata' => []
+            'synonymsdata' => [],
         ];
     }
 
+    #[\Override]
     protected function third_param_for_default_question_text() {
         return QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE;
     }
 }
 
-
+/**
+ * The combinable pattern match question type.
+ * This class defines the form fragment for the pattern match question type
+ * when it is used as a sub-question in a combined question.
+ *
+ * @package    qtype_pmatch
+ * @copyright  2013 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ **/
 class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_entry {
 
-    /**
-     * @param moodleform      $combinedform
-     * @param MoodleQuickForm $mform
-     * @param                 $repeatenabled
-     * @return mixed
-     */
+    #[\Override]
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
         $mform->addElement('select', $this->form_field_name('usecase'), get_string('casesensitive', 'qtype_pmatch'), [
             get_string('caseno', 'qtype_pmatch'),
@@ -184,6 +204,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         $this->js_call();
     }
 
+    #[\Override]
     public function data_to_form($context, $fileoptions) {
         $answers = ['answer' => []];
         if ($this->questionrec !== null) {
@@ -207,7 +228,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         return $data;
     }
 
-
+    #[\Override]
     public function validate() {
         $errors = [];
 
@@ -248,6 +269,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         return $errors;
     }
 
+    #[\Override]
     public function get_sup_sub_editor_option() {
         if ($this->question->allowsubscript && $this->question->allowsuperscript) {
             return 'both';
@@ -260,12 +282,16 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         }
     }
 
+    #[\Override]
     public function has_submitted_data() {
         return $this->submitted_data_array_not_empty('answer') || parent::has_submitted_data();
     }
 
     /**
-     * Perform the needed JS setup for this question type.
+     * Add the JavaScript required for the pattern match question type.
+     *
+     * This method is called to include the necessary JavaScript files and initialize
+     * the JavaScript modules for the pattern match question type.
      */
     public function js_call(): void {
         global $PAGE;

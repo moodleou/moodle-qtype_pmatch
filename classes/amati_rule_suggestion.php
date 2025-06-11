@@ -48,14 +48,33 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  */
 class amati_rule_suggestion {
 
+    /**
+     * The prefix for AMATI rules.
+     * This is used to identify the start of a rule and to remove it when translating to pmatch.
+     */
     const AMATI_RULE_PREFIX = 'correct_response(A) :-';
+
+    /**
+     * The empty rule used by AMATI when no rules are found.
+     * This is used to identify when no rules are returned from the AMATI web service.
+     */
     const AMATI_EMPTY_RULE = 'correct_response(A).';
     /**
      * Operators in AMATI rules add or exclude a phrase from a match or provide an alternate and
      * include add, esclude and or
      */
     const RULE_OPERATOR_AND = 'AND';
+
+    /**
+     * The NOT operator in AMATI rules.
+     * This is used to exclude a phrase from a match.
+     */
     const RULE_OPERATOR_NOT = 'NOT';
+
+    /**
+     * The OR operator in AMATI rules.
+     * This is used to provide an alternate match.
+     */
     const RULE_OPERATOR_OR = 'OR';
 
     /**
@@ -317,7 +336,7 @@ class amati_rule_suggestion {
      * @param string $rule amati rule to translate to pmatch
      * @return string translated pmatch rule
      */
-    public static function get_pmatch_rule_from_amati_rule ($rule) {
+    public static function get_pmatch_rule_from_amati_rule($rule) {
         // Translate each rule into an array of parameter objects that describe
         // the AMATI rule.
         $subrulesasparameters = self::get_parameters_from_amati_rule($rule);
@@ -331,7 +350,7 @@ class amati_rule_suggestion {
      * @param string[] $rule amati rules to translate to pmatch
      * @return string[] translated pmatch rules
      */
-    public static function get_pmatch_rules_from_amati_rules ($amatirules) {
+    public static function get_pmatch_rules_from_amati_rules($amatirules) {
         $rules = [];
         foreach ($amatirules as $rule) {
             $pmatchrule = self::get_pmatch_rule_from_amati_rule($rule->rule);

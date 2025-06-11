@@ -32,15 +32,25 @@ require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
  *
  * @covers \qtype_pmatch
  */
-class questiontype_test extends \basic_testcase {
+final class questiontype_test extends \basic_testcase {
+
+    /** @var string[] List of files to include for code coverage */
     public static $includecoverage = ['question/type/questiontype.php',
                                         'question/type/pmatch/questiontype.php'];
+    /** @var \qtype_pmatch The question type instance being tested */
     protected $qtype;
 
+    #[\Override]
     protected function setUp(): void {
+        parent::setUp();
         $this->qtype = new \qtype_pmatch();
     }
 
+    /**
+     * Returns a test question data object with predefined answers.
+     *
+     * @return \stdClass
+     */
     protected function get_test_question_data(): \stdClass {
         $q = new \stdClass();
         $q->id = 1;
@@ -51,20 +61,32 @@ class questiontype_test extends \basic_testcase {
         return $q;
     }
 
-    public function test_name() {
+    /**
+     * Tests the name of the question type.
+     */
+    public function test_name(): void {
         $this->assertEquals('pmatch', $this->qtype->name());
     }
 
-    public function test_can_analyse_responses() {
+    /**
+     * Tests the can_analyse_responses method of the question type.
+     */
+    public function test_can_analyse_responses(): void {
         $this->assertTrue($this->qtype->can_analyse_responses());
     }
 
-    public function test_get_random_guess_score() {
+    /**
+     * Tests the get_random_guess_score method of the question type.
+     */
+    public function test_get_random_guess_score(): void {
         $q = $this->get_test_question_data();
         $this->assertEquals(0, $this->qtype->get_random_guess_score($q));
     }
 
-    public function test_get_possible_responses() {
+    /**
+     * Tests the get_possible_responses method of the question type.
+     */
+    public function test_get_possible_responses(): void {
         $q = $this->get_test_question_data();
 
         $this->assertEquals([

@@ -37,6 +37,9 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  */
 class behat_qtype_pmatch extends behat_base {
 
+    /**
+     * @var string File path to default responses csv file.
+     */
     public static $responsesfilepath = "fixtures/myfirstquestion_responses.csv";
 
     /**
@@ -98,7 +101,7 @@ class behat_qtype_pmatch extends behat_base {
      * @param string|null $pathtoresponses responses file to load. Defaults to self::$responsesfilepath.
      * @return array [$responses, $problems].
      */
-    protected function load_responses(qtype_pmatch_question $question, string $pathtoresponses = null): array {
+    protected function load_responses(qtype_pmatch_question $question, ?string $pathtoresponses = null): array {
         $pathtoresponses = $pathtoresponses ?? self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/../' . $pathtoresponses;
 
@@ -125,7 +128,7 @@ class behat_qtype_pmatch extends behat_base {
      * @param string $questionname the question name to use.
      * @param string|null $pathtoresponses the file of responses to load.
      */
-    protected function intialise_default_responses(string $questionname, string $pathtoresponses = null): void {
+    protected function intialise_default_responses(string $questionname, ?string $pathtoresponses = null): void {
         $question = $this->get_question_by_name($questionname);
 
         [$responses] = $this->load_responses($question, $pathtoresponses);

@@ -34,12 +34,12 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
  * @covers \qtype_pmatch\testquestion_response
  * @covers \qtype_pmatch\testquestion_responses
  */
-class testquestion_responses_test extends testquestion_test_base {
+final class testquestion_responses_test extends testquestion_test_base {
 
     /**
      * Test basic instantiation of the test_response class.
      */
-    public function test_intialise_test_response() {
+    public function test_intialise_test_response(): void {
         $this->resetAfterTest();
         // No data returns null.
         $testresponse = testquestion_response::create();
@@ -80,7 +80,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test data is correctly converted to a response object.
      */
-    public function test_data_to_responses() {
+    public function test_data_to_responses(): void {
         $this->resetAfterTest();
         // Empty array.
         $responses = testquestion_responses::data_to_responses([]);
@@ -108,7 +108,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test basic instantiation of the test_response class.
      */
-    public function test_intialise_test_responses_create_for_question() {
+    public function test_intialise_test_responses_create_for_question(): void {
         // An example using the DB.
         $this->resetAfterTest();
 
@@ -123,7 +123,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test responses are correctly retrieved by id.
      */
-    public function test_get_responses_by_ids() {
+    public function test_get_responses_by_ids(): void {
         $this->resetAfterTest();
         /** @var \qtype_pmatch_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('qtype_pmatch');
@@ -148,7 +148,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test that responses are correctly added to the db.
      */
-    public function test_add_responses() {
+    public function test_add_responses(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -190,7 +190,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test update_response.
      */
-    public function test_update_response() {
+    public function test_update_response(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -214,7 +214,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test delete_responses_by_ids.
      */
-    public function test_delete_responses_by_ids() {
+    public function test_delete_responses_by_ids(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -233,7 +233,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test get_question_grade_summary_counts.
      */
-    public function test_get_question_grade_summary_counts() {
+    public function test_get_question_grade_summary_counts(): void {
         $this->resetAfterTest();
 
         $responses = $this->load_default_responses();
@@ -272,7 +272,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Tests grade_response.
      */
-    public function test_grade_response() {
+    public function test_grade_response(): void {
         $this->resetAfterTest();
 
         $responses = $this->load_default_responses();
@@ -316,7 +316,7 @@ class testquestion_responses_test extends testquestion_test_base {
      * Test load_responses using the helper. This was the original method prior to the amati
      * testquestion as used above.
      */
-    public function test_load_responses_from_file() {
+    public function test_load_responses_from_file(): void {
         $this->resetAfterTest();
         $question = \qtype_pmatch_test_helper::make_a_pmatch_question();
         $question->id = 1;
@@ -337,7 +337,7 @@ class testquestion_responses_test extends testquestion_test_base {
                 [0, "one not two but three and four."],
                 [1, "another test"],
                 [null, 'testing anything.'],
-                [null, '']
+                [null, ''],
         ];
         $expectedresponses = [];
         foreach ($data as $datarow) {
@@ -353,7 +353,7 @@ class testquestion_responses_test extends testquestion_test_base {
                 'Each row should contain exactly two items, a numerical mark and a response.' .
                 ' Row <b>11</b> contains <b>3</b> item(s).',
                 'greater than one: The expected mark was 2. Only 0 or 1 are allowed.',
-                'negative: The expected mark was -1. Only 0 or 1 are allowed.'
+                'negative: The expected mark was -1. Only 0 or 1 are allowed.',
         ];
 
         $this->assertEquals($expectedproblems, $problems);
@@ -365,7 +365,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test the try rule function.
      */
-    public function test_try_rule() {
+    public function test_try_rule(): void {
         $this->resetAfterTest();
         $responses = $this->load_default_responses();
         foreach ($responses as $response) {
@@ -404,7 +404,7 @@ class testquestion_responses_test extends testquestion_test_base {
      * grade_response calles grading strategy question_first_matching_answer_grading_strategy::grade()
      * which uses pmatch/question.php::compare_response_with_answer()
      */
-    public function test_grade_rule_with_response() {
+    public function test_grade_rule_with_response(): void {
         $this->resetAfterTest();
         $this->currentquestion = $this->create_default_question();
         $answers = $this->currentquestion->get_answers();
@@ -429,7 +429,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test grading responses by a rule.
      */
-    public function test_grade_rule_with_responses() {
+    public function test_grade_rule_with_responses(): void {
         $this->resetAfterTest();
         $this->currentquestion = $this->create_default_question();
         $rules = $this->currentquestion->get_answers();
@@ -442,7 +442,7 @@ class testquestion_responses_test extends testquestion_test_base {
                 'Tom Dick or Harry' => [13],
                 'Tom' => [13],
                 'Harry' => [13],
-                'Tom was janes companion' => [13]
+                'Tom was janes companion' => [13],
         ];
 
         foreach ($compareresponses as $compareresponse) {
@@ -460,7 +460,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test individual grading rule accuracy.
      */
-    public function test_get_rule_accuracy_counts() {
+    public function test_get_rule_accuracy_counts(): void {
         $this->resetAfterTest();
 
         $this->currentquestion = $this->create_default_question();
@@ -501,7 +501,7 @@ class testquestion_responses_test extends testquestion_test_base {
      * Test the grading process including saving rule matches works correctly by re grading responses
      * after updating a rule.
      */
-    public function test_regrading() {
+    public function test_regrading(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -569,7 +569,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test the rule matching table
      */
-    public function test_save_rule_matches() {
+    public function test_save_rule_matches(): void {
         $this->resetAfterTest();
 
         $responses = $this->load_default_responses();
@@ -595,7 +595,7 @@ class testquestion_responses_test extends testquestion_test_base {
                                 3 => 'Tom was janes companion'],
                         'match_w(Dick)' => [0 => 'Tom Dick or Harry', 1 => 'Dick'],
                         'match_w(Felicity)' => [0 => "Felicity"],
-                ]
+                ],
         ];
         // Grade a response and save results to the qtype_pmatch_rule_matches table.
         testquestion_responses::save_rule_matches($this->currentquestion);
@@ -672,7 +672,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test validate function with json file type.
      */
-    public function test_validate_json_file_type() {
+    public function test_validate_json_file_type(): void {
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_json_error_1.json';
@@ -710,7 +710,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test validate_html_file_type function.
      */
-    public function test_validate_html_file_type() {
+    public function test_validate_html_file_type(): void {
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_html_error_1.html';
@@ -748,7 +748,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test validate_csv_file_type function.
      */
-    public function test_validate_csv_file_type() {
+    public function test_validate_csv_file_type(): void {
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_error_1.csv';
@@ -790,7 +790,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test validate_xlsx_file_type function.
      */
-    public function test_validate_xlsx_file_type() {
+    public function test_validate_xlsx_file_type(): void {
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_error_1.xlsx';
@@ -832,7 +832,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test validate_ods_file_type function.
      */
-    public function test_validate_ods_file_type() {
+    public function test_validate_ods_file_type(): void {
         $this->resetAfterTest();
 
         $responsesfile = dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_error_1.ods';
@@ -880,7 +880,7 @@ class testquestion_responses_test extends testquestion_test_base {
      * @param int $expectedtotalrows Expected total rows
      * @param array $expectedrows List of expected rows
      */
-    public function test_get_responses(string $responsesfile, int $expectedtotalrows, array $expectedrows) {
+    public function test_get_responses(string $responsesfile, int $expectedtotalrows, array $expectedrows): void {
         $this->resetAfterTest();
         $testquestionimporthelper = new testquestion_import_helper($responsesfile);
         $importer = $testquestionimporthelper->import_factory();
@@ -894,7 +894,12 @@ class testquestion_responses_test extends testquestion_test_base {
         }
     }
 
-    public function get_responses_cases(): array {
+    /**
+     * Data provider for test_get_responses.
+     *
+     * @return array
+     */
+    public static function get_responses_cases(): array {
         return [
                 [
                         dirname(__FILE__) . '/' . 'fixtures/testreponses_json_normal.json',
@@ -903,8 +908,8 @@ class testquestion_responses_test extends testquestion_test_base {
                                 [0, 'Response 1'],
                                 [1, 'Response 2'],
                                 [0, 'Response 3'],
-                                [1, 'Response 4']
-                        ]
+                                [1, 'Response 4'],
+                        ],
                 ],
                 [
                         dirname(__FILE__) . '/' . 'fixtures/testreponses_html_normal.html',
@@ -913,8 +918,8 @@ class testquestion_responses_test extends testquestion_test_base {
                                 [0, 'Response 1'],
                                 [1, 'Response 2'],
                                 [0, 'Response 3'],
-                                [1, 'Response 4']
-                        ]
+                                [1, 'Response 4'],
+                        ],
                 ],
                 [
                         dirname(__FILE__) . '/' . 'fixtures/testreponses_csv_normal.csv',
@@ -923,8 +928,8 @@ class testquestion_responses_test extends testquestion_test_base {
                                 [0, 'Response 1'],
                                 [1, 'Response 2'],
                                 [0, 'Response 3'],
-                                [1, 'Response 4']
-                        ]
+                                [1, 'Response 4'],
+                        ],
                 ],
                 [
                         dirname(__FILE__) . '/' . 'fixtures/testreponses_xlsx_normal.xlsx',
@@ -933,8 +938,8 @@ class testquestion_responses_test extends testquestion_test_base {
                                 [0, 'Response 1'],
                                 [1, 'Response 2'],
                                 [0, 'Response 3'],
-                                [1, 'Response 4']
-                        ]
+                                [1, 'Response 4'],
+                        ],
                 ],
                 [
                         dirname(__FILE__) . '/' . 'fixtures/testreponses_ods_normal.ods',
@@ -943,16 +948,16 @@ class testquestion_responses_test extends testquestion_test_base {
                                 [0, 'Response 1'],
                                 [1, 'Response 2'],
                                 [0, 'Response 3'],
-                                [1, 'Response 4']
-                        ]
-                ]
+                                [1, 'Response 4'],
+                        ],
+                ],
         ];
     }
 
     /**
      * Test export function for qtype_pmatch
      */
-    public function test_xml_export() {
+    public function test_xml_export(): void {
         global $CFG;
         $this->resetAfterTest();
 
@@ -1136,7 +1141,7 @@ class testquestion_responses_test extends testquestion_test_base {
     /**
      * Test import function for qtype_pmatch
      */
-    public function test_xml_import() {
+    public function test_xml_import(): void {
         global $CFG;
         $this->resetAfterTest();
         $xml = '<!-- question: 0  -->

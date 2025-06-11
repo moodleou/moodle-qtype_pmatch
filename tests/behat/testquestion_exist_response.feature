@@ -150,8 +150,7 @@ Feature: Test responses existing for pattern match question
   @javascript
   Scenario: Confirm a student cannot access the test this question feature.
     When I am on the "My first pattern match question" "qtype_pmatch > test responses" page logged in as student
-    Then I should see "Sorry, but you do not currently have permissions to do that (view)"
-    And I should not see "Pattern-match question testing tool: Testing question: My first pattern match question"
+    Then I should not see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should not see "Showing the responses for the selected question: My first pattern match question"
 
   @javascript

@@ -37,14 +37,14 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @covers \pmatch_options
  * @covers \pmatch_parsed_string
  */
-class examples_test extends \basic_testcase {
+final class examples_test extends \basic_testcase {
     /** @var string where to look for examples. */
     protected $examplesdir = 'examples';
 
     /**
      * Main entry point. Run all the tests in all the example files.
      */
-    public function test_examples() {
+    public function test_examples(): void {
         foreach ($this->get_examples_list() as $name) {
             $this->run_tests_from($name);
         }
@@ -80,7 +80,7 @@ class examples_test extends \basic_testcase {
      *
      * @param string $name one of the paths returned by {@link get_examples_list()}.
      */
-    protected function run_tests_from(string $name) {
+    protected function run_tests_from(string $name): void {
         $expression = new pmatch_expression(file_get_contents($name . '.rules.txt'));
         if (!$expression->is_valid()) {
             $this->fail('Error parsing match rules in ' . $name . '.rules.txt' .

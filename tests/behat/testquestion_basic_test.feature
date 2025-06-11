@@ -151,7 +151,7 @@ Feature: Basic test of the question testing tool
     And I should see "Course 2"
 
     # Check the new course's testquestion data.
-    And I navigate to "Question bank" in current page administration
+    And I am on the "Course 2 copy 1" "core_question > course question bank" page
     And I choose "Pattern-match testing tool" action for "My first pattern match question" in the question bank
     Then I should see "Pattern-match question testing tool: Testing question: My first pattern match question"
     And I should see "testing one two three four" in the "#qtype-pmatch-testquestion_r0_c5" "css_element"

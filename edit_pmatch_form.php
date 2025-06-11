@@ -47,6 +47,15 @@ class qtype_pmatch_edit_form extends question_edit_form {
      */
     protected $suggestedrules = null;
 
+    /**
+     * Constructor for the pattern match question editing form.
+     *
+     * @param string $submiturl The URL to submit the form to.
+     * @param stdClass $question The question object being edited.
+     * @param string $category The category of the question.
+     * @param context[] $contexts The contexts in which the question is being edited.
+     * @param bool $formeditable Whether the form is editable or not.
+     */
     public function __construct($submiturl, $question, $category, $contexts, $formeditable = true) {
         // Separate the Any other' answer from the list of normal answers.
         if (!empty($question->options->answers)) {
@@ -61,6 +70,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         parent::__construct($submiturl, $question, $category, $contexts, $formeditable = true);
     }
 
+    #[\Override]
     protected function definition_inner($mform) {
         $this->general_answer_fields($mform);
         $standardplaceholders = $this->get_possible_answer_placeholders(6);
@@ -104,6 +114,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         return $output;
     }
 
+    #[\Override]
     protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
             $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
 
@@ -240,6 +251,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         }
     }
 
+    #[\Override]
     protected function get_more_choices_string() {
         return get_string('addmoreanswerblanks', 'qtype_pmatch');
     }
@@ -351,6 +363,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->setType('responsetemplate', PARAM_RAW_TRIMMED);
     }
 
+    #[\Override]
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                                             &$repeatedoptions, &$answersoption) {
         $repeated = [];
@@ -379,6 +392,9 @@ class qtype_pmatch_edit_form extends question_edit_form {
         return $repeated;
     }
 
+    /**
+     * Add the try button to the form.
+     */
     protected function get_try_button() {
         $html = '';
         if (!\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
@@ -469,8 +485,9 @@ EOT;
         return $html;
     }
 
-    /*
+    /**
      * Adds the rule suggestion fields to the form
+     *
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_rule_suggestion_fields($mform) {
@@ -519,6 +536,12 @@ EOT;
         }
     }
 
+    /**
+     * Prepares the question data for other answer.
+     *
+     * @param stdClass $question The question object to prepare.
+     * @return stdClass The prepared question object.
+     */
     protected function data_preprocessing_other_answer($question) {
         // Special handling of otheranswer.
         if ($this->otheranswer) {
@@ -541,6 +564,7 @@ EOT;
         return $question;
     }
 
+    #[\Override]
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_other_answer($question); // Must come first.
@@ -552,9 +576,9 @@ EOT;
         return $question;
     }
 
+    #[\Override]
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
 
         // Convert smart quotes to straight quotes in the form data before validating.
         if (isset($data['quotematching']) && !$data['quotematching']) {
@@ -609,6 +633,13 @@ EOT;
         return $errors;
     }
 
+    /**
+     * Validates the question text for placeholder errors.
+     *
+     * @param string $questiontext The question text to validate.
+     * @param bool $usesubsup Whether subscript and superscript are used in the question.
+     * @return array An array of errors found in the question text.
+     */
     protected function place_holder_errors($questiontext, $usesubsup) {
         // Check sizes of answer box within a reasonable range.
         $errors = [];
@@ -631,6 +662,7 @@ EOT;
         return $errors;
     }
 
+    #[\Override]
     public function qtype() {
         return 'pmatch';
     }

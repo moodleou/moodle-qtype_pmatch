@@ -35,22 +35,22 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 class testquestion_test_base extends \question_testcase {
 
     /**
-     * File path to default responses csv file.
+     * @var string File path to default responses csv file.
      */
     public static $responsesfilepath = "fixtures/testresponses.csv";
 
     /**
-     * File path to default graded responses csv file.
+     * @var string File path to default graded responses csv file.
      */
     public static $gradedresponses = "fixtures/testresponsesgraded.csv";
 
     /**
-     * Place holder for the current question object.
+     * @var qtype_pmatch_question Place holder for the current question object.
      */
     protected $currentquestion = null;
 
     /**
-     * File path to default rules json file representing rules returned from the AMATI web service.
+     * @var string File path to default rules json file representing rules returned from the AMATI web service.
      */
     public static $rulesfilepath = "fixtures/testquestion_rules.json";
 
@@ -63,8 +63,8 @@ class testquestion_test_base extends \question_testcase {
      * @return array as for testquestion_responses::load_responses_from_file.
      */
     protected function load_responses(
-            qtype_pmatch_question $question = null,
-            string $pathtoresponses = null,
+            ?qtype_pmatch_question $question = null,
+            ?string $pathtoresponses = null,
             int $count = 0): array {
         $pathtoresponses = $pathtoresponses ?? self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/' . $pathtoresponses;
@@ -96,7 +96,7 @@ class testquestion_test_base extends \question_testcase {
      * @param int $count Number of responses to load. 0 = load all responses in file
      * @return testquestion_response[] responses for the question
      */
-    protected function load_default_responses(string $pathtoresponses = null, int $count = 0): array {
+    protected function load_default_responses(?string $pathtoresponses = null, int $count = 0): array {
         global $DB;
         $this->currentquestion = $this->create_default_question();
 
@@ -138,7 +138,7 @@ class testquestion_test_base extends \question_testcase {
      * @param testquestion_response[] $responses
      * @param string|null $pathtoresponses file path to the required responses
      */
-    protected function update_response_grades_from_file(array $responses, string $pathtoresponses = null): void {
+    protected function update_response_grades_from_file(array $responses, ?string $pathtoresponses = null): void {
         $gradeddata = $this->load_graded_data($pathtoresponses);
 
         // Update computer marked grade.

@@ -48,7 +48,7 @@ class qtype_pmatch_external extends external_api {
     public static function check_response_returns() {
         return new external_single_structure([
                 'status' => new external_value(PARAM_ALPHA, 'Status when check'),
-                'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL)
+                'message' => new external_value(PARAM_RAW, 'The error message', VALUE_OPTIONAL),
         ]);
     }
 
@@ -103,7 +103,7 @@ class qtype_pmatch_external extends external_api {
                         'misspositive' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                         'missnegative' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
                         'accuracy' => new external_value(PARAM_INT, '', VALUE_OPTIONAL),
-                ])
+                ]),
         ]);
     }
 

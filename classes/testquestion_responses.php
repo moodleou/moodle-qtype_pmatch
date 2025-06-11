@@ -193,7 +193,7 @@ class testquestion_responses {
      * @param array $responseids ids of responses to delete
      * @return bool
      */
-    public static function delete_responses_by_ids ($responseids) {
+    public static function delete_responses_by_ids($responseids) {
         global $DB;
         $DB->delete_records_list('qtype_pmatch_rule_matches', 'testresponseid', $responseids);
         return $DB->delete_records_list('qtype_pmatch_test_responses', 'id', $responseids);

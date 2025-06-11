@@ -33,16 +33,16 @@ require_once($CFG->dirroot . '/question/type/pmatch/classes/privacy/provider.php
  *
  * @covers \qtype_pmatch\privacy\provider
  */
-class privacy_provider_test extends \core_privacy\tests\provider_testcase {
+final class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     // Include the privacy helper which has assertions on it.
 
-    public function test_get_metadata() {
+    public function test_get_metadata(): void {
         $collection = new \core_privacy\local\metadata\collection('qtype_pmatch');
         $actual = provider::get_metadata($collection);
         $this->assertEquals($collection, $actual);
     }
 
-    public function test_export_user_preferences_no_pref() {
+    public function test_export_user_preferences_no_pref(): void {
         $this->resetAfterTest();
 
         $user = $this->getDataGenerator()->create_user();
@@ -84,7 +84,7 @@ class privacy_provider_test extends \core_privacy\tests\provider_testcase {
      *
      * @return array Array of valid user preferences.
      */
-    public function user_preference_provider(): array {
+    public static function user_preference_provider(): array {
         return [
                 'testquestion_pagesize2' => ['testquestion_pagesize', '5', '5'],
                 'default mark 2' => ['defaultmark', '2', '2'],
@@ -99,7 +99,7 @@ class privacy_provider_test extends \core_privacy\tests\provider_testcase {
                 'forcelength no' => ['forcelength', '0', get_string('forcelengthno', 'qtype_pmatch')],
                 'applydictionarycheck yes' => ['applydictionarycheck', get_string('iso6391', 'langconfig'), 'en'],
                 'sentencedividers' => ['sentencedividers', '?.', '?.'],
-                'converttospace' => ['converttospace', ';:', ';:']
+                'converttospace' => ['converttospace', ';:', ';:'],
         ];
     }
 }

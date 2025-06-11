@@ -22,10 +22,15 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  *
  * @package   qtype_pmatch
  * @copyright 2013 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 org later
  */
 class qtype_pmatch_test_helper extends question_test_helper {
 
+    /**
+     * Returns a list of test questions that this helper can create.
+     *
+     * @return array
+     */
     public function get_test_questions() {
         return ['listen', 'test0', 'frogtoad', 'test1', 'spanish'];
     }
@@ -71,6 +76,8 @@ class qtype_pmatch_test_helper extends question_test_helper {
     }
 
     /**
+     * Create a pmatch listen.
+     *
      * @return stdClass data to create a pattern match question.
      */
     public function get_pmatch_question_form_data_listen(): stdClass {
@@ -119,6 +126,8 @@ class qtype_pmatch_test_helper extends question_test_helper {
     }
 
     /**
+     * Create a pmatch question frogtoad
+     *
      * @return stdClass data to create a pattern match question.
      */
     public function get_pmatch_question_form_data_frogtoad(): stdClass {
@@ -127,8 +136,10 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->name = 'Frog but not toad';
         $fromform->questiontext = ['text' => 'Type a sentence with the word frog but not toad.', 'format' => FORMAT_HTML];
         $fromform->defaultmark = 1.0;
-        $fromform->generalfeedback = ['text' => 'The word frog can appear within the sentence but not the word toad.',
-                'format' => FORMAT_HTML];
+        $fromform->generalfeedback = [
+            'text' => 'The word frog can appear within the sentence but not the word toad.',
+            'format' => FORMAT_HTML,
+        ];
         $fromform->allowsubscript = 0;
         $fromform->allowsuperscript = 0;
         $fromform->quotematching = 0;
@@ -136,7 +147,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
             [
                 'word' => '',
                 'synonyms' => '',
-            ]
+            ],
         ];
         $fromform->extenddictionary = '';
         $fromform->sentencedividers = '.?!';
@@ -149,7 +160,10 @@ class qtype_pmatch_test_helper extends question_test_helper {
                 ['text' => 'The word toad should not apear in your response.', 'format' => FORMAT_HTML],
                 ['text' => 'Well done! The word frog apears in your response.', 'format' => FORMAT_HTML],
             ];
-        $fromform->otherfeedback = ['text' => 'Sorry, no.', 'format' => FORMAT_HTML];
+        $fromform->otherfeedback = [
+            'text' => 'Sorry, no.',
+            'format' => FORMAT_HTML,
+        ];
         $fromform->penalty = 0.3333333;
 
         $fromform->hint = [
@@ -160,7 +174,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
             [
                 'text' => 'Use the word frog with any other words but not the word toad.',
                 'format' => FORMAT_HTML,
-            ]
+            ],
         ];
 
         return $fromform;
@@ -177,16 +191,22 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform = new stdClass();
         $fromform->quotematching = 0;
         $fromform->name = 'Spanish question';
-        $fromform->questiontext = ['text' => 'What is the Spanish for "How do you feel?" __15x1__', 'format' => FORMAT_HTML];
+        $fromform->questiontext = [
+            'text' => 'What is the Spanish for "How do you feel?" __15x1__',
+            'format' => FORMAT_HTML,
+        ];
         $fromform->defaultmark = 1.0;
-        $fromform->generalfeedback = ['text' => 'The answer is ¿Cómo te sientes?', 'format' => FORMAT_HTML];
+        $fromform->generalfeedback = [
+            'text' => 'The answer is ¿Cómo te sientes?',
+            'format' => FORMAT_HTML,
+        ];
         $fromform->allowsubscript = 0;
         $fromform->allowsuperscript = 0;
         $fromform->synonymsdata = [
             [
                 'word' => '¿Cómo',
                 'synonyms' => '¿Como',
-            ]
+            ],
         ];
         $fromform->extenddictionary = '';
         $fromform->sentencedividers = '.!';
@@ -197,7 +217,10 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $fromform->feedback = [
             ['text' => 'Well done!', 'format' => FORMAT_HTML],
         ];
-        $fromform->otherfeedback = ['text' => 'Sorry, no.', 'format' => FORMAT_HTML];
+        $fromform->otherfeedback = [
+            'text' => 'Sorry, no.',
+            'format' => FORMAT_HTML,
+        ];
         $fromform->penalty = 0.3333333;
 
         $fromform->hint = [
@@ -208,7 +231,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
             [
                 'text' => 'This is an idiomatic expression, so either you know it or you don\'t.',
                 'format' => FORMAT_HTML,
-            ]
+            ],
         ];
 
         return $fromform;
@@ -245,7 +268,7 @@ class qtype_pmatch_test_helper extends question_test_helper {
                 13 => new question_answer(13, 'match (testing one two three four)', 1.0,
                         'Well done!', FORMAT_MOODLE),
                 14 => new question_answer(14,
-                        '*', 0.0, 'Sorry, no.', FORMAT_MOODLE)
+                        '*', 0.0, 'Sorry, no.', FORMAT_MOODLE),
         ];
 
         $synonyms = [];

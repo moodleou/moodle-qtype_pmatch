@@ -31,6 +31,11 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
     /** @var resource the enchant dictionary. */
     protected $dictionary = null;
 
+    /**
+     * Constructor for the enchant spell checker.
+     *
+     * @param string $lang The language code for the spell checker.
+     */
     public function __construct($lang) {
         parent::__construct($lang);
 
@@ -42,6 +47,9 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         $this->dictionary = enchant_broker_request_dict($broker, $lang);
     }
 
+    /**
+     * Destructor to free the dictionary resource.
+     */
     public function __destruct() {
         if ($this->dictionary && PHP_MAJOR_VERSION <= 7) {
             // phpcs:ignore
@@ -49,14 +57,17 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         }
     }
 
+    #[\Override]
     public function is_in_dictionary($word) {
         return enchant_dict_check($this->dictionary, $word);
     }
 
+    #[\Override]
     public static function get_name() {
         return get_string('spellcheckerenchant', 'qtype_pmatch');
     }
 
+    #[\Override]
     public static function is_available() {
         if (!function_exists('enchant_broker_init')) {
             return false;
@@ -65,12 +76,15 @@ class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
         return (bool) self::get_broker();
     }
 
+    #[\Override]
     public function is_initialised() {
         return (bool) $this->dictionary;
     }
 
     /**
-     * @return a broker.
+     * Get the enchant broker instance.
+     *
+     * @return resource a broker.
      */
     protected static function get_broker() {
         if (self::$broker === null) {

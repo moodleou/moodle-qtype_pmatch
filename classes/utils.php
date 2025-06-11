@@ -24,6 +24,10 @@
 
 namespace qtype_pmatch;
 
+/**
+ * Utility class for pattern match question type.
+ *
+ */
 class utils {
 
     /**

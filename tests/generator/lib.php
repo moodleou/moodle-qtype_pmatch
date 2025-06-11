@@ -28,6 +28,11 @@ class qtype_pmatch_generator extends component_generator_base {
      */
     protected $responsecount = 0;
 
+    /**
+     * Reset the response count.
+     * This is useful for tests that need to create multiple responses
+     * and want to start counting from 1 each time.
+     */
     public function reset() {
         $this->responsecount = 0;
     }
@@ -46,7 +51,7 @@ class qtype_pmatch_generator extends component_generator_base {
             'response' => 'Test response ' . $this->responsecount,
             'questionid' => $question ? $question->id : 0,
             'expectedfraction' => null,
-            'gradedfraction' => null
+            'gradedfraction' => null,
         ];
 
         $record = $this->datagenerator->combine_defaults_and_record($defaults, $record);

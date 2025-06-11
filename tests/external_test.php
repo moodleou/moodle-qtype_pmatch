@@ -36,12 +36,12 @@ use moodle_exception;
  *
  * @covers \qtype_pmatch\external
  */
-class external_test extends \advanced_testcase {
+final class external_test extends \advanced_testcase {
     /**
      * Test the qtype_pmatch_inplace_editable function.
      * @runInSeparateProcess
      */
-    public function test_pmatch_inplace_editable() {
+    public function test_pmatch_inplace_editable(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 

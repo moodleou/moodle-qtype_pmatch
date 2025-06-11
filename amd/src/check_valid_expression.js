@@ -45,6 +45,7 @@ const validation = () => {
                 promises[0].then(function(data) {
                     FormEvents.notifyFieldValidationFailure(e.target, data.message);
                     M.util.js_complete(pendingid);
+                    return;
                 }).catch(displayException);
             } else {
                 FormEvents.notifyFieldValidationFailure(e.target, '');

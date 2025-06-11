@@ -317,7 +317,7 @@ define(['jquery'], function($) {
             const ref = 'id_' + id;
             return this.store[ref].length;
         },
-
+        /* eslint-disable complexity, max-depth */
         getStoredResult: function(id) {
             const ref = 'id_' + id;
             let rule = '';
@@ -499,7 +499,7 @@ define(['jquery'], function($) {
             }
             return rule.trim();
         },
-
+        /* eslint-enable complexity, max-depth */
         displayResult: function(id) {
             const result = this.getStoredResult(id);
             $('#rc_result_' + id).text(result);

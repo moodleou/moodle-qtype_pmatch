@@ -24,6 +24,8 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_renderer extends qtype_renderer {
+
+    #[\Override]
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
         /** @var qtype_pmatch_question $question */
@@ -100,7 +102,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         } else {
             $inputattributes = [
                 'type' => 'text',
-                'value' => $currentanswer
+                'value' => $currentanswer,
             ];
             $inputattributes['size'] = $cols;
             $input = html_writer::empty_tag('input', $inputattributes + $attributes) . $feedbackimg;
@@ -189,6 +191,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
         );
     }
 
+    #[\Override]
     public function specific_feedback(question_attempt $qa) {
         /** @var qtype_pmatch_question $question */
         $question = $qa->get_question();
@@ -202,6 +205,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
                 $qa, 'question', 'answerfeedback', $answer->id);
     }
 
+    #[\Override]
     public function correct_response(question_attempt $qa) {
         return '';
     }
@@ -227,12 +231,24 @@ class qtype_pmatch_renderer extends qtype_renderer {
         return html_writer::tag('div', $link, ['class' => 'questiontestslink']);
     }
 
-    public function back_to_test_question_link($qid) {
+    /**
+     * Displays a link to go back to the test question page.
+     *
+     * @param int $qid question id.
+     * @return string HTML fragment.
+     */
+    public function back_to_test_question_link(int $qid): string {
         return html_writer::tag('p', html_writer::link(
                 new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $qid]),
                 get_string('testquestionbacklink', 'qtype_pmatch')));
     }
 
+    /**
+     * Displays the feedback
+     *
+     * @param object $feedback object containing feedback data.
+     * @return string HTML fragment.
+     */
     public function display_feedback($feedback) {
         $html = html_writer::tag('p', html_writer::div(
                     get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved))));

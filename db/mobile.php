@@ -32,13 +32,13 @@ $addons = [
                 'method' => 'pmatch_view',
                 'styles' => [
                     'url' => $CFG->wwwroot . '/question/type/pmatch/mobileapp.css',
-                    'version' => 2019032204
+                    'version' => 2019032204,
                 ],
-                'init' => 'pmatch_view'
+                'init' => 'pmatch_view',
             ],
         ],
         'lang' => [ // Language strings to be used.
-            ['err_ousupsubnotsupportedonmobile', 'qtype_pmatch']
-        ]
-    ]
+            ['err_ousupsubnotsupportedonmobile', 'qtype_pmatch'],
+        ],
+    ],
 ];

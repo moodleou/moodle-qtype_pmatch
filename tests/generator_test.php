@@ -25,8 +25,8 @@ namespace qtype_pmatch;
  *
  * @covers \qtype_pmatch_generator
  */
-class generator_test extends \advanced_testcase {
-    public function test_create() {
+final class generator_test extends \advanced_testcase {
+    public function test_create(): void {
         global $DB;
 
         $this->resetAfterTest();
