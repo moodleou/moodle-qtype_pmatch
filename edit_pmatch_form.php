@@ -78,7 +78,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
             function($key, $placeholder) {
                 return html_writer::empty_tag('input', ['type' => 'text', 'readonly' => 'readonly', 'size' => '22',
                     'value' => $placeholder, 'onfocus' => 'this.select()',
-                    'class' => 'form-control-plaintext d-inline-block w-auto mr-3',
+                    'class' => 'form-control-plaintext d-inline-block w-auto me-3',
                     'name' => 'placeholder',
                     'id' => 'possibleanswerplaceholder-' . $key]);
             }, array_keys($standardplaceholders), $standardplaceholders);

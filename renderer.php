@@ -185,7 +185,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             $options->add_question_identifier_to_label(get_string('reset', 'core'), true),
             [
                 'id' => $resetbuttonid,
-                'class' => 'submit btn btn-secondary align-middle ml-1',
+                'class' => 'submit btn btn-secondary align-middle ms-1',
                 'type' => 'button',
             ],
         );

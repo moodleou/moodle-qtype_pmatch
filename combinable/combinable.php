@@ -185,7 +185,7 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
             'id' => $this->form_field_name('placeholder'),
             'value' => QTYPE_PMATCH_DEFAULT_PLACEHOLDER_SIZE,
             'onfocus' => 'this.select()',
-            'class' => 'form-control-plaintext d-inline-block w-auto mr-3',
+            'class' => 'form-control-plaintext d-inline-block w-auto me-3',
         ]);
         $modalanswer[] = $mform->createElement('static', 'possible-answer-placeholder',
             get_string('modelanswer_possibleanswerplaceholders', 'qtype_pmatch'), $htmlplaceholder);
