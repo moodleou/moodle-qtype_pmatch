@@ -1,5 +1,29 @@
 # Change log for the pattern-match question type
 
+
+## Changes in 3.3
+
+* This version is compatible with Moodle 5.0.
+* Added new validations when uploading responses in the question testing tool.
+* Improved validations on the question editing form.
+* Fixed the question testing tool to correctly process uploaded files when the expectedfraction field is missing.
+* Fixed display issues in the question testing tool for grade summaries and test responses.
+* The Overall grading accuracy text on the edit form is now shown only when responses exist.
+* Improved the edit form: the first answer box is now prefilled with match () to help the author.
+* Renamed the 'Answer' field on the edit form to 'Answer must match'.
+* Fixed an issue where images inserted in the Feedback section were not displayed on the edit form.
+* New feature: Added a new field to pre-fill the answer box for students, so this question type can be used for
+  grammar/spelling correction tasks without requiring students to retype the whole sentence.
+* Added an option in the edit form to enable or disable the Spellchecks.
+* Supports both OpenSpout and Spout libraries for importing/exporting sample responses.
+* Fixed an issue where leading space characters in the responses were skipped during conversion.
+* Added a new setting to treat curly and straight punctuation marks as interchangeable (default = on).
+* Defined excluded hash fields and implemented conversion of legacy backup data
+  to align with new question data format (per MDL-83541).
+* Fixed to codechecker and PHPDoc issues.
+* Fixed automated tests.
+
+
 ## Changes in 3.2
 
 * Upgrade to work with Moodle 4.0 and 3.11. In particular, the question testing tool needed to
