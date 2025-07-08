@@ -28,43 +28,43 @@ Feature: Test editing a pattern match question
   Scenario: Edit the copy and verify the form field contents of pattern match question.
     Given I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     When I add a "Pattern match" question filling the form with:
-      | Question name              | My edit match question                                          |
-      | Question text              | Listen, translate and write                                     |
-      | id_usecase                 | Yes, case must match                                            |
-      | id_quotematching           | Relaxed: ` ' and ' are interchangeable (default)                |
-      | id_allowsubscript          | Yes                                                             |
-      | id_allowsuperscript        | Yes                                                             |
-      | id_forcelength             | warn that answer is too long and invite respondee to shorten it |
-      | id_applydictionarycheck    | Do not check spelling of student                                |
-      | id_sentencedividers        | ?!                                                              |
-      | id_converttospace          | ;:                                                              |
-      | id_synonymsdata_0_word     | any                                                             |
-      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”                                |
-      | Answer 1 must match        | match (testing one " two three four)                            |
-      | Model answer               | testing one “ two three four                                    |
-      | id_fraction_0              | 100%                                                            |
-      | id_feedback_0              | ‘Well done!’                                                    |
-      | id_otherfeedback           | Sorry, no.                                                      |
-      | Hint 1                     | Please try again.                                               |
-      | Hint 2                     | Use a calculator if necessary.                                  |
+      | Question name              | My edit match question                                                      |
+      | Question text              | Listen, translate and write                                                 |
+      | id_usecase                 | Yes, case must match                                                        |
+      | id_quotematching           | Relaxed: all forms of quotes and apostrophes are interchangeable (default). |
+      | id_allowsubscript          | Yes                                                                         |
+      | id_allowsuperscript        | Yes                                                                         |
+      | id_forcelength             | warn that answer is too long and invite respondee to shorten it             |
+      | id_applydictionarycheck    | Do not check spelling of student                                            |
+      | id_sentencedividers        | ?!                                                                          |
+      | id_converttospace          | ;:                                                                          |
+      | id_synonymsdata_0_word     | any                                                                         |
+      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”                                            |
+      | Answer 1 must match        | match (testing one " two three four)                                        |
+      | Model answer               | testing one “ two three four                                                |
+      | id_fraction_0              | 100%                                                                        |
+      | id_feedback_0              | ‘Well done!’                                                                |
+      | id_otherfeedback           | Sorry, no.                                                                  |
+      | Hint 1                     | Please try again.                                                           |
+      | Hint 2                     | Use a calculator if necessary.                                              |
     And I choose "Edit question" action for "My edit match question" in the question bank
     And "Help with Answer matching" "icon" should exist
     And I click on "Help with Answer matching" "icon"
     And I should see "If you have a short phrase you want to match, you should enclose it in square brackets ([...])."
     And "More help" "link" should exist
     Then the following fields match these values:
-      | Question name              | My edit match question                           |
-      | Question text              | Listen, translate and write                      |
-      | id_quotematching           | Relaxed: ` ' and ' are interchangeable (default) |
-      | id_synonymsdata_0_word     | any                                              |
-      | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                 |
-      | Answer 1 must match        | match (testing one " two three four)             |
-      | Model answer               | testing one " two three four                     |
-      | id_fraction_0              | 100%                                             |
-      | id_feedback_0              | 'Well done!'                                     |
-      | id_otherfeedback           | Sorry, no.                                       |
-      | Hint 1                     | Please try again.                                |
-      | Hint 2                     | Use a calculator if necessary.                   |
+      | Question name              | My edit match question                                                      |
+      | Question text              | Listen, translate and write                                                 |
+      | id_quotematching           | Relaxed: all forms of quotes and apostrophes are interchangeable (default). |
+      | id_synonymsdata_0_word     | any                                                                         |
+      | id_synonymsdata_0_synonyms | "testing\|one\|two\|three\|four"                                            |
+      | Answer 1 must match        | match (testing one " two three four)                                        |
+      | Model answer               | testing one " two three four                                                |
+      | id_fraction_0              | 100%                                                                        |
+      | id_feedback_0              | 'Well done!'                                                                |
+      | id_otherfeedback           | Sorry, no.                                                                  |
+      | Hint 1                     | Please try again.                                                           |
+      | Hint 2                     | Use a calculator if necessary.                                              |
     And I click on "Quote/apostrophe matching" "icon"
     And I should see "If the \"Relaxed\" option is enabled"
     And I set the following fields to these values:
@@ -89,26 +89,26 @@ Feature: Test editing a pattern match question
   Scenario: Edit the copy and verify the form field contents of pattern match question when quote matching is strictly.
     Given I am on the "Course 1" "core_question > course question bank" page logged in as teacher
     When I add a "Pattern match" question filling the form with:
-      | Question name              | My edit match question             |
-      | Question text              | Listen, translate and write        |
-      | id_usecase                 | Yes, case must match               |
-      | id_quotematching           | Strict: ` ' and ' all different    |
-      | id_synonymsdata_0_word     | any                                |
-      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”   |
-      | Answer 1 must match        | match (testing one two three four) |
-      | Model answer               | testing one two three four         |
-      | id_fraction_0              | 100%                               |
-      | id_feedback_0              | ‘Well done!’                       |
-      | id_otherfeedback           | Sorry, no.                         |
-      | Hint 1                     | Please try again.                  |
-      | Hint 2                     | Use a calculator if necessary.     |
+      | Question name              | My edit match question                                  |
+      | Question text              | Listen, translate and write                             |
+      | id_usecase                 | Yes, case must match                                    |
+      | id_quotematching           | Strict: all forms of quotes and apostrophes are unique. |
+      | id_synonymsdata_0_word     | any                                                     |
+      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”                        |
+      | Answer 1 must match        | match (testing one two three four)                      |
+      | Model answer               | testing one two three four                              |
+      | id_fraction_0              | 100%                                                    |
+      | id_feedback_0              | ‘Well done!’                                            |
+      | id_otherfeedback           | Sorry, no.                                              |
+      | Hint 1                     | Please try again.                                       |
+      | Hint 2                     | Use a calculator if necessary.                          |
     And I choose "Edit question" action for "My edit match question" in the question bank
     Then the following fields match these values:
-      | Question name              | My edit match question           |
-      | Question text              | Listen, translate and write      |
-      | id_quotematching           | Strict: ` ' and ' all different  |
-      | id_feedback_0              | ‘Well done!’                     |
-      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four” |
+      | Question name              | My edit match question                                  |
+      | Question text              | Listen, translate and write                             |
+      | id_quotematching           | Strict: all forms of quotes and apostrophes are unique. |
+      | id_feedback_0              | ‘Well done!’                                            |
+      | id_synonymsdata_0_synonyms | “testing\|one\|two\|three\|four”                        |
 
   @javascript
   Scenario: Validation of the model answer
