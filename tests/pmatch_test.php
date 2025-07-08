@@ -127,11 +127,12 @@ final class pmatch_test extends \basic_testcase {
     }
 
     /**
-     * Test for messege error
+     * Test for error messages in pmatch expressions.
      *
      * @dataProvider pmatch_error_provider
-     * @param $expression
-     * @param $actual
+     * @param string $expression The pmatch expression to test.
+     * @param string $actual The expected error message.
+     * @return void
      */
     public function test_pmatch_error($expression, $actual): void {
         $this->assertEquals($this->error_message($expression), $actual);
@@ -680,7 +681,8 @@ EOF;
      * @dataProvider pmatch_number_regex_testcases
      *
      * @param string $string
-     * @param array $expectedmatches
+     * @param int $expectedmatches
+     * @return void
      */
     public function test_pmatch_number_regex(string $string, int $expectedmatches): void {
         $this->assertSame($expectedmatches, preg_match('!'.PMATCH_NUMBER.'$!A', $string));
@@ -753,6 +755,10 @@ EOF;
      * Test that the pmatch matching works with numbers.
      *
      * @dataProvider pmatch_number_matching_cases
+     * @param string $string a string to match.
+     * @param string $expression the pattern to match against.
+     * @param bool $shouldmatch whether this string should match this pattern.
+     * @return void
      */
     public function test_pmatch_number_matching($string, $expression, $shouldmatch): void {
         if ($shouldmatch) {

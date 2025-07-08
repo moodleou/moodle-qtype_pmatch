@@ -58,7 +58,7 @@ class testquestion_test_base extends \question_testcase {
      * Load a csv file into an array of response objects reporting feedback.
      *
      * @param qtype_pmatch_question|null $question (optional) question to associate responses with.
-     * @param string|null fixture filename to use
+     * @param string|null $pathtoresponses fixture filename to use
      * @param int $count number of responses to import (defaults to all).
      * @return array as for testquestion_responses::load_responses_from_file.
      */

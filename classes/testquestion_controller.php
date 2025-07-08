@@ -107,8 +107,10 @@ class testquestion_controller {
 
     /**
      * Process the results of the form.
+     * @param \moodle_url $redirecturl the URL.
+     * @return void
      */
-    protected function process_response_table_actions($redirecturl) {
+    protected function process_response_table_actions($redirecturl): void {
         global $OUTPUT;
         if (optional_param('test', 0, PARAM_BOOL) && confirm_sesskey()) {
             if ($responseids = optional_param_array('responseid', [], PARAM_INT)) {

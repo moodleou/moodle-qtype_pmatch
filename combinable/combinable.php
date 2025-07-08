@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/** * Combinable pattern match question type.
+/**
+ * Combinable pattern match question type.
  *
  * This file defines the combinable pattern match question type, which is used
  * as a sub-question in a combined question.

@@ -324,7 +324,7 @@ class qtype_pmatch extends question_type {
     }
 
     /**
-     * Helper method used by {@link import_from_xml()}. Handle the data for test question responses text.
+     * Helper method used by {@see import_from_xml()}. Handle the data for test question responses text.
      *
      * @param qformat_xml $format the importer/exporter object.
      * @param stdClass $question the question.
@@ -396,7 +396,7 @@ class qtype_pmatch extends question_type {
     }
 
     /**
-     * Helper method used by {@link export_to_xml()}.
+     * Helper method used by {@see export_to_xml()}.
      *
      * @param stdClass $question the question.
      * @param qformat_xml $format the importer/exporter object.

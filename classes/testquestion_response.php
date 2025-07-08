@@ -54,10 +54,10 @@ class testquestion_response {
 
     /**
      * Create an instance of this class representing an empty test response.
-     * @param $response \stdClass data object to translate into a test_response class
-     * @return testquestion_response
+     * @param \stdClass $response data object to translate into a test_response class
+     * @return ?testquestion_response
      */
-    public static function create($response = null) {
+    public static function create($response = null): ?testquestion_response {
         $testresponse = new self();
         $fields = ['id', 'questionid', 'response', 'expectedfraction', 'gradedfraction'];
 

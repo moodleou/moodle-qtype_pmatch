@@ -172,9 +172,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
      * Returns the answer for a given response.
      *
      * @param array $response the response to match.
-     * @return question_answer|null the matching answer, or null if no match.
+     * @param question_answer|null $answer the matching answer, or null if no match.
+     * @return bool
      */
-    public function compare_response_with_answer(array $response, question_answer $answer) {
+    public function compare_response_with_answer(array $response, question_answer $answer): bool {
         if ($answer->answer == '*') {
             return true;
         }

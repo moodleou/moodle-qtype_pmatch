@@ -17,7 +17,7 @@
 namespace qtype_pmatch\local\spell;
 
 /**
- * Implements the {@link qtype_pmatch_spell_checker} API using the Enchant PHP API.
+ * Implements the {@see qtype_pmatch_spell_checker} API using the Enchant PHP API.
  *
  * @package qtype_pmatch
  * @copyright 2019 The Open University

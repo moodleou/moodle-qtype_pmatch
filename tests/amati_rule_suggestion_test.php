@@ -1182,10 +1182,11 @@ final class amati_rule_suggestion_test
     /**
      * Replace the existing question rules with the given rules.
      *
-     * @param string[] the new answers to set.
+     * @param string[] $newruleanswers the new answers to set.
      * @param qtype_pmatch_question $question the question to update.
+     * @return void
      */
-    protected function set_question_rules(array $newruleanswers, qtype_pmatch_question $question) {
+    protected function set_question_rules(array $newruleanswers, qtype_pmatch_question $question): void {
         $newrules = [];
         $ruleid = 0;
         foreach ($newruleanswers as $newruleanswer) {
@@ -1247,8 +1248,8 @@ final class amati_rule_suggestion_test
     /**
      * Load rules from a given file path or the default rule path.
      *
-     * @param $filepath string path to file
-     * @return string file contents
+     * @param ?string $filepath path to file
+     * @return string[] file contents
      */
     public function load_rules(?string $filepath = null): array {
         $filepath = $filepath ?? self::$rulesfilepath;

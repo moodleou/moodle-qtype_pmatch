@@ -78,7 +78,7 @@ final class examples_test extends \basic_testcase {
     /**
      * Run all the tests one one pair of example files.
      *
-     * @param string $name one of the paths returned by {@link get_examples_list()}.
+     * @param string $name one of the paths returned by {@see get_examples_list()}.
      */
     protected function run_tests_from(string $name): void {
         $expression = new pmatch_expression(file_get_contents($name . '.rules.txt'));

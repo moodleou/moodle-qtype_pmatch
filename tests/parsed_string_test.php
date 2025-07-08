@@ -166,8 +166,9 @@ final class parsed_string_test extends \basic_testcase {
      * @dataProvider pmatch_spelling_testcases
      *
      * @param array $misspelledwords
-     * @param $string
+     * @param string $string
      * @param null $options
+     * @return void
      */
     public function test_pmatch_spelling(array $misspelledwords, $string, $options = null): void {
         if ($options === null) {

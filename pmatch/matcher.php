@@ -46,6 +46,9 @@ interface pmatch_word_delimiter {
     /**
      *
      * A hook to override allow any word order in word delimiter that precedes a phrase.
+     *
+     * @param bool $allowanywordorder whether to allow any word order in adjacent phrases
+     * @return bool true if any word order is allowed
      */
     public function allow_any_word_order_in_adjacent_phrase($allowanywordorder);
     /**
@@ -113,7 +116,7 @@ interface pmatch_can_match_whole_expression {
     /**
      * Can possibly match the whole expression.
      *
-     * @param array $phrase array of words
+     * @param array $words array of words
      * @return bool successful match?
      */
     public function match_whole_expression($words);
@@ -189,6 +192,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
      * Create a tree of matcher items.
      *
      * @param pmatch_interpreter_item_with_subcontents $interpreter
+     * @param pmatch_options $externaloptions
      */
     public function __construct($interpreter, $externaloptions) {
         parent::__construct($interpreter, $externaloptions);
@@ -704,14 +708,7 @@ class pmatch_matcher_or_list_phrase extends pmatch_matcher_item_with_subcontents
 class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
         implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
 
-    /**
-     * This function matches a phrase against the options.
-     *
-     * @param array $phrase the phrase to match
-     * @param pmatch_phrase_level_options $phraseleveloptions the phrase level options
-     * @param pmatch_word_level_options $wordleveloptions the word level options
-     * @return bool true if the phrase matches any of the subcontents
-     */
+    #[\Override]
     public function can_match_len($phraseleveloptions) {
         $noofwords = (count($this->subcontents) + 1) / 2;
         if ($phraseleveloptions->get_allow_extra_words()) {
@@ -728,15 +725,7 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
 class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
         implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {
 
-    /**
-     * This function checks if the word delimiter is valid for the given phrase, wordsmatched,
-     *
-     * @param $phrase
-     * @param $wordsmatched
-     * @param $wordtotry
-     * @param $phraseleveloptions
-     * @return bool
-     */
+    #[\Override]
     public function valid_match($phrase, $wordsmatched, $wordtotry, $phraseleveloptions) {
         $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
         if (!$phraseleveloptions->get_allow_any_word_order() &&
@@ -868,13 +857,7 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 class pmatch_matcher_number extends pmatch_matcher_item
             implements pmatch_can_match_word {
 
-    /**
-     * This function matches a word against the options.
-     *
-     * @param $word
-     * @param $wordleveloptions
-     * @return bool
-     */
+    #[\Override]
     public function match_word($word, $wordleveloptions) {
         $word = $this->externaloptions->strip_sentence_divider($word);
         if (0 === preg_match('~'.PMATCH_NUMBER.'$~A', $word)) {
@@ -957,6 +940,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
      * Check each character against each item and iterate down branches of possible matches to whole
      * word.
      * @param string $word word to match from student response
+     * @param integer $allowmispellings number of mispellings allowed in this word
      * @param integer $charpos position of character in word we are currently checking for a match
      * @param integer $subcontentno subcontent item to match this character against
      * @param integer $noofcharactertomatch no of characters to match
@@ -964,7 +948,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
      */
     private function check_match_branches($word, $allowmispellings,
                                             $charpos = 0, $subcontentno = 0,
-                                            $noofcharactertomatch = 1) {
+                                            $noofcharactertomatch = 1): bool {
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
         $charslefttomatch = core_text::strlen($word) - ($charpos + $noofcharactertomatch);
         // Check if we have gone beyond limit of what can be matched.
@@ -1077,6 +1061,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         } else {
             return false;
         }
+        return false;
     }
 
     /**

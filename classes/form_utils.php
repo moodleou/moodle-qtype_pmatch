@@ -96,11 +96,11 @@ class form_utils {
     /**
      * Check whether any char of the first string appear in the second string.
      *
-     * @param string $fiststring
+     * @param string $firststring
      * @param string $secondstring
-     * @return string
+     * @return ?string
      */
-    public static function find_char_in_both_strings($firststring, $secondstring) {
+    public static function find_char_in_both_strings($firststring, $secondstring): ?string {
         if (empty($firststring)) {
             return null;
         }

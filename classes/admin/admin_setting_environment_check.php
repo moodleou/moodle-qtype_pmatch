@@ -33,11 +33,7 @@ require_once($CFG->libdir . '/adminlib.php');
  */
 class qtype_pmatch_admin_setting_environment_check extends \admin_setting_heading {
 
-    /**
-     * Returns an HTML string
-     *
-     * @return string Returns an HTML string
-     */
+    #[\Override]
     public function output_html($data, $query = '') {
         $results = [];
 

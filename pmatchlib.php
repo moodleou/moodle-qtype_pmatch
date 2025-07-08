@@ -315,7 +315,7 @@ class pmatch_parsed_string {
      * Constructor. Parses string.
      *
      * @param string $string the string to match against.
-     * @param pmatch_options $options the options to use.
+     * @param pmatch_options|null $options the options to use.
      */
     public function __construct($string, ?pmatch_options $options = null) {
         if (!is_null($options)) {

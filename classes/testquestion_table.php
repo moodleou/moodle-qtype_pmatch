@@ -312,11 +312,11 @@ class testquestion_table extends \table_sql {
     /**
      * Return row as html for response table.
      *
-     * @param $row \stdClass the response to display.
-     * @param $curentrow int the index of current editing row.
+     * @param \stdClass $row the response to display.
+     * @param int $curentrow the index of current editing row.
      * @return string row html to append response table.
      */
-    public function get_row_html_for_response_table($row, $curentrow) {
+    public function get_row_html_for_response_table($row, $curentrow): string {
         $columns = [];
         $headers = [];
         $this->currentrow = $curentrow;

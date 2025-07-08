@@ -17,7 +17,7 @@
 namespace qtype_pmatch;
 
 /**
- * Class to store options for {@link \qtype_pmatch\testquestion_controller}.
+ * Class to store options for {@see \qtype_pmatch\testquestion_controller}.
  * Design references are: mod_quiz\local\reports\attempts_report_options, quiz_overview_options.
  *
  * @package   qtype_pmatch
@@ -58,7 +58,6 @@ class testquestion_options {
     /**
      * Constructor.
      * @param object $question the settings for the question being reported on.
-     * @param object $context the context object for the question being reported on.
      */
     public function __construct($question) {
         $this->question = $question;

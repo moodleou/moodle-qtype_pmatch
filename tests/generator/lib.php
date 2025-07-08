@@ -39,7 +39,8 @@ class qtype_pmatch_generator extends component_generator_base {
 
     /**
      * Create a new test response.
-     * @param array|stdClass $record
+     * @param array|stdClass|null $record
+     * @param question|null $question
      * @return stdClass qtype_pmatch_test_responses record.
      */
     public function create_test_response($record = null, $question = null) {

@@ -17,7 +17,7 @@
 namespace qtype_pmatch\local\spell;
 
 /**
- * Implements the {@link qtype_pmatch_spell_checker} API using pspell.
+ * Implements the {@see qtype_pmatch_spell_checker} API using pspell.
  *
  * @package qtype_pmatch
  * @copyright 2019 The Open University

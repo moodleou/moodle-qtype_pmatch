@@ -17,7 +17,7 @@
 namespace qtype_pmatch\local\spell;
 
 /**
- * Implements the {@link qtype_pmatch_spell_checker} by saying that any string is a
+ * Implements the {@see qtype_pmatch_spell_checker} by saying that any string is a
  * correctly spelled word. This can be used when there is no back-end installed.
  *
  * @package qtype_pmatch

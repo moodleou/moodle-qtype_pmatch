@@ -140,9 +140,12 @@ class behat_qtype_pmatch extends behat_base {
     /**
      * Check that the given Spell checking library already installed.
      *
+     * @param string $enginename the name of the spell checking engine to check.
+     * @throws \Moodle\BehatExtension\Exception\SkippedException if the spell checking library is not installed.
+     *
      * @Given /^I check the "(?P<spell_check_engine_string>(?:[^"]|\\")*)" spell checking library already installed$/
      */
-    public function is_spell_checking_library_install($enginename) {
+    public function is_spell_checking_library_install($enginename): void {
         if ($enginename == 'pspell') {
             if (!function_exists('pspell_new')) {
                 throw new \Moodle\BehatExtension\Exception\SkippedException();

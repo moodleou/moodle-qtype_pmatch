@@ -232,7 +232,7 @@ class amati_rule_suggestion {
     }
 
     /**
-     * Return a valid pattern match rule combining from the rules craeted from the
+     * Return a valid pattern match rule combining from the rules created from the
      * parameters of the give subrules
      *
      * AMATI rules are broken down into commands, operators and words. We determine
@@ -242,10 +242,10 @@ class amati_rule_suggestion {
      * Here we wrap each sub rule in the operator correct operator using match_all for
      * ADD  and match_any for OR.
      *
-     * @param \stdClass[] $subrules Sub rules converted to consyituent parameteres
+     * @param \stdClass[] $subrulesasparameters Sub rules converted to consyituent parameters
      * @return string valid pmatch rule
      */
-    public static function get_pmatch_rule_from_subrules($subrulesasparameters) {
+    public static function get_pmatch_rule_from_subrules($subrulesasparameters): string {
 
         // If there are no subrules return early.
         if (!count($subrulesasparameters)) {
@@ -347,10 +347,10 @@ class amati_rule_suggestion {
 
     /**
      * Translate an array of AMATI rules into an equivalent pmatch rules.
-     * @param string[] $rule amati rules to translate to pmatch
+     * @param string[] $amatirules amati rules to translate to pmatch
      * @return string[] translated pmatch rules
      */
-    public static function get_pmatch_rules_from_amati_rules($amatirules) {
+    public static function get_pmatch_rules_from_amati_rules($amatirules): array {
         $rules = [];
         foreach ($amatirules as $rule) {
             $pmatchrule = self::get_pmatch_rule_from_amati_rule($rule->rule);
@@ -472,10 +472,10 @@ class amati_rule_suggestion {
      * This must be done in qtype_pmatch_edit_form:: add_per_answer_fields before the edit question
      * form answer fields are created.
      * @param object $question
-     * @param string[]
+     * @param string[] $suggestedrules
      * @return void
      */
-    public static function add_suggested_rules_to_question($question, $suggestedrules) {
+    public static function add_suggested_rules_to_question($question, $suggestedrules): void {
         foreach ($suggestedrules as $suggestedrule) {
             $newrule = (object) [
                 'id' => '',
