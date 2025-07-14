@@ -259,6 +259,7 @@ class qtype_pmatch extends question_type {
 
             if ($question->fraction[$key] > $maxfraction) {
                 $maxfraction = $question->fraction[$key];
+                $this->save_extra_answer_data($question, $key, $answer->id);
             }
         }
 
@@ -278,6 +279,7 @@ class qtype_pmatch extends question_type {
                     $context, 'question', 'answerfeedback', $otheranswer->id);
             $otheranswer->feedbackformat = $question->otherfeedback['format'];
             $DB->update_record('question_answers', $otheranswer);
+            $this->save_extra_answer_data($question, 'other', $otheranswer->id);
         }
 
         // Delete any left over old answer records.
@@ -295,6 +297,17 @@ class qtype_pmatch extends question_type {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Save any extra data associated with an answer.
+     * This function will be used by the pmatchjme question type.
+     *
+     * @param stdClass $question The question object.
+     * @param string $key The key of the answer.
+     * @param int $answerid The id of the answer.
+     */
+    public function save_extra_answer_data($question, $key, $answerid) {
     }
 
     #[\Override]
