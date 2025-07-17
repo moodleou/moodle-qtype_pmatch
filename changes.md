@@ -1,5 +1,9 @@
 # Change log for the pattern-match question type
 
+## Changes in 3.4
+
+* Bug fix: Restore the save_extra_answer_data function required by pmatchjme.
+
 
 ## Changes in 3.3
 
