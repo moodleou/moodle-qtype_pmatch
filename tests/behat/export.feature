@@ -1,4 +1,4 @@
-@ou @ou_vle @qtype @qtype_pmatch
+@ou @ou_vle @qtype @qtype_pmatch @_file_upload
 Feature: Test exporting pattern match questions
   As a teacher
   In order to be able to reuse my pattern match questions
