@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
-
     /**
      * Returns the qtype information to attach to question element.
      */
@@ -51,12 +50,18 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
         $synonym = new backup_nested_element('synonym', ['id'], ['word', 'synonyms']);
 
         $responses = new backup_nested_element('test_responses');
-        $response = new backup_nested_element('test_response', ['id'],
-                ['response', 'expectedfraction', 'gradedfraction']);
+        $response = new backup_nested_element(
+            'test_response',
+            ['id'],
+            ['response', 'expectedfraction', 'gradedfraction']
+        );
 
         $matches = new backup_nested_element('rule_matches');
-        $match = new backup_nested_element('rule_match', ['id'],
-                ['answerid']);
+        $match = new backup_nested_element(
+            'rule_match',
+            ['id'],
+            ['answerid']
+        );
 
         $pluginwrapper->add_child($pmatchoptions);
         $pluginwrapper->add_child($synonyms);
@@ -68,14 +73,24 @@ class backup_qtype_pmatch_plugin extends backup_qtype_plugin {
         $matches->add_child($match);
 
         // Set source to populate the data.
-        $pmatchoptions->set_source_table('qtype_pmatch',
-                ['questionid' => backup::VAR_PARENTID]);
-        $synonym->set_source_table('qtype_pmatch_synonyms',
-                ['questionid' => backup::VAR_PARENTID], 'id ASC');
-        $response->set_source_table('qtype_pmatch_test_responses',
-                ['questionid' => backup::VAR_PARENTID], 'id ASC');
-        $match->set_source_table('qtype_pmatch_rule_matches',
-                ['testresponseid' => backup::VAR_PARENTID]);
+        $pmatchoptions->set_source_table(
+            'qtype_pmatch',
+            ['questionid' => backup::VAR_PARENTID]
+        );
+        $synonym->set_source_table(
+            'qtype_pmatch_synonyms',
+            ['questionid' => backup::VAR_PARENTID],
+            'id ASC'
+        );
+        $response->set_source_table(
+            'qtype_pmatch_test_responses',
+            ['questionid' => backup::VAR_PARENTID],
+            'id ASC'
+        );
+        $match->set_source_table(
+            'qtype_pmatch_rule_matches',
+            ['testresponseid' => backup::VAR_PARENTID]
+        );
 
         // Don't need to annotate ids nor files.
 

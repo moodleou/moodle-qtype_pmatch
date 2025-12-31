@@ -29,7 +29,6 @@ namespace qtype_pmatch\local\spell;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_pmatch_spell_checker {
-
     /**
      * @var array lang code => qtype_pmatch_spell_checker, so we only load each dictionary once.
      * We were experiencing incomprehensible errors if we loaded the same dictionaries
@@ -260,8 +259,10 @@ abstract class qtype_pmatch_spell_checker {
         $options[self::DO_NOT_CHECK_OPTION] = get_string('apply_spellchecker_label', 'qtype_pmatch');
 
         $spellchecklanguagesdata = get_config('qtype_pmatch', 'spellcheck_languages');
-        if (!$spellchecklanguagesdata ||
-                get_config('qtype_pmatch', 'spellchecker') == self::NULL_SPELL_CHECK) {
+        if (
+            !$spellchecklanguagesdata ||
+            get_config('qtype_pmatch', 'spellchecker') == self::NULL_SPELL_CHECK
+        ) {
             $disable = true;
             return [$options, $disable];
         }
@@ -276,8 +277,10 @@ abstract class qtype_pmatch_spell_checker {
 
         if (isset($question->options)) {
             $originallanguage = $question->options->applydictionarycheck;
-            if ($originallanguage != self::DO_NOT_CHECK_OPTION &&
-                    !in_array($originallanguage, $availablelangs)) {
+            if (
+                $originallanguage != self::DO_NOT_CHECK_OPTION &&
+                !in_array($originallanguage, $availablelangs)
+            ) {
                 $missinglangname = self::get_display_name_for_language_code($originallanguage);
                 $options[$originallanguage] =
                         get_string('apply_spellchecker_missing_language_select', 'qtype_pmatch', $missinglangname);
@@ -287,5 +290,4 @@ abstract class qtype_pmatch_spell_checker {
 
         return [$options, $disable];
     }
-
 }

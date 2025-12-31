@@ -24,7 +24,6 @@ namespace qtype_pmatch\local\spell;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
-
     /** @var int the pspell link handle. */
     protected $pspell;
 
@@ -69,5 +68,4 @@ class qtype_pmatch_pspell_spell_checker extends qtype_pmatch_spell_checker {
         }
         return $availablelanguages;
     }
-
 }

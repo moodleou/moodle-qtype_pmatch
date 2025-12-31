@@ -22,10 +22,9 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  *
  * @package   qtype_pmatch
  * @copyright 2013 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 org later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_test_helper extends question_test_helper {
-
     /**
      * Returns a list of test questions that this helper can create.
      *
@@ -57,12 +56,27 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $pm->pmatchoptions = new pmatch_options();
         $pm->modelanswer = 'Tom';
         $pm->answers = [
-            13 => new question_answer(13, 'match_w(Tom|Harry)', 1.0,
-                'Either Tom or Harry is a very good answer.', FORMAT_HTML),
-            14 => new question_answer(14,
-                                      'match_w(Dick)', 0.8, 'Dick is an OK good answer.', FORMAT_HTML),
-            15 => new question_answer(15,
-                                      'match_w(Felicity)', 0.0, 'No, no, no! That is a bad answer.', FORMAT_HTML),
+            13 => new question_answer(
+                13,
+                'match_w(Tom|Harry)',
+                1.0,
+                'Either Tom or Harry is a very good answer.',
+                FORMAT_HTML
+            ),
+            14 => new question_answer(
+                14,
+                'match_w(Dick)',
+                0.8,
+                'Dick is an OK good answer.',
+                FORMAT_HTML
+            ),
+            15 => new question_answer(
+                15,
+                'match_w(Felicity)',
+                0.0,
+                'No, no, no! That is a bad answer.',
+                FORMAT_HTML
+            ),
         ];
         $pm->qtype = question_bank::get_qtype('pmatch');
         $pm->applydictionarycheck = $applydictionarycheck ? 'en_GB' :
@@ -265,10 +279,20 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $qdata->options->modelanswer = 'testing one two three four';
         $qdata->options->responsetemplate = '';
         $qdata->options->answers = [
-                13 => new question_answer(13, 'match (testing one two three four)', 1.0,
-                        'Well done!', FORMAT_MOODLE),
-                14 => new question_answer(14,
-                        '*', 0.0, 'Sorry, no.', FORMAT_MOODLE),
+                13 => new question_answer(
+                    13,
+                    'match (testing one two three four)',
+                    1.0,
+                    'Well done!',
+                    FORMAT_MOODLE
+                ),
+                14 => new question_answer(
+                    14,
+                    '*',
+                    0.0,
+                    'Sorry, no.',
+                    FORMAT_MOODLE
+                ),
         ];
 
         $synonyms = [];
@@ -295,7 +319,8 @@ class qtype_pmatch_test_helper extends question_test_helper {
         $spellchecker = qtype_pmatch_spell_checker::make($lang, false);
         if ($spellchecker instanceof qtype_pmatch_null_spell_checker) {
             $testcase->markTestSkipped(
-                    'Spell-checking not installed on your server. Skipping test.');
+                'Spell-checking not installed on your server. Skipping test.'
+            );
         }
     }
 }

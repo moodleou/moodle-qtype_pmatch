@@ -29,7 +29,6 @@ namespace qtype_pmatch;
  *
  */
 class utils {
-
     /**
      * Convert smart quotes to straight quotes, handling recursion for arrays.
      *
@@ -51,7 +50,7 @@ class utils {
             // Replace smart quotes with straight quotes.
             $input = str_replace(
                 ['&lsquo;', '&rsquo;', '&ldquo;', '&rdquo;', '‘', '’', '“', '”'], // HTML entities and smart quotes.
-                ["'", "'", '"', '"', "'", "'", '"', '"'],                         // Corresponding straight quotes.
+                ["'", "'", '"', '"', "'", "'", '"', '"'], // Corresponding straight quotes.
                 $input
             );
         }

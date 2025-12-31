@@ -53,12 +53,16 @@ final class parsed_string_test extends \basic_testcase {
         $this->assertEquals(['123<sup>3</sup>'], $parsedstring->get_words());
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>?456<sup>3</sup>', $options);
-        $this->assertEquals(['123<sup>3</sup>?', '456<sup>3</sup>'],
-                $parsedstring->get_words());
+        $this->assertEquals(
+            ['123<sup>3</sup>?', '456<sup>3</sup>'],
+            $parsedstring->get_words()
+        );
 
         $parsedstring = new pmatch_parsed_string('123<sup>3</sup>!456<sup>3</sup>', $options);
-        $this->assertEquals(['123<sup>3</sup>!', '456<sup>3</sup>'],
-                $parsedstring->get_words());
+        $this->assertEquals(
+            ['123<sup>3</sup>!', '456<sup>3</sup>'],
+            $parsedstring->get_words()
+        );
 
         $parsedstring = new pmatch_parsed_string('1.23', $options);
         $this->assertEquals(['1.23'], $parsedstring->get_words());
@@ -124,6 +128,8 @@ final class parsed_string_test extends \basic_testcase {
         $this->assertEquals($expected, (new pmatch_parsed_string($string, $options))->get_words());
     }
 
+    // phpcs:disable Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterCommaBeforeTrailingComment
+
     /**
      * Data provider function for test_pmatch_spelling.
      *
@@ -158,6 +164,8 @@ final class parsed_string_test extends \basic_testcase {
             [['fbi'], 'fbi'],                          // That must be upper-case.
         ];
     }
+
+    // phpcs:enable Universal.WhiteSpace.CommaSpacing.TooMuchSpaceAfterCommaBeforeTrailingComment
 
     /**
      *
@@ -203,7 +211,10 @@ final class parsed_string_test extends \basic_testcase {
      * @param string $expecteddisplayname Expected language display name
      */
     public function test_get_display_name_for_language_code(
-            string $langcode, string $expectedlangname, string $expecteddisplayname): void {
+        string $langcode,
+        string $expectedlangname,
+        string $expecteddisplayname
+    ): void {
         $language = new \stdClass();
         $language->name = qtype_pmatch_spell_checker::get_display_name_for_language_code($langcode);
         $language->code = $langcode;
@@ -241,8 +252,11 @@ final class parsed_string_test extends \basic_testcase {
      * @param array $availablelangs List of available languages
      * @param string $expectedmatch Expected language match
      */
-    public function test_get_default_spell_check_dictionary(string $checklanguage,
-            array $availablelangs, string $expectedmatch): void {
+    public function test_get_default_spell_check_dictionary(
+        string $checklanguage,
+        array $availablelangs,
+        string $expectedmatch
+    ): void {
         $matched = qtype_pmatch_spell_checker::get_default_spell_check_dictionary($checklanguage, $availablelangs);
         $this->assertEquals($expectedmatch, $matched);
     }

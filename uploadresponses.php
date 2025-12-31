@@ -40,21 +40,34 @@ require_once($CFG->dirroot . '/question/type/pmatch/lib.php');
  * The upload form.
  */
 class upload_form extends moodleform {
-
     #[\Override]
     protected function definition() {
-        $this->_form->addElement('header', 'header',
-                get_string('testquestionformheader', 'qtype_pmatch'));
-        $this->_form->addElement('static', 'help', '',
-                get_string('testquestionforminfo', 'qtype_pmatch'));
-        $this->_form->addElement('filepicker', 'responsesfile',
-                get_string('testquestionformuploadlabel', 'qtype_pmatch'), null,
-                ['accepted_types' => \qtype_pmatch\testquestion_import_helper::ACCEPTED_TYPES]);
+        $this->_form->addElement(
+            'header',
+            'header',
+            get_string('testquestionformheader', 'qtype_pmatch')
+        );
+        $this->_form->addElement(
+            'static',
+            'help',
+            '',
+            get_string('testquestionforminfo', 'qtype_pmatch')
+        );
+        $this->_form->addElement(
+            'filepicker',
+            'responsesfile',
+            get_string('testquestionformuploadlabel', 'qtype_pmatch'),
+            null,
+            ['accepted_types' => \qtype_pmatch\testquestion_import_helper::ACCEPTED_TYPES]
+        );
         $this->_form->addRule('responsesfile', null, 'required', null, 'client');
         $this->_form->addElement('hidden', 'id', 0);
         $this->_form->setType('id', PARAM_INT);
-        $this->_form->addElement('submit', 'submitbutton',
-                get_string('testquestionuploadtheseresponses', 'qtype_pmatch'));
+        $this->_form->addElement(
+            'submit',
+            'submitbutton',
+            get_string('testquestionuploadtheseresponses', 'qtype_pmatch')
+        );
     }
 
     #[\Override]
@@ -113,7 +126,7 @@ if ($questiondata->qtype != 'pmatch') {
 $question = question_bank::load_question($questionid);
 
 // Process any other URL parameters, and do require_login.
-list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
+[$context, $urlparams] = qtype_pmatch_setup_question_test_page($question);
 question_require_capability_on($questiondata, 'edit');
 
 $url = new moodle_url('/question/type/pmatch/uploadresponses.php', ['id' => $questionid]);
@@ -146,8 +159,10 @@ if ($fromform = $form->get_data()) {
         throw new moodle_exception('uploadproblem');
     }
 
-    list($responses, $problems) = \qtype_pmatch\testquestion_responses::load_responses_from_file(
-            $responsefile, $question);
+    [$responses, $problems] = \qtype_pmatch\testquestion_responses::load_responses_from_file(
+        $responsefile,
+        $question
+    );
 
     // Save responses to the database.
     $feedback = \qtype_pmatch\testquestion_responses::add_responses($responses);

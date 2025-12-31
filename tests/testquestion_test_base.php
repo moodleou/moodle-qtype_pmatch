@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_test_base extends \question_testcase {
-
     /**
      * @var string File path to default responses csv file.
      */
@@ -63,9 +62,10 @@ class testquestion_test_base extends \question_testcase {
      * @return array as for testquestion_responses::load_responses_from_file.
      */
     protected function load_responses(
-            ?qtype_pmatch_question $question = null,
-            ?string $pathtoresponses = null,
-            int $count = 0): array {
+        ?qtype_pmatch_question $question = null,
+        ?string $pathtoresponses = null,
+        int $count = 0
+    ): array {
         $pathtoresponses = $pathtoresponses ?? self::$responsesfilepath;
         $responsesfile = dirname(__FILE__) . '/' . $pathtoresponses;
         if (!$question) {
@@ -124,7 +124,7 @@ class testquestion_test_base extends \question_testcase {
             throw new \coding_exception('Could not open testquestionresponses CSV file.');
         }
         $gradeddata = [];
-        while (($data = fgetcsv($handle)) !== false) {
+        while (($data = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
             if (count($data) == 2) {
                 $data[2] = null;
             }
@@ -167,8 +167,10 @@ class testquestion_test_base extends \question_testcase {
      * @return array[]
      */
     protected function get_rule_matches_as_responses_and_rules(
-            array $rulematches, array $rules, array $responses): array {
-
+        array $rulematches,
+        array $rules,
+        array $responses
+    ): array {
         $matchedresponsesandrules = [];
         $matchedrulesandresponses = [];
         foreach ($rulematches['responseidstoruleids'] as $responseid => $responseruleids) {

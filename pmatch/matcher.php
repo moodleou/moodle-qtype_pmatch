@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+
 /**
  * Interface for word delimiters that can be used in pmatch expressions.
  */
@@ -107,7 +109,6 @@ interface pmatch_can_match_phrase {
      * @return bool successful match?
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions);
-
 }
 /**
  * Interface for pmatch matchers that can match the whole expression.
@@ -120,7 +121,6 @@ interface pmatch_can_match_whole_expression {
      * @return bool successful match?
      */
     public function match_whole_expression($words);
-
 }
 /**
  * Interface for pmatch matchers that can contribute to the length of a phrase.
@@ -134,7 +134,6 @@ interface pmatch_can_contribute_to_length_of_phrase {
      *                    number of words possible. Maximum is null if no max.
      */
     public function can_match_len($phraseleveloptions);
-
 }
 /**
  * Base class for all matcher items.
@@ -178,7 +177,6 @@ abstract class pmatch_matcher_item {
  * Base class for matcher items that have subcontents.
  */
 abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item {
-
     /** @var pmatch_interpreter_item_with_subcontents */
     protected $subcontents = [];
 
@@ -233,13 +231,15 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions) {
         $this->phraseleveloptions = $phraseleveloptions;
         $this->wordleveloptions = $wordleveloptions;
-        list($phraseminlength, $phrasemaxlength) =
+        [$phraseminlength, $phrasemaxlength] =
                             $this->can_match_len($phraseleveloptions);
         if (count($phrase) < $phraseminlength) {
             return false;
         }
-        if ((!$this->phraseleveloptions->get_allow_extra_words())
-                && (!is_null($phrasemaxlength)) && (count($phrase) > $phrasemaxlength)) {
+        if (
+            (!$this->phraseleveloptions->get_allow_extra_words())
+                && (!is_null($phrasemaxlength)) && (count($phrase) > $phrasemaxlength)
+        ) {
             return false;
         }
         return $this->check_match_phrase_branch($phrase);
@@ -257,8 +257,12 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
      * @param array $wordsmatched
      * @return bool found a match?
      */
-    protected function check_match_phrase_branch($phrase, $itemtotry = 0, $wordtotry = 0,
-                                                                        $wordsmatched = []) {
+    protected function check_match_phrase_branch(
+        $phrase,
+        $itemtotry = 0,
+        $wordtotry = 0,
+        $wordsmatched = []
+    ) {
         if ($wordtotry >= count($phrase)) {
             return false;
         }
@@ -267,22 +271,34 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
             $shallwetry = true;
         } else {
             $lastsub = $this->subcontents[$itemtotry - 1];
-            if ($lastsub->valid_match($phrase, $wordsmatched,
-                                      $wordtotry, $this->phraseleveloptions) &&
-                                      (!in_array($wordtotry, $wordsmatched, true))) {
+            if (
+                $lastsub->valid_match(
+                    $phrase,
+                    $wordsmatched,
+                    $wordtotry,
+                    $this->phraseleveloptions
+                ) &&
+                                      (!in_array($wordtotry, $wordsmatched, true))
+            ) {
                 $shallwetry = true;
             } else {
                 $shallwetry = false;
             }
         }
         // See if we can match this word to next subcontents item.
-        if ($shallwetry &&
-                        $this->subcontents[$itemtotry]->match_word($phrase[$wordtotry],
-                                                                    $this->wordleveloptions)) {
+        if (
+            $shallwetry &&
+                        $this->subcontents[$itemtotry]->match_word(
+                            $phrase[$wordtotry],
+                            $this->wordleveloptions
+                        )
+        ) {
             // We found a match for one word.
             $wordsmatchedwithnewword = $wordsmatched;
-            if ((count($wordsmatched) > 0) && isset($this->subcontents[$itemtotry - 1])
-                        && $this->subcontents[$itemtotry - 1]->also_match_intervening_words()) {
+            if (
+                (count($wordsmatched) > 0) && isset($this->subcontents[$itemtotry - 1])
+                        && $this->subcontents[$itemtotry - 1]->also_match_intervening_words()
+            ) {
                 // We need to mark all words since last match as matched too,
                 // for some separator types.
                 $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
@@ -295,8 +311,10 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
             $wordsmatchedwithnewword[] = $wordtotry;
             if ($itemtotry == count($this->subcontents) - 1) {
                 // Last item matched.
-                if (count($wordsmatchedwithnewword) == count($phrase) ||
-                                        $this->phraseleveloptions->get_allow_extra_words()) {
+                if (
+                    count($wordsmatchedwithnewword) == count($phrase) ||
+                                        $this->phraseleveloptions->get_allow_extra_words()
+                ) {
                     // All words matched or words are left but extra words are allowed.
                     return true;
                 }
@@ -309,8 +327,14 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
                 }
                 // Not reached the end of this branch, continue following branches down and
                 // return true if we find a branch which finds a complete match.
-                if ($this->check_match_phrase_branch($phrase, $itemtotry + 2, $nextwordtotry,
-                                                                    $wordsmatchedwithnewword)) {
+                if (
+                    $this->check_match_phrase_branch(
+                        $phrase,
+                        $itemtotry + 2,
+                        $nextwordtotry,
+                        $wordsmatchedwithnewword
+                    )
+                ) {
                     return true;
                 }
             }
@@ -318,7 +342,7 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
         // See if we can match these next few words as a phrase to next subcontents item.
         if ($shallwetry && $this->subcontents[$itemtotry] instanceof pmatch_can_match_phrase) {
             // Calculate min and max phrase lengths given the epxression and the length of phrase.
-            list($phraseminlength, $phrasemaxlength) =
+            [$phraseminlength, $phrasemaxlength] =
                     $this->subcontents[$itemtotry]->can_match_len($this->phraseleveloptions);
             if (is_null($phrasemaxlength)) {
                 $phrasemaxlength = count($phrase) - ($wordtotry);
@@ -344,17 +368,22 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
                     }
                 }
                 $nextphraseleveloptions->set_allow_any_word_order($allowanywordorder);
-                if ($this->subcontents[$itemtotry]->match_phrase(
-                                            array_slice($phrase, $wordtotry, $plength),
-                                            $nextphraseleveloptions,
-                                            $this->wordleveloptions)) {
+                if (
+                    $this->subcontents[$itemtotry]->match_phrase(
+                        array_slice($phrase, $wordtotry, $plength),
+                        $nextphraseleveloptions,
+                        $this->wordleveloptions
+                    )
+                ) {
                     // We matched a phrase.
                     $nextwordtotry = $wordtotry + $plength;
                     if ($allowanywordorder) {
                         $nextwordtotry = 0;
                     }
-                    $wordsmatchedandphrasewords = array_merge($wordsmatched,
-                                                    range($wordtotry, $wordtotry + $plength - 1));
+                    $wordsmatchedandphrasewords = array_merge(
+                        $wordsmatched,
+                        range($wordtotry, $wordtotry + $plength - 1)
+                    );
                     // Was this the last item to match?
                     if (($itemtotry) == count($this->subcontents) - 1) {
                         if (count($wordsmatchedandphrasewords) == count($phrase)) {
@@ -365,8 +394,14 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
                             // but extra words are allowed.
                             return true;
                         }
-                    } else if ($this->check_match_phrase_branch($phrase, $itemtotry + 2,
-                                                    $nextwordtotry, $wordsmatchedandphrasewords)) {
+                    } else if (
+                        $this->check_match_phrase_branch(
+                            $phrase,
+                            $itemtotry + 2,
+                            $nextwordtotry,
+                            $wordsmatchedandphrasewords
+                        )
+                    ) {
                         return true;
                     }
                     break;
@@ -382,21 +417,24 @@ abstract class pmatch_matcher_item_with_subcontents extends pmatch_matcher_item 
         if ($allowextrawordshere || $this->phraseleveloptions->get_allow_any_word_order()) {
             $nextwordtotry = $wordtotry + 1;
             // Try next word.
-            if ($this->check_match_phrase_branch($phrase, $itemtotry,
-                                                        $nextwordtotry, $wordsmatched)) {
+            if (
+                $this->check_match_phrase_branch(
+                    $phrase,
+                    $itemtotry,
+                    $nextwordtotry,
+                    $wordsmatched
+                )
+            ) {
                 return true;
             }
         }
         return false;
     }
-
-
 }
 /**
  * This class is used to match the whole expression.
  */
-class pmatch_matcher_whole_expression extends pmatch_matcher_item_with_subcontents
-                                                implements pmatch_can_match_whole_expression {
+class pmatch_matcher_whole_expression extends pmatch_matcher_item_with_subcontents implements pmatch_can_match_whole_expression {
     /**
      * This function matches the whole expression against the words.
      *
@@ -433,8 +471,7 @@ class pmatch_matcher_match extends pmatch_matcher_item_with_subcontents {
  * This class is used to match a single match item that can match either all or any of its
  * subcontents.
  */
-class pmatch_matcher_match_any extends pmatch_matcher_match
-                                implements pmatch_can_match_whole_expression {
+class pmatch_matcher_match_any extends pmatch_matcher_match implements pmatch_can_match_whole_expression {
     /**
      * This function matches the whole expression against the words.
      *
@@ -454,8 +491,7 @@ class pmatch_matcher_match_any extends pmatch_matcher_match
 /**
  * This class is used to match a single match item that can match all of its subcontents.
  */
-class pmatch_matcher_match_all extends pmatch_matcher_match
-        implements  pmatch_can_match_whole_expression {
+class pmatch_matcher_match_all extends pmatch_matcher_match implements pmatch_can_match_whole_expression {
     /**
      * This function matches the whole expression against the words.
      *
@@ -475,9 +511,10 @@ class pmatch_matcher_match_all extends pmatch_matcher_match
 /**
  * This class is used to match a single match item that can match options.
  */
-class pmatch_matcher_match_options extends pmatch_matcher_match
-        implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase,
-                    pmatch_can_match_whole_expression {
+class pmatch_matcher_match_options extends pmatch_matcher_match implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_phrase,
+    pmatch_can_match_whole_expression {
     /** @var pmatch_word_level_options */
     public $wordleveloptions;
 
@@ -498,8 +535,11 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
      * @return bool true if the whole expression matches the words
      */
     public function match_whole_expression($words) {
-        return $this->match_phrase($words, $this->interpreter->phraseleveloptions,
-                                    $this->interpreter->wordleveloptions);
+        return $this->match_phrase(
+            $words,
+            $this->interpreter->phraseleveloptions,
+            $this->interpreter->wordleveloptions
+        );
     }
 
     /**
@@ -513,7 +553,7 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
         $max = 0;
         foreach ($this->subcontents as $subcontent) {
             if ($subcontent instanceof pmatch_can_contribute_to_length_of_phrase) {
-                list($subcontentmin, $subcontentmax) =
+                [$subcontentmin, $subcontentmax] =
                         $subcontent->can_match_len($phraseleveloptions);
                 if (is_null($subcontentmax) || is_null($max)) {
                     $max = null;
@@ -530,10 +570,10 @@ class pmatch_matcher_match_options extends pmatch_matcher_match
 /**
  * This class is used to match a list of items that can match a phrase or word.
  */
-class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
-        implements pmatch_can_match_phrase, pmatch_can_match_word,
-                    pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_phrase,
+    pmatch_can_match_word {
     /**
      * This function matches a phrase against the options.
      *
@@ -543,8 +583,10 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
      */
     public function match_word($word, $wordleveloptions) {
         foreach ($this->subcontents as $subcontent) {
-            if ($subcontent instanceof pmatch_can_match_word &&
-                        $subcontent->match_word($word, $wordleveloptions) === true) {
+            if (
+                $subcontent instanceof pmatch_can_match_word &&
+                        $subcontent->match_word($word, $wordleveloptions) === true
+            ) {
                 return true;
             }
         }
@@ -561,8 +603,10 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions) {
         foreach ($this->subcontents as $subcontent) {
-            if ($subcontent instanceof pmatch_can_match_phrase &&
-                    $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true) {
+            if (
+                $subcontent instanceof pmatch_can_match_phrase &&
+                    $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true
+            ) {
                 return true;
             }
         }
@@ -582,7 +626,7 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
         $max = 1;
         foreach ($this->subcontents as $subcontent) {
             if ($subcontent instanceof pmatch_can_contribute_to_length_of_phrase) {
-                list($subcontentmin, $subcontentmax) =
+                [$subcontentmin, $subcontentmax] =
                         $subcontent->can_match_len($phraseleveloptions);
                 if (is_null($subcontentmax) || is_null($max)) {
                     $max = null;
@@ -600,9 +644,9 @@ class pmatch_matcher_or_list extends pmatch_matcher_item_with_subcontents
 /**
  * This is the same as an or_list but with no or_list_phrases.
  */
-class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
-        implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_word {
     /**
      * This property is used to count the number of misspellings used to match the student response
      * word to the pmatch expression.
@@ -629,16 +673,20 @@ class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
     public function match_word($word, $wordleveloptions) {
         // phpcs:disable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterFirst
         // phpcs:disable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterSecond
-        for ($this->usedmisspellings = 0;
+        for (
+            $this->usedmisspellings = 0;
                 $this->usedmisspellings <= $wordleveloptions->get_misspellings();
-                $this->usedmisspellings++) {
+                $this->usedmisspellings++
+        ) {
         // phpcs:enable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterFirst
         // phpcs:enable Squiz.ControlStructures.ForLoopDeclaration.SpacingAfterSecond
             foreach ($this->subcontents as $subcontent) {
                 $nextwordleveloptions = clone($wordleveloptions);
                 $nextwordleveloptions->set_misspellings($this->usedmisspellings);
-                if ($subcontent instanceof pmatch_can_match_word &&
-                            $subcontent->match_word($word, $nextwordleveloptions) === true) {
+                if (
+                    $subcontent instanceof pmatch_can_match_word &&
+                            $subcontent->match_word($word, $nextwordleveloptions) === true
+                ) {
                     return true;
                 }
             }
@@ -661,15 +709,14 @@ class pmatch_matcher_synonym extends pmatch_matcher_item_with_subcontents
  * This class is used to match a single character in a word.
  */
 class pmatch_matcher_or_character extends pmatch_matcher_item {
-
 }
 
 /**
  * This class is used to match a single character in a word or phrase.
  */
-class pmatch_matcher_or_list_phrase extends pmatch_matcher_item_with_subcontents
-            implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_or_list_phrase extends pmatch_matcher_item_with_subcontents implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_phrase {
     /**
      * This function matches a phrase against the options.
      *
@@ -680,8 +727,10 @@ class pmatch_matcher_or_list_phrase extends pmatch_matcher_item_with_subcontents
      */
     public function match_phrase($phrase, $phraseleveloptions, $wordleveloptions) {
         foreach ($this->subcontents as $subcontent) {
-            if ($subcontent instanceof pmatch_can_match_phrase &&
-                    $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true) {
+            if (
+                $subcontent instanceof pmatch_can_match_phrase &&
+                    $subcontent->match_phrase($phrase, $phraseleveloptions, $wordleveloptions) === true
+            ) {
                 return true;
             }
         }
@@ -705,9 +754,9 @@ class pmatch_matcher_or_list_phrase extends pmatch_matcher_item_with_subcontents
 /**
  * This class is used to match a phrase that is made up of a number of subcontents.
  */
-class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
-        implements pmatch_can_match_phrase, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_phrase {
     #[\Override]
     public function can_match_len($phraseleveloptions) {
         $noofwords = (count($this->subcontents) + 1) / 2;
@@ -722,14 +771,16 @@ class pmatch_matcher_phrase extends pmatch_matcher_item_with_subcontents
 /**
  * This class is used to match a word delimiter that is a space.
  */
-class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
-        implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_word_delimiter {
     #[\Override]
     public function valid_match($phrase, $wordsmatched, $wordtotry, $phraseleveloptions) {
         $lastwordmatched = $wordsmatched[count($wordsmatched) - 1];
-        if (!$phraseleveloptions->get_allow_any_word_order() &&
-                                                !$phraseleveloptions->get_allow_extra_words()) {
+        if (
+            !$phraseleveloptions->get_allow_any_word_order() &&
+                                                !$phraseleveloptions->get_allow_extra_words()
+        ) {
             return ($wordtotry == ($lastwordmatched + 1));
         } else if (!$phraseleveloptions->get_allow_any_word_order()) {
             return ($wordtotry > $lastwordmatched);
@@ -779,9 +830,9 @@ class pmatch_matcher_word_delimiter_space extends pmatch_matcher_item
 /**
  * This class is used to match a word delimiter that is a space but with proximity.
  */
-class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
-        implements pmatch_word_delimiter, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_word_delimiter {
     /**
      * This function checks if the word delimiter is valid for the given phrase, wordsmatched,
      * and wordtotry.
@@ -797,8 +848,10 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
         if ($wordtotry < $lastwordmatched) {
             return false;
         }
-        if (($wordtotry - $lastwordmatched) >
-                                ($phraseleveloptions->get_allow_proximity_of() + 1)) {
+        if (
+            ($wordtotry - $lastwordmatched) >
+                                ($phraseleveloptions->get_allow_proximity_of() + 1)
+        ) {
             return false;
         }
         for ($wordno = $lastwordmatched; $wordno < $wordtotry; $wordno++) {
@@ -854,13 +907,11 @@ class pmatch_matcher_word_delimiter_proximity extends pmatch_matcher_item
 /**
  * This class is used to match a number
  */
-class pmatch_matcher_number extends pmatch_matcher_item
-            implements pmatch_can_match_word {
-
+class pmatch_matcher_number extends pmatch_matcher_item implements pmatch_can_match_word {
     #[\Override]
     public function match_word($word, $wordleveloptions) {
         $word = $this->externaloptions->strip_sentence_divider($word);
-        if (0 === preg_match('~'.PMATCH_NUMBER.'$~A', $word)) {
+        if (0 === preg_match('~' . PMATCH_NUMBER . '$~A', $word)) {
             return false;
         } else {
             $studentinput = $this->cleanup_number($word);
@@ -879,7 +930,7 @@ class pmatch_matcher_number extends pmatch_matcher_item
      */
     public function cleanup_number($numberstr) {
         $numberstr = str_replace(' ', '', $numberstr);
-        $numberstr = preg_replace('~'.PMATCH_HTML_EXPONENT.'~', 'e$2', $numberstr);
+        $numberstr = preg_replace('~' . PMATCH_HTML_EXPONENT . '~', 'e$2', $numberstr);
         return (float)$numberstr;
     }
 }
@@ -887,9 +938,9 @@ class pmatch_matcher_number extends pmatch_matcher_item
 /**
  * This class is used to match a word that is made up of a number of subcontents.
  */
-class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
-        implements pmatch_can_match_word, pmatch_can_contribute_to_length_of_phrase {
-
+class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents implements
+    pmatch_can_contribute_to_length_of_phrase,
+    pmatch_can_match_word {
     /**
      * This function check a word options.
      *
@@ -901,8 +952,12 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
         $normalcharactercount = 0;
         $adjustedwordleveloptions = clone($wordleveloptions);
         foreach ($this->subcontents as $subcontent) {
-            if (in_array($this->get_type_name($subcontent),
-                                ['character_in_word', 'special_character_in_word'])) {
+            if (
+                in_array(
+                    $this->get_type_name($subcontent),
+                    ['character_in_word', 'special_character_in_word']
+                )
+            ) {
                 $normalcharactercount++;
             }
         }
@@ -946,9 +1001,13 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
      * @param integer $noofcharactertomatch no of characters to match
      * @return bool true if we find one match branch that successfully matches the whole word
      */
-    private function check_match_branches($word, $allowmispellings,
-                                            $charpos = 0, $subcontentno = 0,
-                                            $noofcharactertomatch = 1): bool {
+    private function check_match_branches(
+        $word,
+        $allowmispellings,
+        $charpos = 0,
+        $subcontentno = 0,
+        $noofcharactertomatch = 1
+    ): bool {
         $itemslefttomatch = count($this->subcontents) - ($subcontentno + 1);
         $charslefttomatch = core_text::strlen($word) - ($charpos + $noofcharactertomatch);
         // Check if we have gone beyond limit of what can be matched.
@@ -957,20 +1016,31 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
                 return true;
             } else if ($this->wordleveloptions->get_allow_extra_characters()) {
                 return true;
-            } else if ($this->wordleveloptions->get_misspelling_allow_extra_char()
-                                    && ($allowmispellings > $charslefttomatch)) {
+            } else if (
+                $this->wordleveloptions->get_misspelling_allow_extra_char()
+                                    && ($allowmispellings > $charslefttomatch)
+            ) {
                 return true;
             } else {
                 return false;
             }
         } else if ($charslefttomatch < 0) {
-            if ($this->wordleveloptions->get_misspelling_allow_fewer_char()
-                                        && ($allowmispellings > $itemslefttomatch)) {
+            if (
+                $this->wordleveloptions->get_misspelling_allow_fewer_char()
+                                        && ($allowmispellings > $itemslefttomatch)
+            ) {
                 return true;
-            } else if (($this->subcontents[$subcontentno]
+            } else if (
+                ($this->subcontents[$subcontentno]
                                     instanceof pmatch_can_match_multiple_or_no_chars)
-                    && ($this->check_match_branches($word, $allowmispellings,
-                                        $charpos + 1, $subcontentno + 1, $noofcharactertomatch))) {
+                    && ($this->check_match_branches(
+                        $word,
+                        $allowmispellings,
+                        $charpos + 1,
+                        $subcontentno + 1,
+                        $noofcharactertomatch
+                    ))
+            ) {
                 // No chars left to match but this is a multiple match wild card, so no match needed.
                 return true;
             } else {
@@ -984,78 +1054,146 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
             $thisfragmentmatched = $this->subcontents[$subcontentno]->match_char($thisfragment);
         }
 
-        if (($noofcharactertomatch == 1) &&
+        if (
+            ($noofcharactertomatch == 1) &&
                         $this->subcontents[$subcontentno]
-                        instanceof pmatch_can_match_multiple_or_no_chars) {
+                        instanceof pmatch_can_match_multiple_or_no_chars
+        ) {
             // Check for the multiple char match wild card matching no characters at
             // the same time as checking for matching one.
-            if ($this->check_match_branches($word, $allowmispellings,
-                                                $charpos, $subcontentno + 1, 1)) {
+            if (
+                $this->check_match_branches(
+                    $word,
+                    $allowmispellings,
+                    $charpos,
+                    $subcontentno + 1,
+                    1
+                )
+            ) {
                 return true;
             }
         }
         if ((!$thisfragmentmatched) && $this->wordleveloptions->get_allow_extra_characters()) {
-            if ($this->check_match_branches($word, $allowmispellings,
-                                                $charpos + 1, $subcontentno, 1)) {
+            if (
+                $this->check_match_branches(
+                    $word,
+                    $allowmispellings,
+                    $charpos + 1,
+                    $subcontentno,
+                    1
+                )
+            ) {
                 return true;
             }
         }
         if ((!$thisfragmentmatched) && ($allowmispellings > 0)) {
             // If there is no match but we can match the next character.
-            if ($this->wordleveloptions->get_misspelling_allow_transpose_two_chars()&&
-                        ($itemslefttomatch > 0) && ($charslefttomatch > 0)) {
-                if (!$this->subcontents[$subcontentno + 1]
-                                            instanceof pmatch_can_match_multiple_or_no_chars) {
+            if (
+                $this->wordleveloptions->get_misspelling_allow_transpose_two_chars() &&
+                        ($itemslefttomatch > 0) && ($charslefttomatch > 0)
+            ) {
+                if (
+                    !$this->subcontents[$subcontentno + 1]
+                                            instanceof pmatch_can_match_multiple_or_no_chars
+                ) {
                     $wordtransposed = core_text::substr($word, 0, $charpos);
                     $wordtransposed .= core_text::substr($word, $charpos + 1, 1);
                     $wordtransposed .= core_text::substr($word, $charpos, 1);
                     $wordtransposed .= core_text::substr($word, $charpos + 2, core_text::strlen($word));
 
-                    if ($this->check_match_branches($wordtransposed, $allowmispellings - 1,
-                                                        $charpos, $subcontentno, 1)) {
+                    if (
+                        $this->check_match_branches(
+                            $wordtransposed,
+                            $allowmispellings - 1,
+                            $charpos,
+                            $subcontentno,
+                            1
+                        )
+                    ) {
                         return true;
                     }
                 }
             }
             // ... and if there is no match try ignoring this item.
             if ($this->wordleveloptions->get_misspelling_allow_fewer_char()) {
-                if ($this->check_match_branches($word, $allowmispellings - 1,
-                                                        $charpos, $subcontentno + 1, 1)) {
+                if (
+                    $this->check_match_branches(
+                        $word,
+                        $allowmispellings - 1,
+                        $charpos,
+                        $subcontentno + 1,
+                        1
+                    )
+                ) {
                     return true;
                 }
             }
             // ... and if there is no match try ignoring this character.
             if ($this->wordleveloptions->get_misspelling_allow_extra_char()) {
-                if ($this->check_match_branches($word, $allowmispellings - 1,
-                                                        $charpos + 1, $subcontentno, 1)) {
+                if (
+                    $this->check_match_branches(
+                        $word,
+                        $allowmispellings - 1,
+                        $charpos + 1,
+                        $subcontentno,
+                        1
+                    )
+                ) {
                     return true;
                 }
             }
             // ... and if there is no match try going on as if it was a match.
             if ($this->wordleveloptions->get_misspelling_allow_replace_char()) {
-                if ($this->check_match_branches($word, $allowmispellings - 1,
-                                                        $charpos + 1, $subcontentno + 1, 1)) {
+                if (
+                    $this->check_match_branches(
+                        $word,
+                        $allowmispellings - 1,
+                        $charpos + 1,
+                        $subcontentno + 1,
+                        1
+                    )
+                ) {
                     return true;
                 }
             }
         }
 
         if ($thisfragmentmatched) {
-            if ($this->subcontents[$subcontentno]
-                                    instanceof pmatch_can_match_multiple_or_no_chars) {
-                if ($this->check_match_branches($word, $allowmispellings,
-                                                    $charpos,
-                                                    $subcontentno, $noofcharactertomatch + 1)) {
+            if (
+                $this->subcontents[$subcontentno]
+                                    instanceof pmatch_can_match_multiple_or_no_chars
+            ) {
+                if (
+                    $this->check_match_branches(
+                        $word,
+                        $allowmispellings,
+                        $charpos,
+                        $subcontentno,
+                        $noofcharactertomatch + 1
+                    )
+                ) {
                     return true;
                 }
-                if ($this->check_match_branches($word, $allowmispellings,
-                                                    $charpos + $noofcharactertomatch,
-                                                    $subcontentno + 1, 1)) {
+                if (
+                    $this->check_match_branches(
+                        $word,
+                        $allowmispellings,
+                        $charpos + $noofcharactertomatch,
+                        $subcontentno + 1,
+                        1
+                    )
+                ) {
                     return true;
                 }
-            } else if ($this->check_match_branches($word, $allowmispellings,
-                                                    $charpos + $noofcharactertomatch,
-                                                    $subcontentno + 1, 1)) {
+            } else if (
+                $this->check_match_branches(
+                    $word,
+                    $allowmispellings,
+                    $charpos + $noofcharactertomatch,
+                    $subcontentno + 1,
+                    1
+                )
+            ) {
                 return true;
             }
         } else {
@@ -1080,9 +1218,7 @@ class pmatch_matcher_word extends pmatch_matcher_item_with_subcontents
 /**
  * This class is used to match a single character in a word.
  */
-class pmatch_matcher_character_in_word extends pmatch_matcher_item
-        implements pmatch_can_match_char {
-
+class pmatch_matcher_character_in_word extends pmatch_matcher_item implements pmatch_can_match_char {
     /**
      * This function matches a single character against the code fragment.
      *
@@ -1102,8 +1238,7 @@ class pmatch_matcher_character_in_word extends pmatch_matcher_item
 /**
  * This class is used to match a special character in a word.
  */
-class pmatch_matcher_special_character_in_word extends pmatch_matcher_item
-                                                implements pmatch_can_match_char {
+class pmatch_matcher_special_character_in_word extends pmatch_matcher_item implements pmatch_can_match_char {
     /**
      * This function matches a single character against the special character.
      *
@@ -1119,8 +1254,7 @@ class pmatch_matcher_special_character_in_word extends pmatch_matcher_item
 /**
  * This class is used to match a single character in a word that can be a wildcard.
  */
-class pmatch_matcher_wildcard_match_single extends pmatch_matcher_item
-                                            implements pmatch_can_match_char {
+class pmatch_matcher_wildcard_match_single extends pmatch_matcher_item implements pmatch_can_match_char {
     /**
      * This function matches a single character against the wildcard.
      *
@@ -1136,10 +1270,7 @@ class pmatch_matcher_wildcard_match_single extends pmatch_matcher_item
  * This class is used to match a single character in a word that can be a wildcard and can match
  * multiple characters.
  */
-class pmatch_matcher_wildcard_match_multiple
-            extends pmatch_matcher_item
-            implements pmatch_can_match_multiple_or_no_chars {
-
+class pmatch_matcher_wildcard_match_multiple extends pmatch_matcher_item implements pmatch_can_match_multiple_or_no_chars {
     /**
      * This function matches a string of characters against the wildcard.
      *

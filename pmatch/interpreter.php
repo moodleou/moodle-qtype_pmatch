@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/pmatch/pmatch/matcher.php');
@@ -31,13 +33,13 @@ define('PMATCH_SPECIAL_CHARACTER', '[\(\)\\\\\|\?\*_\[\]]');
 define('PMATCH_CHARACTER', '(?:(?!' . PMATCH_SPECIAL_CHARACTER . ')[\pL\pM\pN\pP\pS])');
 
 define('PMATCH_LNUM', '[0-9]+');
-define('PMATCH_DNUM', PMATCH_LNUM.'[\.]'.PMATCH_LNUM);
-define('PMATCH_HTML_EXPONENT', '[*xX]10<(sup|SUP)>([+-]?'.PMATCH_LNUM.')</(sup|SUP)>');
-define('PMATCH_EXPONENT_DNUM', '(('.PMATCH_LNUM.'|'.PMATCH_DNUM.')'.
-                            '([eE][+-]?'.PMATCH_LNUM.'|'.PMATCH_HTML_EXPONENT.'))');
-define('PMATCH_NUMBER', '((([+|-])?'.PMATCH_EXPONENT_DNUM.')'.
-                            '|(([+|-])?'.PMATCH_DNUM.')'.
-                            '|(([+|-])?'.PMATCH_LNUM.'))');
+define('PMATCH_DNUM', PMATCH_LNUM . '[\.]' . PMATCH_LNUM);
+define('PMATCH_HTML_EXPONENT', '[*xX]10<(sup|SUP)>([+-]?' . PMATCH_LNUM . ')</(sup|SUP)>');
+define('PMATCH_EXPONENT_DNUM', '((' . PMATCH_LNUM . '|' . PMATCH_DNUM . ')' .
+                            '([eE][+-]?' . PMATCH_LNUM . '|' . PMATCH_HTML_EXPONENT . '))');
+define('PMATCH_NUMBER', '((([+|-])?' . PMATCH_EXPONENT_DNUM . ')' .
+                            '|(([+|-])?' . PMATCH_DNUM . ')' .
+                            '|(([+|-])?' . PMATCH_LNUM . '))');
 
 /**
  * This file contains code to interpret a pmatch expression.
@@ -85,7 +87,7 @@ abstract class pmatch_interpreter_item {
      */
     public function interpret($string, $start = 0) {
         $this->interpretererrormessage = '';
-        list($found, $endofmatch) = $this->interpret_contents($string, $start);
+        [$found, $endofmatch] = $this->interpret_contents($string, $start);
         if ($found) {
             $this->codefragment = core_text::substr($string, $start, $endofmatch - $start);
         } else {
@@ -104,8 +106,11 @@ abstract class pmatch_interpreter_item {
      */
     protected function interpret_contents($string, $start) {
         // Regex pattern to match one character of pmatch code.
-        list($found, $endofpattern, $subpatterns) = $this->find_pattern(
-                $this->pattern, $string, $start);
+        [$found, $endofpattern, $subpatterns] = $this->find_pattern(
+            $this->pattern,
+            $string,
+            $start
+        );
         return [$found, $endofpattern];
     }
 
@@ -121,7 +126,7 @@ abstract class pmatch_interpreter_item {
      */
     public function find_pattern($pattern, $string, $start) {
         $matches = [];
-        preg_match($pattern.'iAu', core_text::substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
+        preg_match($pattern . 'iAu', core_text::substr($string, $start), $matches, PREG_OFFSET_CAPTURE);
         $found = !empty($matches);
         if ($found) {
             $endofpattern = $matches[0][1] + core_text::strlen($matches[0][0]) + $start;
@@ -156,7 +161,7 @@ abstract class pmatch_interpreter_item {
      */
     public function set_error_message($errormessage, $codefragment) {
         $this->interpretererrormessage =
-                                get_string('ie_'.$errormessage, 'qtype_pmatch', $codefragment);
+                                get_string('ie_' . $errormessage, 'qtype_pmatch', $codefragment);
     }
 
     /**
@@ -168,7 +173,7 @@ abstract class pmatch_interpreter_item {
      */
     public function get_matcher($externaloptions) {
         $thistypename = $this->get_type_name_of_interpreter_object($this);
-        $matchclassname = 'pmatch_matcher_'.$thistypename;
+        $matchclassname = 'pmatch_matcher_' . $thistypename;
         return new $matchclassname($this, $externaloptions);
     }
 
@@ -226,7 +231,6 @@ abstract class pmatch_interpreter_item {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpreter_item {
-
     /**
      * @var pmatch_interpreter_item[] The sub contents of this item. This is an array of items that are sub contents of this item.
      */
@@ -254,16 +258,20 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
         // Iterate down all branches.
         foreach ($typestotry as $typetotry) {
             $childbranches[$branchindex] = $branchfoundsofar;
-            list($typefound, $found, $childbranchcursor[$branchindex]) =
+            [$typefound, $found, $childbranchcursor[$branchindex]] =
                     $this->interpret_subcontent_item($typetotry, $string, $start);
             if ($found && ($childbranchcursor[$branchindex] > $start)) {
                 $childbranches[$branchindex][] = $typefound;
-                if (($this->limitsubcontents == 0) ||
-                            (count($childbranches[$branchindex]) < $this->limitsubcontents)) {
-                    list($childbranches[$branchindex], $childbranchcursor[$branchindex]) =
-                                $this->interpret_subcontents($string,
-                                                            $childbranchcursor[$branchindex],
-                                                            $childbranches[$branchindex]);
+                if (
+                    ($this->limitsubcontents == 0) ||
+                            (count($childbranches[$branchindex]) < $this->limitsubcontents)
+                ) {
+                    [$childbranches[$branchindex], $childbranchcursor[$branchindex]] =
+                                $this->interpret_subcontents(
+                                    $string,
+                                    $childbranchcursor[$branchindex],
+                                    $childbranches[$branchindex]
+                                );
                 }
             }
             if ($anyerrormessage = $typefound->get_error_message()) {
@@ -311,9 +319,9 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      * @param integer $start
      */
     protected function interpret_subcontent_item($cancontaintype, $string, $start) {
-        $cancontainclassname = 'pmatch_interpreter_'.$cancontaintype;
+        $cancontainclassname = 'pmatch_interpreter_' . $cancontaintype;
         $cancontain = new $cancontainclassname($this->pmatchoptions);
-        list($found, $aftercontent) = $cancontain->interpret($string, $start);
+        [$found, $aftercontent] = $cancontain->interpret($string, $start);
         if ($found) {
             return [$cancontain, true, $aftercontent];
         } else {
@@ -323,7 +331,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
 
     #[\Override]
     protected function interpret_contents($string, $start) {
-        list($this->subcontents, $endofcontents) = $this->interpret_subcontents($string, $start);
+        [$this->subcontents, $endofcontents] = $this->interpret_subcontents($string, $start);
         $this->check_subcontents();
         return [(!empty($this->subcontents)), $endofcontents];
     }
@@ -335,11 +343,16 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
      * error.
      */
     protected function check_subcontents() {
-        if (array_key_exists($this->last_subcontent_type_found($this->subcontents),
-                                                                    $this->lastcontenttypeerrors)) {
+        if (
+            array_key_exists(
+                $this->last_subcontent_type_found($this->subcontents),
+                $this->lastcontenttypeerrors
+            )
+        ) {
             $this->set_error_message(
                 $this->lastcontenttypeerrors[$this->last_subcontent_type_found($this->subcontents)],
-                $this->codefragment);
+                $this->codefragment
+            );
         }
     }
 
@@ -351,7 +364,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
                                  'word_delimiter_proximity' => 'lastsubcontenttypeworddelimiter'];
     #[\Override]
     public function interpret($string, $start = 0) {
-        list($found, $endofmatch) = parent::interpret($string, $start);
+        [$found, $endofmatch] = parent::interpret($string, $start);
         $this->check_subcontents();
         return [$found, $endofmatch];
     }
@@ -382,9 +395,7 @@ abstract class pmatch_interpreter_item_with_subcontents extends pmatch_interpret
  * It is used to interpret items that have sub contents enclosed in brackets or other delimiters.
  * It is used to interpret the not, match_any, match_all and match_options items.
  */
-abstract class pmatch_interpreter_item_with_enclosed_subcontents
-                    extends pmatch_interpreter_item_with_subcontents {
-
+abstract class pmatch_interpreter_item_with_enclosed_subcontents extends pmatch_interpreter_item_with_subcontents {
     /**
      * @var string The patterns used to find the opening and closing of this item.
      */
@@ -405,7 +416,7 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
     #[\Override]
     protected function interpret_contents($string, $start) {
         $subpatterns = [];
-        list($found, $endofopening, $subpatterns) =
+        [$found, $endofopening, $subpatterns] =
                                 $this->find_pattern($this->openingpattern, $string, $start);
 
         if (!$found) {
@@ -420,18 +431,20 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
         if (!$this->interpret_subpattern_in_opening($subpattern)) {
             return [false, $start];
         }
-        list($this->subcontents, $endofcontents) =
+        [$this->subcontents, $endofcontents] =
                                             $this->interpret_subcontents($string, $endofopening);
         if (empty($this->subcontents)) {
             $this->set_error_message('unrecognisedsubcontents', shorten_text($string, 20, true));
             return [false, $start];
         }
-        list($found, $endofclosing, $subpatterns) =
+        [$found, $endofclosing, $subpatterns] =
                             $this->find_pattern($this->closingpattern, $string, $endofcontents);
         if (!$found) {
             if (!empty($this->missingclosingpatternerror)) {
-                $this->set_error_message($this->missingclosingpatternerror,
-                                            core_text::substr($string, $start, $endofcontents - $start));
+                $this->set_error_message(
+                    $this->missingclosingpatternerror,
+                    core_text::substr($string, $start, $endofcontents - $start)
+                );
             }
             return [true, $start];
         }
@@ -453,9 +466,9 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
 
     #[\Override]
     public function get_formatted_expression_string($indentlevel = 0) {
-        $string = $this->indent($indentlevel). $this->formatted_opening()." (\n";
+        $string = $this->indent($indentlevel) . $this->formatted_opening() . " (\n";
         $string .= parent::get_formatted_expression_string($indentlevel);
-        $string .= $this->indent($indentlevel). ")\n";
+        $string .= $this->indent($indentlevel) . ")\n";
         return $string;
     }
 
@@ -470,7 +483,6 @@ abstract class pmatch_interpreter_item_with_enclosed_subcontents
     protected function formatted_opening() {
         return ''; // Overridden in sub classes.
     }
-
 }
 
 /**
@@ -782,18 +794,22 @@ class pmatch_word_level_options {
      */
     public function get_options_as_string() {
         $string = '';
-        if ($this->misspellingallowreplacechar &&
+        if (
+            $this->misspellingallowreplacechar &&
                     $this->misspellingallowextrachar &&
                     $this->misspellingallowfewerchar &&
-                    $this->misspellingallowtransposetwochars) {
+                    $this->misspellingallowtransposetwochars
+        ) {
             $string .= 'm';
             if ($this->misspellings == 2) {
                 $string .= '2';
             }
-        } else if ($this->misspellingallowreplacechar ||
+        } else if (
+            $this->misspellingallowreplacechar ||
                     $this->misspellingallowextrachar ||
                     $this->misspellingallowfewerchar ||
-                    $this->misspellingallowtransposetwochars) {
+                    $this->misspellingallowtransposetwochars
+        ) {
             $string .= 'm';
             if ($this->misspellingallowreplacechar) {
                 $string .= 'r';
@@ -929,7 +945,7 @@ class pmatch_phrase_level_options {
             $string .= 'w';
         }
         if ($this->allowproximityof != 2) {
-            $string .= 'p'.$this->allowproximityof;
+            $string .= 'p' . $this->allowproximityof;
         }
         return $string;
     }
@@ -943,7 +959,6 @@ class pmatch_phrase_level_options {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pmatch_interpreter_match_options extends pmatch_interpreter_match {
-
     /** @var pmatch_word_level_options */
     public $wordleveloptions;
 
@@ -981,15 +996,19 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $misspellingoptionmatches = [];
         $cursor = 1; // Start at second character after '_'.
         while ($cursor < core_text::strlen($options)) {
-            if (0 === preg_match('~c|o|w|m([frtx2])*|p[0-4]~A',
-                                        core_text::substr($options, $cursor),
-                                        $misspellingoptionmatches)) {
+            if (
+                0 === preg_match(
+                    '~c|o|w|m([frtx2])*|p[0-4]~A',
+                    core_text::substr($options, $cursor),
+                    $misspellingoptionmatches
+                )
+            ) {
                 $this->set_error_message('illegaloptions', $options);
                 return false;
             }
             $thisoption = $misspellingoptionmatches[0];
             switch ($thisoption[0]) {
-                case 'm' :
+                case 'm':
                     if (core_text::strlen($thisoption) == 1) {
                         $wlopt->set_misspelling_allow_replace_char(true);
                         $wlopt->set_misspelling_allow_transpose_two_chars(true);
@@ -999,37 +1018,37 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                         $misspellingoptioncursor = 0;
                         do {
                             switch ($thisoption[1 + $misspellingoptioncursor]) {
-                                case 'r' :
+                                case 'r':
                                     $wlopt->set_misspelling_allow_replace_char(true);
                                     break;
-                                case 't' :
+                                case 't':
                                     $wlopt->set_misspelling_allow_transpose_two_chars(true);
                                     break;
-                                case 'x' :
+                                case 'x':
                                     $wlopt->set_misspelling_allow_extra_char(true);
                                     break;
-                                case 'f' :
+                                case 'f':
                                     $wlopt->set_misspelling_allow_fewer_char(true);
                                     break;
-                                case '2' :
+                                case '2':
                                     $wlopt->set_misspellings(2);
                                     $wlopt->set_misspelling_allow_replace_char(true);
                                     $wlopt->set_misspelling_allow_transpose_two_chars(true);
                                     $wlopt->set_misspelling_allow_extra_char(true);
                                     $wlopt->set_misspelling_allow_fewer_char(true);
                                     break;
-                                default :
+                                default:
                                     $this->set_error_message('illegaloptions', $options);
                                     return false;
                             }
-                            $misspellingoptioncursor ++;
+                            $misspellingoptioncursor++;
                         } while (isset($thisoption[1 + $misspellingoptioncursor]));
                     }
                     break;
-                case 'c' :
+                case 'c':
                     $wlopt->set_allow_extra_characters(true);
                     break;
-                case 'p' :
+                case 'p':
                     if (0 === preg_match('~[0-4]$~A', $thisoption[1])) {
                         $this->set_error_message('illegaloptions', $options);
                         return false;
@@ -1037,13 +1056,13 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
                         $this->phraseleveloptions->set_allow_proximity_of($thisoption[1]);
                     }
                     break;
-                case 'o' :
+                case 'o':
                     $this->phraseleveloptions->set_allow_any_word_order(true);
                     break;
-                case 'w' :
+                case 'w':
                     $this->phraseleveloptions->set_allow_extra_words(true);
                     break;
-                default :
+                default:
                     $this->set_error_message('illegaloptions', $options);
                     return false;
             }
@@ -1082,7 +1101,7 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
         $options .= $this->wordleveloptions->get_options_as_string();
         $options .= $this->phraseleveloptions->get_options_as_string();
         if (!empty($options)) {
-            return 'match_'.$options;
+            return 'match_' . $options;
         } else {
             return 'match';
         }
@@ -1090,14 +1109,17 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
 
     #[\Override]
     protected function interpret_subcontents($string, $start, $branchfoundsofar = []) {
-        list($found, $end) = parent::interpret_subcontents($string, $start, $branchfoundsofar);
+        [$found, $end] = parent::interpret_subcontents($string, $start, $branchfoundsofar);
         if (!count($branchfoundsofar)) {
             if ($found && !empty($this->pmatchoptions->wordstoreplace)) {
                 $subcontentsstr = core_text::substr($string, $start, $end - $start);
-                $subcontentsstrwithsyn = preg_replace($this->pmatchoptions->wordstoreplace,
-                        $this->pmatchoptions->synonymtoreplacewith, $subcontentsstr);
+                $subcontentsstrwithsyn = preg_replace(
+                    $this->pmatchoptions->wordstoreplace,
+                    $this->pmatchoptions->synonymtoreplacewith,
+                    $subcontentsstr
+                );
                 if ($subcontentsstrwithsyn != $subcontentsstr) {
-                    list($found, ) =
+                    [$found, ] =
                         parent::interpret_subcontents($subcontentsstrwithsyn, 0, $branchfoundsofar);
                 }
             }
@@ -1114,7 +1136,6 @@ class pmatch_interpreter_match_options extends pmatch_interpreter_match {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pmatch_interpreter_or_list extends pmatch_interpreter_item_with_subcontents {
-
     #[\Override]
     protected function next_possible_subcontent($foundsofar) {
         switch ($this->last_subcontent_type_found($foundsofar)) {
@@ -1285,7 +1306,7 @@ class pmatch_interpreter_number extends pmatch_interpreter_item {
      */
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '~'.PMATCH_NUMBER.'~';
+        $this->pattern = '~' . PMATCH_NUMBER . '~';
     }
 }
 
@@ -1303,7 +1324,7 @@ class pmatch_interpreter_character_in_word extends pmatch_interpreter_item {
      */
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '~'.PMATCH_CHARACTER.'~';
+        $this->pattern = '~' . PMATCH_CHARACTER . '~';
     }
 }
 
@@ -1321,7 +1342,7 @@ class pmatch_interpreter_special_character_in_word extends pmatch_interpreter_it
      */
     public function __construct($pmatchoptions) {
         parent::__construct($pmatchoptions);
-        $this->pattern = '~\\\\'.PMATCH_SPECIAL_CHARACTER.'~';
+        $this->pattern = '~\\\\' . PMATCH_SPECIAL_CHARACTER . '~';
     }
 }
 

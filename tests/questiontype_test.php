@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/question/type/pmatch/questiontype.php');
  * @covers \qtype_pmatch
  */
 final class questiontype_test extends \basic_testcase {
-
     /** @var string[] List of files to include for code coverage */
     public static $includecoverage = ['question/type/questiontype.php',
                                         'question/type/pmatch/questiontype.php'];

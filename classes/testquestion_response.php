@@ -24,7 +24,6 @@ namespace qtype_pmatch;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_response {
-
     /** @var string to identify the matched state. */
     const MATCHED = 'matched';
     /** @var string to identify the missed positive state. */

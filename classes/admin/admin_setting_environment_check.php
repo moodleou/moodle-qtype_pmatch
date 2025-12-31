@@ -32,7 +32,6 @@ require_once($CFG->libdir . '/adminlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_admin_setting_environment_check extends \admin_setting_heading {
-
     #[\Override]
     public function output_html($data, $query = '') {
         $results = [];
@@ -55,9 +54,13 @@ class qtype_pmatch_admin_setting_environment_check extends \admin_setting_headin
                 $a->humanfriendlylang = $humanfriendlylang;
                 $langcode = $stringmanager->get_string('iso6391', 'langconfig', null, $lang);
                 $a->langforspellchecker = qtype_pmatch_spell_checker::get_default_spell_check_dictionary(
-                        $langcode, $availablelangs);
-                if ($a->langforspellchecker &&
-                        !(qtype_pmatch_spell_checker::make($a->langforspellchecker) instanceof qtype_pmatch_null_spell_checker)) {
+                    $langcode,
+                    $availablelangs
+                );
+                if (
+                    $a->langforspellchecker &&
+                    !(qtype_pmatch_spell_checker::make($a->langforspellchecker) instanceof qtype_pmatch_null_spell_checker)
+                ) {
                     $results[] = get_string('env_dictok', 'qtype_pmatch', $a);
                 } else {
                     $results[] = get_string('env_dictmissing', 'qtype_pmatch', $a);
@@ -69,5 +72,4 @@ class qtype_pmatch_admin_setting_environment_check extends \admin_setting_headin
 
         return parent::output_html($data, $query);
     }
-
 }

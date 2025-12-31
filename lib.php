@@ -35,7 +35,7 @@
  * @param bool $forcedownload
  * @param array $options
  */
-function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options= []) {
+function qtype_pmatch_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $CFG;
     require_once($CFG->libdir . '/questionlib.php');
     question_pluginfile($course, $context, 'qtype_pmatch', $filearea, $args, $forcedownload, $options);
@@ -61,23 +61,19 @@ function qtype_pmatch_setup_question_test_page($question) {
         require_login($cm->course, false, $cm);
         $context = context_module::instance($cmid);
         $urlparams['cmid'] = $cmid;
-
     } else if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
         require_login($courseid);
         $context = context_course::instance($courseid);
         $urlparams['courseid'] = $courseid;
-
     } else if ($qcontext->contextlevel == CONTEXT_MODULE) {
         $cm = get_coursemodule_from_id(false, $qcontext->instanceid);
         require_login($cm->course, false, $cm);
         $context = $qcontext;
         $urlparams['cmid'] = $cm->id;
-
     } else if ($qcontext->contextlevel == CONTEXT_COURSE) {
         require_login($qcontext->instanceid);
         $context = $qcontext;
         $urlparams['courseid'] = $courseid;
-
     } else {
         require_login();
         $context = $question->get_context();
@@ -116,14 +112,18 @@ function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue): \core\out
                 throw new moodle_exception('error:blank', 'qtype_pmatch');
             } else {
                 $duplicated = \qtype_pmatch\testquestion_responses::check_duplicate_response(
-                        $response->questionid, $newvalue);
+                    $response->questionid,
+                    $newvalue
+                );
                 if ($duplicated) {
                     throw new moodle_exception('testquestionformduplicateresponse', 'qtype_pmatch');
                 }
             }
             $response->response = $newvalue;
-            $DB->update_record('qtype_pmatch_test_responses',
-                    (object) ['id' => $itemid, 'response' => $newvalue]);
+            $DB->update_record(
+                'qtype_pmatch_test_responses',
+                (object) ['id' => $itemid, 'response' => $newvalue]
+            );
             $result = qtype_pmatch_external::update_computed_mark_and_get_row_response($response->id, $question, null);
             // An json string pass value to updater.js file.
             $responsevalue = json_encode(['html' => $result['html'],
@@ -134,8 +134,16 @@ function qtype_pmatch_inplace_editable($itemtype, $itemid, $newvalue): \core\out
 
         // Prepare the element for the output.
         $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
-        return new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
-                true, s($response->response), $responsevalue, $editresponse, $editresponse);
+        return new \core\output\inplace_editable(
+            'qtype_pmatch',
+            'responsetable',
+            $response->id,
+            true,
+            s($response->response),
+            $responsevalue,
+            $editresponse,
+            $editresponse
+        );
     }
 
     throw new coding_exception('Unexpected item type in qtype_pmatch_inplace_editable.');

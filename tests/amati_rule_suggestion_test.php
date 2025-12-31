@@ -34,9 +34,7 @@ require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_test_base
  *
  * @covers \qtype_pmatch\amati_rule_suggestion
  */
-final class amati_rule_suggestion_test
-        extends testquestion_test_base {
-
+final class amati_rule_suggestion_test extends testquestion_test_base {
     /** @var \qtype_pmatch_question the data defining the question being tested. */
     protected $currentquestion;
 
@@ -1065,11 +1063,20 @@ final class amati_rule_suggestion_test
         // Set correct existing rules.
         $this->currentquestion->options = new stdClass();
         $this->currentquestion->options->answers = [];
-        $this->currentquestion->options->answers[17] = new question_answer(17,
-                'match_all(match_w(Tom) match_w(harry))', 1.0, '', FORMAT_HTML);
-        $this->currentquestion->options->answers[18] = new question_answer(18,
-                'match_any(match_w(tom) match_w(dick) match_w(harry) not( match_wm(annoy*)))', 1.0,
-                '.', FORMAT_HTML);
+        $this->currentquestion->options->answers[17] = new question_answer(
+            17,
+            'match_all(match_w(Tom) match_w(harry))',
+            1.0,
+            '',
+            FORMAT_HTML
+        );
+        $this->currentquestion->options->answers[18] = new question_answer(
+            18,
+            'match_any(match_w(tom) match_w(dick) match_w(harry) not( match_wm(annoy*)))',
+            1.0,
+            '.',
+            FORMAT_HTML
+        );
 
         // Ensure the question object has the relevant form rule fields.
         $this->add_question_form_fields($this->currentquestion);
@@ -1191,8 +1198,13 @@ final class amati_rule_suggestion_test
         $ruleid = 0;
         foreach ($newruleanswers as $newruleanswer) {
             $ruleid++;
-            $newrules[$ruleid] = new question_answer($ruleid,
-                                      $newruleanswer, 0.0, 'Feedback for rule: ' . $newruleanswer, FORMAT_HTML);
+            $newrules[$ruleid] = new question_answer(
+                $ruleid,
+                $newruleanswer,
+                0.0,
+                'Feedback for rule: ' . $newruleanswer,
+                FORMAT_HTML
+            );
         }
 
         $question->answers = $newrules;

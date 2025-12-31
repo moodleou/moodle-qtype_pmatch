@@ -24,7 +24,6 @@ namespace qtype_pmatch\output;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mobile {
-
     /**
      * Returns the mobile view for the pattern match question type.
      *

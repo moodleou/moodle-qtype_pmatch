@@ -25,7 +25,6 @@ namespace qtype_pmatch;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_options {
-
     /** @var object the settings for the question we are reporting on. */
     public $question;
 

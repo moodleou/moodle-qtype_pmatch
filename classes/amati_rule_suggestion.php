@@ -47,7 +47,6 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class amati_rule_suggestion {
-
     /**
      * The prefix for AMATI rules.
      * This is used to identify the start of a rule and to remove it when translating to pmatch.
@@ -96,7 +95,7 @@ class amati_rule_suggestion {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         $errors = [];
         $rules = [];
-        $data = curl_exec ($ch);
+        $data = curl_exec($ch);
         if ($errno = curl_errno($ch)) {
             $errors[] = curl_error($ch);
         }
@@ -342,7 +341,7 @@ class amati_rule_suggestion {
         $subrulesasparameters = self::get_parameters_from_amati_rule($rule);
 
         // Convert the parameter objects into equivalent pmatch rules.
-        return self::get_pmatch_rule_from_subrules ($subrulesasparameters);
+        return self::get_pmatch_rule_from_subrules($subrulesasparameters);
     }
 
     /**
@@ -391,8 +390,10 @@ class amati_rule_suggestion {
         }
 
         // Get suggested rules from AMATI web service.
-        list($amatirules, $amatierrors) = self::load_suggested_rules_from_amati_webservice($config->amatiwsurl,
-                $responses);
+        [$amatirules, $amatierrors] = self::load_suggested_rules_from_amati_webservice(
+            $config->amatiwsurl,
+            $responses
+        );
 
         // If there were no rules returned no translation is needed so return early.
         if (!$amatirules || !count($amatirules) || $amatirules[0]->rule == self::AMATI_EMPTY_RULE) {

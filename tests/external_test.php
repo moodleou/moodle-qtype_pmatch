@@ -69,8 +69,12 @@ final class external_test extends \advanced_testcase {
         }
 
         // Test the response is updated with valid value.
-        $res = core_external::update_inplace_editable('qtype_pmatch', 'responsetable', $responsevalue[0]->id,
-            'updated response value');
+        $res = core_external::update_inplace_editable(
+            'qtype_pmatch',
+            'responsetable',
+            $responsevalue[0]->id,
+            'updated response value'
+        );
         $res = external_api::clean_returnvalue(core_external::update_inplace_editable_returns(), $res);
         $this->assertEquals('updated response value', $res['displayvalue']);
     }

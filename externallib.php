@@ -27,7 +27,6 @@ require_once($CFG->libdir . '/questionlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_external extends external_api {
-
     /**
      * Describes the parameters for check_response webservice.
      *
@@ -132,8 +131,10 @@ class qtype_pmatch_external extends external_api {
             $response->expectedfraction = $params['expectedfraction'];
             $response->response = $params['response'];
             $response->questionid = $params['questionid'];
-            $duplicated = \qtype_pmatch\testquestion_responses::check_duplicate_response($params['questionid'],
-                    $params['response']);
+            $duplicated = \qtype_pmatch\testquestion_responses::check_duplicate_response(
+                $params['questionid'],
+                $params['response']
+            );
 
             if (!$duplicated) {
                 $rid = $DB->insert_record('qtype_pmatch_test_responses', $response);

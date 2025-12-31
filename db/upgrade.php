@@ -35,7 +35,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2013021201) {
-
         $backends = qtype_pmatch_spell_checker::get_installed_backends();
         end($backends);
         set_config('spellchecker', key($backends), 'qtype_pmatch');
@@ -91,8 +90,7 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016012600) {
-
-            // Define field questionid to be added to qtype_pmatch_rule_matches.
+        // Define field questionid to be added to qtype_pmatch_rule_matches.
         $table = new xmldb_table('qtype_pmatch_rule_matches');
         $field = new xmldb_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'testresponseid');
         $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, ['questionid'], 'question', ['id']);
@@ -124,14 +122,29 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     if ($oldversion < 2019021800) {
         $table = new xmldb_table('qtype_pmatch');
         if ($dbman->table_exists($table)) {
-            $field = new xmldb_field('applydictionarycheck', XMLDB_TYPE_CHAR, '2', null, null, null,
-                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            $field = new xmldb_field(
+                'applydictionarycheck',
+                XMLDB_TYPE_CHAR,
+                '2',
+                null,
+                null,
+                null,
+                qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION
+            );
             if ($dbman->field_exists($table, $field)) {
                 $dbman->change_field_type($table, $field);
-                $DB->set_field('qtype_pmatch', 'applydictionarycheck', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION,
-                        ['applydictionarycheck' => 0]);
-                $DB->set_field('qtype_pmatch', 'applydictionarycheck', get_string('iso6391', 'langconfig'),
-                        ['applydictionarycheck' => 1]);
+                $DB->set_field(
+                    'qtype_pmatch',
+                    'applydictionarycheck',
+                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION,
+                    ['applydictionarycheck' => 0]
+                );
+                $DB->set_field(
+                    'qtype_pmatch',
+                    'applydictionarycheck',
+                    get_string('iso6391', 'langconfig'),
+                    ['applydictionarycheck' => 1]
+                );
             }
         }
         upgrade_plugin_savepoint(true, 2019021800, 'qtype', 'pmatch');
@@ -140,8 +153,15 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     if ($oldversion < 2019031800) {
         $table = new xmldb_table('qtype_pmatch');
         if ($dbman->table_exists($table)) {
-            $field = new xmldb_field('applydictionarycheck', XMLDB_TYPE_CHAR, '5', null, null, null,
-                    qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+            $field = new xmldb_field(
+                'applydictionarycheck',
+                XMLDB_TYPE_CHAR,
+                '5',
+                null,
+                null,
+                null,
+                qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION
+            );
             if ($dbman->field_exists($table, $field)) {
                 $dbman->change_field_type($table, $field);
             }
@@ -161,7 +181,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019071200) {
-
         // Define field sentencedividers to be added to qtype_pmatch.
         $table = new xmldb_table('qtype_pmatch');
         $field = new xmldb_field('sentencedividers', XMLDB_TYPE_CHAR, 255, null, XMLDB_NOTNULL, null, '.?!', 'usecase');
@@ -176,7 +195,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019091000) {
-
         // Define field modelanswer to be added to qtype_pmatch.
         $table = new xmldb_table('qtype_pmatch');
         $field = new xmldb_field('modelanswer', XMLDB_TYPE_TEXT, null, null, null, null, null, 'converttospace');
@@ -191,7 +209,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023060200) {
-
         // Define field responsetemplate to be added to qtype_pmatch.
         $table = new xmldb_table('qtype_pmatch');
         $field = new xmldb_field('responsetemplate', XMLDB_TYPE_TEXT, null, null, null, null, null, 'extenddictionary');
@@ -206,7 +223,6 @@ function xmldb_qtype_pmatch_upgrade($oldversion) {
     }
 
     if ($oldversion < 2025010700) {
-
         // Define field quotematching to be added to qtype_pmatch.
         $table = new xmldb_table('qtype_pmatch');
         $field = new xmldb_field('quotematching', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'responsetemplate');

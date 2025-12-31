@@ -30,7 +30,6 @@ require_once($CFG->libdir . '/adminlib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_admin_setting_spell_check_languages extends \admin_setting_configmulticheckbox {
-
     /**
      * This function may be used in ancestors for lazy loading of choices
      *
@@ -60,5 +59,4 @@ class qtype_pmatch_admin_setting_spell_check_languages extends \admin_setting_co
 
         return true;
     }
-
 }

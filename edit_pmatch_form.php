@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
 use qtype_pmatch\form_utils;
 use qtype_pmatch\utils;
@@ -75,21 +75,31 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $this->general_answer_fields($mform);
         $standardplaceholders = $this->get_possible_answer_placeholders(6);
         $placeholders = array_map(
-            function($key, $placeholder) {
+            function ($key, $placeholder) {
                 return html_writer::empty_tag('input', ['type' => 'text', 'readonly' => 'readonly', 'size' => '22',
                     'value' => $placeholder, 'onfocus' => 'this.select()',
                     'class' => 'form-control-plaintext d-inline-block w-auto me-3',
                     'name' => 'placeholder',
                     'id' => 'possibleanswerplaceholder-' . $key]);
-            }, array_keys($standardplaceholders), $standardplaceholders);
-        $possibleanswerplaceholders = $mform->createElement('static', 'possibleanswerplaceholder',
-            get_string('modelanswer_possibleanswerplaceholders', 'qtype_pmatch'), implode("\n", $placeholders));
+            },
+            array_keys($standardplaceholders),
+            $standardplaceholders
+        );
+        $possibleanswerplaceholders = $mform->createElement(
+            'static',
+            'possibleanswerplaceholder',
+            get_string('modelanswer_possibleanswerplaceholders', 'qtype_pmatch'),
+            implode("\n", $placeholders)
+        );
         $mform->insertElementBefore($possibleanswerplaceholders, 'status');
 
         form_utils::add_synonyms($this, $mform, $this->question, true, 'synonymsdata', 3, 2);
 
-        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_pmatch', '{no}'),
-                question_bank::fraction_options());
+        $this->add_per_answer_fields(
+            $mform,
+            get_string('answerno', 'qtype_pmatch', '{no}'),
+            question_bank::fraction_options()
+        );
         $this->_form->setDefault('answer', [0 => 'match ()']);
 
         $this->add_interactive_settings();
@@ -106,7 +116,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
     protected function get_possible_answer_placeholders(int $number): array {
         $codes = [];
         // Create a default set of placeholders.
-        $codes[] = [str_repeat("_", $number), "__" . $number ."__", "__" . $number . "x2__"];
+        $codes[] = [str_repeat("_", $number), "__" . $number . "__", "__" . $number . "x2__"];
         foreach ($codes as $value) {
             $output = $value;
         }
@@ -115,8 +125,13 @@ class qtype_pmatch_edit_form extends question_edit_form {
     }
 
     #[\Override]
-    protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
-            $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
+    protected function add_per_answer_fields(
+        &$mform,
+        $label,
+        $gradeoptions,
+        $minoptions = QUESTION_NUMANS_START,
+        $addoptions = QUESTION_NUMANS_ADD
+    ) {
 
         // Nasty hack. The auto suggest answers button is a no submit button, so it doesn't
         // appear in the normal form flow. Though it is in the $_FORM object, so we access it
@@ -133,30 +148,46 @@ class qtype_pmatch_edit_form extends question_edit_form {
         // first field in the section (which is 'topborder[0]').
 
         // Add Model answer field.
-        $answermodel = $mform->createElement('text', 'modelanswer', get_string('modelanswer', 'qtype_pmatch'),
-            'size="50"');
+        $answermodel = $mform->createElement(
+            'text',
+            'modelanswer',
+            get_string('modelanswer', 'qtype_pmatch'),
+            'size="50"'
+        );
         $mform->insertElementBefore($answermodel, 'topborder[0]');
         $mform->addHelpButton('modelanswer', 'modelanswer', 'qtype_pmatch');
         $mform->setType('modelanswer', PARAM_RAW_TRIMMED);
-        $mform->addRule('modelanswer', get_string('modelanswermissing', 'qtype_pmatch'),
-            'required', null, 'client');
+        $mform->addRule(
+            'modelanswer',
+            get_string('modelanswermissing', 'qtype_pmatch'),
+            'required',
+            null,
+            'client'
+        );
 
         // Prepare grading accuracy info to add to the static text.
         $results = '';
         if (\qtype_pmatch\testquestion_responses::has_responses($this->question)) {
             $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($this->question);
-            $results = html_writer::tag('p',
+            $results = html_writer::tag(
+                'p',
                 get_string('overallgradingaccuracy', 'qtype_pmatch'),
-                ['class' => 'font-weight-bold']);
-            $results .= html_writer::tag('p',
+                ['class' => 'font-weight-bold']
+            );
+            $results .= html_writer::tag(
+                'p',
                 get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
-                ["id" => 'testquestion_gradesummary']);
+                ["id" => 'testquestion_gradesummary']
+            );
         }
 
         // Add instructions.
-        $answersinstruct = $mform->createElement('static', 'answersinstruct',
+        $answersinstruct = $mform->createElement(
+            'static',
+            'answersinstruct',
             get_string('correctanswers', 'qtype_pmatch'),
-            get_string('filloutoneanswer', 'qtype_pmatch') . $results);
+            get_string('filloutoneanswer', 'qtype_pmatch') . $results
+        );
         $mform->insertElementBefore($answersinstruct, 'topborder[0]');
         $mform->addHelpButton('answersinstruct', 'correctanswers', 'qtype_pmatch');
 
@@ -175,7 +206,7 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_answer_accuracy_fields($mform) {
-        if (!$this->question || !property_exists ($this->question, 'id')) {
+        if (!$this->question || !property_exists($this->question, 'id')) {
             return;
         }
         $questionobj = question_bank::load_question($this->question->id);
@@ -204,12 +235,18 @@ class qtype_pmatch_edit_form extends question_edit_form {
             // Add the Rule accuracy section.
             $accuracy = \qtype_pmatch\testquestion_responses::get_rule_accuracy_counts($responsestmp, $rule, $matches);
             $labelhtml = html_writer::div(
-                    html_writer::label(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitem_accuracy_' . $count),
-                    'fitemtitle');
-            $elementhtml = html_writer::div(get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
-                    'felement fselect', ['id' => 'fitem_accuracy_' . $count]);
-            $html = html_writer::div(html_writer::div($labelhtml. $elementhtml, 'col-md-12'),
-                    'fitem fitem_accuracy form-group row');
+                html_writer::label(get_string('ruleaccuracylabel', 'qtype_pmatch'), 'fitem_accuracy_' . $count),
+                'fitemtitle'
+            );
+            $elementhtml = html_writer::div(
+                get_string('ruleaccuracy', 'qtype_pmatch', $accuracy),
+                'felement fselect',
+                ['id' => 'fitem_accuracy_' . $count]
+            );
+            $html = html_writer::div(
+                html_writer::div($labelhtml . $elementhtml, 'col-md-12'),
+                'fitem fitem_accuracy form-group row'
+            );
             $answersaccuracy = $mform->createElement('html', $html);
             $cloneanswersaccuracy = clone $answersaccuracy;
             $mform->insertElementBefore($cloneanswersaccuracy, 'accuracyborder[' . $count . ']');
@@ -240,8 +277,14 @@ class qtype_pmatch_edit_form extends question_edit_form {
                         }
                     }
                 }
-                $reponseslist = print_collapsible_region_start('', 'matchedresponses_' . $count,
-                        get_string('showcoverage', 'qtype_pmatch'), '', true, true);
+                $reponseslist = print_collapsible_region_start(
+                    '',
+                    'matchedresponses_' . $count,
+                    get_string('showcoverage', 'qtype_pmatch'),
+                    '',
+                    true,
+                    true
+                );
                 $reponseslist .= html_writer::alist($items);
                 $reponseslist .= print_collapsible_region_end(true);
                 $html = html_writer::div($reponseslist, 'fitem fitem_matchedresponses');
@@ -262,12 +305,20 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function add_other_answer_fields($mform) {
-        $otheranswerhdr = $mform->addElement('static', 'otheranswerhdr',
-                                                get_string('anyotheranswer', 'qtype_pmatch'));
+        $otheranswerhdr = $mform->addElement(
+            'static',
+            'otheranswerhdr',
+            get_string('anyotheranswer', 'qtype_pmatch')
+        );
         $otheranswerhdr->setAttributes(['class' => 'otheranswerhdr']);
         $mform->addElement('static', 'otherfraction', get_string('gradenoun'), '0%');
-        $mform->addElement('editor', 'otherfeedback', get_string('feedback', 'question'),
-                                                        ['rows' => 5], $this->editoroptions);
+        $mform->addElement(
+            'editor',
+            'otherfeedback',
+            get_string('feedback', 'question'),
+            ['rows' => 5],
+            $this->editoroptions
+        );
     }
 
     /**
@@ -276,11 +327,18 @@ class qtype_pmatch_edit_form extends question_edit_form {
      * @param MoodleQuickForm $mform the form being built.
      */
     protected function general_answer_fields($mform) {
-        $mform->addElement('header', 'answeroptionsheader',
-                get_string('answeroptions', 'qtype_pmatch'));
+        $mform->addElement(
+            'header',
+            'answeroptionsheader',
+            get_string('answeroptions', 'qtype_pmatch')
+        );
 
-        $mform->addElement('static', 'generaldescription', '',
-                get_string('answeringoptions', 'qtype_pmatch'));
+        $mform->addElement(
+            'static',
+            'generaldescription',
+            '',
+            get_string('answeringoptions', 'qtype_pmatch')
+        );
 
         $mform->addElement('select', 'usecase', get_string('casesensitive', 'qtype_pmatch'), [
                 get_string('caseno', 'qtype_pmatch'),
@@ -296,22 +354,33 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->setDefault('quotematching', $this->get_default_value('quotematching', 0));
 
         $supsubels = [];
-        $supsubels[] = $mform->createElement('selectyesno', 'allowsubscript',
-                get_string('allowsubscript', 'qtype_pmatch'));
+        $supsubels[] = $mform->createElement(
+            'selectyesno',
+            'allowsubscript',
+            get_string('allowsubscript', 'qtype_pmatch')
+        );
         $mform->setDefault('allowsubscript', $this->get_default_value('allowsubscript', false));
         // Add hidden sub field so that we can retain the selected value when the field is disabled.
         $mform->addElement('hidden', 'allowsubscriptselectedvalue', '');
         $mform->setType('allowsubscriptselectedvalue', PARAM_BOOL);
 
-        $supsubels[] = $mform->createElement('selectyesno', 'allowsuperscript',
-                get_string('allowsuperscript', 'qtype_pmatch'));
+        $supsubels[] = $mform->createElement(
+            'selectyesno',
+            'allowsuperscript',
+            get_string('allowsuperscript', 'qtype_pmatch')
+        );
         $mform->setDefault('allowsuperscript', $this->get_default_value('allowsuperscript', false));
         // Add hidden sup field so that we can retain the selected value when the field is disabled.
         $mform->addElement('hidden', 'allowsuperscriptselectedvalue', '');
         $mform->setType('allowsuperscriptselectedvalue', PARAM_BOOL);
 
-        $mform->addGroup($supsubels, 'supsubels',
-                get_string('allowsubscript', 'qtype_pmatch'), '', false);
+        $mform->addGroup(
+            $supsubels,
+            'supsubels',
+            get_string('allowsubscript', 'qtype_pmatch'),
+            '',
+            false
+        );
         $mform->addElement('static', 'spellcheckdescription', '', get_string('spellcheckdisabled', 'qtype_pmatch'));
 
         $mform->addElement('select', 'forcelength', get_string('forcelength', 'qtype_pmatch'), [
@@ -323,13 +392,24 @@ class qtype_pmatch_edit_form extends question_edit_form {
         [$options, $disable] =
                 qtype_pmatch_spell_checker::get_spell_checker_language_options($this->question);
         if ($disable) {
-            $mform->addElement('select', 'applydictionarycheck',
-                    get_string('applydictionarycheck', 'qtype_pmatch'), $options, ['disabled' => 'disabled']);
+            $mform->addElement(
+                'select',
+                'applydictionarycheck',
+                get_string('applydictionarycheck', 'qtype_pmatch'),
+                $options,
+                ['disabled' => 'disabled']
+            );
         } else {
-            $mform->addElement('select', 'applydictionarycheck',
-                    get_string('applydictionarycheck', 'qtype_pmatch'), $options);
-            $mform->setDefault('applydictionarycheck',
-                    $this->get_default_value('applydictionarycheck', get_string('iso6391', 'langconfig')));
+            $mform->addElement(
+                'select',
+                'applydictionarycheck',
+                get_string('applydictionarycheck', 'qtype_pmatch'),
+                $options
+            );
+            $mform->setDefault(
+                'applydictionarycheck',
+                $this->get_default_value('applydictionarycheck', get_string('iso6391', 'langconfig'))
+            );
             // Add hidden spell-check field so that we can retain the selected value when the field is disabled.
             $mform->addElement('hidden', 'applydictionarycheckselectedvalue', '');
             $mform->setType('applydictionarycheckselectedvalue', PARAM_ALPHAEXT);
@@ -340,10 +420,18 @@ class qtype_pmatch_edit_form extends question_edit_form {
             $mform->disabledIf('allowsubscript', 'applydictionarycheck', 'neq', qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
         }
 
-        $mform->addElement('textarea', 'extenddictionary',
-                get_string('extenddictionary', 'qtype_pmatch'), ['rows' => '5', 'cols' => '80']);
-        $mform->disabledIf('extenddictionary', 'applydictionarycheck', 'eq',
-                qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION);
+        $mform->addElement(
+            'textarea',
+            'extenddictionary',
+            get_string('extenddictionary', 'qtype_pmatch'),
+            ['rows' => '5', 'cols' => '80']
+        );
+        $mform->disabledIf(
+            'extenddictionary',
+            'applydictionarycheck',
+            'eq',
+            qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION
+        );
         $mform->disabledIf('extenddictionary', 'allowsuperscript', 'eq', true);
         $mform->disabledIf('extenddictionary', 'allowsubscript', 'eq', true);
 
@@ -357,21 +445,34 @@ class qtype_pmatch_edit_form extends question_edit_form {
         $mform->setDefault('converttospace', $this->get_default_value('converttospace', ',;:'));
         $mform->setType('converttospace', PARAM_RAW_TRIMMED);
 
-        $mform->addElement('text', 'responsetemplate',
-            get_string('prefillanswertext', 'qtype_pmatch'), ['size' => 50]);
+        $mform->addElement(
+            'text',
+            'responsetemplate',
+            get_string('prefillanswertext', 'qtype_pmatch'),
+            ['size' => 50]
+        );
         $mform->addHelpButton('responsetemplate', 'prefillanswertext', 'qtype_pmatch');
         $mform->setType('responsetemplate', PARAM_RAW_TRIMMED);
     }
 
     #[\Override]
-    protected function get_per_answer_fields($mform, $label, $gradeoptions,
-                                                            &$repeatedoptions, &$answersoption) {
+    protected function get_per_answer_fields(
+        $mform,
+        $label,
+        $gradeoptions,
+        &$repeatedoptions,
+        &$answersoption
+    ) {
         $repeated = [];
         // Add an empty label to provide the top border for an answer (rule).
         // It would be nice to add a class to this element for styling, but it does not work.
         $repeated[] = $mform->createElement('static', 'topborder', '', ' ');
-        $repeated[] = $mform->createElement('textarea', 'answer', $label,
-                ['rows' => '8', 'cols' => '60', 'class' => 'answer-rule textareamonospace']);
+        $repeated[] = $mform->createElement(
+            'textarea',
+            'answer',
+            $label,
+            ['rows' => '8', 'cols' => '60', 'class' => 'answer-rule textareamonospace']
+        );
         if ($this->question->qtype == 'pmatch') {
             $title = $this->get_rc_title();
             $content = $this->get_rc_content();
@@ -381,11 +482,19 @@ class qtype_pmatch_edit_form extends question_edit_form {
                 $repeated[] = $mform->createElement('html', $html);
             }
         }
-        $repeated[] = $mform->createElement('select', 'fraction',
-                                                                get_string('gradenoun'), $gradeoptions);
-        $repeated[] = $mform->createElement('editor', 'feedback',
-                                get_string('feedback', 'question'),
-                                ['rows' => 5], $this->editoroptions);
+        $repeated[] = $mform->createElement(
+            'select',
+            'fraction',
+            get_string('gradenoun'),
+            $gradeoptions
+        );
+        $repeated[] = $mform->createElement(
+            'editor',
+            'feedback',
+            get_string('feedback', 'question'),
+            ['rows' => 5],
+            $this->editoroptions
+        );
         $repeatedoptions['answer']['type'] = PARAM_RAW;
         $repeatedoptions['fraction']['default'] = 0;
         $answersoption = 'answers';
@@ -500,11 +609,18 @@ EOT;
             $feedback = get_string('xrulesuggested', 'qtype_pmatch', $rulecount);
         }
 
-        $textelement = $mform->createElement('static', 'answersuggesttext',
-                                                get_string('rulesuggestionlabel', 'qtype_pmatch'), $feedback);
+        $textelement = $mform->createElement(
+            'static',
+            'answersuggesttext',
+            get_string('rulesuggestionlabel', 'qtype_pmatch'),
+            $feedback
+        );
         $mform->insertElementBefore($textelement, 'topborder[0]');
-        $buttonelement = $mform->createElement('submit', 'answersuggestbutton',
-                                                get_string('rulesuggestionbutton', 'qtype_pmatch'));
+        $buttonelement = $mform->createElement(
+            'submit',
+            'answersuggestbutton',
+            get_string('rulesuggestionbutton', 'qtype_pmatch')
+        );
         $mform->insertElementBefore($buttonelement, 'topborder[0]');
         $mform->registerNoSubmitButton('answersuggestbutton');
     }
@@ -604,8 +720,10 @@ EOT;
                 if ($data['fraction'][$key] == 1) {
                     $maxgrade = true;
                 }
-            } else if ($data['fraction'][$key] != 0 ||
-                                            !html_is_blank($data['feedback'][$key]['text'])) {
+            } else if (
+                $data['fraction'][$key] != 0 ||
+                                            !html_is_blank($data['feedback'][$key]['text'])
+            ) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_pmatch');
                 $answercount++;
             }
@@ -628,8 +746,10 @@ EOT;
             }
         }
 
-        $errors += $this->place_holder_errors($data['questiontext']['text'],
-                                             ($data['allowsubscript'] ?? false) || ($data['allowsuperscript'] ?? false));
+        $errors += $this->place_holder_errors(
+            $data['questiontext']['text'],
+            ($data['allowsubscript'] ?? false) || ($data['allowsuperscript'] ?? false)
+        );
         return $errors;
     }
 
@@ -667,4 +787,3 @@ EOT;
         return 'pmatch';
     }
 }
-

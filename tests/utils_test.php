@@ -26,7 +26,6 @@ namespace qtype_pmatch;
  * @covers \qtype_pmatch\utils
  */
 final class utils_test extends \basic_testcase {
-
     /**
      * This function should convert smart quotes and HTML entities to straight quotes.
      */

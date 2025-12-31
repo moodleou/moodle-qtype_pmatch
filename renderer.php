@@ -24,7 +24,6 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_renderer extends qtype_renderer {
-
     #[\Override]
     public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
 
@@ -53,7 +52,7 @@ class qtype_pmatch_renderer extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $attributes['class'] .= ' '.$this->feedback_class($fraction);
+            $attributes['class'] .= ' ' . $this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 
@@ -111,11 +110,18 @@ class qtype_pmatch_renderer extends qtype_renderer {
         $resetbutton = $this->reset_button($question, $options, $qa->get_qt_field_name('resetbutton'), $inputname);
 
         if ($placeholder) {
-            $inputinplace = html_writer::tag('label', get_string('answer'),
-                    ['for' => $attributes['id'], 'class' => 'accesshide']);
+            $inputinplace = html_writer::tag(
+                'label',
+                get_string('answer'),
+                ['for' => $attributes['id'], 'class' => 'accesshide']
+            );
             $inputinplace .= $input . $resetbutton;
-            $questiontext = substr_replace($questiontext, $inputinplace,
-                     strpos($questiontext, $placeholder), strlen($placeholder));
+            $questiontext = substr_replace(
+                $questiontext,
+                $inputinplace,
+                strpos($questiontext, $placeholder),
+                strlen($placeholder)
+            );
         }
 
         $result = $this->question_tests_link($question, $options);
@@ -140,17 +146,21 @@ class qtype_pmatch_renderer extends qtype_renderer {
         }
 
         if ($qa->get_state() == question_state::$invalid) {
-            $result .= html_writer::nonempty_tag('div',
-                    $question->get_validation_error(['answer' => $currentanswer]),
-                    ['class' => 'validationerror']);
+            $result .= html_writer::nonempty_tag(
+                'div',
+                $question->get_validation_error(['answer' => $currentanswer]),
+                ['class' => 'validationerror']
+            );
         }
 
         // Show the error if the question is using a language that does not available on the server.
         if ($question->user_can_see_missing_dict_warning() && $question->is_spell_check_laguage_available()) {
             $missinglangname = qtype_pmatch_spell_checker::get_display_name_for_language_code($question->applydictionarycheck);
-            $result .= html_writer::nonempty_tag('div',
-                    get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch', $missinglangname),
-                    ['class' => 'validationerror']);
+            $result .= html_writer::nonempty_tag(
+                'div',
+                get_string('apply_spellchecker_missing_language_attempt', 'qtype_pmatch', $missinglangname),
+                ['class' => 'validationerror']
+            );
         }
         return $result;
     }
@@ -201,8 +211,14 @@ class qtype_pmatch_renderer extends qtype_renderer {
             return '';
         }
 
-        return $question->format_text($answer->feedback, $answer->feedbackformat,
-                $qa, 'question', 'answerfeedback', $answer->id);
+        return $question->format_text(
+            $answer->feedback,
+            $answer->feedbackformat,
+            $qa,
+            'question',
+            'answerfeedback',
+            $answer->id
+        );
     }
 
     #[\Override]
@@ -224,9 +240,13 @@ class qtype_pmatch_renderer extends qtype_renderer {
             return '';
         }
 
-        $link = html_writer::link(new moodle_url(
-                '/question/type/pmatch/testquestion.php', ['id' => $question->id]),
-                get_string('testthisquestion', 'qtype_pmatch'));
+        $link = html_writer::link(
+            new moodle_url(
+                '/question/type/pmatch/testquestion.php',
+                ['id' => $question->id]
+            ),
+            get_string('testthisquestion', 'qtype_pmatch')
+        );
 
         return html_writer::tag('div', $link, ['class' => 'questiontestslink']);
     }
@@ -239,8 +259,9 @@ class qtype_pmatch_renderer extends qtype_renderer {
      */
     public function back_to_test_question_link(int $qid): string {
         return html_writer::tag('p', html_writer::link(
-                new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $qid]),
-                get_string('testquestionbacklink', 'qtype_pmatch')));
+            new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $qid]),
+            get_string('testquestionbacklink', 'qtype_pmatch')
+        ));
     }
 
     /**
@@ -251,11 +272,15 @@ class qtype_pmatch_renderer extends qtype_renderer {
      */
     public function display_feedback($feedback) {
         $html = html_writer::tag('p', html_writer::div(
-                    get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved))));
+            get_string('savedxresponses', 'qtype_pmatch', ($feedback->saved))
+        ));
         $total = count($feedback->duplicates) + count($feedback->problems);
         if ($total) {
-            $html .= html_writer::div(get_string('xresponsesproblems', 'qtype_pmatch',
-                $total));
+            $html .= html_writer::div(get_string(
+                'xresponsesproblems',
+                'qtype_pmatch',
+                $total
+            ));
 
             $feebacklist = array_merge($feedback->duplicates, $feedback->problems);
             $html .= html_writer::alist($feebacklist);

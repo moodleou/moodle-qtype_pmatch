@@ -27,6 +27,8 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatch/interpreter.php');
 
 use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+
 // The following is required because the xdebug library defaults to throwing a fatal error if
 // there is more than 100 nested function calls.
 if (extension_loaded('xdebug')) {
@@ -42,7 +44,6 @@ if (extension_loaded('xdebug')) {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pmatch_options {
-
     /** @var bool */
     public $ignorecase = false;
 
@@ -112,10 +113,13 @@ class pmatch_options {
             $synonym->word = $this->unicode_normalisation($synonym->word);
             $synonym->synonyms = $this->unicode_normalisation($synonym->synonyms);
             $toreplaceitem = preg_quote($synonym->word, '~');
-            $toreplaceitem = preg_replace('~\\\\\*~u',
-                        '('.$this->character_in_word_pattern().')*', $toreplaceitem);
+            $toreplaceitem = preg_replace(
+                '~\\\\\*~u',
+                '(' . $this->character_in_word_pattern() . ')*',
+                $toreplaceitem
+            );
             // The ?<= and ?= ensures that the adjacent characters are not replaced also.
-            $toreplaceitem = '~(?<=^|\PL)'.$toreplaceitem.'(?=\PL|$)~u';
+            $toreplaceitem = '~(?<=^|\PL)' . $toreplaceitem . '(?=\PL|$)~u';
             if ($this->ignorecase) {
                 $toreplaceitem .= 'i';
             }
@@ -173,9 +177,11 @@ class pmatch_options {
                 continue;
             }
             $wordpattern = preg_quote($word, '~');
-            $wordpattern = preg_replace('~\\\\\*~u',
-                                        '('.$this->character_in_word_pattern().')*',
-                                        $wordpattern);
+            $wordpattern = preg_replace(
+                '~\\\\\*~u',
+                '(' . $this->character_in_word_pattern() . ')*',
+                $wordpattern
+            );
             $wordpatterns[] = $wordpattern;
         }
         return $wordpatterns;
@@ -198,7 +204,7 @@ class pmatch_options {
      */
     public function word_has_sentence_divider_suffix($word) {
         $sd = $this->sentence_divider_pattern();
-        return (1 === preg_match('~('.$sd.')$~u', $word));
+        return (1 === preg_match('~(' . $sd . ')$~u', $word));
     }
 
     /**
@@ -241,7 +247,7 @@ class pmatch_options {
      * @return string
      */
     public function character_in_word_pattern() {
-        return PMATCH_CHARACTER.'|'.PMATCH_SPECIAL_CHARACTER;
+        return PMATCH_CHARACTER . '|' . PMATCH_SPECIAL_CHARACTER;
     }
 
 
@@ -298,7 +304,6 @@ class pmatch_options {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pmatch_parsed_string {
-
     /** @var pmatch_options */
     protected $options;
 
@@ -457,7 +462,7 @@ class pmatch_parsed_string {
             $endofpattern .= 'i';
         }
         foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
-            if (preg_match('~'.$wordstoignorepattern.$endofpattern, $word)) {
+            if (preg_match('~' . $wordstoignorepattern . $endofpattern, $word)) {
                 // Is a number, extra dictionary word or synonym.
                 return null;
             }
@@ -535,7 +540,6 @@ class pmatch_parsed_string {
  * Represents a pmatch_expression.
  */
 class pmatch_expression {
-
     /** @var pmatch_interpreter_whole_expression */
     protected $interpreter;
 
@@ -566,7 +570,7 @@ class pmatch_expression {
         $expression = $this->options->unicode_normalisation($expression);
         $this->originalexpression = $expression;
         $this->interpreter = new pmatch_interpreter_whole_expression($options);
-        list($matched, $endofmatch) = $this->interpreter->interpret($expression);
+        [$matched, $endofmatch] = $this->interpreter->interpret($expression);
         $this->errormessage = $this->interpreter->get_error_message();
         if ($endofmatch == core_text::strlen($expression) && $matched && $this->errormessage == '') {
             $this->valid = true;
@@ -586,8 +590,8 @@ class pmatch_expression {
      */
     public function matches(pmatch_parsed_string $parsedstring) {
         if (!$this->is_valid()) {
-            throw new coding_exception('Oops. You called matches for an expression that is not '.
-                                'valid. You should call is_valid first. Interpreter error :'.
+            throw new coding_exception('Oops. You called matches for an expression that is not ' .
+                                'valid. You should call is_valid first. Interpreter error :' .
                                 $this->get_parse_error());
         }
         $matcher = $this->interpreter->get_matcher($this->options);
@@ -639,7 +643,7 @@ class pmatch_expression {
      */
     public function get_formatted_expression_string() {
         if (!$this->is_valid()) {
-            throw new coding_exception('Oops. You called get_formatted_expression_string for an '.
+            throw new coding_exception('Oops. You called get_formatted_expression_string for an ' .
                                 'expression that is not valid. You should call is_valid first.');
         }
         return $this->interpreter->get_formatted_expression_string();

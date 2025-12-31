@@ -37,7 +37,6 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_responses {
-
     /** @var \qtype_pmatch_question the question the test responses relate to. */
     protected $questionobj = null;
 
@@ -161,13 +160,20 @@ class testquestion_responses {
             $count++;
             // There could be matching responses in the DB. Ugly to have a DB call in a for loop.
             // but seemed best compromise since this is a rare function.
-            $id = $DB->get_field_select('qtype_pmatch_test_responses', 'id', 'response=? AND questionid=?',
-                    [$response->response, $response->questionid]);
+            $id = $DB->get_field_select(
+                'qtype_pmatch_test_responses',
+                'id',
+                'response=? AND questionid=?',
+                [$response->response, $response->questionid]
+            );
             // Check for duplicates.
             if ($id) {
                 // Record duplicate response against it's number in the saved array.
-                $feedback->duplicates[$count] = get_string('duplicateresponse', 'qtype_pmatch',
-                        $response->response);
+                $feedback->duplicates[$count] = get_string(
+                    'duplicateresponse',
+                    'qtype_pmatch',
+                    $response->response
+                );
                 continue;
             }
 
@@ -284,7 +290,7 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question to do the grading
      */
     public static function grade_response($response, $question) {
-        list($actualmark) = $question->grade_response(['answer' => $response->response]);
+        [$actualmark] = $question->grade_response(['answer' => $response->response]);
         $response->set_gradedfraction($actualmark);
         self::update_response($response);
     }
@@ -372,7 +378,6 @@ class testquestion_responses {
         }
 
         if ($accuracy['incorrectlymatched'] > 0) {
-
             if (round($rule->fraction) == 1) {
                 $accuracy['class'] .= '-missed-positive';
             } else {
@@ -391,7 +396,7 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question to do the grading
      * @param array $responseids an array of response ids that need rule matching.
      */
-    public static function save_rule_matches($question, $responseids= []) {
+    public static function save_rule_matches($question, $responseids = []) {
         global $DB;
 
         $rules = $question->get_answers();
@@ -415,7 +420,9 @@ class testquestion_responses {
                 }
 
                 $match = $question->compare_response_with_answer(
-                                                    ['answer' => $response->response], $rule);
+                    ['answer' => $response->response],
+                    $rule
+                );
                 if ($match) {
                     $rulematch = [];
                     $rulematch['answerid'] = $rule->id;
@@ -534,15 +541,18 @@ class testquestion_responses {
      * @param \qtype_pmatch_question $question
      * @param array $responseids Optional array of response ids
      */
-    public static function delete_rule_matches($question, $responseids= []) {
+    public static function delete_rule_matches($question, $responseids = []) {
         global $DB;
         if (empty($responseids)) {
             $DB->delete_records('qtype_pmatch_rule_matches', ['questionid' => $question->id]);
         } else {
-            list ($sql, $params) = $DB->get_in_or_equal($responseids);
+             [$sql, $params] = $DB->get_in_or_equal($responseids);
             $params[] = $question->id;
-            $DB->delete_records_select('qtype_pmatch_rule_matches',
-                    "testresponseid $sql AND questionid = ?", $params);
+            $DB->delete_records_select(
+                'qtype_pmatch_rule_matches',
+                "testresponseid $sql AND questionid = ?",
+                $params
+            );
         }
     }
 
@@ -569,7 +579,7 @@ class testquestion_responses {
         // Get the response ids for the question.
         $sql = "SELECT id, testresponseid, answerid FROM {qtype_pmatch_rule_matches}
                     WHERE questionid='" . $questionid . "'
-                    AND testresponseid IN(". implode(',', $responseids) . ")
+                    AND testresponseid IN(" . implode(',', $responseids) . ")
                     ORDER BY testresponseid ASC";
         $data = $DB->get_records_sql($sql);
 
@@ -596,7 +606,6 @@ class testquestion_responses {
                 $matchruleidtoresponseid[] = $record->testresponseid;
             }
             $matchruleidstoresponseids[$record->answerid] = $matchruleidtoresponseid;
-
         }
 
         $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
@@ -652,7 +661,6 @@ class testquestion_responses {
                 }
                 $matchruleidstoresponseids[$ruleid] = $matchruleidtoresponseid;
             }
-
         }
 
         $matches = ['responseidstoruleids' => $matchresponseidstoruleids,
@@ -729,7 +737,11 @@ class testquestion_responses {
      * @param int $count the number of responses to load (optional)
      * @return array of two elements [testquestion_response[], string[]]
      */
-    public static function load_responses_from_file($filepath, $question, $count=0) {
+    public static function load_responses_from_file(
+        $filepath,
+        $question,
+        $count = 0
+    ) {
         $responses = [];
         $problems = [];
         $row = 1;
@@ -753,8 +765,11 @@ class testquestion_responses {
                 $score = null;
             } else if ($data[0] != 0 && $data[0] != 1) {
                 // We don't want to upload responses with expected mark other than 0 or 1.
-                $problems[] = get_string('testquestionuploadincorrectmark', 'qtype_pmatch',
-                        ['expectedmark' => $data[0], 'response' => $data[1]]);
+                $problems[] = get_string(
+                    'testquestionuploadincorrectmark',
+                    'qtype_pmatch',
+                    ['expectedmark' => $data[0], 'response' => $data[1]]
+                );
                 continue;
             } else {
                 $score = (float)$data[0];
@@ -770,8 +785,11 @@ class testquestion_responses {
                 // csv file are not wanted. Often a comma will exist within a students answer,
                 // and tutors are expected to wrap those answers within speech marks for this
                 // upload. See e.g. in fixtures/shortanswerquestion_webserviceresponses.csv.
-                $problems[] = get_string('testquestionuploadrowhastwoitems', 'qtype_pmatch',
-                                    ['row' => $row, 'items' => count($data)]);
+                $problems[] = get_string(
+                    'testquestionuploadrowhastwoitems',
+                    'qtype_pmatch',
+                    ['row' => $row, 'items' => count($data)]
+                );
                 continue;
             }
 
@@ -807,8 +825,11 @@ class testquestion_responses {
     public static function check_duplicate_response($questionid, $response) {
         global $DB;
 
-        return $DB->record_exists_select('qtype_pmatch_test_responses', 'response = ? AND questionid = ?',
-                ['response' => $response, 'questionid' => $questionid]);
+        return $DB->record_exists_select(
+            'qtype_pmatch_test_responses',
+            'response = ? AND questionid = ?',
+            ['response' => $response, 'questionid' => $questionid]
+        );
     }
 
     /**

@@ -38,7 +38,6 @@ require_once(__DIR__ . '/../pmatchlib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class form_utils {
-
     /**
      * Validate synonyms field.
      *
@@ -65,7 +64,7 @@ class form_utils {
             }
 
             $wordinterpreter = new \pmatch_interpreter_word();
-            list($wordmatched, $endofmatch) = $wordinterpreter->interpret($trimmedword);
+            [$wordmatched, $endofmatch] = $wordinterpreter->interpret($trimmedword);
             if ((!$wordmatched) || !($endofmatch == (\core_text::strlen($trimmedword)))) {
                 $errors[$fieldname . '[' . $key . ']'] = get_string('wordcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
@@ -75,7 +74,7 @@ class form_utils {
             }
 
             $synonyminterpreter = new \pmatch_interpreter_synonym();
-            list($synonymmatched, $endofmatch) = $synonyminterpreter->interpret($trimmedsynonyms);
+            [$synonymmatched, $endofmatch] = $synonyminterpreter->interpret($trimmedsynonyms);
             if ((!$synonymmatched) || !($endofmatch == (\core_text::strlen($trimmedsynonyms)))) {
                 $errors[$fieldname . '[' . $key . ']'] = get_string('synonymcontainsillegalcharacters', 'qtype_pmatch');
                 continue;
@@ -173,8 +172,13 @@ class form_utils {
                 continue;
             }
             $expression = new \pmatch_expression($trimmedanswer, $options);
-            if (\qtype_pmatch_question::compare_string_with_pmatch_expression(
-                    $modelanswer, $trimmedanswer, $expression->get_options())) {
+            if (
+                \qtype_pmatch_question::compare_string_with_pmatch_expression(
+                    $modelanswer,
+                    $trimmedanswer,
+                    $expression->get_options()
+                )
+            ) {
                 // This answer matches. Is the grade right?
                 return $grades[$key] == 1.0;
             }
@@ -194,18 +198,33 @@ class form_utils {
      * @param int $repeatwhenempty Number of synonyms field will be shown when no synonyms inserted.
      * @param int $repeatwhenexist Number of synonyms field will be shown when synonyms existed.
      */
-    public static function add_synonyms($editform, $mform, $question, $showheader, $elementname, $repeatwhenempty,
-                                        $repeatwhenexist) {
+    public static function add_synonyms(
+        $editform,
+        $mform,
+        $question,
+        $showheader,
+        $elementname,
+        $repeatwhenempty,
+        $repeatwhenexist
+    ) {
         if ($showheader) {
             $mform->addElement('header', 'synonymshdr', get_string('synonym', 'qtype_pmatch'));
         }
 
-        $mform->addElement('static', 'synonymsdescription', '',
-                get_string('synonymsheader', 'qtype_pmatch'));
+        $mform->addElement(
+            'static',
+            'synonymsdescription',
+            '',
+            get_string('synonymsheader', 'qtype_pmatch')
+        );
 
         $textboxgroup = [];
-        $textboxgroup[] = $mform->createElement('group', $elementname,
-                get_string('synonymsno', 'qtype_pmatch', '{no}'), self::add_synonym($mform));
+        $textboxgroup[] = $mform->createElement(
+            'group',
+            $elementname,
+            get_string('synonymsno', 'qtype_pmatch', '{no}'),
+            self::add_synonym($mform)
+        );
         $repeatedoptions = ['synonymsdata[word]' => ['type' => PARAM_RAW],
                 'synonymsdata[synonyms]' => ['type' => PARAM_RAW]];
 
@@ -219,8 +238,16 @@ class form_utils {
             $repeatsatstart = $countsynonyms + $repeatwhenexist;
         }
 
-        $editform->repeat_elements($textboxgroup, $repeatsatstart, $repeatedoptions, 'nosynonyms' . $elementname,
-                'addsynonyms' . $elementname, 2, get_string('addmoresynonymblanks', 'qtype_pmatch'), true);
+        $editform->repeat_elements(
+            $textboxgroup,
+            $repeatsatstart,
+            $repeatedoptions,
+            'nosynonyms' . $elementname,
+            'addsynonyms' . $elementname,
+            2,
+            get_string('addmoresynonymblanks', 'qtype_pmatch'),
+            true
+        );
     }
 
     /**
@@ -268,10 +295,18 @@ class form_utils {
      */
     public static function add_synonym($mquickform) {
         $grouparray = [];
-        $grouparray[] = $mquickform->createElement('text', 'word',
-                get_string('wordwithsynonym', 'qtype_pmatch'), ['size' => 15]);
-        $grouparray[] = $mquickform->createElement('text', 'synonyms',
-                get_string('synonym', 'qtype_pmatch'), ['size' => 50]);
+        $grouparray[] = $mquickform->createElement(
+            'text',
+            'word',
+            get_string('wordwithsynonym', 'qtype_pmatch'),
+            ['size' => 15]
+        );
+        $grouparray[] = $mquickform->createElement(
+            'text',
+            'synonyms',
+            get_string('synonym', 'qtype_pmatch'),
+            ['size' => 50]
+        );
         return $grouparray;
     }
 

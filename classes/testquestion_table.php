@@ -28,7 +28,6 @@ require_once($CFG->libdir . '/tablelib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_table extends \table_sql {
-
     /** @var object the settings for the question we are reporting on. */
     protected $question;
 
@@ -64,12 +63,15 @@ class testquestion_table extends \table_sql {
     protected function get_checkbox_header() {
         global $OUTPUT;
         return $OUTPUT->render(new \core\output\checkbox_toggleall(
-                'responses', true, [
+            'responses',
+            true,
+            [
                     'id' => 'tqheadercheckbox',
                     'value' => 1,
                     'label' => get_string('selectall'),
                     'labelclasses' => 'accesshide',
-                ]));
+            ]
+        ));
     }
 
     /**
@@ -81,12 +83,15 @@ class testquestion_table extends \table_sql {
         global $OUTPUT;
         if ($response->id) {
             return $OUTPUT->render(new \core\output\checkbox_toggleall(
-                'responses', false, [
+                'responses',
+                false,
+                [
                     'name' => 'responseid[]',
                     'value' => $response->id,
                     'label' => get_string('testquestionseletresponsex', 'qtype_pmatch', $response->id),
                     'labelclasses' => 'accesshide',
-                ]));
+                ]
+            ));
         } else {
             return '';
         }
@@ -105,11 +110,15 @@ class testquestion_table extends \table_sql {
             return $expectedfraction;
         }
 
-        return \html_writer::tag('a',
-                $expectedfraction,
-                ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
-                        'title' => get_string('testquestionchangescore', 'qtype_pmatch') ]);
-
+        return \html_writer::tag(
+            'a',
+            $expectedfraction,
+            ['class' => 'updater-ef', 'data-id' => $response->id, 'id' => 'updater-ef_' . $response->id, 'href' => '#',
+            'title' => get_string(
+                'testquestionchangescore',
+                'qtype_pmatch'
+            ) ]
+        );
     }
 
     /**
@@ -127,11 +136,19 @@ class testquestion_table extends \table_sql {
      * @return string HTML content to go inside the td.
      */
     public function col_rules($response) {
-        if (testquestion_responses::has_rule_match_for_response(
-                    $this->testresponses->rulematches, $response->id)) {
-            return implode(',',
-                    testquestion_responses::get_matching_rule_indexes_for_response(
-                            $this->testresponses, $response->id));
+        if (
+            testquestion_responses::has_rule_match_for_response(
+                $this->testresponses->rulematches,
+                $response->id
+            )
+        ) {
+            return implode(
+                ',',
+                testquestion_responses::get_matching_rule_indexes_for_response(
+                    $this->testresponses,
+                    $response->id
+                )
+            );
         } else {
             return '';
         }
@@ -163,7 +180,7 @@ class testquestion_table extends \table_sql {
         $from = '{qtype_pmatch_test_responses}';
         $fields = 'id, expectedfraction, gradedfraction, response';
         $params = ['questionid' => $this->question->id];
-        $where = 'questionid = '.$this->question->id;
+        $where = 'questionid = ' . $this->question->id;
 
         if ($this->options->states) {
             $statesqllist = [
@@ -213,8 +230,16 @@ class testquestion_table extends \table_sql {
             return $response->response;
         }
         $editresponse = get_string('testquestioneditresponse', 'qtype_pmatch');
-        $tmpl = new \core\output\inplace_editable('qtype_pmatch', 'responsetable', $response->id,
-                true, s($response->response), $response->response, $editresponse, $editresponse);
+        $tmpl = new \core\output\inplace_editable(
+            'qtype_pmatch',
+            'responsetable',
+            $response->id,
+            true,
+            s($response->response),
+            $response->response,
+            $editresponse,
+            $editresponse
+        );
         $out = $OUTPUT->render($tmpl);
 
         return $out;
@@ -289,7 +314,7 @@ class testquestion_table extends \table_sql {
      */
     protected function set_up_table_form() {
         // Set up the table's SQL.
-        list($fields, $from, $where, $params) = $this->base_sql();
+        [$fields, $from, $where, $params] = $this->base_sql();
         $this->set_count_sql("SELECT COUNT(1) FROM $from WHERE $where", $params);
         $this->set_sql($fields, $from, $where, $params);
         // Define table columns and headers.

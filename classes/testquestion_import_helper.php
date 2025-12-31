@@ -23,6 +23,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MultipleClasses
+
 namespace qtype_pmatch;
 
 defined('MOODLE_INTERNAL') || die();
@@ -35,7 +37,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_import_helper {
-
     /** @var array Allow import file type. */
     const ACCEPTED_TYPES = ['csv', 'xlsx', 'html', 'json', 'ods'];
     /** @var int Minimum row require for import file. */
@@ -95,7 +96,6 @@ class testquestion_import_helper {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_pmatch_importer {
-
     /** @var string Content of the file */
     public $contents;
 
@@ -124,7 +124,6 @@ abstract class qtype_pmatch_importer {
      * @return array List of error if any.
      */
     abstract public function validate();
-
 }
 
 /**
@@ -135,7 +134,6 @@ abstract class qtype_pmatch_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_pmatch_spout_importer {
-
     /**
      * @var \Box\Spout\Reader\ReaderInterface $reader Spout Reader.
      */
@@ -230,7 +228,6 @@ abstract class qtype_pmatch_spout_importer {
 
         return $errcase;
     }
-
 }
 
 /**
@@ -241,7 +238,6 @@ abstract class qtype_pmatch_spout_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_csv_importer extends qtype_pmatch_spout_importer {
-
     /**
      * qtype_pmatch_csv_importer constructor.
      *
@@ -266,7 +262,6 @@ class qtype_pmatch_csv_importer extends qtype_pmatch_spout_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_xlsx_importer extends qtype_pmatch_spout_importer {
-
     /**
      * qtype_pmatch_xlsx_importer constructor.
      */
@@ -290,7 +285,6 @@ class qtype_pmatch_xlsx_importer extends qtype_pmatch_spout_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_ods_importer extends qtype_pmatch_spout_importer {
-
     /**
      * qtype_pmatch_xlsx_importer constructor.
      */
@@ -314,7 +308,6 @@ class qtype_pmatch_ods_importer extends qtype_pmatch_spout_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_json_importer extends qtype_pmatch_importer {
-
     /**
      * Get the responses from file
      *
@@ -345,8 +338,10 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
         // We only need the first sheet of the file.
         // Any more sheets in this file are not wanted.
         $repsonsedata = $this->get_responses();
-        if (count($repsonsedata) <
-                testquestion_import_helper::UPLOAD_FILE_MIN_ROW - 1) {
+        if (
+            count($repsonsedata) <
+            testquestion_import_helper::UPLOAD_FILE_MIN_ROW - 1
+        ) {
             // Json file does not include header row or comment.
             $errcase['row'] = true;
         }
@@ -366,7 +361,6 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
 
         return $errcase;
     }
-
 }
 
 /**
@@ -377,7 +371,6 @@ class qtype_pmatch_json_importer extends qtype_pmatch_importer {
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_html_importer extends qtype_pmatch_importer {
-
     /**
      * Get the responses from file
      *
@@ -460,5 +453,4 @@ class qtype_pmatch_html_importer extends qtype_pmatch_importer {
 
         return $errcase;
     }
-
 }

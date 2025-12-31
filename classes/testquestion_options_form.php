@@ -28,22 +28,42 @@ require_once($CFG->libdir . '/formslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_options_form extends \moodleform {
-
     #[\Override]
     protected function definition() {
         $mform = $this->_form;
         $stategroup = [
-                $mform->createElement('advcheckbox', 'statematches', '',
-                        get_string('testquestionmatches', 'qtype_pmatch')),
-                $mform->createElement('advcheckbox', 'statemissedpositive', '',
-                        get_string('testquestionincorrectlymarkedwrong', 'qtype_pmatch')),
-                $mform->createElement('advcheckbox', 'statemissednegative', '',
-                        get_string('testquestionincorrectlymarkedrights', 'qtype_pmatch')),
-                $mform->createElement('advcheckbox', 'stateungraded', '',
-                        get_string('testquestionungraded', 'qtype_pmatch')),
+                $mform->createElement(
+                    'advcheckbox',
+                    'statematches',
+                    '',
+                    get_string('testquestionmatches', 'qtype_pmatch')
+                ),
+                $mform->createElement(
+                    'advcheckbox',
+                    'statemissedpositive',
+                    '',
+                    get_string('testquestionincorrectlymarkedwrong', 'qtype_pmatch')
+                ),
+                $mform->createElement(
+                    'advcheckbox',
+                    'statemissednegative',
+                    '',
+                    get_string('testquestionincorrectlymarkedrights', 'qtype_pmatch')
+                ),
+                $mform->createElement(
+                    'advcheckbox',
+                    'stateungraded',
+                    '',
+                    get_string('testquestionungraded', 'qtype_pmatch')
+                ),
         ];
-        $mform->addGroup($stategroup, 'stateoptions',
-                get_string('testquestionresponsesthatare', 'qtype_pmatch'), [' '], false);
+        $mform->addGroup(
+            $stategroup,
+            'stateoptions',
+            get_string('testquestionresponsesthatare', 'qtype_pmatch'),
+            [' '],
+            false
+        );
         $mform->setDefault('statematches', 1);
         $mform->setDefault('statemissedpositive', 1);
         $mform->setDefault('statemissednegative', 1);
@@ -52,15 +72,20 @@ class testquestion_options_form extends \moodleform {
         $mform->addElement('text', 'pagesize', get_string('pagesize', 'quiz'), ['size' => 3]);
         $mform->setType('pagesize', PARAM_INT);
 
-        $mform->addElement('submit', 'submitbutton',
-                get_string('updatedisplayoptions', 'core_question'));
+        $mform->addElement(
+            'submit',
+            'submitbutton',
+            get_string('updatedisplayoptions', 'core_question')
+        );
     }
 
     #[\Override]
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        if (!($data['statematches'] || $data['statemissedpositive'] ||
-                $data['statemissednegative'] || $data['stateungraded'])) {
+        if (
+            !($data['statematches'] || $data['statemissedpositive'] ||
+            $data['statemissednegative'] || $data['stateungraded'])
+        ) {
             $errors['stateoptions'] = get_string('reportmustselectstate', 'quiz');
         }
         return $errors;

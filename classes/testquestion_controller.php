@@ -29,7 +29,6 @@ require_once($CFG->dirroot . '/lib/questionlib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testquestion_controller {
-
     /** @var int default page size (number of responses to display on a page). */
     const DEFAULT_PAGE_SIZE = 50;
 
@@ -63,8 +62,11 @@ class testquestion_controller {
         $this->context = $context;
         $this->options = new testquestion_options($question);
         $this->optionsform = new testquestion_options_form($this->get_base_url());
-        $this->responsestable = new testquestion_table($question,
-                $this->testresponses, $this->options);
+        $this->responsestable = new testquestion_table(
+            $question,
+            $this->testresponses,
+            $this->options
+        );
         // Initiate download dropdown list.
         $this->responsestable->is_downloading('');
     }
@@ -101,8 +103,10 @@ class testquestion_controller {
      * @return moodle_url the URL.
      */
     protected function get_base_url() {
-        return new \moodle_url('/question/type/pmatch/testquestion.php',
-                ['id' => $this->question->id]);
+        return new \moodle_url(
+            '/question/type/pmatch/testquestion.php',
+            ['id' => $this->question->id]
+        );
     }
 
     /**
@@ -151,8 +155,11 @@ class testquestion_controller {
             \core_php_time_limit::raise(60);
             $row++;
             \qtype_pmatch\testquestion_responses::grade_response($response, $this->question);
-            $pbar->update($row, $rowcount, get_string('processingxofy', 'qtype_pmatch',
-                    ['row' => $row, 'total' => $rowcount, 'response' => $response->response]));
+            $pbar->update($row, $rowcount, get_string(
+                'processingxofy',
+                'qtype_pmatch',
+                ['row' => $row, 'total' => $rowcount, 'response' => $response->response]
+            ));
         }
     }
 

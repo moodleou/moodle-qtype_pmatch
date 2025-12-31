@@ -36,7 +36,6 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_qtype_pmatch extends behat_base {
-
     /**
      * @var string File path to default responses csv file.
      */
@@ -58,12 +57,16 @@ class behat_qtype_pmatch extends behat_base {
     protected function resolve_page_instance_url(string $type, string $identifier): moodle_url {
         switch (strtolower($type)) {
             case 'test responses':
-                return new moodle_url('/question/type/pmatch/testquestion.php',
-                        ['id' => $this->find_question_by_name($identifier)]);
+                return new moodle_url(
+                    '/question/type/pmatch/testquestion.php',
+                    ['id' => $this->find_question_by_name($identifier)]
+                );
 
             case 'test responses upload':
-                return new moodle_url('/question/type/pmatch/uploadresponses.php',
-                        ['id' => $this->find_question_by_name($identifier)]);
+                return new moodle_url(
+                    '/question/type/pmatch/uploadresponses.php',
+                    ['id' => $this->find_question_by_name($identifier)]
+                );
 
             default:
                 throw new Exception('Unrecognised qtype_pmatch page type "' . $type . '."');

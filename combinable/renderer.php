@@ -23,32 +23,48 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_embedded_renderer extends qtype_combined_text_entry_renderer_base {
-
     #[\Override]
-    public function subquestion(question_attempt $qa, question_display_options $options, qtype_combined_combinable_base $subq,
-            $placeno) {
-
+    public function subquestion(
+        question_attempt $qa,
+        question_display_options $options,
+        qtype_combined_combinable_base $subq,
+        $placeno
+    ) {
         $result = parent::subquestion($qa, $options, $subq, $placeno);
         $link = '';
         if ($subq->question->user_can_view()) {
-            $link = html_writer::link(new moodle_url(
-                    '/question/type/pmatch/testquestion.php', ['id' => $subq->question->id]),
-                    get_string('test', 'qtype_pmatch'), ['title' => get_string('testsubquestionx', 'qtype_pmatch',
-                            $subq->get_identifier())]);
+            $link = html_writer::link(
+                new moodle_url(
+                    '/question/type/pmatch/testquestion.php',
+                    ['id' => $subq->question->id]
+                ),
+                get_string('test', 'qtype_pmatch'),
+                ['title' => get_string(
+                    'testsubquestionx',
+                    'qtype_pmatch',
+                    $subq->get_identifier()
+                )]
+            );
         }
 
         /** @var qtype_pmatch_renderer $pmatchrenderer */
         $pmatchrenderer = $this->page->get_renderer('qtype_pmatch');
 
         return html_writer::tag('span', $result . $link, ['class' => 'combined-pmatch-input mw-100 pb-2']) .
-            $pmatchrenderer->reset_button($subq->question, $options,
+            $pmatchrenderer->reset_button(
+                $subq->question,
+                $options,
                 $qa->get_qt_field_name($subq->step_data_name('resetbutton')),
-                $qa->get_qt_field_name($subq->step_data_name('answer')));
+                $qa->get_qt_field_name($subq->step_data_name('answer'))
+            );
     }
 
     #[\Override]
-    protected function prepare_current_answer(question_display_options $options, ?string $currentanswer,
-            qtype_combined_combinable_base $subq): ?string {
+    protected function prepare_current_answer(
+        question_display_options $options,
+        ?string $currentanswer,
+        qtype_combined_combinable_base $subq
+    ): ?string {
         $currentanswer = parent::prepare_current_answer($options, $currentanswer, $subq);
         $currentanswer = $subq->question->modify_current_answer($currentanswer, $options);
         return $currentanswer;

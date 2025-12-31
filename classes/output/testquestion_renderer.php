@@ -24,7 +24,6 @@ use qtype_pmatch\testquestion_controller;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
-
     /**
      * Render the question testing tool options form.
      *
@@ -61,8 +60,8 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
                 'id' => 'uploadbutton',
                 'value' => get_string('testquestionuploadresponses', 'qtype_pmatch'),
                 "onclick" => "window.location.href = '" . $link->out(false) . "'",
-                'class' => 'btn btn-secondary']
-            );
+                'class' => 'btn btn-secondary',
+            ]);
     }
 
     /**
@@ -83,8 +82,11 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
      */
     public function get_grade_summary(qtype_pmatch_question $question) {
         $counts = \qtype_pmatch\testquestion_responses::get_question_grade_summary_counts($question);
-        return html_writer::tag('p', get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
-                ['id' => 'testquestion_gradesummary']);
+        return html_writer::tag(
+            'p',
+            get_string('testquestionresultssummary', 'qtype_pmatch', $counts),
+            ['id' => 'testquestion_gradesummary']
+        );
     }
 
     /**
@@ -142,8 +144,12 @@ class qtype_pmatch_testquestion_renderer extends plugin_renderer_base {
             $html .= html_writer::end_div();
 
             // Initialise JavaScript.
-            $this->page->requires->event_handler('#deleteresponsesbutton', 'click', 'M.util.show_confirm_dialog',
-                    ['message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')]);
+            $this->page->requires->event_handler(
+                '#deleteresponsesbutton',
+                'click',
+                'M.util.show_confirm_dialog',
+                ['message' => get_string('testquestionformdeletecheck', 'qtype_pmatch')]
+            );
             $this->page->requires->js_call_amd('qtype_pmatch/updater', 'init');
             $this->page->requires->js_call_amd('qtype_pmatch/creator', 'init');
             $this->page->requires->strings_for_js(['ok', 'selectall', 'deselectall'], 'moodle');

@@ -37,7 +37,6 @@ require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
  * @covers \pmatch_parsed_string
  */
 final class pmatch_test extends \basic_testcase {
-
     /**
      * Match expression matches a string.
      *
@@ -87,26 +86,47 @@ final class pmatch_test extends \basic_testcase {
     public static function pmatch_error_provider(): array {
         return [
                 // No closing bracket.
-                ['match_mow([tom maud]|[sid jane]', get_string('ie_missingclosingbracket',
-                        'qtype_pmatch', 'match_mow([tom maud]|[sid jane]')],
+                ['match_mow([tom maud]|[sid jane]', get_string(
+                    'ie_missingclosingbracket',
+                    'qtype_pmatch',
+                    'match_mow([tom maud]|[sid jane]'
+                )],
                 // No contents.
-                ['match_mow()', get_string('ie_unrecognisedsubcontents',
-                        'qtype_pmatch', 'match_mow()')],
+                ['match_mow()', get_string(
+                    'ie_unrecognisedsubcontents',
+                    'qtype_pmatch',
+                    'match_mow()'
+                )],
                 // Short contents and wrong format.
-                ['match_any([tom])', get_string('ie_unrecognisedsubcontents',
-                    'qtype_pmatch', 'match_any([tom])')],
+                ['match_any([tom])', get_string(
+                    'ie_unrecognisedsubcontents',
+                    'qtype_pmatch',
+                    'match_any([tom])'
+                )],
                 // Long contents and wrong format.
-                ['match_any([tom maud])', get_string('ie_unrecognisedsubcontents',
-                    'qtype_pmatch', 'match_any([tom ma...')],
+                ['match_any([tom maud])', get_string(
+                    'ie_unrecognisedsubcontents',
+                    'qtype_pmatch',
+                    'match_any([tom ma...'
+                )],
                 // Ends in an or character.
-                ['match_mow([tom maud]|)', get_string('ie_lastsubcontenttypeorcharacter',
-                        'qtype_pmatch', '[tom maud]|')],
+                ['match_mow([tom maud]|)', get_string(
+                    'ie_lastsubcontenttypeorcharacter',
+                    'qtype_pmatch',
+                    '[tom maud]|'
+                )],
                 // Ends in a space.
-                ['match_mow([tom maud] )', get_string('ie_lastsubcontenttypeworddelimiter',
-                        'qtype_pmatch', 'match_mow([tom maud] )')],
+                ['match_mow([tom maud] )', get_string(
+                    'ie_lastsubcontenttypeworddelimiter',
+                    'qtype_pmatch',
+                    'match_mow([tom maud] )'
+                )],
                 // Ends in a proximity delimiter.
-                ['match_mow([tom maud]_)', get_string('ie_lastsubcontenttypeworddelimiter',
-                        'qtype_pmatch', 'match_mow([tom maud]_)')],
+                ['match_mow([tom maud]_)', get_string(
+                    'ie_lastsubcontenttypeworddelimiter',
+                    'qtype_pmatch',
+                    'match_mow([tom maud]_)'
+                )],
                 // A full stop is only allowed in match expressions if surrounded on both sides by digits.
                 ['match(abc.)', ''],
                 ['match(abc.def)', ''],
@@ -508,8 +528,12 @@ EOF;
      * @param bool $shouldmatch is method assert.
      * @param pmatch_options|null $options is options for method assert.
      */
-    public function test_pmatch_matching(string $string, string $expression,
-            bool $shouldmatch, ?pmatch_options $options = null): void {
+    public function test_pmatch_matching(
+        string $string,
+        string $expression,
+        bool $shouldmatch,
+        ?pmatch_options $options = null
+    ): void {
         if ($shouldmatch) {
             $this->assertTrue($this->match($string, $expression, $options));
         } else {
@@ -685,7 +709,7 @@ EOF;
      * @return void
      */
     public function test_pmatch_number_regex(string $string, int $expectedmatches): void {
-        $this->assertSame($expectedmatches, preg_match('!'.PMATCH_NUMBER.'$!A', $string));
+        $this->assertSame($expectedmatches, preg_match('!' . PMATCH_NUMBER . '$!A', $string));
     }
 
     /**

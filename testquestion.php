@@ -55,7 +55,7 @@ if ($questiondata->qtype != 'pmatch') {
 $question = question_bank::load_question($questionid);
 
 // Process any other URL parameters, and do require_login.
-list($context, $urlparams) = qtype_pmatch_setup_question_test_page($question);
+[$context, $urlparams] = qtype_pmatch_setup_question_test_page($question);
 
 $url = new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $questionid]);
 $PAGE->set_pagelayout('popup');

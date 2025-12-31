@@ -24,7 +24,6 @@ namespace qtype_pmatch\local\spell;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch_enchant_spell_checker extends qtype_pmatch_spell_checker {
-
     /** @var resource the enchant broker. */
     protected static $broker = null;
 

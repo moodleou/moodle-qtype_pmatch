@@ -41,16 +41,16 @@ require_once($CFG->dirroot . '/question/type/pmatch/question.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_pmatch extends question_type {
-
     #[\Override]
     public function get_extra_question_bank_actions(stdClass $question): array {
         $actions = parent::get_extra_question_bank_actions($question);
 
         if (question_has_capability_on($question, 'view')) {
             $actions[] = new action_menu_link_secondary(
-                    new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $question->id]),
-                    new pix_icon('t/approve', ''),
-                    get_string('testquestiontool', 'qtype_pmatch'));
+                new moodle_url('/question/type/pmatch/testquestion.php', ['id' => $question->id]),
+                new pix_icon('t/approve', ''),
+                get_string('testquestiontool', 'qtype_pmatch')
+            );
         }
 
         return $actions;
@@ -60,9 +60,11 @@ class qtype_pmatch extends question_type {
     public function get_question_options($question): bool {
         global $DB;
         parent::get_question_options($question);
-        $question->options->synonyms = $DB->get_records('qtype_pmatch_synonyms',
-                                                        ['questionid' => $question->id],
-                                                        'id ASC');
+        $question->options->synonyms = $DB->get_records(
+            'qtype_pmatch_synonyms',
+            ['questionid' => $question->id],
+            'id ASC'
+        );
         return true;
     }
 
@@ -110,7 +112,8 @@ class qtype_pmatch extends question_type {
         $previousversionquestionid = $question->id ?? 0;
         if ($CFG->branch >= 400 && $previousversionquestionid) {
             $fromform->responsesdata = testquestion_responses::get_responses_by_questionid(
-                    $previousversionquestionid);
+                $previousversionquestionid
+            );
         }
         if (!$fromform->quotematching) {
             foreach ($fromform as $property => $value) {
@@ -126,8 +129,11 @@ class qtype_pmatch extends question_type {
     public function save_question_options($fromform) {
         global $DB;
 
-        $oldsynonyms = $DB->get_records('qtype_pmatch_synonyms',
-                ['questionid' => $fromform->id], 'id ASC');
+        $oldsynonyms = $DB->get_records(
+            'qtype_pmatch_synonyms',
+            ['questionid' => $fromform->id],
+            'id ASC'
+        );
 
         foreach ($fromform->synonymsdata as $synonymfromform) {
             // Check for, and ignore, completely blank synonym from the form.
@@ -149,7 +155,6 @@ class qtype_pmatch extends question_type {
             $synonym->word = $word;
             $synonym->synonyms = trim($synonymfromform['synonyms']);
             $DB->update_record('qtype_pmatch_synonyms', $synonym);
-
         }
 
         // Delete any remaining synonyms.
@@ -166,8 +171,10 @@ class qtype_pmatch extends question_type {
         // And it only existing when user change the select value of applydictionarycheck.
         // These options are incompatible, applydictionarycheckselectedvalue is set.
         // Unset allowsubscript/allowsuperscript before saving to the database.
-        if (!empty($fromform->applydictionarycheckselectedvalue) &&
-            ($fromform->applydictionarycheckselectedvalue !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION)) {
+        if (
+            !empty($fromform->applydictionarycheckselectedvalue) &&
+            ($fromform->applydictionarycheckselectedvalue !== qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION)
+        ) {
             $fromform->allowsubscript = $fromform->allowsuperscript = 0;
         }
         if (!isset($fromform->extenddictionary)) {
@@ -221,8 +228,11 @@ class qtype_pmatch extends question_type {
      */
     protected function save_answers($question): ?stdClass {
         global $DB;
-        $oldanswers = $DB->get_records('question_answers',
-                                            ['question' => $question->id], 'id ASC');
+        $oldanswers = $DB->get_records(
+            'question_answers',
+            ['question' => $question->id],
+            'id ASC'
+        );
 
         $context = $question->context;
         $maxfraction = -1;
@@ -230,8 +240,10 @@ class qtype_pmatch extends question_type {
         // Insert all the new answers.
         foreach ($question->answer as $key => $answerdata) {
             // Check for, and ignore, completely blank answer from the form.
-            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
-                    html_is_blank($question->feedback[$key]['text'])) {
+            if (
+                trim($answerdata) == '' && $question->fraction[$key] == 0 &&
+                html_is_blank($question->feedback[$key]['text'])
+            ) {
                 continue;
             }
 
@@ -252,8 +264,13 @@ class qtype_pmatch extends question_type {
             }
 
             $answer->fraction = $question->fraction[$key];
-            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
-                    $context, 'question', 'answerfeedback', $answer->id);
+            $answer->feedback = $this->import_or_save_files(
+                $question->feedback[$key],
+                $context,
+                'question',
+                'answerfeedback',
+                $answer->id
+            );
             $answer->feedbackformat = $question->feedback[$key]['format'];
             $DB->update_record('question_answers', $answer);
 
@@ -275,8 +292,13 @@ class qtype_pmatch extends question_type {
             } else {
                 $otheranswer->id = $oldotheranswer->id;
             }
-            $otheranswer->feedback = $this->import_or_save_files($question->otherfeedback,
-                    $context, 'question', 'answerfeedback', $otheranswer->id);
+            $otheranswer->feedback = $this->import_or_save_files(
+                $question->otherfeedback,
+                $context,
+                'question',
+                'answerfeedback',
+                $otheranswer->id
+            );
             $otheranswer->feedbackformat = $question->otherfeedback['format'];
             $DB->update_record('question_answers', $otheranswer);
             $this->save_extra_answer_data($question, 'other', $otheranswer->id);
@@ -311,7 +333,7 @@ class qtype_pmatch extends question_type {
     }
 
     #[\Override]
-    public function import_from_xml($data, $question, qformat_xml $format, $extra=null) {
+    public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
         $question = parent::import_from_xml($data, $question, $format, $extra);
         if (!$question) {
             return false;
@@ -331,8 +353,13 @@ class qtype_pmatch extends question_type {
             $question->responsesdata = [];
         }
 
-        $format->import_hints($question, $data, true, false,
-                $format->get_format($question->questiontextformat));
+        $format->import_hints(
+            $question,
+            $data,
+            true,
+            false,
+            $format->get_format($question->questiontextformat)
+        );
         return $question;
     }
 
@@ -343,7 +370,7 @@ class qtype_pmatch extends question_type {
      * @param stdClass $question the question.
      * @param array $testquestionresponses the bit of the XML representing test question responses data.
      */
-    public function import_responses(qformat_xml $format, stdClass$question, array $testquestionresponses): void {
+    public function import_responses(qformat_xml $format, stdClass $question, array $testquestionresponses): void {
         $responses = [];
         foreach ($testquestionresponses as $testquestionresponse) {
             $response = $this->get_response_data($format, $testquestionresponse);
@@ -362,10 +389,16 @@ class qtype_pmatch extends question_type {
     public function get_response_data(qformat_xml $format, array $testquestionresponse): testquestion_response {
         $response = new testquestion_response();
         $response->response = $format->import_text($format->getpath($testquestionresponse, ['#', 'response', 0, '#', 'text'], ''));
-        $response->expectedfraction = $format->import_text($format->getpath($testquestionresponse,
-                ['#', 'expectedfraction', 0, '#', 'text'], ''));
-        $response->gradedfraction = $format->import_text($format->getpath($testquestionresponse,
-                ['#', 'gradedfraction', 0, '#', 'text'], ''));
+        $response->expectedfraction = $format->import_text($format->getpath(
+            $testquestionresponse,
+            ['#', 'expectedfraction', 0, '#', 'text'],
+            ''
+        ));
+        $response->gradedfraction = $format->import_text($format->getpath(
+            $testquestionresponse,
+            ['#', 'gradedfraction', 0, '#', 'text'],
+            ''
+        ));
         return $response;
     }
 
@@ -496,7 +529,8 @@ class qtype_pmatch extends question_type {
         $question->pmatchoptions = new pmatch_options();
         $question->pmatchoptions->ignorecase = !$questiondata->options->usecase;
         $question->pmatchoptions->set_extra_dictionary_words(
-                                                        $questiondata->options->extenddictionary);
+            $questiondata->options->extenddictionary
+        );
         $question->pmatchoptions->sentencedividers = $questiondata->options->sentencedividers;
         $question->pmatchoptions->converttospace = $questiondata->options->converttospace;
         $question->pmatchoptions->set_synonyms($questiondata->options->synonyms);
@@ -524,8 +558,10 @@ class qtype_pmatch extends question_type {
             if ($answer->answer === '*') {
                 $starfound = true;
             }
-            $responses[$aid] = new question_possible_response($answer->answer,
-                    $answer->fraction);
+            $responses[$aid] = new question_possible_response(
+                $answer->answer,
+                $answer->fraction
+            );
         }
         if (!$starfound) {
             $responses[0] = new question_possible_response(get_string('didnotmatchanyanswer', 'question'), 0);
@@ -545,5 +581,4 @@ class qtype_pmatch extends question_type {
 
         parent::delete_question($questionid, $contextid);
     }
-
 }

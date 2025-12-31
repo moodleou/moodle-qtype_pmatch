@@ -18,7 +18,7 @@ use qtype_pmatch\local\spell\qtype_pmatch_spell_checker;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
+require_once($CFG->dirroot . '/question/type/pmatch/pmatchlib.php');
 
 /**
  * Represents a pattern-match  question.
@@ -27,9 +27,7 @@ require_once($CFG->dirroot.'/question/type/pmatch/pmatchlib.php');
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_pmatch_question extends question_graded_by_strategy
-        implements question_response_answer_comparer {
-
+class qtype_pmatch_question extends question_graded_by_strategy implements question_response_answer_comparer {
     /** @var bool whether answers should be graded case-sensitively. */
     public $usecase;
 
@@ -128,8 +126,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
             $a = $parsestring->unparseable();
             $responsevalidationerrors[] = get_string('unparseable', 'qtype_pmatch', $a);
         }
-        if ($this->applydictionarycheck != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION &&
-                !$parsestring->is_spelled_correctly() && (!$this->allowsubscript && !$this->allowsuperscript)) {
+        if (
+            $this->applydictionarycheck != qtype_pmatch_spell_checker::DO_NOT_CHECK_OPTION &&
+                !$parsestring->is_spelled_correctly() && (!$this->allowsubscript && !$this->allowsuperscript)
+        ) {
             $misspelledwords = $parsestring->get_spelling_errors();
             $a = join(' ', $misspelledwords);
             $responsevalidationerrors[] = get_string('spellingmistakes', 'qtype_pmatch', $a);
@@ -156,7 +156,10 @@ class qtype_pmatch_question extends question_graded_by_strategy
     #[\Override]
     public function is_same_response(array $prevresponse, array $newresponse) {
         return question_utils::arrays_same_at_key_missing_is_blank(
-                $prevresponse, $newresponse, 'answer');
+            $prevresponse,
+            $newresponse,
+            'answer'
+        );
     }
 
     /**
@@ -187,9 +190,11 @@ class qtype_pmatch_question extends question_graded_by_strategy
         if (isset($this->quotematching) && !$this->quotematching) {
             $response = \qtype_pmatch\utils::convert_quote_to_straight_quote($response);
         }
-        return self::compare_string_with_pmatch_expression($response['answer'],
-                                                            $answer->answer,
-                                                            $this->pmatchoptions);
+        return self::compare_string_with_pmatch_expression(
+            $response['answer'],
+            $answer->answer,
+            $this->pmatchoptions
+        );
     }
 
     /**
@@ -222,13 +227,17 @@ class qtype_pmatch_question extends question_graded_by_strategy
             $answer = $qa->get_question()->get_matching_answer(['answer' => $currentanswer]);
             $answerid = reset($args); // Itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
-
         } else if ($component == 'question' && $filearea == 'hint') {
             return $this->check_hint_file_access($qa, $options, $args);
-
         } else {
-            return parent::check_file_access($qa, $options, $component,
-                                                                $filearea, $args, $forcedownload);
+            return parent::check_file_access(
+                $qa,
+                $options,
+                $component,
+                $filearea,
+                $args,
+                $forcedownload
+            );
         }
     }
 

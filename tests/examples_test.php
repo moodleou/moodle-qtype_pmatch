@@ -93,7 +93,7 @@ final class examples_test extends \basic_testcase {
         }
 
         $row = -1;
-        while (($data = fgetcsv($handle)) !== false) {
+        while (($data = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
             $row++;
             if ($row == 0 || $data[0][0] === '#') {
                 continue; // Skipping header row or comment.
@@ -104,10 +104,12 @@ final class examples_test extends \basic_testcase {
             }
 
             if (count($data) < 2 || !is_numeric($data[1])) {
-                $this->fail('Skipping bad line in responses file '.
+                $this->fail('Skipping bad line in responses file ' .
                             '(file ' . $name . '.responses.csv, line ' . ($row + 1) . ').');
             }
             $options = new pmatch_options();
+
+            // phpcs:disable PSR2.ControlStructures.SwitchDeclaration.TerminatingComment
             switch (count($data)) {
                 case 5:
                     $options->worddividers = $data[4];
@@ -116,11 +118,15 @@ final class examples_test extends \basic_testcase {
                 case 3: // Fall through.
                     (bool)$options->ignorecase = $data[2];
             }
+            // phpcs:enable PSR2.ControlStructures.SwitchDeclaration.TerminatingComment
 
             $string = new pmatch_parsed_string($data[0], $options);
-            $this->assertEquals((bool) trim($data[1]), $expression->matches($string),
-                    'File ' . $name . '.responses.csv, line ' . ($row + 1) .
-                    ' "' . s($data[0]) . '", %s');
+            $this->assertEquals(
+                (bool) trim($data[1]),
+                $expression->matches($string),
+                'File ' . $name . '.responses.csv, line ' . ($row + 1) .
+                ' "' . s($data[0]) . '", %s'
+            );
         }
 
         fclose($handle);

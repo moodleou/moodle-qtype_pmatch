@@ -22,6 +22,7 @@ global $CFG;
 require_once($CFG->dirroot . '/question/type/pmatch/tests/testquestion_test_base.php');
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/format/xml/format.php');
+require_once($CFG->dirroot . '/lib/xmlize.php');
 
 /**
  * Test the responses used in the test this question function.
@@ -35,7 +36,6 @@ require_once($CFG->dirroot . '/question/format/xml/format.php');
  * @covers \qtype_pmatch\testquestion_responses
  */
 final class testquestion_responses_test extends testquestion_test_base {
-
     /**
      * Test basic instantiation of the test_response class.
      */
@@ -421,9 +421,11 @@ final class testquestion_responses_test extends testquestion_test_base {
             $answerstoruleids[$answer->answer] = $aid;
         }
 
-        $this->assertEquals([$answerstoruleids['match_w(Tom|Harry)'],
+        $this->assertEquals(
+            [$answerstoruleids['match_w(Tom|Harry)'],
                 $answerstoruleids['match_w(Dick)']],
-                $response->ruleids);
+            $response->ruleids
+        );
     }
 
     /**
@@ -601,12 +603,17 @@ final class testquestion_responses_test extends testquestion_test_base {
         testquestion_responses::save_rule_matches($this->currentquestion);
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
-        $rulematches = testquestion_responses::get_rule_matches_for_responses($responseids,
-                $this->currentquestion->id);
+        $rulematches = testquestion_responses::get_rule_matches_for_responses(
+            $responseids,
+            $this->currentquestion->id
+        );
 
         // Translate the rule and response ids into responses and rules to test.
-        $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches,
-                $rules, $responses);
+        $responseandrulematches = $this->get_rule_matches_as_responses_and_rules(
+            $rulematches,
+            $rules,
+            $responses
+        );
 
         $this->assertEquals($comparerulematches, $responseandrulematches);
 
@@ -638,8 +645,10 @@ final class testquestion_responses_test extends testquestion_test_base {
         testquestion_responses::save_rule_matches($this->currentquestion);
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
-        $rulematches = testquestion_responses::get_rule_matches_for_responses($responseids,
-                $this->currentquestion->id);
+        $rulematches = testquestion_responses::get_rule_matches_for_responses(
+            $responseids,
+            $this->currentquestion->id
+        );
 
         // Translate the rule and response ids into responses and rules to test.
         $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
@@ -660,8 +669,10 @@ final class testquestion_responses_test extends testquestion_test_base {
         testquestion_responses::save_rule_matches($this->currentquestion);
 
         // Determine which rules match which response using data from table qtype_pmatch_rule_matches.
-        $rulematches = testquestion_responses::get_rule_matches_for_responses($responseids,
-                $this->currentquestion->id);
+        $rulematches = testquestion_responses::get_rule_matches_for_responses(
+            $responseids,
+            $this->currentquestion->id
+        );
 
         // Translate the rule and response ids into responses and rules to test.
         $responseandrulematches = $this->get_rule_matches_as_responses_and_rules($rulematches, $rules, $responses);
