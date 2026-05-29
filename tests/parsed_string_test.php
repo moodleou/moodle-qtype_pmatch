@@ -194,6 +194,29 @@ final class parsed_string_test extends \basic_testcase {
     }
 
     /**
+     * Regression test for long punctuated responses.
+     *
+     * The assertion focus is that spell-checking completes and produces a result array.
+     */
+    public function test_pmatch_spelling_with_long_punctuated_sentence(): void {
+        $options = new pmatch_options();
+        $options->lang = 'en_GB';
+
+        \qtype_pmatch_test_helper::skip_test_if_no_spellcheck($this, $options->lang);
+
+        $string = 'During routine checks, the operations team reviewed multiple records, noted repeated '
+                . 'format anomalies, and applied consistent corrections to preserve readability, accuracy, '
+                . 'and traceability across archived responses, while ensuring punctuation-heavy input '
+                . 'continued to process without excessive resource usage.';
+
+        $parsedstring = new pmatch_parsed_string($string, $options);
+
+        $this->assertGreaterThan(0, $parsedstring->get_word_count());
+        $parsedstring->is_spelled_correctly();
+        $this->assertIsArray($parsedstring->get_spelling_errors());
+    }
+
+    /**
      * Test get_display_name_for_language_code
      *
      * @dataProvider get_display_name_for_language_code_provider

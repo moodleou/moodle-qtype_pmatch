@@ -468,11 +468,29 @@ class pmatch_parsed_string {
             return null;
         }
 
-        // Try trimming one non-letter character from the end or start, if present.
-        if (preg_match('~[^\pL]$~u', $word)) {
-            return $this->is_word_misspelled(core_text::substr($word, 0, -1));
-        } else if (preg_match('~^[^\pL]~u', $word)) {
-            return $this->is_word_misspelled(core_text::substr($word, 1));
+        // Try trimming non-letter characters from the end or start, if present.
+        // This was previously recursive, but long punctuated inputs could create a deep
+        // call stack and many transient string copies. Iterative trimming keeps the same
+        // matching behaviour while bounding stack growth and reducing peak memory pressure.
+        // Keep checking dictionary membership after each trim, so wrapped valid words still
+        // short-circuit as soon as a dictionary form is reached. Trailing characters are
+        // stripped before leading ones, matching the original recursive order.
+        while (preg_match('~[^\pL]$~u', $word) || preg_match('~^[^\pL]~u', $word)) {
+            $word = preg_match('~[^\pL]$~u', $word)
+                ? core_text::substr($word, 0, -1)
+                : core_text::substr($word, 1);
+            if (trim($word) === '') {
+                return null;
+            }
+            foreach ($this->options->words_to_ignore_patterns() as $wordstoignorepattern) {
+                if (preg_match('~'.$wordstoignorepattern.$endofpattern, $word)) {
+                    // Is a number, extra dictionary word or synonym.
+                    return null;
+                }
+            }
+            if ($spellchecker->is_in_dictionary($word)) {
+                return null;
+            }
         }
 
         // Finally, if what is left after all punctuation is removed contains hyphens,
