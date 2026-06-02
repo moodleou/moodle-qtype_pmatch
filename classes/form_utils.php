@@ -279,10 +279,14 @@ class form_utils {
      * Check valid or invalid of expression.
      *
      * @param string $expressionstring Inputted expression data. E.g: match(example).
+     * @param \pmatch_options|null $options the matching options (synonyms, dividers, ...) to validate against.
+     *      These must be passed so that the expression is validated under the same options that will be
+     *      used when matching, otherwise an expression that is valid on its own (for example before
+     *      synonym substitution) can later fail to parse during matching.
      * @return string Error message when the expression is invalid or empty string if expression is valid.
      */
-    public static function validate_pmatch_expression(string $expressionstring): string {
-        $expression = new \pmatch_expression($expressionstring);
+    public static function validate_pmatch_expression(string $expressionstring, ?\pmatch_options $options = null): string {
+        $expression = new \pmatch_expression($expressionstring, $options);
         return $expression->get_parse_error();
     }
 

@@ -73,6 +73,49 @@ final class question_test extends \basic_testcase {
                                                                     'match_c(C)', $options));
     }
 
+    /**
+     * An expression that is valid on its own can become invalid once synonyms are applied,
+     * because synonym substitution happens during parsing. In that case
+     * compare_string_with_pmatch_expression() must return false rather than throwing a
+     * coding_exception from pmatch_expression::matches().
+     */
+    public function test_compare_string_with_expression_invalidated_by_synonyms(): void {
+        $options = new pmatch_options();
+        // The synonym value carries a trailing space, so substituting it into the match content
+        // leaves a word delimiter at the end of the sub content, making the expression invalid.
+        $options->set_synonyms([(object) ['word' => 'Israel', 'synonyms' => 'Jacob ']]);
+
+        // Sanity check: the expression really is invalid under these options.
+        $expression = new \pmatch_expression('match_mw (Yahweh|delivered|salvation Israel)', $options);
+        $this->assertFalse($expression->is_valid());
+
+        // The comparison must not throw; it should simply report no match.
+        $this->assertFalse(qtype_pmatch_question::compare_string_with_pmatch_expression(
+                'salvation Israel', 'match_mw (Yahweh|delivered|salvation Israel)', $options));
+    }
+
+    /**
+     * validate_pmatch_expression() must validate against the given matching options so that an
+     * expression invalidated by synonyms is reported as an answer-field error, rather than being
+     * accepted and then failing fatally during model answer matching.
+     *
+     * @covers \qtype_pmatch\form_utils::validate_pmatch_expression
+     */
+    public function test_validate_pmatch_expression_uses_options(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/question/type/pmatch/classes/form_utils.php');
+
+        $expression = 'match_mw (Yahweh|delivered|salvation Israel)';
+
+        // Without the synonym option the expression is valid: no error message.
+        $this->assertSame('', form_utils::validate_pmatch_expression($expression));
+
+        // With the synonym that appends a trailing delimiter, validation must report the error.
+        $options = new pmatch_options();
+        $options->set_synonyms([(object) ['word' => 'Israel', 'synonyms' => 'Jacob ']]);
+        $this->assertNotSame('', form_utils::validate_pmatch_expression($expression, $options));
+    }
+
     public function test_is_complete_response(): void {
         $question = qtype_pmatch_test_helper::make_a_pmatch_question();
 
