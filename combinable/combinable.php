@@ -237,9 +237,13 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         if (isset($this->formdata->quotematching) && !$this->formdata->quotematching) {
             $this->formdata = utils::convert_quote_to_straight_quote($this->formdata);
         }
+        // Build the matching options so the answer is validated under the same options (synonyms,
+        // dividers, ...) used when matching. See the note in edit_pmatch_form::validation().
+        $pmatchoptions = form_utils::options_from_form_data((array) $this->formdata);
+
         $trimmedanswer = $this->formdata->answer[0];
         if ('' !== $trimmedanswer) {
-            if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {
+            if ($message = form_utils::validate_pmatch_expression($trimmedanswer, $pmatchoptions)) {
                 $errors[$this->form_field_name('answer[0]')] = $message;
             }
         } else {
@@ -260,7 +264,6 @@ class qtype_combined_combinable_pmatch extends qtype_combined_combinable_text_en
         // Validate the model answer (if everything else is OK).
         if (empty($errors)) {
             $modelanswer = trim($this->formdata->modelanswer);
-            $pmatchoptions = form_utils::options_from_form_data((array) $this->formdata);
             if (!form_utils::validate_modelanswer($this->formdata->answer,
                     ['0' => 1.0], $modelanswer, $pmatchoptions)) {
                 $errors[$this->form_field_name('modelanswer')] = get_string('modelanswererror', 'qtype_pmatch', $modelanswer);

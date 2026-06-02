@@ -592,12 +592,19 @@ EOT;
             }
         }
 
+        // Build the matching options from the form data so that the answers are validated under the
+        // same options (synonyms, dividers, ...) that will be used when matching. An expression can be
+        // valid on its own but become invalid once these options are applied (for example synonym
+        // substitution happens during parsing), so validating with the options surfaces a friendly
+        // error on the answer field instead of a fatal coding error later during model answer matching.
+        $pmatchoptions = form_utils::options_from_form_data($data);
+
         $answercount = 0;
         $maxgrade = false;
         foreach ($data['answer'] as $key => $answer) {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
-                if ($message = form_utils::validate_pmatch_expression($trimmedanswer)) {
+                if ($message = form_utils::validate_pmatch_expression($trimmedanswer, $pmatchoptions)) {
                     $errors["answer[$key]"] = $message;
                 }
                 $answercount++;
@@ -622,7 +629,6 @@ EOT;
         // Can only validate the model answer if there is one, and if the rest of the question is valid.
         if (empty($errors) && isset($data['modelanswer'])) {
             $modelanswer = trim($data['modelanswer']);
-            $pmatchoptions = form_utils::options_from_form_data($data);
             if (!form_utils::validate_modelanswer($data['answer'], $data['fraction'], $modelanswer, $pmatchoptions)) {
                 $errors['modelanswer'] = get_string('modelanswererror', 'qtype_pmatch', $modelanswer);
             }

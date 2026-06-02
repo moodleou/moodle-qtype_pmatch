@@ -203,6 +203,13 @@ class qtype_pmatch_question extends question_graded_by_strategy
     public static function compare_string_with_pmatch_expression($string, $expression, $options) {
         $string = new pmatch_parsed_string($string, $options);
         $expression = new pmatch_expression($expression, $options);
+        // The expression can be valid on its own but become invalid once the matching options
+        // (for example synonyms) are applied, because synonym substitution happens during parsing.
+        // matches() throws a coding_exception if called on an invalid expression, so guard against
+        // that here and treat an unparseable expression as a non-match rather than a fatal error.
+        if (!$expression->is_valid()) {
+            return false;
+        }
         return $expression->matches($string);
     }
 
