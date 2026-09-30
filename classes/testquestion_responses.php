@@ -167,7 +167,7 @@ class testquestion_responses {
             if ($id) {
                 // Record duplicate response against it's number in the saved array.
                 $feedback->duplicates[$count] = get_string('duplicateresponse', 'qtype_pmatch',
-                        $response->response);
+                        s($response->response));
                 continue;
             }
 
@@ -485,21 +485,21 @@ class testquestion_responses {
             if ($response->expectedfraction == $fraction) {
                 if ($response->expectedfraction) {
                     $responsematches[] = '<span>' .
-                            $response->id . ': ' . $response->response .
+                            $response->id . ': ' . s($response->response) .
                             '</span>';
                 } else {
                     $responsematches[] = '<span>' .
-                            $response->id . ': ' . $response->response .
+                            $response->id . ': ' . s($response->response) .
                             '</span>';
                 }
             } else {
                 if ($response->expectedfraction) {
                     $responsematches[] = '<span class="qtype_pmatch-selftest-missed-negative">' .
-                            $response->id . ': ' . $response->response .
+                            $response->id . ': ' . s($response->response) .
                             '</span>';
                 } else {
                     $responsematches[] = '<span class="qtype_pmatch-selftest-missed-positive">' .
-                            $response->id . ': ' . $response->response .
+                            $response->id . ': ' . s($response->response) .
                             '</span>';
                 }
             }
@@ -754,7 +754,7 @@ class testquestion_responses {
             } else if ($data[0] != 0 && $data[0] != 1) {
                 // We don't want to upload responses with expected mark other than 0 or 1.
                 $problems[] = get_string('testquestionuploadincorrectmark', 'qtype_pmatch',
-                        ['expectedmark' => $data[0], 'response' => $data[1]]);
+                        ['expectedmark' => $data[0], 'response' => s($data[1])]);
                 continue;
             } else {
                 $score = (float)$data[0];

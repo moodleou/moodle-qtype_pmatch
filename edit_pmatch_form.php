@@ -221,21 +221,21 @@ class qtype_pmatch_edit_form extends question_edit_form {
                     if ($responses[$responseid]->expectedfraction == $responses[$responseid]->gradedfraction) {
                         if ($responses[$responseid]->expectedfraction) {
                             $items[] = '<span>' .
-                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    $responses[$responseid]->id . ': ' . s($responses[$responseid]->response) .
                                     '</span>';
                         } else {
                             $items[] = '<span>' .
-                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    $responses[$responseid]->id . ': ' . s($responses[$responseid]->response) .
                                     '</span>';
                         }
                     } else {
                         if ($responses[$responseid]->expectedfraction) {
                             $items[] = '<span class="qtype_pmatch-selftest-missed-negative">' .
-                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    $responses[$responseid]->id . ': ' . s($responses[$responseid]->response) .
                                     '</span>';
                         } else {
                             $items[] = '<span class="qtype_pmatch-selftest-missed-positive">' .
-                                    $responses[$responseid]->id . ': ' . $responses[$responseid]->response .
+                                    $responses[$responseid]->id . ': ' . s($responses[$responseid]->response) .
                                     '</span>';
                         }
                     }

@@ -65,6 +65,10 @@ class qtype_pmatch_external extends external_api {
         $params = self::validate_parameters(self::check_response_parameters(), [
                 'questionid' => $questionid,
                 'response' => $response]);
+        $question = question_bank::load_question($params['questionid']);
+        $context = $question->get_context();
+        self::validate_context($context);
+        question_require_capability_on($question, 'edit');
         $duplicated = \qtype_pmatch\testquestion_responses::check_duplicate_response($params['questionid'], $params['response']);
         if ($duplicated) {
             $result['status'] = 'error';
@@ -125,8 +129,11 @@ class qtype_pmatch_external extends external_api {
                 'response' => $response,
                 'curentrow' => $curentrow]);
         $question = question_bank::load_question($params['questionid']);
+        $context = $question->get_context();
+        self::validate_context($context);
+        question_require_capability_on($question, 'edit');
         // To prevent notice message when calling web service.
-        $PAGE->set_context($question->get_context());
+        $PAGE->set_context($context);
         try {
             $response = new stdClass();
             $response->expectedfraction = $params['expectedfraction'];
